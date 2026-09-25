@@ -1,0 +1,73 @@
+:root {
+  color-scheme: light;
+
+  --brand: #b85a32;
+  --brand-hover: #9f4a26;
+  --brand-soft: #f6e4d9;
+  --on-brand: #ffffff;
+
+  --accent: #1f7a74;
+  --accent-hover: #18625c;
+  --on-accent: #ffffff;
+
+  --canvas: #faf6f0;
+  --surface: #ffffff;
+  --surface-muted: #f1eadd;
+  --edge: #e4dbc9;
+
+  --ink: #241f19;
+  --muted: #6e675b;
+
+  --success: #2f7d4f;
+  --warning: #b7791f;
+  --error: #b3402e;
+  --info: #2f6fb3;
+
+  --focus-ring: rgb(184 90 50 / 0.4);
+
+  --font-family-base: "Avenir Next", Avenir, "Segoe UI", ui-sans-serif, system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-family-display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, ui-serif, "Times New Roman", serif;
+  --font-family-mono: "Cascadia Code", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+
+  --font-display-size: clamp(2.25rem, 4vw + 1rem, 3.5rem);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+
+  --shadow-card: 0 1px 2px rgb(36 31 25 / 0.05), 0 10px 28px -14px rgb(36 31 25 / 0.22);
+  --shadow-pop: 0 18px 48px -16px rgb(36 31 25 / 0.32);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+
+    --brand: #d67a4e;
+    --brand-hover: #dd8b63;
+    --brand-soft: #3a2417;
+    --on-brand: #1c130c;
+
+    --accent: #3aa39b;
+    --accent-hover: #4db4ac;
+    --on-accent: #0e201e;
+
+    --canvas: #17181c;
+    --surface: #1f2126;
+    --surface-muted: #282b32;
+    --edge: #363a43;
+
+    --ink: #f4efe7;
+    --muted: #a7a399;
+
+    --success: #57a878;
+    --warning: #d8a34a;
+    --error: #d96a55;
+    --info: #6f9fd4;
+
+    --focus-ring: rgb(214 122 78 / 0.4);
+
+    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 10px 28px -14px rgb(0 0 0 / 0.5);
+    --shadow-pop: 0 18px 48px -16px rgb(0 0 0 / 0.6);
+  }
+}
