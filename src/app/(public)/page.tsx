@@ -1,66 +1,99 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { Container } from "@/shared/ui";
+import { ArrowRightIcon, Container } from "@/shared/ui";
 import { SearchForm } from "@/features/search";
 import { ROUTES } from "@/shared/config/routes";
 import { buildMetadata } from "@/shared/lib/seo";
 
 export const metadata = buildMetadata({
-  title: "Ariz — Homes and apartments in Peru",
+  title: "Ariz Proyectos — Casas, departamentos y terrenos en Perú",
   description:
-    "Real estate portal to find homes, apartments, land and projects in Peru.",
+    "Portal inmobiliario para encontrar casas, departamentos, terrenos y proyectos en Perú.",
   path: "/",
 });
 
-function SearchFormFallback() {
-  return <div className="h-[76px] rounded-card border border-edge bg-surface" />;
+const HERO_BACKGROUND = [
+  "linear-gradient(180deg, rgb(0 18 79 / 0.45), rgb(0 18 79 / 0.78))",
+  "url(/images/hero.jpg)",
+  "linear-gradient(135deg, #1a2a6c 0%, #00124f 55%, #000a2e 100%)",
+].join(", ");
+
+const CATEGORIES = [
+  { slug: "houses", label: "Casas" },
+  { slug: "apartments", label: "Departamentos" },
+  { slug: "projects", label: "Proyectos" },
+  { slug: "land", label: "Terrenos" },
+  { slug: "country-lots", label: "Lotes campestres" },
+] as const;
+
+function categoryBackground(slug: string) {
+  return [
+    "linear-gradient(0deg, rgb(0 18 79 / 0.8) 0%, rgb(0 18 79 / 0) 55%)",
+    `url(/images/categories/${slug}.jpg)`,
+    "linear-gradient(135deg, #2a3b85, #00124f)",
+  ].join(", ");
 }
 
-const QUICK_SEARCHES = [
-  {
-    label: "Buy apartments",
-    href: ROUTES.search({ operation: "buy", type: "apartments" }),
-  },
-  {
-    label: "Rent houses",
-    href: ROUTES.search({ operation: "rent", type: "houses" }),
-  },
-  {
-    label: "Invest in projects",
-    href: ROUTES.search({ operation: "invest", type: "projects" }),
-  },
-];
+function SearchFormFallback() {
+  return <div className="h-[178px] w-full rounded-2xl bg-surface" />;
+}
 
 export default function PublicHomePage() {
   return (
-    <Container className="flex flex-1 flex-col gap-14 py-16">
-      <section className="mx-auto flex max-w-2xl flex-col items-center gap-6 text-center">
-        <h1 className="font-display text-[var(--font-display-size)] font-semibold leading-tight text-ink">
-          Find your next home
-        </h1>
-        <p className="max-w-xl text-lg text-muted">
-          Homes, apartments, land and projects across Peru.
-        </p>
-      </section>
-
-      <Suspense fallback={<SearchFormFallback />}>
-        <SearchForm />
-      </Suspense>
-
-      <section className="flex flex-col gap-2">
-        <h2 className="text-sm font-medium text-muted">Popular searches</h2>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          {QUICK_SEARCHES.map((quick) => (
-            <Link
-              key={quick.href}
-              href={quick.href}
-              className="rounded-card border border-edge bg-surface p-4 text-sm font-medium text-ink transition-colors hover:border-brand"
-            >
-              {quick.label}
-            </Link>
-          ))}
+    <>
+      <section
+        className="bg-cover bg-center px-4 pt-20 pb-14 text-center text-white sm:px-6"
+        style={{ backgroundImage: HERO_BACKGROUND }}
+      >
+        <div className="mx-auto flex max-w-[942px] flex-col items-center">
+          <p className="rounded-full border border-white/40 bg-white/10 px-3.5 py-1.5 text-[11px] font-bold backdrop-blur-sm">
+            Tu próximo espacio empieza aquí
+          </p>
+          <h1 className="mt-7 max-w-3xl text-4xl leading-[1.05] font-light tracking-tight sm:text-6xl">
+            Encuentra el lugar que estás buscando
+          </h1>
+          <p className="mt-5 mb-14 max-w-xl text-base text-white/85 sm:text-lg">
+            Compra, alquila o descubre proyectos inmobiliarios en un solo lugar.
+          </p>
+          <Suspense fallback={<SearchFormFallback />}>
+            <SearchForm />
+          </Suspense>
         </div>
       </section>
-    </Container>
+
+      <Container size="wide" className="py-14 sm:py-20">
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <h2 className="text-3xl font-light tracking-tight text-brand sm:text-4xl">
+              Explora propiedades
+            </h2>
+            <p className="mt-2 text-sm text-muted">
+              Elige el tipo de inmueble y descubre opciones con todos los detalles que necesitas.
+            </p>
+          </div>
+          <Link
+            href={ROUTES.search({ operation: "buy", type: "all" })}
+            className="flex shrink-0 items-center gap-2 text-xs font-bold text-brand"
+          >
+            Ver todas
+            <ArrowRightIcon className="size-4" />
+          </Link>
+        </div>
+
+        <ul className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+          {CATEGORIES.map((category) => (
+            <li key={category.slug}>
+              <Link
+                href={ROUTES.search({ operation: "buy", type: category.slug })}
+                className="group flex aspect-[4/5] items-end rounded-xl border border-brand bg-cover bg-center p-4 transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+                style={{ backgroundImage: categoryBackground(category.slug) }}
+              >
+                <span className="text-sm font-bold text-white">{category.label}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </Container>
+    </>
   );
 }

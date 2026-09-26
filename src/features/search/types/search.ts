@@ -1,6 +1,7 @@
 export type SearchOperation = "buy" | "rent" | "invest";
 
 export type SearchPropertyType =
+  | "all"
   | "houses"
   | "apartments"
   | "land"
@@ -21,22 +22,23 @@ export interface SearchOption<T extends string> {
 }
 
 export const SEARCH_OPERATIONS: readonly SearchOption<SearchOperation>[] = [
-  { value: "buy", label: "Buy" },
-  { value: "rent", label: "Rent" },
-  { value: "invest", label: "Invest" },
+  { value: "buy", label: "Comprar" },
+  { value: "rent", label: "Alquilar" },
+  { value: "invest", label: "Invertir" },
 ];
 
 export const SEARCH_PROPERTY_TYPES: readonly SearchOption<SearchPropertyType>[] = [
-  { value: "houses", label: "Houses" },
-  { value: "apartments", label: "Apartments" },
-  { value: "land", label: "Land" },
-  { value: "projects", label: "Projects" },
-  { value: "country-lots", label: "Country lots" },
+  { value: "all", label: "Todos los inmuebles" },
+  { value: "houses", label: "Casas" },
+  { value: "apartments", label: "Departamentos" },
+  { value: "land", label: "Terrenos" },
+  { value: "projects", label: "Proyectos" },
+  { value: "country-lots", label: "Lotes campestres" },
 ];
 
 export function getOperationLabel(operation: string): string {
   return (
-    SEARCH_OPERATIONS.find((option) => option.value === operation)?.label ?? "Properties"
+    SEARCH_OPERATIONS.find((option) => option.value === operation)?.label ?? "Propiedades"
   );
 }
 
