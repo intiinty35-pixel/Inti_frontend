@@ -1,14 +1,16 @@
-export type UserRole = "customer" | "owner";
+export type UserRole = "ADMIN" | "USER" | "REAL_ESTATE";
 
-export const ROLES: readonly UserRole[] = ["customer", "owner"] as const;
+export const ROLES: readonly UserRole[] = ["ADMIN", "USER", "REAL_ESTATE"] as const;
 
 export const ROLE_LABELS: Record<UserRole, string> = {
-  customer: "Customer",
-  owner: "Owner",
+  ADMIN: "Administrador",
+  USER: "Usuario",
+  REAL_ESTATE: "Inmobiliaria",
 };
 
 export type Permission =
   | "panel:access"
+  | "panel:admin"
   | "panel:customers"
   | "panel:owners"
   | "favorites:view"
@@ -17,8 +19,9 @@ export type Permission =
   | "listings:edit";
 
 const ROLE_PERMISSIONS: Record<UserRole, readonly Permission[]> = {
-  customer: ["panel:access", "panel:customers", "favorites:view", "favorites:edit"],
-  owner: ["panel:access", "panel:owners", "listings:view", "listings:edit"],
+  ADMIN: ["panel:access", "panel:admin"],
+  USER: ["panel:access", "panel:customers", "favorites:view", "favorites:edit"],
+  REAL_ESTATE: ["panel:access", "panel:owners", "listings:view", "listings:edit"],
 };
 
 export function can(permission: Permission, role: UserRole | null | undefined): boolean {

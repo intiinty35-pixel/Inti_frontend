@@ -3,6 +3,7 @@ import { can } from "@/shared/config/roles";
 import { ROUTES } from "@/shared/config/routes";
 
 export type ModuleKey =
+  | "admin-home"
   | "customer-home"
   | "customer-favorites"
   | "owner-home"
@@ -19,35 +20,43 @@ export interface ModuleConfig {
 
 export const MODULES: readonly ModuleConfig[] = [
   {
+    key: "admin-home",
+    label: "Profesionales",
+    description: "Validación de cuentas profesionales",
+    href: ROUTES.panel.admin.base,
+    roles: ["ADMIN"],
+    permission: "panel:admin",
+  },
+  {
     key: "customer-home",
-    label: "My account",
-    description: "Account summary and activity",
+    label: "Mi cuenta",
+    description: "Resumen de tu cuenta y actividad",
     href: ROUTES.panel.client.base,
-    roles: ["customer"],
+    roles: ["USER"],
     permission: "panel:customers",
   },
   {
     key: "customer-favorites",
-    label: "My favorites",
-    description: "Properties you saved",
+    label: "Mis favoritos",
+    description: "Propiedades que guardaste",
     href: ROUTES.panel.client.favorites,
-    roles: ["customer"],
+    roles: ["USER"],
     permission: "favorites:view",
   },
   {
     key: "owner-home",
-    label: "My dashboard",
-    description: "Listing overview",
+    label: "Mi panel",
+    description: "Resumen de tus publicaciones",
     href: ROUTES.panel.owner.base,
-    roles: ["owner"],
+    roles: ["REAL_ESTATE"],
     permission: "panel:owners",
   },
   {
     key: "owner-listings",
-    label: "My listings",
-    description: "Manage your published properties",
+    label: "Mis publicaciones",
+    description: "Administra tus propiedades publicadas",
     href: ROUTES.panel.owner.listings,
-    roles: ["owner"],
+    roles: ["REAL_ESTATE"],
     permission: "listings:view",
   },
 ];

@@ -14,14 +14,14 @@ export function Select({ label, hint, error, className, id, children, ...props }
   return (
     <div className="flex flex-col gap-1.5">
       {label ? (
-        <label htmlFor={selectId} className="text-sm font-medium text-ink">
+        <label htmlFor={selectId} className="text-[13px] font-semibold text-brand">
           {label}
         </label>
       ) : null}
       <select
         id={selectId}
         className={cn(
-          "h-10 rounded-card border border-edge bg-surface px-3 text-sm text-ink focus:outline-2 focus:outline-brand",
+          "h-11 rounded-card border border-edge bg-surface px-3 text-sm text-ink focus:border-brand focus:outline-2 focus:outline-brand/25",
           error ? "border-error focus:outline-error" : "",
           className,
         )}
