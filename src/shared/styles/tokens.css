@@ -1,0 +1,40 @@
+:root {
+  color-scheme: light;
+
+  --brand: #00124f;
+  --brand-hover: #0b2170;
+  --brand-soft: #e8ecf8;
+  --on-brand: #ffffff;
+
+  --accent: #f2a900;
+  --accent-hover: #d99700;
+  --on-accent: #00124f;
+
+  --canvas: #f5f6fa;
+  --surface: #ffffff;
+  --surface-muted: #eef0f6;
+  --edge: #dde1ec;
+
+  --ink: #0b1437;
+  --muted: #646d8a;
+
+  --success: #2f7d4f;
+  --warning: #b7791f;
+  --error: #b3402e;
+  --info: #2f6fb3;
+
+  --focus-ring: rgb(0 18 79 / 0.3);
+
+  --font-family-base: "Segoe UI", "Avenir Next", Avenir, ui-sans-serif, system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-family-display: var(--font-family-base);
+  --font-family-mono: "Cascadia Code", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+
+  --font-display-size: clamp(2.25rem, 4vw + 1rem, 3.5rem);
+
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 18px;
+
+  --shadow-card: 0 1px 2px rgb(11 20 55 / 0.05), 0 18px 40px -18px rgb(11 20 55 / 0.22);
+  --shadow-pop: 0 18px 48px -16px rgb(11 20 55 / 0.32);
+}
