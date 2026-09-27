@@ -1,8 +1,12 @@
 import { Suspense } from "react";
-import Link from "next/link";
-import { ArrowRightIcon, Container } from "@/shared/ui";
 import { SearchForm } from "@/features/search";
-import { ROUTES } from "@/shared/config/routes";
+import {
+  AccountCtaSection,
+  ArizProjectsSection,
+  CategoryShowcase,
+  FeaturedListingsSection,
+  MapExplorerSection,
+} from "@/features/home";
 import { buildMetadata } from "@/shared/lib/seo";
 
 export const metadata = buildMetadata({
@@ -17,22 +21,6 @@ const HERO_BACKGROUND = [
   "url(/images/hero.jpg)",
   "linear-gradient(135deg, #1a2a6c 0%, #00124f 55%, #000a2e 100%)",
 ].join(", ");
-
-const CATEGORIES = [
-  { slug: "houses", label: "Casas" },
-  { slug: "apartments", label: "Departamentos" },
-  { slug: "projects", label: "Proyectos" },
-  { slug: "land", label: "Terrenos" },
-  { slug: "country-lots", label: "Lotes campestres" },
-] as const;
-
-function categoryBackground(slug: string) {
-  return [
-    "linear-gradient(0deg, rgb(0 18 79 / 0.8) 0%, rgb(0 18 79 / 0) 55%)",
-    `url(/images/categories/${slug}.jpg)`,
-    "linear-gradient(135deg, #2a3b85, #00124f)",
-  ].join(", ");
-}
 
 function SearchFormFallback() {
   return <div className="h-[178px] w-full rounded-2xl bg-surface" />;
@@ -61,39 +49,11 @@ export default function PublicHomePage() {
         </div>
       </section>
 
-      <Container size="wide" className="py-14 sm:py-20">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <h2 className="text-3xl font-light tracking-tight text-brand sm:text-4xl">
-              Explora propiedades
-            </h2>
-            <p className="mt-2 text-sm text-muted">
-              Elige el tipo de inmueble y descubre opciones con todos los detalles que necesitas.
-            </p>
-          </div>
-          <Link
-            href={ROUTES.search({ operation: "buy", type: "all" })}
-            className="flex shrink-0 items-center gap-2 text-xs font-bold text-brand"
-          >
-            Ver todas
-            <ArrowRightIcon className="size-4" />
-          </Link>
-        </div>
-
-        <ul className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-          {CATEGORIES.map((category) => (
-            <li key={category.slug}>
-              <Link
-                href={ROUTES.search({ operation: "buy", type: category.slug })}
-                className="group flex aspect-[4/5] items-end rounded-xl border border-brand bg-cover bg-center p-4 transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
-                style={{ backgroundImage: categoryBackground(category.slug) }}
-              >
-                <span className="text-sm font-bold text-white">{category.label}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </Container>
+      <CategoryShowcase />
+      <ArizProjectsSection />
+      <FeaturedListingsSection />
+      <MapExplorerSection />
+      <AccountCtaSection />
     </>
   );
 }

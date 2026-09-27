@@ -16,7 +16,10 @@ export interface Project {
     min: number;
     max: number;
   };
+  lotsTotal?: number;
+  lotsLabel?: string;
   deliveryAt?: string;
+  deliveryStage?: string;
   features: string[];
   status: ProjectStatus;
 }

@@ -1,14 +1,16 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useId, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import {
   ChevronDownIcon,
   CrosshairIcon,
+  Listbox,
   MapIcon,
   PinIcon,
   SearchIcon,
   SlidersIcon,
+  type ListboxOption,
 } from "@/shared/ui";
 import { cn } from "@/shared/lib/cn";
 import type { SearchOperation, SearchPropertyType } from "@/features/search/types/search";
@@ -34,6 +36,21 @@ const FIELD_LABEL = "text-[10px] font-bold tracking-[0.12em] text-brand";
 const FIELD_CONTROL =
   "w-full bg-transparent text-sm text-ink placeholder:text-muted/70 focus:outline-none";
 
+const TRIGGER_CONTROL = "w-full text-sm text-ink";
+
+function typeOptions(fixedType: SearchPropertyType | undefined): readonly ListboxOption[] {
+  if (!fixedType) {
+    return SELECTABLE_TYPES;
+  }
+
+  return [
+    {
+      value: fixedType,
+      label: SEARCH_PROPERTY_TYPES.find((option) => option.value === fixedType)?.label ?? "",
+    },
+  ];
+}
+
 function toSlugs(location: string): string[] {
   return location
     .split(",")
@@ -50,13 +67,15 @@ function toSlugs(location: string): string[] {
 
 export function SearchForm() {
   const router = useRouter();
+  const typeLabelId = useId();
   const [tabKey, setTabKey] = useState<string>(TABS[0].key);
+  const [type, setType] = useState<SearchPropertyType>("all");
   const tab = TABS.find((item) => item.key === tabKey) ?? TABS[0];
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
-    const type = tab.fixedType ?? (String(form.get("type") ?? "all") as SearchPropertyType);
+    const selectedType = tab.fixedType ?? (String(form.get("type") ?? "all") as SearchPropertyType);
     const location = toSlugs(String(form.get("location") ?? ""));
     const params = new URLSearchParams();
 
@@ -66,7 +85,7 @@ export function SearchForm() {
     if (max) params.set("price_max", max);
     if (min || max) params.set("currency", String(form.get("currency") ?? "PEN"));
 
-    const path = `/${tab.operation}/${type}${location.map((slug) => `/${slug}`).join("")}`;
+    const path = `/${tab.operation}/${selectedType}${location.map((slug) => `/${slug}`).join("")}`;
     const query = params.toString();
     router.push(query ? `${path}?${query}` : path);
   }
@@ -74,16 +93,23 @@ export function SearchForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full overflow-hidden rounded-2xl bg-surface text-left shadow-[var(--shadow-pop)]"
+      className="w-full rounded-2xl bg-surface text-left shadow-[var(--shadow-pop)]"
     >
-      <div role="tablist" aria-label="Tipo de búsqueda" className="flex justify-center border-b border-edge">
+      <div
+        role="tablist"
+        aria-label="Tipo de búsqueda"
+        className="flex justify-center rounded-t-2xl border-b border-edge"
+      >
         {TABS.map((item) => (
           <button
             key={item.key}
             type="button"
             role="tab"
             aria-selected={item.key === tab.key}
-            onClick={() => setTabKey(item.key)}
+            onClick={() => {
+              setTabKey(item.key);
+              setType("all");
+            }}
             className={cn(
               "-mb-px border-b-2 px-5 py-3.5 text-[13px] font-bold transition-colors sm:px-7",
               item.key === tab.key
@@ -111,31 +137,20 @@ export function SearchForm() {
           </span>
         </label>
 
-        <label className="flex flex-col gap-1.5 lg:border-l lg:border-edge lg:px-6 lg:py-5">
-          <span className={FIELD_LABEL}>TIPO DE PROPIEDAD</span>
-          <span className="relative flex items-center">
-            <select
-              name="type"
-              defaultValue="all"
-              disabled={Boolean(tab.fixedType)}
-              key={tab.fixedType ?? "free"}
-              className={cn(FIELD_CONTROL, "cursor-pointer appearance-none pr-6 disabled:cursor-default")}
-            >
-              {tab.fixedType ? (
-                <option value={tab.fixedType}>
-                  {SEARCH_PROPERTY_TYPES.find((option) => option.value === tab.fixedType)?.label}
-                </option>
-              ) : (
-                SELECTABLE_TYPES.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))
-              )}
-            </select>
-            <ChevronDownIcon className="pointer-events-none absolute right-0 size-4 text-muted" />
+        <div className="flex flex-col gap-1.5 lg:border-l lg:border-edge lg:px-6 lg:py-5">
+          <span className={FIELD_LABEL} id={typeLabelId}>
+            TIPO DE PROPIEDAD
           </span>
-        </label>
+          <Listbox
+            name="type"
+            value={tab.fixedType ?? type}
+            options={typeOptions(tab.fixedType)}
+            onValueChange={(value) => setType(value as SearchPropertyType)}
+            disabled={Boolean(tab.fixedType)}
+            labelledBy={typeLabelId}
+            triggerClassName={TRIGGER_CONTROL}
+          />
+        </div>
 
         <div className="flex flex-col gap-1.5 md:col-span-2 lg:col-span-1 lg:border-l lg:border-edge lg:px-6 lg:py-5">
           <span className={FIELD_LABEL}>RANGO DE PRECIO</span>

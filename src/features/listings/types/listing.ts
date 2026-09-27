@@ -2,7 +2,13 @@ export type Currency = "PEN" | "USD";
 
 export type ListingOperation = "buy" | "rent" | "invest";
 
-export type PropertyType = "houses" | "apartments" | "land" | "projects" | "country-lots";
+export type PropertyType =
+  | "houses"
+  | "apartments"
+  | "land"
+  | "projects"
+  | "country-lots"
+  | "commercial";
 
 export type ListingStatus = "disponible" | "reservado" | "vendido" | "alquilado";
 
@@ -35,6 +41,7 @@ export interface Listing {
   images: string[];
   rooms: number;
   bathrooms: number;
+  parkingSpaces?: number;
   areaM2: number;
   status: ListingStatus;
   projectId?: string;

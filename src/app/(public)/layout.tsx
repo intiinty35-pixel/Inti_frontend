@@ -2,9 +2,9 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { Container } from "@/shared/ui/container";
 import { SparkleIcon } from "@/shared/ui";
-import { getHomeRoute, ROUTES } from "@/shared/config/routes";
-import { getSession } from "@/features/auth";
+import { ROUTES } from "@/shared/config/routes";
 import { PublicNav } from "@/app/(public)/public-nav";
+import { PublicFooter } from "@/app/(public)/public-footer";
 
 function Logo() {
   return (
@@ -20,9 +20,7 @@ function Logo() {
   );
 }
 
-export default async function PublicLayout({ children }: { children: ReactNode }) {
-  const session = await getSession();
-
+export default function PublicLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-40 border-b border-edge bg-surface">
@@ -35,42 +33,26 @@ export default async function PublicLayout({ children }: { children: ReactNode }
             <PublicNav />
           </div>
 
-          <div className="flex items-center gap-4 text-xs font-bold text-brand">
-            {session ? (
-              <Link
-                href={getHomeRoute(session.role)}
-                className="flex h-9 items-center rounded-lg bg-brand px-4 text-on-brand transition-colors hover:bg-brand-hover"
-              >
-                Mi panel
-              </Link>
-            ) : (
-              <>
-                <Link href={ROUTES.registerProfessional} className="hidden whitespace-nowrap sm:block">
-                  Soy Agente / Inmobiliaria
-                </Link>
-                <Link href={ROUTES.login} className="whitespace-nowrap">
-                  Iniciar sesión
-                </Link>
-                <Link
-                  href={ROUTES.register}
-                  className="flex h-9 items-center rounded-lg bg-brand px-4 text-on-brand transition-colors hover:bg-brand-hover"
-                >
-                  Registrarse
-                </Link>
-              </>
-            )}
+          <div className="grid grid-cols-2 gap-2">
+            <Link
+              href={ROUTES.login}
+              className="flex h-10 items-center justify-center rounded-card border border-edge bg-surface px-4 text-xs font-bold whitespace-nowrap text-brand transition-colors hover:border-brand"
+            >
+              Iniciar sesión
+            </Link>
+            <Link
+              href={ROUTES.register}
+              className="flex h-10 items-center justify-center rounded-card bg-brand px-4 text-xs font-bold whitespace-nowrap text-on-brand transition-colors hover:bg-brand-hover"
+            >
+              Registro
+            </Link>
           </div>
         </Container>
       </header>
 
       <main className="flex flex-1 flex-col">{children}</main>
 
-      <footer className="border-t border-edge bg-surface">
-        <Container size="wide" className="flex h-14 items-center justify-between text-sm text-muted">
-          <span>Ariz Proyectos</span>
-          <span>© {new Date().getFullYear()} Ariz Proyectos</span>
-        </Container>
-      </footer>
+      <PublicFooter />
 
       <button
         type="button"

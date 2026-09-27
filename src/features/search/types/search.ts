@@ -6,7 +6,8 @@ export type SearchPropertyType =
   | "apartments"
   | "land"
   | "projects"
-  | "country-lots";
+  | "country-lots"
+  | "commercial";
 
 export type SearchQuery = Record<string, string | string[] | undefined>;
 
@@ -34,6 +35,7 @@ export const SEARCH_PROPERTY_TYPES: readonly SearchOption<SearchPropertyType>[] 
   { value: "land", label: "Terrenos" },
   { value: "projects", label: "Proyectos" },
   { value: "country-lots", label: "Lotes campestres" },
+  { value: "commercial", label: "Locales comerciales" },
 ];
 
 export function getOperationLabel(operation: string): string {
