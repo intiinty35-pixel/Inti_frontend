@@ -1,5 +1,19 @@
 import { backendFetch } from "@/shared/lib/api/server";
 import type { ApprovalStatus } from "@/features/auth";
+import type { Plan } from "@/features/owner/types/plan";
+
+export interface PendingSubscription {
+  id: string;
+  status: "PENDING_PAYMENT";
+  receiptUrl: string | null;
+  createdAt: string;
+  plan: Plan;
+  agentProfile: {
+    id: string;
+    businessName: string | null;
+    user: { firstName: string; lastName: string | null; email: string };
+  };
+}
 
 export interface ProfessionalRecord {
   id: string;
@@ -39,4 +53,20 @@ export async function setProfessionalStatus(id: string, status: ApprovalStatus):
   if (!response.ok) {
     throw new Error(`No se pudo actualizar el estado (${response.status})`);
   }
+}
+
+async function getJson<T>(path: string): Promise<T> {
+  const response = await backendFetch(path);
+  if (!response.ok) {
+    throw new Error(`No se pudo cargar ${path} (${response.status})`);
+  }
+  return (await response.json()) as T;
+}
+
+export function listAllPlans(): Promise<Plan[]> {
+  return getJson<Plan[]>("/admin/plans");
+}
+
+export function listPendingSubscriptions(): Promise<PendingSubscription[]> {
+  return getJson<PendingSubscription[]>("/admin/subscriptions/pending");
 }

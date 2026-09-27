@@ -22,6 +22,8 @@ export const ROUTES = {
   panel: {
     admin: {
       base: "/panel/admin",
+      plans: "/panel/admin/plans",
+      subscriptions: "/panel/admin/subscriptions",
     },
     client: {
       base: "/panel/client",
@@ -31,6 +33,13 @@ export const ROUTES = {
       base: "/panel/owner",
       listings: "/panel/owner/listings",
       newListing: "/panel/owner/listings/new",
+      projects: "/panel/owner/projects",
+      newProject: "/panel/owner/projects/new",
+      leads: "/panel/owner/leads",
+      stats: "/panel/owner/stats",
+      subscription: "/panel/owner/subscription",
+      profile: "/panel/owner/profile",
+      settings: "/panel/owner/settings",
     },
   },
 } as const;

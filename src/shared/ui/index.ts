@@ -24,3 +24,7 @@ export {
 } from "@/shared/ui/icons";
 export { Card,CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 export { Container, type ContainerProps, type ContainerSize } from "@/shared/ui/container";
+export { Pagination, type PaginationProps } from "@/shared/ui/pagination";
+export { BarChart, type BarDatum } from "@/shared/ui/charts/bar-chart";
+export { TrendChart, type TrendPoint } from "@/shared/ui/charts/trend-chart";
+export { CATEGORICAL, STATUS } from "@/shared/ui/charts/chart-colors";
