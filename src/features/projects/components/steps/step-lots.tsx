@@ -1,0 +1,247 @@
+"use client";
+
+import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
+import { FieldSet, useFieldError } from "@/shared/ui/field-shell";
+import { NumericField, SelectField, TextField } from "@/shared/ui/rhf-fields";
+import { RadioGroup } from "@/shared/ui/radio-group";
+import { Button } from "@/shared/ui/button";
+import { Uploader } from "@/shared/ui/uploader";
+import { AreaIcon, PlusIcon, RulerIcon, TrashIcon } from "@/shared/ui/icons";
+import {
+  LOT_MODES,
+  LOT_STATUSES,
+  LOT_STATUS_LABELS,
+  LOT_STATUS_TONES,
+} from "@/features/projects/data/project-catalogs";
+import { createEmptyLot } from "@/features/projects/lib/project-draft";
+import { summarizeLots } from "@/features/projects/lib/project-summary";
+import {
+  MAX_PLAN_SIZE_MB,
+  type LotDraft,
+  type LotStatus,
+  type ProjectDraft,
+} from "@/features/projects/types/draft";
+import { formatArea, formatNumber, formatPrice } from "@/shared/lib/format";
+
+const BATCH_SIZE = 5;
+const PLAN_ACCEPT = ".pdf,image/jpeg,image/png,image/webp";
+
+interface LotRowProps {
+  index: number;
+  canRemove: boolean;
+  onRemove: (index: number) => void;
+}
+
+function LotRow({ index, canRemove, onRemove }: LotRowProps) {
+  const { setValue } = useFormContext<ProjectDraft>();
+  const lot = useWatch({ name: `lots.${index}` }) as LotDraft | undefined;
+  const status: LotStatus = lot?.status ?? "disponible";
+  const planImage = lot?.planImage;
+
+  function changePlan(files: File[]) {
+    setValue(`lots.${index}.planImage`, files[0], { shouldDirty: true, shouldValidate: true });
+  }
+
+  return (
+    <li className="flex flex-col gap-3 rounded-card border border-edge bg-surface p-3">
+      <div className="flex items-center justify-between gap-2">
+        <h4 className="text-sm font-semibold text-brand">
+          Ficha {index + 1}
+          {lot?.lotNumber.trim() ? ` · ${lot.lotNumber.trim()}` : ""}
+        </h4>
+
+        <div className="flex items-center gap-1">
+          <span
+            className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${LOT_STATUS_TONES[status]}`}
+          >
+            {LOT_STATUS_LABELS[status]}
+          </span>
+
+          {canRemove ? (
+            <Button
+              type="button"
+              variant="ghost"
+              size="xs"
+              onClick={() => onRemove(index)}
+              aria-label={`Quitar la ficha ${index + 1}`}
+            >
+              <TrashIcon className="h-3.5 w-3.5" />
+            </Button>
+          ) : null}
+        </div>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <TextField<ProjectDraft> name={`lots.${index}.lotNumber`} label="Número de lote" placeholder="L-014" required />
+        <TextField<ProjectDraft> name={`lots.${index}.block`} label="Manzana / bloque" placeholder="A" />
+        <NumericField<ProjectDraft>
+          name={`lots.${index}.areaM2`}
+          label="Área"
+          placeholder="120"
+          inputMode="decimal"
+          required
+        />
+        <NumericField<ProjectDraft>
+          name={`lots.${index}.frontM`}
+          label="Frente (m)"
+          placeholder="8.5"
+          inputMode="decimal"
+          step="any"
+        />
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <NumericField<ProjectDraft>
+          name={`lots.${index}.price`}
+          label="Precio"
+          prefix="S/"
+          placeholder="95000"
+          inputMode="decimal"
+          required
+        />
+
+        <SelectField<ProjectDraft>
+          name={`lots.${index}.status`}
+          label="Estado"
+          options={LOT_STATUSES}
+          required
+        />
+
+        <TextField<ProjectDraft>
+          name={`lots.${index}.planLocation`}
+          label="Ubicación en el plano"
+          placeholder="Manzana A, lote 14"
+          className="lg:col-span-2"
+        />
+      </div>
+
+      <Uploader
+        label="Plano del lote"
+        accept={PLAN_ACCEPT}
+        maxFiles={1}
+        maxSizeMb={MAX_PLAN_SIZE_MB}
+        hint="Opcional. Un archivo por ficha."
+        emptyLabel="PDF, JPG, PNG o WebP"
+        files={planImage ? [planImage] : []}
+        onFilesChange={changePlan}
+      />
+    </li>
+  );
+}
+
+export function StepLots() {
+  const { append, remove, fields } = useFieldArray({ name: "lots" });
+  const lots = useWatch({ name: "lots" });
+  const lotModeError = useFieldError<ProjectDraft>("lotMode");
+  const lotsError = useFieldError<ProjectDraft>("lots");
+  const totals = summarizeLots(lots ?? []);
+
+  return (
+    <div className="flex flex-col gap-6">
+      <FieldSet
+        legend="Modo de inventario"
+        description="Individual para una ficha por lote; grupo para una ficha por grupo de lotes."
+        required
+      >
+        <RadioGroup<ProjectDraft> name="lotMode" ariaLabel="Modo de inventario" options={LOT_MODES} />
+        {lotModeError ? (
+          <p className="text-sm text-error" role="alert">
+            {lotModeError}
+          </p>
+        ) : null}
+      </FieldSet>
+
+      <FieldSet
+        legend={`Lotes · ${totals.filledLots} completos de ${fields.length}`}
+        description="Solo se guardan las fichas con número, área y precio completos."
+        required
+        error={lotsError}
+      >
+        <div className="flex flex-col gap-3">
+          <ul className="flex flex-col gap-3">
+            {fields.map((field, index) => (
+              <LotRow
+                key={field.id}
+                index={index}
+                canRemove={fields.length > 1}
+                onRemove={remove}
+              />
+            ))}
+          </ul>
+
+          <div className="flex flex-wrap gap-2">
+            <Button type="button" variant="secondary" size="sm" onClick={() => append(createEmptyLot())}>
+              <PlusIcon className="h-4 w-4" />
+              Agregar ficha
+            </Button>
+
+            {fields.length <= 10 ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => append(Array.from({ length: BATCH_SIZE }, createEmptyLot))}
+              >
+                Agregar {BATCH_SIZE} fichas
+              </Button>
+            ) : null}
+          </div>
+        </div>
+      </FieldSet>
+
+      <FieldSet legend="Resumen del inventario" description="Calculado sobre las fichas completas.">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="rounded-card border border-edge p-3">
+            <p className="text-xs font-semibold text-muted">Área total</p>
+            <p className="mt-1 flex items-center gap-1.5 text-lg font-semibold text-ink">
+              <AreaIcon className="h-4 w-4 text-brand" />
+              {formatArea(totals.totalAreaM2) || "—"}
+            </p>
+          </div>
+
+          <div className="rounded-card border border-edge p-3">
+            <p className="text-xs font-semibold text-muted">Valor del inventario</p>
+            <p className="mt-1 text-lg font-semibold text-ink">
+              {totals.filledLots > 0 ? formatPrice(totals.totalPrice) : "—"}
+            </p>
+          </div>
+
+          <div className="rounded-card border border-edge p-3">
+            <p className="text-xs font-semibold text-muted">Rango por lote</p>
+            <p className="mt-1 flex items-center gap-1.5 text-sm font-semibold text-ink">
+              <RulerIcon className="h-4 w-4 text-brand" />
+              {totals.cheapestPrice === undefined
+                ? "—"
+                : `${formatPrice(totals.cheapestPrice)} – ${formatPrice(totals.dearestPrice ?? 0)}`}
+            </p>
+          </div>
+
+          <div className="rounded-card border border-edge p-3">
+            <p className="text-xs font-semibold text-muted">Manzanas</p>
+            <p className="mt-1 text-lg font-semibold text-ink">
+              {totals.blocks.length > 0 ? totals.blocks.join(", ") : "—"}
+            </p>
+            <p className="text-[11px] text-muted">
+              {formatNumber(totals.filledLots)} fichas · {totals.blankLots} sin completar
+            </p>
+          </div>
+        </div>
+
+        <ul className="flex flex-wrap gap-2">
+          {LOT_STATUSES.map((option) => {
+            const key = option.value as LotStatus;
+
+            return (
+              <li
+                key={option.value}
+                className={`rounded-full px-2.5 py-1 text-xs font-semibold ${LOT_STATUS_TONES[key]}`}
+              >
+                {option.label} · {totals.byStatus[key]}
+              </li>
+            );
+          })}
+        </ul>
+      </FieldSet>
+    </div>
+  );
+}

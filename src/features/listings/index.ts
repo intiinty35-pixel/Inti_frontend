@@ -25,7 +25,7 @@ export { ListingGrid } from "@/features/listings/components/listing-grid";
 export { MapListingCard } from "@/features/listings/components/map-listing-card";
 export { ProjectCard } from "@/features/listings/components/project-card";
 export {
-  PREVIEW_ARIZ_PROJECTS,
   PREVIEW_FEATURED_LISTINGS,
   PREVIEW_MAP_LISTINGS,
 } from "@/features/listings/data/preview-catalog";
+export { PREVIEW_PROJECTS } from "@/features/listings/data/preview-projects";

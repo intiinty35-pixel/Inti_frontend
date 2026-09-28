@@ -2,7 +2,7 @@ import { defineConfig, globalIgnores } from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
 
-const FEATURES = ["auth", "favorites", "leads", "listings", "search"];
+const FEATURES = ["auth", "favorites", "leads", "listings", "projects", "search"];
 
 const featureRestrictions = FEATURES.map((feature) => ({
   files: [`src/features/${feature}/**/*.{ts,tsx}`],

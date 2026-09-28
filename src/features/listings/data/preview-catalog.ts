@@ -1,106 +1,10 @@
 import type { Listing } from "@/features/listings/types/listing";
-import type { Project } from "@/features/listings/types/project";
 
 /**
- * Catálogo de respaldo para maquetar el home mientras la API no está conectada.
- * Cuando exista el backend, se reemplazan estas constantes por getListings()/getProjects()
+ * Propiedades de prueba para maquetar el home mientras la API no está conectada.
+ * Cuando exista el backend, se reemplazan estas constantes por getListings()
  * y las secciones no cambian.
  */
-
-export const PREVIEW_ARIZ_PROJECTS: readonly Project[] = [
-  {
-    id: "prj-valle-verde",
-    slug: "lotizacion-valle-verde",
-    name: "Lotización Valle Verde",
-    developer: "Ariz Proyectos",
-    description:
-      "Lotización con veredas y areas verdes, a pocos minutos de la carretera Panamericana Sur.",
-    propertyType: "land",
-    location: { department: "Lima", province: "Huaura", district: "Lurín" },
-    images: ["/images/projects/valle-verde.jpg"],
-    startingPrice: { amount: 35000, currency: "PEN" },
-    areaRange: { min: 90, max: 220 },
-    lotsTotal: 40,
-    lotsLabel: "lotes",
-    deliveryStage: "Etapa 1",
-    deliveryAt: "2027-06",
-    features: ["Servicios básicos", "Área verde común", "Seguridad 24/7"],
-    status: "preventa",
-  },
-  {
-    id: "prj-ariz-miraflores",
-    slug: "edificio-ariz-miraflores",
-    name: "Edificio Ariz Miraflores",
-    developer: "Ariz Proyectos",
-    description: "Torres de departamentos con vista al parque y amenidades en azotea.",
-    propertyType: "apartments",
-    location: { department: "Lima", province: "Lima", district: "Miraflores" },
-    images: ["/images/projects/ariz-miraflores.jpg"],
-    startingPrice: { amount: 289000, currency: "PEN" },
-    areaRange: { min: 68, max: 96 },
-    lotsTotal: 32,
-    lotsLabel: "unidades",
-    deliveryStage: "Etapa 2",
-    deliveryAt: "2028-03",
-    features: ["Terraza BBQ", "Gimnasio", "Estacionamiento subterráneo"],
-    status: "en-construccion",
-  },
-  {
-    id: "prj-torres-ariz-san-borja",
-    slug: "torres-ariz-san-borja",
-    name: "Torres Ariz San Borja",
-    developer: "Ariz Proyectos",
-    description: "Departamentos familiares con areas verdes privadas y areas comunes.",
-    propertyType: "apartments",
-    location: { department: "Lima", province: "Lima", district: "San Borja" },
-    images: ["/images/projects/torres-san-borja.jpg"],
-    startingPrice: { amount: 415000, currency: "PEN" },
-    areaRange: { min: 105, max: 140 },
-    lotsTotal: 18,
-    lotsLabel: "unidades",
-    deliveryStage: "Próxima",
-    deliveryAt: "2029-01",
-    features: ["Jardines interiores", "Coworking", "Sala de reuniones"],
-    status: "preventa",
-  },
-  {
-    id: "prj-lotes-ariz-punta-hermosa",
-    slug: "lotes-ariz-punta-hermosa",
-    name: "Lotes Ariz Punta Hermosa",
-    developer: "Ariz Proyectos",
-    description: "Lotes de playa con servicios básicos y acceso directo a la playa.",
-    propertyType: "country-lots",
-    location: { department: "Lima", province: "Huaura", district: "Punta Hermosa" },
-    images: ["/images/projects/lotes-punta-hermosa.jpg"],
-    startingPrice: { amount: 68000, currency: "PEN" },
-    areaRange: { min: 120, max: 300 },
-    lotsTotal: 24,
-    lotsLabel: "lotes",
-    deliveryStage: "Etapa 1",
-    deliveryAt: "2027-11",
-    features: ["Acceso a playa", "Servicios básicos", "Oficina de ventas"],
-    status: "preventa",
-  },
-  {
-    id: "prj-torres-ariz-los-olivos",
-    slug: "torres-ariz-los-olivos",
-    name: "Torres Ariz Los Olivos",
-    developer: "Ariz Proyectos",
-    description:
-      "Torres de departamentos con areas verdes comunes,Coworking y acceso directo a la Panamericana Norte.",
-    propertyType: "apartments",
-    location: { department: "Lima", province: "Lima", district: "Los Olivos" },
-    images: ["/images/projects/torres-los-olivos.jpg"],
-    startingPrice: { amount: 268000, currency: "PEN" },
-    areaRange: { min: 72, max: 108 },
-    lotsTotal: 28,
-    lotsLabel: "unidades",
-    deliveryStage: "Próxima",
-    deliveryAt: "2028-11",
-    features: ["Coworking", "Gimnasio", "Ciclositorquios"],
-    status: "preventa",
-  },
-];
 
 export const PREVIEW_FEATURED_LISTINGS: readonly Listing[] = [
   {

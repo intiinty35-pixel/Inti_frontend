@@ -8,7 +8,7 @@ export interface DataGridProps {
 }
 
 const COLUMNS = {
-  2: "grid-cols-2 gap-x-3",
+  2: "grid-cols-2 gap-x-2",
   4: "grid-cols-4 gap-x-2",
 } as const;
 
@@ -17,7 +17,7 @@ export function DataGrid({ children, columns = 2, className }: DataGridProps) {
   return (
     <dl
       className={cn(
-        "grid gap-y-1.5 border-t border-edge pt-2",
+        "grid gap-y-0.5 border-t border-edge pt-1.5",
         COLUMNS[columns],
         className,
       )}
@@ -40,7 +40,7 @@ export function DataCell({ label, value, className }: DataCellProps) {
 
   return (
     <div className={cn("min-w-0", className)}>
-      <dt className="truncate text-[9px] font-bold tracking-[0.12em] text-muted uppercase">
+      <dt className="truncate text-[9px] font-bold tracking-[0.06em] text-muted uppercase">
         {label}
       </dt>
       <dd className="mt-0.5 line-clamp-2 text-[11px] font-semibold text-ink">{value}</dd>

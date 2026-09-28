@@ -21,7 +21,7 @@ export function FeaturedListingsSection() {
         }
       />
 
-      <ul className="mt-6 grid w-full gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+      <ul className="mt-6 grid w-full gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {PREVIEW_FEATURED_LISTINGS.map((listing) => (
           <li key={listing.id}>
             <FeaturedListingCard listing={listing} />

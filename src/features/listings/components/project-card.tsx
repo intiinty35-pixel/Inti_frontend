@@ -1,4 +1,3 @@
-import { SoonButton } from "@/shared/ui";
 import { formatArea, formatPrice } from "@/shared/lib/format";
 import type { Project, ProjectStatus } from "@/features/listings/types/project";
 import { DataCell, DataGrid } from "@/features/listings/components/data-grid";
@@ -12,8 +11,8 @@ const STATUS_LABELS: Record<ProjectStatus, string> = {
 
 export function ProjectCard({ project }: { project: Project }) {
   return (
-    <article className="flex h-full flex-col overflow-hidden rounded-card border border-edge bg-surface shadow-[var(--shadow-card)]">
-      <ListingImage src={project.images[0]} className="h-36 sm:h-44">
+    <article className="flex h-full flex-col overflow-hidden rounded-[3px] border border-edge bg-surface shadow-[var(--shadow-card)]">
+      <ListingImage src={project.images[0]} className="aspect-[4/3]">
         <span className="absolute top-2 left-2 rounded-full bg-accent px-1.5 py-0.5 text-[9px] font-bold text-on-accent">
           {STATUS_LABELS[project.status]}
         </span>
@@ -34,15 +33,6 @@ export function ProjectCard({ project }: { project: Project }) {
           <DataCell label="Entrega" value={project.deliveryStage} />
           <DataCell label="Distrito" value={project.location.district} />
         </DataGrid>
-
-        <div className="mt-auto flex gap-1.5 pt-2">
-          <SoonButton size="xs" className="flex-1">
-            Ver proyecto
-          </SoonButton>
-          <SoonButton size="xs" variant="secondary" className="flex-1">
-            Contactar
-          </SoonButton>
-        </div>
       </div>
     </article>
   );

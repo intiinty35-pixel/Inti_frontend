@@ -9,6 +9,8 @@ export type SearchPropertyType =
   | "country-lots"
   | "commercial";
 
+export type SearchCurrency = "PEN" | "USD";
+
 export type SearchQuery = Record<string, string | string[] | undefined>;
 
 export interface SearchFilters {
@@ -36,6 +38,11 @@ export const SEARCH_PROPERTY_TYPES: readonly SearchOption<SearchPropertyType>[] 
   { value: "projects", label: "Proyectos" },
   { value: "country-lots", label: "Lotes campestres" },
   { value: "commercial", label: "Locales comerciales" },
+];
+
+export const SEARCH_CURRENCIES: readonly SearchOption<SearchCurrency>[] = [
+  { value: "PEN", label: "S/ Soles" },
+  { value: "USD", label: "$ Dólares" },
 ];
 
 export function getOperationLabel(operation: string): string {

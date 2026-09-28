@@ -3,7 +3,6 @@
 import { useId, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import {
-  ChevronDownIcon,
   CrosshairIcon,
   Listbox,
   MapIcon,
@@ -13,8 +12,11 @@ import {
   type ListboxOption,
 } from "@/shared/ui";
 import { cn } from "@/shared/lib/cn";
-import type { SearchOperation, SearchPropertyType } from "@/features/search/types/search";
-import { SEARCH_PROPERTY_TYPES } from "@/features/search/types/search";
+import type { SearchCurrency, SearchOperation, SearchPropertyType } from "@/features/search/types/search";
+import {
+  SEARCH_CURRENCIES,
+  SEARCH_PROPERTY_TYPES,
+} from "@/features/search/types/search";
 
 interface SearchTab {
   key: string;
@@ -35,6 +37,12 @@ const SELECTABLE_TYPES = SEARCH_PROPERTY_TYPES.filter((option) => option.value !
 const FIELD_LABEL = "text-[10px] font-bold tracking-[0.12em] text-brand";
 const FIELD_CONTROL =
   "w-full bg-transparent text-sm text-ink placeholder:text-muted/70 focus:outline-none";
+
+const NUMBER_CONTROL = cn(
+  "h-9 min-w-0 flex-1 rounded-card border border-edge bg-surface px-2.5 text-sm text-ink tabular-nums",
+  "placeholder:text-muted/70 focus:border-brand focus:outline-2 focus:outline-brand/25",
+  "[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
+);
 
 const TRIGGER_CONTROL = "w-full text-sm text-ink";
 
@@ -70,6 +78,7 @@ export function SearchForm() {
   const typeLabelId = useId();
   const [tabKey, setTabKey] = useState<string>(TABS[0].key);
   const [type, setType] = useState<SearchPropertyType>("all");
+  const [currency, setCurrency] = useState<SearchCurrency>("PEN");
   const tab = TABS.find((item) => item.key === tabKey) ?? TABS[0];
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -122,8 +131,8 @@ export function SearchForm() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 gap-5 p-5 md:grid-cols-2 lg:grid-cols-[1.35fr_1.1fr_1.4fr_auto] lg:items-center lg:gap-0 lg:p-0">
-        <label className="flex flex-col gap-1.5 lg:px-6 lg:py-5">
+      <div className="grid grid-cols-1 gap-5 p-5 md:grid-cols-2 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1.05fr)_minmax(0,1.5fr)_auto] lg:items-center lg:gap-0 lg:p-0">
+        <label className="flex min-w-0 flex-col gap-1.5 lg:px-6 lg:py-5">
           <span className={FIELD_LABEL}>UBICACIÓN</span>
           <span className="flex items-center gap-2 text-muted">
             <PinIcon className="size-4 shrink-0" />
@@ -137,7 +146,7 @@ export function SearchForm() {
           </span>
         </label>
 
-        <div className="flex flex-col gap-1.5 lg:border-l lg:border-edge lg:px-6 lg:py-5">
+        <div className="flex min-w-0 flex-col gap-1.5 lg:border-l lg:border-edge lg:px-6 lg:py-5">
           <span className={FIELD_LABEL} id={typeLabelId}>
             TIPO DE PROPIEDAD
           </span>
@@ -152,20 +161,18 @@ export function SearchForm() {
           />
         </div>
 
-        <div className="flex flex-col gap-1.5 md:col-span-2 lg:col-span-1 lg:border-l lg:border-edge lg:px-6 lg:py-5">
+        <div className="flex min-w-0 flex-col gap-1.5 md:col-span-2 lg:col-span-1 lg:border-l lg:border-edge lg:px-6 lg:py-5">
           <span className={FIELD_LABEL}>RANGO DE PRECIO</span>
           <div className="flex items-center gap-2">
-            <span className="relative flex items-center">
-              <select
-                name="currency"
-                aria-label="Moneda"
-                className="cursor-pointer appearance-none bg-transparent pr-4 text-xs font-bold text-ink focus:outline-none"
-              >
-                <option value="PEN">PEN / S/</option>
-                <option value="USD">USD / $</option>
-              </select>
-              <ChevronDownIcon className="pointer-events-none absolute right-0 size-3.5 text-muted" />
-            </span>
+            <Listbox
+              name="currency"
+              value={currency}
+              options={SEARCH_CURRENCIES}
+              onValueChange={(value) => setCurrency(value as SearchCurrency)}
+              variant="chip"
+              label="Moneda"
+              className="w-auto shrink-0"
+            />
             <input
               name="priceMin"
               type="number"
@@ -173,7 +180,7 @@ export function SearchForm() {
               inputMode="numeric"
               placeholder="Mín."
               aria-label="Precio mínimo"
-              className={cn(FIELD_CONTROL, "min-w-0 flex-1")}
+              className={NUMBER_CONTROL}
             />
             <span aria-hidden className="text-muted">
               —
@@ -185,18 +192,18 @@ export function SearchForm() {
               inputMode="numeric"
               placeholder="Máx."
               aria-label="Precio máximo"
-              className={cn(FIELD_CONTROL, "min-w-0 flex-1")}
+              className={NUMBER_CONTROL}
             />
           </div>
         </div>
 
-        <div className="md:col-span-2 lg:col-span-1 lg:px-5">
+        <div className="min-w-0 self-end md:col-span-2 lg:col-span-1 lg:py-5 lg:pr-5 lg:pl-3">
           <button
             type="submit"
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand px-6 text-sm font-bold whitespace-nowrap text-on-brand transition-colors hover:bg-brand-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand lg:w-auto"
+            className="flex h-9 w-full max-w-full cursor-pointer items-center justify-center gap-2 rounded-[6px] bg-brand px-5 text-sm font-bold whitespace-nowrap text-on-brand transition-colors hover:bg-brand-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand lg:w-auto"
           >
             <SearchIcon className="size-4" />
-            Buscar propiedades
+            Buscar
           </button>
         </div>
       </div>
