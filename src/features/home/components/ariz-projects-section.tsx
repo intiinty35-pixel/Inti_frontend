@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { ArrowRightIcon } from "@/shared/ui";
 import { ROUTES } from "@/shared/config/routes";
+<<<<<<< HEAD
 import { PREVIEW_PROJECTS, ProjectCard } from "@/features/listings";
+=======
+import { PREVIEW_ARIZ_PROJECTS, ProjectCard } from "@/features/listings";
+>>>>>>> 9329d94156582eafd16ce5945e63ae0b09f6e33a
 import { HomeSection, SectionHeading } from "@/features/home/components/section";
 
 export function ArizProjectsSection() {
@@ -22,8 +26,13 @@ export function ArizProjectsSection() {
         }
       />
 
+<<<<<<< HEAD
       <ul className="mt-6 grid w-full gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {PREVIEW_PROJECTS.map((project) => (
+=======
+      <ul className="mt-6 grid w-full gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        {PREVIEW_ARIZ_PROJECTS.map((project) => (
+>>>>>>> 9329d94156582eafd16ce5945e63ae0b09f6e33a
           <li key={project.id}>
             <ProjectCard project={project} />
           </li>

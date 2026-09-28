@@ -4,6 +4,11 @@ import { ROUTES } from "@/shared/config/routes";
 
 export type ModuleKey =
   | "admin-home"
+<<<<<<< HEAD
+=======
+  | "admin-plans"
+  | "admin-subscriptions"
+>>>>>>> 9329d94156582eafd16ce5945e63ae0b09f6e33a
   | "customer-home"
   | "customer-favorites"
   | "owner-home"
@@ -28,6 +33,25 @@ export const MODULES: readonly ModuleConfig[] = [
     permission: "panel:admin",
   },
   {
+<<<<<<< HEAD
+=======
+    key: "admin-plans",
+    label: "Planes",
+    description: "Planes de suscripción",
+    href: ROUTES.panel.admin.plans,
+    roles: ["ADMIN"],
+    permission: "panel:admin",
+  },
+  {
+    key: "admin-subscriptions",
+    label: "Solicitudes de pago",
+    description: "Comprobantes pendientes de revisión",
+    href: ROUTES.panel.admin.subscriptions,
+    roles: ["ADMIN"],
+    permission: "panel:admin",
+  },
+  {
+>>>>>>> 9329d94156582eafd16ce5945e63ae0b09f6e33a
     key: "customer-home",
     label: "Mi cuenta",
     description: "Resumen de tu cuenta y actividad",

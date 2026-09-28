@@ -2,6 +2,10 @@ import Link from "next/link";
 import type { ComponentType, SVGProps } from "react";
 import { ArrowRightIcon, BellIcon, ChatIcon, Container, HeartIcon, HomeIcon, PinIcon, SearchIcon, SlidersIcon, SoonButton } from "@/shared/ui";
 import { formatArea, formatBathrooms, formatPrice, formatRooms } from "@/shared/lib/format";
+<<<<<<< HEAD
+=======
+import { cloudinaryImage } from "@/shared/lib/cloudinary";
+>>>>>>> 9329d94156582eafd16ce5945e63ae0b09f6e33a
 import { ROUTES } from "@/shared/config/routes";
 
 type IconType = ComponentType<SVGProps<SVGSVGElement>>;
@@ -57,7 +61,11 @@ const ACTIVE_TAB = "buscar";
 /** Fondo decorativo de la columna derecha: la imagen se funde con el color de la sección. */
 const BACKDROP = [
   "linear-gradient(90deg, var(--brand-soft) 0%, rgb(232 236 248 / 0.45) 40%, rgb(232 236 248 / 0.12) 100%)",
+<<<<<<< HEAD
   "url(https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=80)",
+=======
+  `url(${cloudinaryImage("ariz/home/account-cta", "f_auto,q_auto,c_fill,w_1280,h_960")})`,
+>>>>>>> 9329d94156582eafd16ce5945e63ae0b09f6e33a
   "linear-gradient(135deg, #2a3b85 0%, #00124f 100%)",
 ].join(", ");
 
@@ -85,9 +93,13 @@ function AccountPreview() {
     <div className="rounded-card border border-edge bg-surface p-5 shadow-[var(--shadow-pop)]">
       <div className="flex items-center justify-between gap-3">
         <span className="flex items-center gap-2">
+<<<<<<< HEAD
           <span className="flex size-8 items-center justify-center rounded-md bg-brand text-base leading-none font-black text-accent">
             A
           </span>
+=======
+          <img src="/logo/logo.png" alt="Ariz" className="h-7 w-auto" />
+>>>>>>> 9329d94156582eafd16ce5945e63ae0b09f6e33a
           <span className="text-base font-extrabold tracking-wide text-brand">ARIZ</span>
         </span>
         <span className="flex items-center gap-1 text-[11px] font-semibold text-muted">

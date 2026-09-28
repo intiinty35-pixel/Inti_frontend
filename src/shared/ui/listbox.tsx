@@ -9,16 +9,22 @@ export interface ListboxOption {
   label: string;
 }
 
+<<<<<<< HEAD
 export type ListboxVariant = "field" | "chip";
 
+=======
+>>>>>>> 9329d94156582eafd16ce5945e63ae0b09f6e33a
 export interface ListboxProps {
   /** Campo del form: se envía un input hidden para que el valor viaje en el FormData. */
   name: string;
   value: string;
   options: readonly ListboxOption[];
   onValueChange: (value: string) => void;
+<<<<<<< HEAD
   /** `field` ocupa la celda del formulario; `chip` es un disparador compacto tipo pastilla. */
   variant?: ListboxVariant;
+=======
+>>>>>>> 9329d94156582eafd16ce5945e63ae0b09f6e33a
   disabled?: boolean;
   label?: string;
   labelledBy?: string;
@@ -37,7 +43,10 @@ export function Listbox({
   value,
   options,
   onValueChange,
+<<<<<<< HEAD
   variant = "field",
+=======
+>>>>>>> 9329d94156582eafd16ce5945e63ae0b09f6e33a
   disabled = false,
   label,
   labelledBy,
@@ -179,10 +188,14 @@ export function Listbox({
         onClick={() => (open ? setOpen(false) : openList(selectedIndex >= 0 ? selectedIndex : 0))}
         onKeyDown={handleKeyDown}
         className={cn(
+<<<<<<< HEAD
           "flex items-center text-left transition-colors",
           variant === "chip"
             ? "h-9 w-full justify-between gap-1.5 rounded-card bg-brand-soft px-2.5 text-xs font-bold whitespace-nowrap text-brand hover:bg-brand-soft/70"
             : "w-full justify-between gap-2 text-sm text-ink",
+=======
+          "flex w-full items-center justify-between gap-2 text-left text-sm text-ink",
+>>>>>>> 9329d94156582eafd16ce5945e63ae0b09f6e33a
           disabled ? "cursor-default" : "cursor-pointer",
           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand",
           triggerClassName,
@@ -192,10 +205,14 @@ export function Listbox({
           {selected?.label ?? "Selecciona"}
         </span>
         <ChevronDownIcon
+<<<<<<< HEAD
           className={cn(
             "size-3.5 shrink-0 text-muted transition-transform",
             open && "rotate-180",
           )}
+=======
+          className={cn("size-4 shrink-0 text-muted transition-transform", open && "rotate-180")}
+>>>>>>> 9329d94156582eafd16ce5945e63ae0b09f6e33a
         />
       </button>
 
@@ -205,10 +222,14 @@ export function Listbox({
           ref={listRef}
           role="listbox"
           aria-labelledby={labelledBy ?? triggerId}
+<<<<<<< HEAD
           className={cn(
             "absolute top-full left-0 z-40 mt-1.5 max-h-64 overflow-y-auto rounded-card border border-edge bg-surface p-1 shadow-[var(--shadow-pop)]",
             variant === "chip" ? "w-max min-w-full" : "w-full min-w-44",
           )}
+=======
+          className="absolute top-full left-0 z-40 mt-2 max-h-64 w-full min-w-56 overflow-y-auto rounded-card border border-edge bg-surface p-1 shadow-[var(--shadow-pop)]"
+>>>>>>> 9329d94156582eafd16ce5945e63ae0b09f6e33a
         >
           {options.map((option, index) => {
             const isSelected = option.value === value;
@@ -224,6 +245,7 @@ export function Listbox({
                 onMouseEnter={() => setActiveIndex(index)}
                 onClick={() => commit(index)}
                 className={cn(
+<<<<<<< HEAD
                   "flex cursor-pointer items-center justify-between gap-2 rounded-[6px] px-2.5 py-1.5 text-xs whitespace-nowrap text-ink",
                   isActive && "bg-surface-muted",
                   isSelected && "font-bold text-brand",
@@ -231,6 +253,15 @@ export function Listbox({
               >
                 <span className="truncate">{option.label}</span>
                 {isSelected ? <CheckIcon className="size-3 shrink-0 text-brand" /> : null}
+=======
+                  "flex cursor-pointer items-center justify-between gap-2 rounded-[6px] px-3 py-2 text-sm text-ink",
+                  isActive && "bg-surface-muted",
+                  isSelected && "font-semibold text-brand",
+                )}
+              >
+                <span className="truncate">{option.label}</span>
+                {isSelected ? <CheckIcon className="size-3.5 shrink-0 text-brand" /> : null}
+>>>>>>> 9329d94156582eafd16ce5945e63ae0b09f6e33a
               </li>
             );
           })}

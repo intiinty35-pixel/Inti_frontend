@@ -7,6 +7,10 @@ import {
   FeaturedListingsSection,
   MapExplorerSection,
 } from "@/features/home";
+<<<<<<< HEAD
+=======
+import { cloudinaryImage } from "@/shared/lib/cloudinary";
+>>>>>>> 9329d94156582eafd16ce5945e63ae0b09f6e33a
 import { buildMetadata } from "@/shared/lib/seo";
 
 export const metadata = buildMetadata({
@@ -18,7 +22,11 @@ export const metadata = buildMetadata({
 
 const HERO_BACKGROUND = [
   "linear-gradient(180deg, rgb(0 18 79 / 0.45), rgb(0 18 79 / 0.78))",
+<<<<<<< HEAD
   "url(/images/hero.jpg)",
+=======
+  `url(${cloudinaryImage("ariz/home/hero", "f_auto,q_auto,c_fill,w_1920,h_860")})`,
+>>>>>>> 9329d94156582eafd16ce5945e63ae0b09f6e33a
   "linear-gradient(135deg, #1a2a6c 0%, #00124f 55%, #000a2e 100%)",
 ].join(", ");
 

@@ -2,6 +2,10 @@ import Link from "next/link";
 import { ArrowRightIcon } from "@/shared/ui";
 import { ROUTES } from "@/shared/config/routes";
 import { cn } from "@/shared/lib/cn";
+<<<<<<< HEAD
+=======
+import { cloudinaryImage } from "@/shared/lib/cloudinary";
+>>>>>>> 9329d94156582eafd16ce5945e63ae0b09f6e33a
 import type { PropertyType } from "@/features/listings/types/listing";
 import { HomeSection, SectionHeading } from "@/features/home/components/section";
 
@@ -12,12 +16,21 @@ interface Category {
 }
 
 const CATEGORIES: readonly Category[] = [
+<<<<<<< HEAD
   { slug: "houses", label: "Casas", image: "/images/categories/houses.jpg" },
   { slug: "apartments", label: "Departamentos", image: "/images/categories/apartments.jpg" },
   { slug: "projects", label: "Proyectos", image: "/images/categories/projects.jpg" },
   { slug: "land", label: "Terrenos", image: "/images/categories/land.jpg" },
   { slug: "country-lots", label: "Lotes campestres", image: "/images/categories/country-lots.jpg" },
   { slug: "commercial", label: "Locales comerciales", image: "/images/categories/commercial.jpg" },
+=======
+  { slug: "houses", label: "Casas", image: cloudinaryImage("ariz/categories/houses", "f_auto,q_auto,c_fill,w_520,h_650") },
+  { slug: "apartments", label: "Departamentos", image: cloudinaryImage("ariz/categories/apartments", "f_auto,q_auto,c_fill,w_520,h_650") },
+  { slug: "projects", label: "Proyectos", image: cloudinaryImage("ariz/categories/projects", "f_auto,q_auto,c_fill,w_520,h_650") },
+  { slug: "land", label: "Terrenos", image: cloudinaryImage("ariz/categories/land", "f_auto,q_auto,c_fill,w_520,h_650") },
+  { slug: "country-lots", label: "Lotes campestres", image: cloudinaryImage("ariz/categories/country-lots", "f_auto,q_auto,c_fill,w_520,h_650") },
+  { slug: "commercial", label: "Locales comerciales", image: cloudinaryImage("ariz/categories/commercial", "f_auto,q_auto,c_fill,w_520,h_650") },
+>>>>>>> 9329d94156582eafd16ce5945e63ae0b09f6e33a
 ];
 
 const FALLBACK = "linear-gradient(135deg, #2a3b85 0%, #00124f 100%)";

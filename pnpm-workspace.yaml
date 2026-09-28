@@ -1,3 +1,8 @@
 allowBuilds:
+<<<<<<< HEAD
+=======
+  '@firebase/util': false
+  protobufjs: false
+>>>>>>> 9329d94156582eafd16ce5945e63ae0b09f6e33a
   sharp: false
   unrs-resolver: false

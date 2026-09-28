@@ -1,5 +1,22 @@
 import { backendFetch } from "@/shared/lib/api/server";
 import type { ApprovalStatus } from "@/features/auth";
+<<<<<<< HEAD
+=======
+import type { Plan } from "@/features/owner/types/plan";
+
+export interface PendingSubscription {
+  id: string;
+  status: "PENDING_PAYMENT";
+  receiptUrl: string | null;
+  createdAt: string;
+  plan: Plan;
+  agentProfile: {
+    id: string;
+    businessName: string | null;
+    user: { firstName: string; lastName: string | null; email: string };
+  };
+}
+>>>>>>> 9329d94156582eafd16ce5945e63ae0b09f6e33a
 
 export interface ProfessionalRecord {
   id: string;
@@ -40,3 +57,22 @@ export async function setProfessionalStatus(id: string, status: ApprovalStatus):
     throw new Error(`No se pudo actualizar el estado (${response.status})`);
   }
 }
+<<<<<<< HEAD
+=======
+
+async function getJson<T>(path: string): Promise<T> {
+  const response = await backendFetch(path);
+  if (!response.ok) {
+    throw new Error(`No se pudo cargar ${path} (${response.status})`);
+  }
+  return (await response.json()) as T;
+}
+
+export function listAllPlans(): Promise<Plan[]> {
+  return getJson<Plan[]>("/admin/plans");
+}
+
+export function listPendingSubscriptions(): Promise<PendingSubscription[]> {
+  return getJson<PendingSubscription[]>("/admin/subscriptions/pending");
+}
+>>>>>>> 9329d94156582eafd16ce5945e63ae0b09f6e33a

@@ -10,6 +10,13 @@
   --accent-hover: #d99700;
   --on-accent: #00124f;
 
+<<<<<<< HEAD
+=======
+  /* Verde oficial de WhatsApp: identidad de marca, no decorativo. */
+  --wa: #25d366;
+  --wa-hover: #1eb257;
+
+>>>>>>> 9329d94156582eafd16ce5945e63ae0b09f6e33a
   --canvas: #f5f6fa;
   --surface: #ffffff;
   --surface-muted: #eef0f6;
@@ -31,6 +38,13 @@
 
   --font-display-size: clamp(2.25rem, 4vw + 1rem, 3.5rem);
 
+<<<<<<< HEAD
+=======
+  /* Titular de publicacion (detalle y tarjetas). Escala contenida en vez del
+     font-black grande: el texto manda por jerarquia, no por tamano. */
+  --title-size: clamp(1.25rem, 0.7vw + 1.05rem, 1.5rem);
+
+>>>>>>> 9329d94156582eafd16ce5945e63ae0b09f6e33a
   --radius-sm: 8px;
   --radius-md: 10px;
   --radius-lg: 18px;

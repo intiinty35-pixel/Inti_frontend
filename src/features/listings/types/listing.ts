@@ -14,6 +14,75 @@ export type ListingStatus = "disponible" | "reservado" | "vendido" | "alquilado"
 
 export type SortOption = "recent" | "price-asc" | "price-desc";
 
+<<<<<<< HEAD
+=======
+export type ApiOperationType = "SALE" | "RENT" | "TEMPORARY_RENT" | "TRANSFER";
+export type ApiPropertyType =
+  | "APARTMENT"
+  | "HOUSE"
+  | "LAND"
+  | "OFFICE"
+  | "COMMERCIAL"
+  | "WAREHOUSE"
+  | "ROOM"
+  | "PARKING";
+export type ApiCurrency = "PEN" | "USD";
+export type ApiConservationStatus =
+  | "NEW"
+  | "EXCELLENT"
+  | "GOOD"
+  | "REMODELED"
+  | "TO_REMODEL"
+  | "UNDER_CONSTRUCTION";
+
+export interface PropertyCreateInput {
+  operationType: ApiOperationType;
+  propertyType: ApiPropertyType;
+  title: string;
+  description: string;
+  price: number;
+  currency: ApiCurrency;
+  negotiable?: boolean;
+  maintenanceFee?: number;
+  location: {
+    department: string;
+    province: string;
+    district: string;
+    address: string;
+    number?: string;
+    sector?: string;
+    reference?: string;
+    latitude?: number;
+    longitude?: number;
+    approximateLocation: boolean;
+  };
+  details: {
+    totalArea?: number;
+    constructedArea?: number;
+    bedrooms?: number;
+    bathrooms?: number;
+    halfBathrooms?: number;
+    parkingSpaces?: number;
+    floor?: number;
+    floors?: number;
+    constructionYear?: number;
+    conservationStatus?: ApiConservationStatus;
+    specificDetails?: Record<string, string | number | boolean | undefined>;
+  };
+  amenityCodes?: string[];
+  media: Array<{
+    url: string;
+    publicId?: string;
+    position?: number;
+    isCover?: boolean;
+  }>;
+  contactName?: string;
+  contactEmail?: string;
+  contactPhone?: string;
+  contactWhatsapp?: string;
+}
+
+>>>>>>> 9329d94156582eafd16ce5945e63ae0b09f6e33a
 export interface LocationRef {
   department: string;
   province: string;
@@ -46,6 +115,44 @@ export interface Listing {
   status: ListingStatus;
   projectId?: string;
   publishedAt: string;
+<<<<<<< HEAD
+=======
+  /** Codigos de servicios. El listado publico puede omitirlos; se usan para afinidad. */
+  amenityCodes?: string[];
+}
+
+export interface PropertyDetail extends Listing {
+  maintenanceFee: number | null;
+  negotiable: boolean;
+  details?: {
+    totalArea?: number | string | null;
+    constructedArea?: number | string | null;
+    bedrooms?: number | null;
+    bathrooms?: number | null;
+    halfBathrooms?: number | null;
+    parkingSpaces?: number | null;
+    floor?: number | null;
+    floors?: number | null;
+    constructionYear?: number | null;
+    conservationStatus?: ApiConservationStatus | null;
+    specificDetails?: Record<string, unknown> | null;
+  } | null;
+  amenities: Array<{
+    id: string;
+    code: string;
+    name: string;
+    category: string;
+  }>;
+  agent: {
+    id: string;
+    name: string;
+    type: string;
+    status: string;
+    whatsapp?: string | null;
+    phone?: string | null;
+    email: string;
+  };
+>>>>>>> 9329d94156582eafd16ce5945e63ae0b09f6e33a
 }
 
 export interface ListingFilters {
@@ -69,4 +176,8 @@ export interface PagedResult<T> {
   page: number;
   pageSize: number;
   hasMore: boolean;
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 9329d94156582eafd16ce5945e63ae0b09f6e33a

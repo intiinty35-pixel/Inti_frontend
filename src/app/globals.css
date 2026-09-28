@@ -60,4 +60,22 @@
   ::selection {
     background-color: var(--focus-ring);
   }
+<<<<<<< HEAD
+=======
+
+  /*
+   * Titular de publicacion. Una sola clase para el detalle y las tarjetas:
+   * el peso 700 y el tracking cerrado sostienen la jerarquia sin recurrir al
+   * font-black gigante que se desbordaba en titulos largos.
+   */
+  .title-listing {
+    font-family: var(--font-family-display);
+    font-size: var(--title-size);
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    color: var(--brand);
+    text-wrap: balance;
+  }
+>>>>>>> 9329d94156582eafd16ce5945e63ae0b09f6e33a
 }

@@ -1,4 +1,9 @@
 import type { SessionUser } from "@/features/auth/types/session";
+<<<<<<< HEAD
+=======
+import { signInWithPopup } from "firebase/auth";
+import { firebaseAuth, googleProvider } from "@/shared/lib/firebase";
+>>>>>>> 9329d94156582eafd16ce5945e63ae0b09f6e33a
 
 export type ProfessionalType = "INDEPENDENT_AGENT" | "REAL_ESTATE_AGENCY" | "DEVELOPER";
 
@@ -78,6 +83,24 @@ export async function login(input: {
   return (await post<{ user: SessionUser }>("login", input)).user;
 }
 
+<<<<<<< HEAD
+=======
+export async function loginWithGoogle(): Promise<SessionUser> {
+  try {
+    const credential = await signInWithPopup(firebaseAuth, googleProvider);
+    const idToken = await credential.user.getIdToken();
+    return (await post<{ user: SessionUser }>("google", { idToken })).user;
+  } catch (error) {
+    if (error instanceof AuthRequestError) throw error;
+    const code = typeof error === "object" && error && "code" in error ? String(error.code) : "";
+    if (code === "auth/popup-closed-by-user") {
+      throw new AuthRequestError(["Se cerró la ventana de Google antes de completar el ingreso."]);
+    }
+    throw new AuthRequestError(["No se pudo iniciar sesión con Google."]);
+  }
+}
+
+>>>>>>> 9329d94156582eafd16ce5945e63ae0b09f6e33a
 export async function registerCustomer(input: RegisterCustomerInput): Promise<SessionUser> {
   return (await post<{ user: SessionUser }>("register/customer", input)).user;
 }

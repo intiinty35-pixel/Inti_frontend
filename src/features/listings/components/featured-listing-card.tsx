@@ -1,3 +1,9 @@
+<<<<<<< HEAD
+=======
+import Link from "next/link";
+import { HeartIcon, PinIcon } from "@/shared/ui";
+import { ROUTES } from "@/shared/config/routes";
+>>>>>>> 9329d94156582eafd16ce5945e63ae0b09f6e33a
 import { formatArea, formatPrice } from "@/shared/lib/format";
 import type { Listing } from "@/features/listings/types/listing";
 import { DataCell, DataGrid } from "@/features/listings/components/data-grid";
@@ -5,8 +11,25 @@ import { ListingImage } from "@/features/listings/components/listing-image";
 
 export function FeaturedListingCard({ listing }: { listing: Listing }) {
   return (
+<<<<<<< HEAD
     <article className="flex h-full flex-col overflow-hidden rounded-[6px] border border-edge bg-surface shadow-[var(--shadow-card)]">
       <ListingImage src={listing.images[0]} className="aspect-[4/3]" />
+=======
+    <article className="flex h-full flex-col overflow-hidden rounded-card border border-edge bg-surface shadow-[var(--shadow-card)]">
+      <div className="relative">
+        <ListingImage src={listing.images[0]} className="h-36 sm:h-44" />
+        <span className="absolute top-2 left-2 rounded-full bg-brand px-2.5 py-1 text-[10px] font-bold text-on-brand">
+          {listing.operation === "rent" ? "ALQUILER" : "VENTA"}
+        </span>
+        <button
+          type="button"
+          aria-label="Guardar favorito"
+          className="absolute top-2 right-2 flex size-8 items-center justify-center rounded-full bg-surface text-brand shadow-[var(--shadow-card)]"
+        >
+          <HeartIcon className="size-4" />
+        </button>
+      </div>
+>>>>>>> 9329d94156582eafd16ce5945e63ae0b09f6e33a
 
       <div className="flex flex-1 flex-col p-2.5">
         <p className="text-base font-bold text-brand">
@@ -15,6 +38,7 @@ export function FeaturedListingCard({ listing }: { listing: Listing }) {
         <h3 className="mt-0.5 line-clamp-2 min-h-[2lh] text-xs leading-snug font-semibold text-ink">
           {listing.title}
         </h3>
+<<<<<<< HEAD
 
         <DataGrid columns={2} className="mt-2">
           <DataCell label="Área" value={formatArea(listing.areaM2)} />
@@ -22,6 +46,28 @@ export function FeaturedListingCard({ listing }: { listing: Listing }) {
           <DataCell label="Baños" value={listing.bathrooms} />
           <DataCell label="Estac." value={listing.parkingSpaces} />
         </DataGrid>
+=======
+        <p className="mt-1 flex items-center gap-1 text-[11px] text-muted">
+          <PinIcon className="size-3" />
+          {listing.location.district}, {listing.location.department}
+        </p>
+
+        <DataGrid columns={4} className="mt-2">
+          <DataCell label="Área" value={formatArea(listing.areaM2)} />
+          <DataCell label="Dorm." value={listing.rooms} />
+          <DataCell label="Baños" value={listing.bathrooms} />
+          <DataCell label="Estac." value={listing.parkingSpaces} />
+        </DataGrid>
+
+        <div className="mt-auto pt-2">
+          <Link
+            href={ROUTES.property(listing.slug)}
+            className="flex h-8 w-full items-center justify-center rounded-card bg-brand px-3 text-xs font-bold text-on-brand transition-colors hover:bg-brand-hover"
+          >
+            Ver propiedad
+          </Link>
+        </div>
+>>>>>>> 9329d94156582eafd16ce5945e63ae0b09f6e33a
       </div>
     </article>
   );
