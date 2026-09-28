@@ -9,6 +9,9 @@ export {
   BathIcon,
   BedIcon,
   BellIcon,
+  BuildingIcon,
+  CameraIcon,
+  ChartIcon,
   CarIcon,
   ChatIcon,
   CheckIcon,
@@ -18,13 +21,22 @@ export {
   HomeIcon,
   MapIcon,
   PinIcon,
+  ParkingIcon,
+  PlusIcon,
   SearchIcon,
+  SettingsIcon,
   SlidersIcon,
   SparkleIcon,
+  StoreIcon,
+  WarehouseIcon,
+  UserIcon,
+  WhatsappIcon,
 } from "@/shared/ui/icons";
 export { Card,CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 export { Container, type ContainerProps, type ContainerSize } from "@/shared/ui/container";
 export { Pagination, type PaginationProps } from "@/shared/ui/pagination";
 export { BarChart, type BarDatum } from "@/shared/ui/charts/bar-chart";
 export { TrendChart, type TrendPoint } from "@/shared/ui/charts/trend-chart";
+export { DonutChart, type DonutChartProps, type DonutDatum } from "@/shared/ui/charts/donut-chart";
+export { RankChart, type RankChartProps, type RankDatum } from "@/shared/ui/charts/rank-chart";
 export { CATEGORICAL, STATUS } from "@/shared/ui/charts/chart-colors";

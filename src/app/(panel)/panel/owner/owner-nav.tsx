@@ -2,43 +2,76 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {
+  BellIcon,
+  ChartIcon,
+  ChatIcon,
+  HomeIcon,
+  MapIcon,
+  PlusIcon,
+  SettingsIcon,
+  UserIcon,
+} from "@/shared/ui/icons";
 import { cn } from "@/shared/lib/cn";
 import { ROUTES } from "@/shared/config/routes";
 
 const NAV_ITEMS = [
-  { key: "dashboard", label: "Dashboard", href: ROUTES.panel.owner.base },
-  { key: "properties", label: "Mis propiedades", href: ROUTES.panel.owner.listings },
-  { key: "projects", label: "Mis proyectos", href: ROUTES.panel.owner.projects },
-  { key: "new-property", label: "Publicar propiedad", href: ROUTES.panel.owner.newListing },
-  { key: "new-project", label: "Publicar proyecto", href: ROUTES.panel.owner.newProject },
-  { key: "leads", label: "Leads / Consultas", href: ROUTES.panel.owner.leads },
-  { key: "stats", label: "Estadísticas", href: ROUTES.panel.owner.stats },
-  { key: "subscription", label: "Suscripción", href: ROUTES.panel.owner.subscription },
-  { key: "profile", label: "Mi perfil", href: ROUTES.panel.owner.profile },
-  { key: "settings", label: "Configuración", href: ROUTES.panel.owner.settings },
+  { key: "dashboard", label: "Dashboard", href: ROUTES.panel.owner.base, Icon: HomeIcon },
+  { key: "properties", label: "Mis propiedades", href: ROUTES.panel.owner.listings, Icon: MapIcon },
+  { key: "projects", label: "Mis proyectos", href: ROUTES.panel.owner.projects, Icon: ChartIcon },
+  { key: "new-property", label: "Publicar propiedad", href: ROUTES.panel.owner.newListing, Icon: PlusIcon },
+  { key: "new-project", label: "Publicar proyecto", href: ROUTES.panel.owner.newProject, Icon: PlusIcon },
+  { key: "leads", label: "Leads / Consultas", href: ROUTES.panel.owner.leads, Icon: ChatIcon },
+  { key: "stats", label: "Estadisticas", href: ROUTES.panel.owner.stats, Icon: ChartIcon },
+  { key: "subscription", label: "Suscripcion", href: ROUTES.panel.owner.subscription, Icon: BellIcon },
+  { key: "profile", label: "Mi perfil", href: ROUTES.panel.owner.profile, Icon: UserIcon },
+  { key: "settings", label: "Configuracion", href: ROUTES.panel.owner.settings, Icon: SettingsIcon },
 ] as const;
 
-export function OwnerNav() {
+function isActiveOwnerRoute(pathname: string, href: string) {
+  if (href === ROUTES.panel.owner.base) return pathname === href;
+  if (href === ROUTES.panel.owner.listings) {
+    return pathname === href || (pathname.startsWith(`${href}/`) && pathname !== ROUTES.panel.owner.newListing);
+  }
+  if (href === ROUTES.panel.owner.projects) {
+    return pathname === href || (pathname.startsWith(`${href}/`) && pathname !== ROUTES.panel.owner.newProject);
+  }
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+export function OwnerNav({
+  collapsed = false,
+  mobile = false,
+  onNavigate,
+}: {
+  collapsed?: boolean;
+  mobile?: boolean;
+  onNavigate?: () => void;
+}) {
   const pathname = usePathname();
 
   return (
-    <nav className="flex flex-col gap-0.5">
+    <nav className={cn(mobile ? "flex flex-col gap-1" : "flex flex-col gap-1.5")}>
       {NAV_ITEMS.map((item) => {
-        const active =
-          item.href === ROUTES.panel.owner.base
-            ? pathname === item.href
-            : pathname.startsWith(item.href);
+        const active = isActiveOwnerRoute(pathname, item.href);
+        const Icon = item.Icon;
 
         return (
           <Link
             key={item.key}
             href={item.href}
+            title={collapsed ? item.label : undefined}
+            onClick={onNavigate}
             className={cn(
-              "rounded-lg px-3.5 py-2.5 text-sm font-medium transition-colors",
-              active ? "bg-white/10 text-white" : "text-white/65 hover:bg-white/5 hover:text-white",
+              "flex h-11 items-center rounded-xl text-sm font-semibold transition-colors",
+              collapsed ? "justify-center px-0" : "gap-3 px-3",
+              active
+                ? "bg-brand text-on-brand shadow-[var(--shadow-card)]"
+                : "text-muted hover:bg-surface-muted hover:text-ink",
             )}
           >
-            {item.label}
+            <Icon className="size-5 shrink-0" />
+            {!collapsed ? <span className="truncate">{item.label}</span> : null}
           </Link>
         );
       })}

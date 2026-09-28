@@ -86,9 +86,7 @@ function AccountPreview() {
     <div className="rounded-card border border-edge bg-surface p-5 shadow-[var(--shadow-pop)]">
       <div className="flex items-center justify-between gap-3">
         <span className="flex items-center gap-2">
-          <span className="flex size-8 items-center justify-center rounded-md bg-brand text-base leading-none font-black text-accent">
-            A
-          </span>
+          <img src="/logo/logo.png" alt="Ariz" className="h-7 w-auto" />
           <span className="text-base font-extrabold tracking-wide text-brand">ARIZ</span>
         </span>
         <span className="flex items-center gap-1 text-[11px] font-semibold text-muted">

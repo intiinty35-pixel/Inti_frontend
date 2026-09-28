@@ -40,13 +40,7 @@ const GROUPS: readonly FooterGroup[] = [
 function Brand() {
   return (
     <Link href={ROUTES.home} className="flex items-center gap-2.5" aria-label="Ariz Proyectos">
-      <span className="flex size-9 items-center justify-center rounded-md bg-brand text-xl leading-none font-black text-accent">
-        A
-      </span>
-      <span className="flex flex-col leading-none">
-        <span className="text-lg font-extrabold tracking-wide text-brand">ARIZ</span>
-        <span className="mt-0.5 text-[7px] font-bold tracking-[0.22em] text-brand">PROYECTOS</span>
-      </span>
+      <img src="/logo/logo.png" alt="Ariz Proyectos" className="h-9 w-auto" />
     </Link>
   );
 }

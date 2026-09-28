@@ -33,6 +33,9 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# qr de cobro: apunta a una cuenta real, no debe ir al historial del repo
+/public/qr/*.png
+
 # vercel
 .vercel
 

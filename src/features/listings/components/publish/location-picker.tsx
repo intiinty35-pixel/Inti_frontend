@@ -5,8 +5,10 @@ import type { LocationPickerProps } from "./leaflet-map";
 
 const MapSkeleton = () => <div className="h-80 w-full rounded-card border border-edge bg-surface-muted" />;
 
+export const preloadLocationPicker = () => import("./leaflet-map");
+
 const LeafletMap = dynamic<LocationPickerProps>(
-  () => import("./leaflet-map").then((module) => module.LeafletMap),
+  () => preloadLocationPicker().then((module) => module.LeafletMap),
   { ssr: false, loading: MapSkeleton },
 );
 

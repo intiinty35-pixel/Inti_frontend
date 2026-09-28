@@ -5,7 +5,15 @@ import { FeaturedListingCard, getListings } from "@/features/listings";
 import { HomeSection, SectionHeading } from "@/features/home/components/section";
 
 export async function FeaturedListingsSection() {
-  const listings = await getListings({ sort: "recent", pageSize: 5 });
+  // La home es estatica y se prerrenderiza en el build. Si la API no responde en ese
+  // momento, no debe romper el build completo: se muestra el estado vacio.
+  const listings = await getListings({ sort: "recent", pageSize: 5 }).catch(() => ({
+    items: [],
+    total: 0,
+    page: 1,
+    pageSize: 5,
+    hasMore: false,
+  }));
 
   return (
     <HomeSection>

@@ -19,8 +19,7 @@ export function GenericPanelShell({ name, role, modules, children }: GenericPane
     <div className="min-h-screen">
       <aside className="fixed inset-y-0 left-0 flex w-64 flex-col gap-6 border-r border-edge bg-surface p-6">
         <Link href={ROUTES.home} className="flex items-center gap-2" aria-label="Ariz Proyectos">
-          <span className="text-2xl leading-none font-black text-accent">A</span>
-          <span className="text-lg font-extrabold tracking-wide text-brand">ARIZ</span>
+          <img src="/logo/logo.png" alt="Ariz Proyectos" className="h-9 w-auto" />
         </Link>
         <div className="flex flex-col">
           <p className="font-medium text-ink">{name}</p>

@@ -9,6 +9,12 @@ export const metadata: Metadata = {
   },
   description:
     "Real estate portal to find homes, apartments, land and projects in Peru.",
+  icons: {
+    icon: [
+      { rel: "icon", url: "/web_v/logo_web.png", type: "image/png" },
+      { rel: "apple-touch-icon", url: "/web_v/logo_web.png", type: "image/png" },
+    ],
+  },
 };
 
 export const viewport: Viewport = {

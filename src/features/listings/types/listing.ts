@@ -22,7 +22,8 @@ export type ApiPropertyType =
   | "OFFICE"
   | "COMMERCIAL"
   | "WAREHOUSE"
-  | "ROOM";
+  | "ROOM"
+  | "PARKING";
 export type ApiCurrency = "PEN" | "USD";
 export type ApiConservationStatus =
   | "NEW"
@@ -64,6 +65,7 @@ export interface PropertyCreateInput {
     floors?: number;
     constructionYear?: number;
     conservationStatus?: ApiConservationStatus;
+    specificDetails?: Record<string, string | number | boolean | undefined>;
   };
   amenityCodes?: string[];
   media: Array<{
@@ -110,6 +112,8 @@ export interface Listing {
   status: ListingStatus;
   projectId?: string;
   publishedAt: string;
+  /** Codigos de servicios. El listado publico puede omitirlos; se usan para afinidad. */
+  amenityCodes?: string[];
 }
 
 export interface PropertyDetail extends Listing {
@@ -126,6 +130,7 @@ export interface PropertyDetail extends Listing {
     floors?: number | null;
     constructionYear?: number | null;
     conservationStatus?: ApiConservationStatus | null;
+    specificDetails?: Record<string, unknown> | null;
   } | null;
   amenities: Array<{
     id: string;

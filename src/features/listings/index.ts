@@ -31,8 +31,15 @@ export {
 export { FeaturedListingCard } from "@/features/listings/components/featured-listing-card";
 export { ListingCard } from "@/features/listings/components/listing-card";
 export { ListingGrid } from "@/features/listings/components/listing-grid";
+export { SimilarListingsSection } from "@/features/listings/components/similar-listings-section";
 export { MapListingCard } from "@/features/listings/components/map-listing-card";
+export { OwnerListingCard } from "@/features/listings/components/owner-listing-card";
 export { ProjectCard } from "@/features/listings/components/project-card";
+export {
+  rankSimilarListings,
+  scoreSimilarity,
+} from "@/features/listings/lib/similar-listings";
+export type { ScoredListing, SimilarityBreakdown } from "@/features/listings/lib/similar-listings";
 export {
   PREVIEW_ARIZ_PROJECTS,
   PREVIEW_FEATURED_LISTINGS,

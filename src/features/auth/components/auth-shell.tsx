@@ -27,11 +27,7 @@ export function AuthShell({ headline, description, cardWidth = "sm", children }:
     <div className="grid min-h-screen grid-cols-1 lg:grid-cols-[42%_1fr]">
       <aside className="relative flex flex-col overflow-hidden bg-brand px-8 py-8 text-white lg:sticky lg:top-0 lg:h-screen lg:px-14 lg:py-12">
         <Link href={ROUTES.home} className="flex items-center gap-2.5" aria-label="Ariz Proyectos">
-          <span className="text-3xl leading-none font-black text-accent">A</span>
-          <span className="flex flex-col leading-none">
-            <span className="text-xl font-extrabold tracking-wide">ARIZ</span>
-            <span className="mt-0.5 text-[8px] font-bold tracking-[0.2em]">PROYECTOS</span>
-          </span>
+          <img src="/logo/logo.png" alt="Ariz Proyectos" className="h-9 w-auto" />
         </Link>
 
         <div className="relative z-10 my-10 flex flex-1 flex-col justify-center lg:my-0">
