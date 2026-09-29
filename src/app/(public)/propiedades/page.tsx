@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Container } from "@/shared/ui";
 import { buildMetadata } from "@/shared/lib/seo";
 import { getListings, ListingCard, type ListingFilters } from "@/features/listings";
+import { getPropertyTypeLabel } from "@/features/search";
+import type { PropertyType } from "@/features/listings/types/listing";
 
 export const metadata: Metadata = buildMetadata({
   title: "Propiedades en venta y alquiler | ARIZ",
@@ -22,10 +24,15 @@ function numberOf(input: string | string[] | undefined) {
   return value ? Number(value) : undefined;
 }
 
+const FILTERABLE_TYPES = new Set<PropertyType>(["houses", "apartments", "land", "commercial"]);
+
 export default async function PropertiesPage({ searchParams }: PropertiesPageProps) {
   const params = await searchParams;
+  const rawType = valueOf(params.type);
+  const type = FILTERABLE_TYPES.has(rawType as PropertyType) ? (rawType as PropertyType) : undefined;
   const filters: ListingFilters = {
     operation: valueOf(params.operation) === "rent" ? "rent" : "buy",
+    type,
     district: valueOf(params.district),
     priceMin: numberOf(params.priceMin),
     priceMax: numberOf(params.priceMax),
@@ -35,6 +42,7 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
     pageSize: 20,
   };
   const result = await getListings(filters);
+  const heading = type ? getPropertyTypeLabel(type) : "Propiedades";
 
   return (
     <Container className="flex flex-1 flex-col gap-6 py-8">
@@ -70,7 +78,7 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-sm text-muted">{result.total} propiedades disponibles</p>
-          <h1 className="font-display text-3xl font-semibold text-ink">Propiedades</h1>
+          <h1 className="font-display text-3xl font-semibold text-ink">{heading}</h1>
         </div>
         <div className="flex gap-2">
           <button className="h-10 rounded-card border border-edge px-4 text-sm font-bold text-brand">
