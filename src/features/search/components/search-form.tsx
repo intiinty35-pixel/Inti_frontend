@@ -21,16 +21,19 @@ interface SearchTab {
   label: string;
   operation: SearchOperation;
   fixedType?: SearchPropertyType;
+  /** Sin esto, el tipo todavía no tiene soporte real en el backend. */
+  disabled?: boolean;
 }
 
 const TABS: readonly SearchTab[] = [
   { key: "buy", label: "Comprar", operation: "buy" },
   { key: "rent", label: "Alquilar", operation: "rent" },
-  { key: "projects", label: "Proyectos", operation: "buy", fixedType: "projects" },
+  { key: "projects", label: "Proyectos", operation: "buy", fixedType: "projects", disabled: true },
   { key: "land", label: "Terrenos", operation: "buy", fixedType: "land" },
 ];
 
-const SELECTABLE_TYPES = SEARCH_PROPERTY_TYPES.filter((option) => option.value !== "projects");
+const UNSUPPORTED_TYPES = new Set<SearchPropertyType>(["projects", "country-lots"]);
+const SELECTABLE_TYPES = SEARCH_PROPERTY_TYPES.filter((option) => !UNSUPPORTED_TYPES.has(option.value));
 
 const FIELD_LABEL = "text-[10px] font-bold tracking-[0.12em] text-brand";
 const FIELD_CONTROL =
@@ -51,20 +54,6 @@ function typeOptions(fixedType: SearchPropertyType | undefined): readonly Listbo
   ];
 }
 
-function toSlugs(location: string): string[] {
-  return location
-    .split(",")
-    .map((part) =>
-      part
-        .normalize("NFD")
-        .replace(/[̀-ͯ]/g, "")
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, ""),
-    )
-    .filter(Boolean);
-}
-
 export function SearchForm() {
   const router = useRouter();
   const typeLabelId = useId();
@@ -76,18 +65,21 @@ export function SearchForm() {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     const selectedType = tab.fixedType ?? (String(form.get("type") ?? "all") as SearchPropertyType);
-    const location = toSlugs(String(form.get("location") ?? ""));
+    const district = String(form.get("location") ?? "").trim();
     const params = new URLSearchParams();
+
+    params.set("operation", tab.operation === "rent" ? "rent" : "buy");
+    if (selectedType !== "all" && !UNSUPPORTED_TYPES.has(selectedType)) {
+      params.set("type", selectedType);
+    }
+    if (district) params.set("district", district);
 
     const min = String(form.get("priceMin") ?? "").trim();
     const max = String(form.get("priceMax") ?? "").trim();
-    if (min) params.set("price_min", min);
-    if (max) params.set("price_max", max);
-    if (min || max) params.set("currency", String(form.get("currency") ?? "PEN"));
+    if (min) params.set("priceMin", min);
+    if (max) params.set("priceMax", max);
 
-    const path = `/${tab.operation}/${selectedType}${location.map((slug) => `/${slug}`).join("")}`;
-    const query = params.toString();
-    router.push(query ? `${path}?${query}` : path);
+    router.push(`/propiedades?${params.toString()}`);
   }
 
   return (
@@ -106,15 +98,21 @@ export function SearchForm() {
             type="button"
             role="tab"
             aria-selected={item.key === tab.key}
+            aria-disabled={item.disabled}
+            disabled={item.disabled}
+            title={item.disabled ? "Disponible próximamente" : undefined}
             onClick={() => {
+              if (item.disabled) return;
               setTabKey(item.key);
               setType("all");
             }}
             className={cn(
               "-mb-px border-b-2 px-5 py-3.5 text-[13px] font-bold transition-colors sm:px-7",
-              item.key === tab.key
-                ? "border-accent text-brand"
-                : "border-transparent text-muted hover:text-brand",
+              item.disabled
+                ? "cursor-not-allowed border-transparent text-muted/50"
+                : item.key === tab.key
+                  ? "border-accent text-brand"
+                  : "border-transparent text-muted hover:text-brand",
             )}
           >
             {item.label}
