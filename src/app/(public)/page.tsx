@@ -6,6 +6,7 @@ import {
   CategoryShowcase,
   FeaturedListingsSection,
   MapExplorerSection,
+  PublishedProjectsSection,
 } from "@/features/home";
 import { cloudinaryImage } from "@/shared/lib/cloudinary";
 import { buildMetadata } from "@/shared/lib/seo";
@@ -53,6 +54,7 @@ export default function PublicHomePage() {
       <CategoryShowcase />
       <ArizProjectsSection />
       <FeaturedListingsSection />
+      <PublishedProjectsSection />
       <MapExplorerSection />
       <AccountCtaSection />
     </>

@@ -5,10 +5,13 @@ import { useEffect, useMemo, useRef, type RefObject } from "react";
 import L, { type LeafletMouseEvent } from "leaflet";
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet";
 
-export interface LocationPickerProps {
+export interface MapPoint {
   latitude: number;
   longitude: number;
-  onChange: (location: { latitude: number; longitude: number }) => void;
+}
+
+export interface LocationPickerProps extends MapPoint {
+  onChange: (location: MapPoint) => void;
 }
 
 const markerIcon = new L.DivIcon({
@@ -18,7 +21,7 @@ const markerIcon = new L.DivIcon({
   iconAnchor: [12, 12],
 });
 
-function MapSync({ latitude, longitude }: { latitude: number; longitude: number }) {
+function MapSync({ latitude, longitude }: MapPoint) {
   const map = useMap();
 
   useEffect(() => {
@@ -71,7 +74,7 @@ function MapResize({ containerRef }: { containerRef: RefObject<HTMLDivElement | 
   return null;
 }
 
-export function LeafletMap({ latitude, longitude, onChange }: LocationPickerProps) {
+export function LeafletLocationPicker({ latitude, longitude, onChange }: LocationPickerProps) {
   const center = useMemo<[number, number]>(() => [latitude, longitude], [latitude, longitude]);
   const containerRef = useRef<HTMLDivElement>(null);
 

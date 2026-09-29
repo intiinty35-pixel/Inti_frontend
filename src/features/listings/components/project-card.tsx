@@ -1,5 +1,7 @@
+import Link from "next/link";
 import { SoonButton } from "@/shared/ui";
 import { formatArea, formatPrice } from "@/shared/lib/format";
+import { ROUTES } from "@/shared/config/routes";
 import type { Project, ProjectStatus } from "@/features/listings/types/project";
 import { DataCell, DataGrid } from "@/features/listings/components/data-grid";
 import { ListingImage } from "@/features/listings/components/listing-image";
@@ -36,9 +38,12 @@ export function ProjectCard({ project }: { project: Project }) {
         </DataGrid>
 
         <div className="mt-auto flex gap-1.5 pt-2">
-          <SoonButton size="xs" className="flex-1">
+          <Link
+            href={ROUTES.project(project.slug)}
+            className="inline-flex h-7 flex-1 items-center justify-center gap-1 rounded-card bg-brand px-2.5 text-xs font-medium text-on-brand transition-colors hover:bg-brand-hover"
+          >
             Ver proyecto
-          </SoonButton>
+          </Link>
           <SoonButton size="xs" variant="secondary" className="flex-1">
             Contactar
           </SoonButton>

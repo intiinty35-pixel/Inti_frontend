@@ -19,6 +19,7 @@ import {
   WarehouseIcon,
 } from "@/shared/ui";
 import { ROUTES } from "@/shared/config/routes";
+import { buildAddressQuery, searchMapPlace } from "@/shared/lib/geo";
 import type { ApiOperationType, ApiPropertyType, PropertyCreateInput } from "@/features/listings/types/listing";
 import { createProperty, publishProperty } from "@/features/listings/api";
 import { PROPERTY_FORM_CONFIG, PROPERTY_TYPE_OPTIONS, amenityCode } from "@/features/listings/config/property-form";
@@ -526,16 +527,15 @@ export function PropertyPublishWizard() {
   async function locateAddress(form: HTMLFormElement | null) {
     if (!form) return;
     const data = new FormData(form);
-    const query = [
+    const parts = [
       text(data, "address"),
       text(data, "number"),
       text(data, "district"),
       text(data, "province"),
       text(data, "department"),
-      "Peru",
-    ].filter(Boolean).join(", ");
+    ];
 
-    if (!query.trim()) {
+    if (!buildAddressQuery(parts)) {
       setErrors(["Completa la direccion antes de ubicarla en el mapa."]);
       return;
     }
@@ -543,18 +543,14 @@ export function PropertyPublishWizard() {
     setLocating(true);
     setErrors([]);
     try {
-      const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(query)}`);
-      const results = (await response.json()) as Array<{ lat: string; lon: string; display_name: string }>;
-      const match = results[0];
-      if (!match) {
+      const place = await searchMapPlace(parts);
+
+      if (!place) {
         setErrors(["No encontramos esa direccion. Ajusta distrito, provincia o referencia."]);
         return;
       }
-      setLocation({
-        latitude: Number(Number(match.lat).toFixed(7)),
-        longitude: Number(Number(match.lon).toFixed(7)),
-      });
-      setLocationLabel(match.display_name);
+      setLocation({ latitude: place.latitude, longitude: place.longitude });
+      setLocationLabel(place.label);
     } catch {
       setErrors(["No pudimos consultar el mapa. Intentalo nuevamente."]);
     } finally {
