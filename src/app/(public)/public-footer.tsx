@@ -16,9 +16,9 @@ const GROUPS: readonly FooterGroup[] = [
   {
     title: "Propiedades",
     links: [
-      { label: "Comprar", href: ROUTES.search({ operation: "buy", type: "all" }) },
-      { label: "Alquilar", href: ROUTES.search({ operation: "rent", type: "all" }) },
-      { label: "Proyectos", href: ROUTES.search({ operation: "buy", type: "projects" }) },
+      { label: "Comprar", href: `${ROUTES.properties}?operation=buy` },
+      { label: "Alquilar", href: `${ROUTES.properties}?operation=rent` },
+      { label: "Proyectos" },
       { label: "Ver mapa", href: `${ROUTES.home}#mapa` },
     ],
   },
@@ -59,7 +59,7 @@ function ClosingCta() {
 
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Link
-            href={ROUTES.search({ operation: "buy", type: "all" })}
+            href={`${ROUTES.properties}?operation=buy`}
             className="flex h-11 items-center gap-2 rounded-card bg-accent px-6 text-sm font-bold text-on-accent transition-colors hover:bg-accent-hover"
           >
             Buscar propiedades

@@ -1,6 +1,3 @@
-import Link from "next/link";
-import { ArrowRightIcon } from "@/shared/ui";
-import { ROUTES } from "@/shared/config/routes";
 import { PREVIEW_ARIZ_PROJECTS, ProjectCard } from "@/features/listings";
 import { HomeSection, SectionHeading } from "@/features/home/components/section";
 
@@ -12,13 +9,9 @@ export function ArizProjectsSection() {
         title="Proyectos Ariz"
         description="Lotizaciones y edificios en preventa que estamos desarrollando en Lima."
         action={
-          <Link
-            href={ROUTES.search({ operation: "buy", type: "projects" })}
-            className="flex shrink-0 items-center gap-2 text-xs font-bold text-brand"
-          >
+          <span title="Disponible próximamente" className="shrink-0 text-xs font-bold text-muted">
             Ver todos
-            <ArrowRightIcon className="size-4" />
-          </Link>
+          </span>
         }
       />
 
