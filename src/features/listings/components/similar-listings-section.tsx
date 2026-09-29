@@ -40,11 +40,7 @@ export function SimilarListingsSection({ property, candidates, limit = 5 }: Simi
           </p>
         </div>
         <Link
-          href={ROUTES.search({
-            operation: property.operation === "rent" ? "rent" : "buy",
-            type: property.type,
-            location: [property.location.department, property.location.province, property.location.district].filter(Boolean),
-          })}
+          href={`${ROUTES.properties}?operation=${property.operation === "rent" ? "rent" : "buy"}&type=${property.type}&district=${encodeURIComponent(property.location.district)}`}
           className="flex h-10 shrink-0 items-center gap-2 rounded-card border border-edge px-4 text-xs font-bold text-brand transition-colors hover:border-brand"
         >
           Ver más similares
