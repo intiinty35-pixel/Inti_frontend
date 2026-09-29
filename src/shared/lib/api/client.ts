@@ -30,6 +30,7 @@ async function request<T>(path: string, init: ApiInit = {}): Promise<T> {
 
   const response = await fetch(`${baseUrl}${path}`, {
     ...init,
+    credentials: "include",
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",

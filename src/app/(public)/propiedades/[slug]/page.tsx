@@ -11,17 +11,17 @@ import {
   CheckIcon,
   HomeIcon,
   PinIcon,
-  SparkleIcon,
-  UserIcon,
-  WhatsappIcon,
 } from "@/shared/ui/icons";
 import { buildMetadata } from "@/shared/lib/seo";
-import { formatArea, formatBathrooms, formatPrice, formatRooms } from "@/shared/lib/format";
+import { formatPrice } from "@/shared/lib/format";
 import { getListingBySlug, getListings, SimilarListingsSection } from "@/features/listings";
 import type { PropertyDetail } from "@/features/listings";
 import { PropertyPhotoGallery } from "@/features/listings/components/property-photo-gallery";
+import { ExpandableText } from "@/features/listings/components/expandable-text";
+import { PriceAlertButton } from "@/features/listings/components/price-alert-button";
 import { LazyPropertyLocationMap } from "@/features/listings/components/property-location-map-client";
-import { LeadForm, QuickQuestionForm } from "@/features/leads";
+import { LeadForm } from "@/features/leads";
+import { QuickQuestions } from "@/features/listings/components/Quickquestions";
 
 interface PropertyPageProps {
   params: Promise<{ slug: string }>;
@@ -59,6 +59,26 @@ const AGENT_TYPE_LABEL: Record<string, string> = {
   ARCHITECT: "Arquitecto",
 };
 
+/* Icono de calendario en linea fina (para la antiguedad). Vive aqui para no
+   depender de que exista en @/shared/ui/icons. */
+function CalendarLineIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden
+    >
+      <rect x="3.5" y="5" width="17" height="15.5" rx="3" />
+      <path d="M8 3v4M16 3v4M3.5 10.5h17" />
+    </svg>
+  );
+}
+
 export async function generateMetadata({ params }: PropertyPageProps): Promise<Metadata> {
   const { slug } = await params;
   try {
@@ -78,15 +98,41 @@ export async function generateMetadata({ params }: PropertyPageProps): Promise<M
   }
 }
 
-function getDetailItems(property: PropertyDetail) {
-  return [
-    property.details?.totalArea ? { label: "m² tot.", value: String(property.details.totalArea), icon: AreaIcon } : null,
-    property.details?.constructedArea ? { label: "m² construidos", value: String(property.details.constructedArea), icon: HomeIcon } : null,
-    property.rooms ? { label: "dormitorios", value: String(property.rooms), icon: BedIcon } : null,
-    property.bathrooms ? { label: "baños", value: String(property.bathrooms), icon: BathIcon } : null,
-    property.details?.halfBathrooms ? { label: "medios baños", value: String(property.details.halfBathrooms), icon: BathIcon } : null,
-    property.parkingSpaces ? { label: "estacionamientos", value: String(property.parkingSpaces), icon: CarIcon } : null,
-  ].filter(Boolean) as Array<{ label: string; value: string; icon: typeof AreaIcon }>;
+interface DetailItem {
+  label: string; // etiqueta completa (Caracteristicas completas)
+  short: string; // etiqueta corta (franja de iconos)
+  value: string;
+  icon: typeof AreaIcon;
+}
+
+function getDetailItems(property: PropertyDetail): DetailItem[] {
+  const halfBaths = property.details?.halfBathrooms;
+  const items: Array<DetailItem | null> = [
+    property.details?.totalArea
+      ? { label: "m² tot.", short: "m² tot.", value: String(property.details.totalArea), icon: AreaIcon }
+      : null,
+    property.details?.constructedArea
+      ? { label: "m² construidos", short: "m² const.", value: String(property.details.constructedArea), icon: HomeIcon }
+      : null,
+    property.rooms
+      ? { label: "dormitorios", short: "dorm.", value: String(property.rooms), icon: BedIcon }
+      : null,
+    property.bathrooms
+      ? { label: "baños", short: property.bathrooms === 1 ? "baño" : "baños", value: String(property.bathrooms), icon: BathIcon }
+      : null,
+    halfBaths
+      ? {
+          label: "medios baños",
+          short: halfBaths === 1 ? "medio baño" : "medios baños",
+          value: String(halfBaths),
+          icon: BathIcon,
+        }
+      : null,
+    property.parkingSpaces
+      ? { label: "estacionamientos", short: "estac.", value: String(property.parkingSpaces), icon: CarIcon }
+      : null,
+  ];
+  return items.filter(Boolean) as DetailItem[];
 }
 
 export default async function PropertyPage({ params }: PropertyPageProps) {
@@ -98,13 +144,24 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
     notFound();
   }
 
-  const specs = [
-    formatArea(property.areaM2),
-    formatRooms(property.rooms),
-    formatBathrooms(property.bathrooms),
-    property.parkingSpaces ? `${property.parkingSpaces} estac.` : null,
-  ].filter(Boolean);
   const detailItems = getDetailItems(property);
+
+  /* Franja de iconos: los mismos datos + antiguedad calculada desde el año. */
+  const constructionYear = Number(property.details?.constructionYear);
+  const age = Number.isFinite(constructionYear) && constructionYear > 1800
+    ? Math.max(0, new Date().getFullYear() - constructionYear)
+    : null;
+  const stripItems: Array<{ key: string; text: string; icon: typeof AreaIcon | typeof CalendarLineIcon }> = [
+    ...detailItems.map((item) => ({
+      key: `${item.value}-${item.label}`,
+      text: `${item.value} ${item.short}`,
+      icon: item.icon,
+    })),
+    ...(age !== null
+      ? [{ key: "age", text: age === 0 ? "A estrenar" : `${age} ${age === 1 ? "año" : "años"}`, icon: CalendarLineIcon }]
+      : []),
+  ];
+
   const half = Math.ceil(property.amenities.length / 2);
   const caretaker = property.amenities.slice(0, half);
   const outdoors = property.amenities.slice(half);
@@ -124,24 +181,24 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
     property.location.department,
   ].filter(Boolean).join(", ");
   const whatsappDigits = property.agent.whatsapp?.replace(/\D/g, "");
-  const typeLabel = TYPE_LABEL[property.type] ?? property.type;
+  const whatsappUrl = whatsappDigits
+    ? `https://wa.me/${whatsappDigits}?text=${encodeURIComponent(`Hola, vi "${property.title}" en ARIZ y quisiera más información.`)}`
+    : undefined;
   const operationLabel = OPERATION_LABEL[property.operation] ?? "Disponible";
+  const operationPhrase = property.operation === "rent" ? "en alquiler" : property.operation === "buy" ? "en venta" : "disponible";
+  const agentTypeLabel =
+    AGENT_TYPE_LABEL[String(property.agent.type).toUpperCase()] ?? "Agente inmobiliario";
 
   return (
     <Container size="full" className="flex flex-1 flex-col py-6 lg:py-8">
       <div className="grid flex-1 items-start gap-6 lg:grid-cols-[minmax(0,7fr)_minmax(0,3fr)] xl:gap-8">
         <main className="min-w-0">
-          {/* La foto va limpia: sin capa oscura ni badges encima. La operacion y
-              el tipo se repiten en el resumen lateral, asi el texto no compite
-              con la imagen. */}
           <PropertyPhotoGallery
             images={property.images}
             title={property.title}
             className="h-[300px] sm:h-[440px] lg:h-[520px] 2xl:h-[600px]"
           />
 
-          {/* El titulo va fuera de la foto: sobre imagenes claras u oscuras el
-              contraste cambiaba y el nombre se perdia. */}
           <header className="mt-5 lg:mt-6">
             <h1 className="title-listing">{property.title}</h1>
             <p className="mt-2 flex items-center gap-2 text-sm font-semibold text-muted lg:text-base">
@@ -150,11 +207,10 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             </p>
           </header>
 
-
-          {/* Bloque de precio + datos clave, como la barra superior del panel. */}
+          {/* Precio + datos clave */}
           <section className="mt-6 grid gap-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center lg:mt-8">
             <div className="min-w-0">
-              <p className="font-display text-3xl leading-none font-black tracking-tight text-brand lg:text-4xl 2xl:text-5xl">
+              <p className="font-display text-2xl leading-none font-black tracking-tight text-brand lg:text-3xl">
                 {formatPrice(property.price.amount, property.price.currency)}
                 {property.price.period === "mensual" ? (
                   <span className="ml-1.5 text-sm font-semibold text-muted">/ mes</span>
@@ -165,51 +221,36 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                   Mantenimiento {formatPrice(property.maintenanceFee, property.price.currency)} / mes
                 </p>
               ) : null}
-              <p className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs font-semibold text-muted lg:text-sm">
-                {specs.map((spec) => (
-                  <span key={spec} className="flex items-center gap-1.5">
-                    <CheckIcon className="size-3.5 shrink-0 text-success" />
-                    {spec}
-                  </span>
-                ))}
-              </p>
             </div>
 
-            <button
-              type="button"
-              className="flex h-11 items-center justify-center gap-2 rounded-card border border-edge px-5 text-sm font-bold text-brand transition-colors hover:border-brand sm:justify-self-end"
-            >
-              <SparkleIcon className="size-4" />
-              Avísame si baja de precio
-            </button>
+            <PriceAlertButton propertyId={property.id} />
           </section>
 
-          {/* Ficha tecnica */}
-          <section className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:gap-4 xl:grid-cols-6 2xl:grid-cols-6">
-            {detailItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <div
-                  key={`${item.value}-${item.label}`}
-                  className="rounded-card border border-edge bg-surface p-4 text-center shadow-[var(--shadow-card)] lg:p-5"
-                >
-                  <span className="mx-auto flex size-9 items-center justify-center rounded-full bg-brand-soft text-brand lg:size-10">
-                    <Icon className="size-4 lg:size-5" />
-                  </span>
-                  <p className="mt-2.5 font-display text-base font-black text-brand lg:text-lg">{item.value}</p>
-                  <p className="text-[11px] font-semibold text-muted">{item.label}</p>
-                </div>
-              );
-            })}
-          </section>
+          {/* Ficha tecnica: iconos libres entre dos lineas, sin cards. */}
+          {stripItems.length > 0 ? (
+            <section className="mt-8 border-y border-edge py-8">
+              <ul className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-6">
+                {stripItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <li key={item.key} className="flex flex-col items-center gap-3 text-center">
+                      <Icon className="size-7 text-ink" />
+                      <span className="text-sm font-semibold text-ink">{item.text}</span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          ) : null}
 
           <section className="mt-9">
             <h2 className="font-display text-xl font-black tracking-tight text-brand lg:text-2xl">Descripción</h2>
-            <p className="mt-3 max-w-5xl text-sm leading-7 whitespace-pre-line text-muted lg:text-[15px] lg:leading-8">
-              {property.description}
-            </p>
+            <ExpandableText
+              text={property.description}
+              lines={4}
+              className="mt-3 max-w-5xl text-sm leading-7 whitespace-pre-line text-muted lg:text-[15px] lg:leading-8"
+            />
           </section>
-
 
           {detailItems.length > 0 || property.amenities.length > 0 || property.details?.constructionYear ? (
             <section className="mt-9 rounded-card border border-edge bg-surface p-5 shadow-[var(--shadow-card)] sm:p-7">
@@ -276,9 +317,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             </section>
           ) : null}
 
-          <QuickQuestionForm propertyId={property.id} />
-
-          {/* Ubicacion: mapa real con las coordenadas guardadas por el wizard. */}
+          {/* Ubicacion */}
           <section className="mt-9 overflow-hidden rounded-card border border-edge bg-surface shadow-[var(--shadow-card)]">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-edge p-5 sm:px-7 sm:py-5">
               <div className="min-w-0">
@@ -325,120 +364,53 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             </div>
           </section>
 
-
-          {/* Informacion del agente */}
-          <section className="mt-9 rounded-card border border-edge bg-surface p-5 shadow-[var(--shadow-card)] sm:p-7">
-            <div className="flex flex-wrap items-center gap-4">
-              <div className="flex size-14 shrink-0 items-center justify-center rounded-card bg-brand font-display text-xl font-black text-accent">
-                {property.agent.name.charAt(0).toUpperCase()}
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate font-display text-lg font-black text-brand">{property.agent.name}</p>
-                <p className="text-sm text-muted">
-                  {AGENT_TYPE_LABEL[property.agent.type] ?? property.agent.type.replaceAll("_", " ").toLowerCase()}
-                </p>
-                {property.agent.status === "APPROVED" ? (
-                  <p className="mt-1 flex items-center gap-1.5 text-xs font-bold text-success">
-                    <CheckIcon className="size-3.5" />
-                    Verificado por ARIZ
-                  </p>
-                ) : null}
-              </div>
-              <Link
-                href={`/agentes/${property.agent.id}`}
-                className="flex h-11 items-center justify-center gap-2 rounded-card border border-edge px-4 text-sm font-bold text-brand transition-colors hover:border-brand"
-              >
-                <UserIcon className="size-4" />
-                Ver perfil
-              </Link>
-            </div>
-          </section>
+          {/* Preguntas rapidas: al final, despues del mapa. Abren un modal que
+              lleva al WhatsApp del anunciante. */}
+          <QuickQuestions
+            propertyTitle={property.title}
+            agentName={property.agent.name}
+            whatsappDigits={whatsappDigits}
+          />
 
           {candidates.length > 0 ? (
             <SimilarListingsSection property={property} candidates={candidates} limit={5} />
           ) : null}
         </main>
 
-        {/* El grid padre usa `items-start`, asi el aside conserva su altura natural
-            y `sticky` mantiene recorrido mientras baja el contenido largo. */}
-        <aside className="flex flex-col gap-5 lg:sticky lg:top-20">
-          <div className="overflow-hidden rounded-card border border-edge bg-surface shadow-[var(--shadow-card)]">
-            <div className="h-1.5 bg-brand" aria-hidden />
-            <div className="border-b border-edge bg-brand-soft px-5 py-5">
-              <p className="text-[11px] font-black tracking-[0.2em] text-accent uppercase">Contacto directo</p>
-              <h2 className="mt-1 font-display text-lg leading-tight font-black tracking-tight text-brand xl:text-xl">
-                Consulta por esta propiedad
-              </h2>
-              <p className="mt-1.5 text-xs text-muted">Respuesta promedio en menos de 24 horas.</p>
-            </div>
-            <div className="p-5 xl:p-6">
-
-              {whatsappDigits ? (
-                <a
-                  href={`https://wa.me/${whatsappDigits}?text=${encodeURIComponent(`Hola, vi "${property.title}" en ARIZ y quisiera más información.`)}`}
-                  className="flex h-12 items-center justify-center gap-2.5 rounded-card bg-[var(--wa)] text-sm font-black tracking-[0.06em] text-white uppercase shadow-[var(--shadow-card)] transition-colors hover:bg-[var(--wa-hover)]"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <WhatsappIcon className="size-5 shrink-0" />
-                  WhatsApp
-                </a>
-              ) : (
-                <p className="rounded-card border border-edge bg-surface-muted p-3 text-xs text-muted">
-                  El anunciante aún no registró un número de WhatsApp.
-                </p>
-              )}
-
-              <div className="mt-5 border-t border-edge pt-5">
-                <LeadForm propertyId={property.id} compact />
-              </div>
-            </div>
+        {/* Columna lateral: formulario de contacto + tarjeta del anunciante. */}
+        <aside className="flex flex-col gap-4 lg:sticky lg:top-20">
+          <div className="rounded-2xl border border-edge bg-surface p-5 xl:p-6">
+            <h2 className="text-base font-bold text-ink xl:text-lg">Contacta al anunciante</h2>
+            <LeadForm
+              propertyId={property.id}
+              compact
+              whatsappUrl={whatsappUrl}
+              defaultMessage={`¡Hola! Quiero que se comuniquen conmigo por este inmueble ${operationPhrase} que vi en ARIZ.`}
+            />
           </div>
 
-          {/* Resumen rapido: lo primero que revisa un comprador. */}
-          <div className="rounded-card border border-edge bg-surface p-5 shadow-[var(--shadow-card)] xl:p-6">
-            <h2 className="text-[11px] font-black tracking-[0.2em] text-accent uppercase">Resumen</h2>
-            <dl className="mt-3.5 grid gap-2.5 text-sm">
-              <div className="flex items-center justify-between gap-3 border-b border-edge/70 pb-2">
-                <dt className="text-muted">Operación</dt>
-                <dd className="font-bold text-ink">{operationLabel}</dd>
-              </div>
-              <div className="flex items-center justify-between gap-3 border-b border-edge/70 pb-2">
-                <dt className="text-muted">Tipo</dt>
-                <dd className="font-bold text-ink">{typeLabel}</dd>
-              </div>
-              <div className="flex items-center justify-between gap-3 border-b border-edge/70 pb-2">
-                <dt className="text-muted">Área</dt>
-                <dd className="font-bold text-ink">{formatArea(property.areaM2) || "—"}</dd>
-              </div>
-              <div className="flex items-center justify-between gap-3 border-b border-edge/70 pb-2">
-                <dt className="text-muted">Dormitorios</dt>
-                <dd className="font-bold text-ink">{property.rooms || "—"}</dd>
-              </div>
-              <div className="flex items-center justify-between gap-3">
-                <dt className="text-muted">Baños</dt>
-                <dd className="font-bold text-ink">{property.bathrooms || "—"}</dd>
-              </div>
-            </dl>
-
-            <Link
-              href={`/agentes/${property.agent.id}`}
-              className="mt-4 flex items-center gap-3 rounded-card border border-edge p-3 transition-colors hover:border-brand"
-            >
-              <span className="flex size-10 shrink-0 items-center justify-center rounded-card bg-brand font-display text-sm font-black text-accent">
-                {property.agent.name.charAt(0).toUpperCase()}
-              </span>
-              <span className="min-w-0">
-                <span className="block truncate text-sm font-bold text-brand">{property.agent.name}</span>
-                <span className="block truncate text-xs text-muted">
-                  {AGENT_TYPE_LABEL[property.agent.type] ?? "Agente inmobiliario"}
+          <Link
+            href={`/agentes/${property.agent.id}`}
+            aria-label={`Ver perfil de ${property.agent.name} (${operationLabel})`}
+            className="flex items-center gap-4 rounded-2xl border border-edge bg-surface p-5 transition-colors hover:border-brand"
+          >
+            <span className="flex h-14 w-24 shrink-0 items-center justify-center rounded-md bg-brand font-display text-2xl font-black text-accent">
+              {property.agent.name.charAt(0).toUpperCase()}
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-sm font-bold text-ink uppercase">{property.agent.name}</span>
+              <span className="block truncate text-xs text-muted">{agentTypeLabel}</span>
+              {property.agent.status === "APPROVED" ? (
+                <span className="mt-1 flex items-center gap-1 text-xs font-bold text-success">
+                  <CheckIcon className="size-3.5" />
+                  Verificado por ARIZ
                 </span>
-              </span>
-            </Link>
-          </div>
+              ) : null}
+            </span>
+            <span className="shrink-0 text-sm font-bold text-ink">Ver perfil</span>
+          </Link>
         </aside>
       </div>
     </Container>
   );
 }
-
