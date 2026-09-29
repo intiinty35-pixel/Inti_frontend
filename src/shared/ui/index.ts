@@ -1,5 +1,6 @@
 export { Button, SoonButton, type ButtonProps, type ButtonSize, type ButtonVariant, type SoonButtonProps } from "@/shared/ui/button";
 export { Checkbox, type CheckboxProps } from "@/shared/ui/checkbox";
+export { ConfirmDialog, type ConfirmDialogProps } from "@/shared/ui/confirm-dialog";
 export { Input, type InputProps } from "@/shared/ui/input";
 export { Listbox, type ListboxOption, type ListboxProps } from "@/shared/ui/listbox";
 export { Select, type SelectProps } from "@/shared/ui/select";
