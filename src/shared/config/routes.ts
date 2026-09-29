@@ -9,6 +9,7 @@ export const ROUTES = {
   properties: "/propiedades",
   property: (slug: string): string => `/propiedades/${slug}`,
   project: (slug: string): string => `/project/${slug}`,
+  services: "/servicios",
   panel: {
     admin: {
       base: "/panel/admin",

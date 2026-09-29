@@ -371,10 +371,6 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             agentName={property.agent.name}
             whatsappDigits={whatsappDigits}
           />
-
-          {candidates.length > 0 ? (
-            <SimilarListingsSection property={property} candidates={candidates} limit={5} />
-          ) : null}
         </main>
 
         {/* Columna lateral: formulario de contacto + tarjeta del anunciante. */}
@@ -411,6 +407,13 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
           </Link>
         </aside>
       </div>
+
+      {/* Similares a ancho completo: queda debajo del formulario y del perfil del
+          anunciante, no dentro de la columna de contenido. Al hacer scroll, la
+          columna lateral ya termino y las 5 tarjetas se ven en una sola fila. */}
+      {candidates.length > 0 ? (
+        <SimilarListingsSection property={property} candidates={candidates} limit={5} />
+      ) : null}
     </Container>
   );
 }

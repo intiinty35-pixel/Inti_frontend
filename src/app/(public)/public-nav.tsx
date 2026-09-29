@@ -57,6 +57,11 @@ interface NavItem {
 
 const ITEMS: readonly NavItem[] = [
   {
+    label: "Servicios",
+    href: ROUTES.services,
+    isActive: (path) => path === ROUTES.services,
+  },
+  {
     label: "Comprar",
     href: `${ROUTES.properties}?operation=buy`,
     operation: "buy",

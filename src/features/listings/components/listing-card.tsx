@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PinIcon } from "@/shared/ui/icons";
+import { PinIcon, WhatsappIcon } from "@/shared/ui/icons";
 import { ROUTES } from "@/shared/config/routes";
 import { formatPrice } from "@/shared/lib/format";
 import type { Listing } from "@/features/listings/types/listing";
@@ -54,8 +54,9 @@ export function ListingCard({ listing }: { listing: Listing }) {
           </Link>
           <Link
             href={`${ROUTES.property(listing.slug)}#contacto`}
-            className="flex h-10 items-center justify-center rounded-card border border-edge px-4 text-sm font-bold text-brand transition-colors hover:border-brand"
+            className="flex h-10 items-center justify-center gap-2 rounded-card bg-[#25d366] px-4 text-sm font-bold text-white transition-colors hover:bg-[#1fb857]"
           >
+            <WhatsappIcon className="size-4" />
             Contactar
           </Link>
         </div>

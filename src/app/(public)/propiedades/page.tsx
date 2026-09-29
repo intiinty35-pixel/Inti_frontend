@@ -1,14 +1,27 @@
 import type { Metadata } from "next";
 import { Container, Pagination } from "@/shared/ui";
 import { buildMetadata } from "@/shared/lib/seo";
-import { getListings, ListingCard, type ListingFilters } from "@/features/listings";
+import { formatPrice } from "@/shared/lib/format";
+import { getListings, ListingCard, ProjectCard, type ListingFilters } from "@/features/listings";
 import { getPropertyTypeLabel } from "@/features/search";
-import type { ListingOperation, PropertyType, SortOption } from "@/features/listings/types/listing";
+import type {
+  Listing,
+  ListingOperation,
+  PropertyType,
+  SortOption,
+} from "@/features/listings/types/listing";
+import type { Project } from "@/features/listings/types/project";
+import type { ProjectApiSummary } from "@/features/projects/types/api";
 import {
   PropertyFiltersBar,
   SortSelect,
+  type PropertyFiltersValue,
 } from "@/features/listings/components/property-filters-bar";
-import { MapPlaceholderPanel } from "@/features/listings/components/map-placeholder-panel";
+import { ListingsMapExperience } from "@/features/listings/components/listings-map-experience";
+import { ListingsMapPanel } from "@/features/listings/components/listings-map-panel";
+import type { MapPoint } from "@/features/listings/components/listings-map";
+import { getPublicProjectsServer } from "@/features/projects/api/server";
+import { toProjectCardModel } from "@/features/projects/lib/project-card";
 
 export const metadata: Metadata = buildMetadata({
   title: "Propiedades en venta y alquiler | ARIZ",
@@ -29,12 +42,117 @@ function numberOf(input: string | string[] | undefined) {
   return value ? Number(value) : undefined;
 }
 
-const FILTERABLE_TYPES = new Set<PropertyType>(["houses", "apartments", "land", "commercial"]);
+const FILTERABLE_TYPES = new Set<PropertyType>(["houses", "apartments", "land", "country-lots", "commercial"]);
 const PAGE_SIZE = 12;
+
+/** Cuantos proyectos se traen al mapa: el endpoint publico no pagina por tipo. */
+const PROJECT_MAP_LIMIT = 60;
+
+function toListingPoints(items: readonly Listing[]): MapPoint[] {
+  return items.flatMap((listing) => {
+    const { lat, lng } = listing.location;
+
+    if (lat === undefined || lng === undefined) {
+      return [];
+    }
+
+    return [
+      {
+        id: listing.id,
+        lat,
+        lng,
+        title: listing.title,
+        priceLabel: formatPrice(listing.price.amount, listing.price.currency),
+        districtLabel: `${listing.location.district}, ${listing.location.department}`,
+        coverImage: listing.images[0],
+        href: `/propiedades/${listing.slug}`,
+        badge: listing.operation === "rent" ? "ALQUILER" : "VENTA",
+      },
+    ];
+  });
+}
+
+/** Proyectos publicados: se convierten al modelo de card + punto del mapa. */
+function toProjectPoints(items: readonly ProjectApiSummary[]): {
+  cards: Project[];
+  points: MapPoint[];
+} {
+  const cards = items.map(toProjectCardModel);
+
+  const points = cards.flatMap((project) => {
+    const { lat, lng } = project.location;
+
+    if (lat === undefined || lng === undefined) {
+      return [];
+    }
+
+    return [
+      {
+        id: project.id,
+        lat,
+        lng,
+        title: project.name,
+        priceLabel: `Desde ${formatPrice(project.startingPrice.amount, project.startingPrice.currency)}`,
+        districtLabel: `${project.location.district}, ${project.location.department}`,
+        coverImage: project.images[0],
+        href: `/project/${project.slug}`,
+        badge: project.developer,
+      },
+    ];
+  });
+
+  return { cards, points };
+}
+
+/**
+ * Rama "Proyectos": los proyectos viven en `/projects`, no en `/properties`, asi
+ * que se consultan aparte y se reusan el card y el mapa del buscador.
+ */
+async function ProjectsResults({
+  operation,
+  district,
+}: {
+  operation: ListingOperation;
+  district?: string;
+}) {
+  const page = await getPublicProjectsServer(PROJECT_MAP_LIMIT);
+  const items = page.items.filter((project) => {
+    if (district && project.location.district.toLowerCase() !== district.toLowerCase()) {
+      return false;
+    }
+    // Los proyectos publicos son de venta; si el menu pide alquiler no hay nada.
+    return operation !== "rent";
+  });
+  const { cards, points } = toProjectPoints(items);
+
+  return (
+    <>
+      {cards.length > 0 ? (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+          {cards.map((project) => (
+            <ProjectCard key={project.id} project={project} />
+          ))}
+        </div>
+      ) : (
+        <div className="rounded-card border border-dashed border-edge bg-surface-muted p-10 text-center text-sm text-muted">
+          No encontramos proyectos publicados con esos filtros.
+        </div>
+      )}
+
+      <ListingsMapPanel
+        points={points}
+        filters={{ operation, district }}
+        isProjectMode
+      />
+    </>
+  );
+}
 
 export default async function PropertiesPage({ searchParams }: PropertiesPageProps) {
   const params = await searchParams;
   const rawType = valueOf(params.type);
+  const requestedType = valueOf(params.type) as PropertyType | undefined;
+  const isProjectMode = rawType === "projects";
   const type = FILTERABLE_TYPES.has(rawType as PropertyType) ? (rawType as PropertyType) : undefined;
   const operation: ListingOperation = valueOf(params.operation) === "rent" ? "rent" : "buy";
   const district = valueOf(params.district);
@@ -58,11 +176,16 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
     pageSize: PAGE_SIZE,
   };
   const result = await getListings(filters);
-  const heading = type ? getPropertyTypeLabel(type) : "Propiedades";
+  // En modo proyectos el listado real viene de /projects: el contador de
+  // propiedades no aplica y se omite en vez de mostrar un "0" enganoso.
+  const totalLabel = isProjectMode
+    ? "Proyectos publicados"
+    : `${result.total} propiedades disponibles`;
+  const heading = requestedType ? getPropertyTypeLabel(requestedType) : "Propiedades";
 
   const currentParams: Record<string, string | undefined> = {
     operation,
-    type,
+    type: requestedType,
     district,
     roomsMin: roomsMin ? String(roomsMin) : undefined,
     priceMin: priceMin ? String(priceMin) : undefined,
@@ -81,16 +204,23 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
     return search ? `/propiedades?${search}` : "/propiedades";
   }
 
+  const filterBarValue: PropertyFiltersValue = {
+    operation,
+    type: (requestedType ?? undefined) as PropertyType | undefined,
+    district,
+    roomsMin,
+    priceMin,
+    priceMax,
+    areaMin,
+  };
+
   return (
     <Container size="full" className="flex flex-1 flex-col gap-6 py-8">
-      <PropertyFiltersBar
-        basePath="/propiedades"
-        value={{ operation, type, district, roomsMin, priceMin, priceMax, areaMin }}
-      />
+      <PropertyFiltersBar basePath="/propiedades" value={filterBarValue} />
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-sm text-muted">{result.total} propiedades disponibles</p>
+          <p className="text-sm text-muted">{totalLabel}</p>
           <h1 className="font-display text-3xl font-semibold text-ink">{heading}</h1>
         </div>
         <div className="flex items-center gap-2">
@@ -101,26 +231,45 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-        {result.items.length > 0 ? (
-          <div className="flex flex-col gap-4">
-            {result.items.map((listing) => (
-              <ListingCard key={listing.id} listing={listing} />
-            ))}
-            <div className="pt-2">
-              <Pagination page={page} pageSize={PAGE_SIZE} total={result.total} buildHref={buildPageHref} />
-            </div>
-          </div>
-        ) : (
-          <div className="rounded-card border border-dashed border-edge bg-surface-muted p-10 text-center text-sm text-muted">
-            No encontramos propiedades con esos filtros.
-          </div>
-        )}
+      {isProjectMode ? (
+        <ProjectsResults operation={operation} district={district} />
+      ) : (
+        <>
+          <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(340px,380px)] 2xl:grid-cols-[minmax(0,1fr)_400px]">
+            {result.items.length > 0 ? (
+              <div className="flex min-w-0 flex-col gap-4">
+                {result.items.map((listing) => (
+                  <ListingCard key={listing.id} listing={listing} />
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-card border border-dashed border-edge bg-surface-muted p-10 text-center text-sm text-muted">
+                No encontramos propiedades con esos filtros.
+              </div>
+            )}
 
-        <div className="hidden lg:block">
-          <MapPlaceholderPanel />
-        </div>
-      </div>
+            {/*
+              La vista previa del mapa vive en la columna derecha. Al abrirla se
+              monta el mapa interactivo completo (mismo panel de siempre) en un
+              modal: en movil tambien aparece el boton flotante "Mapa".
+            */}
+            <ListingsMapExperience
+              points={toListingPoints(result.items)}
+              filters={{ operation, type, district, roomsMin, priceMin, priceMax, areaMin }}
+              isProjectMode={false}
+            />
+          </div>
+
+          {result.items.length > 0 ? (
+            <Pagination
+              page={page}
+              pageSize={PAGE_SIZE}
+              total={result.total}
+              buildHref={buildPageHref}
+            />
+          ) : null}
+        </>
+      )}
     </Container>
   );
 }

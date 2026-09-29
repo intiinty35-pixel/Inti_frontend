@@ -3,22 +3,24 @@
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { cn } from "@/shared/lib/cn";
+import { Listbox, type ListboxOption } from "@/shared/ui";
 import type { ListingOperation, PropertyType, SortOption } from "@/features/listings/types/listing";
 
-const OPERATIONS: Array<{ value: ListingOperation; label: string }> = [
+const OPERATIONS: readonly ListboxOption[] = [
   { value: "buy", label: "Comprar" },
   { value: "rent", label: "Alquilar" },
 ];
 
-const TYPES: Array<{ value: PropertyType | ""; label: string }> = [
+const TYPES: readonly ListboxOption[] = [
   { value: "", label: "Tipo de propiedad" },
   { value: "houses", label: "Casas" },
   { value: "apartments", label: "Departamentos" },
   { value: "land", label: "Terrenos" },
+  { value: "projects", label: "Proyectos" },
   { value: "commercial", label: "Locales comerciales" },
 ];
 
-const ROOM_OPTIONS = [
+const ROOM_OPTIONS: readonly ListboxOption[] = [
   { value: "", label: "Dormitorios" },
   { value: "1", label: "1 o más" },
   { value: "2", label: "2 o más" },
@@ -38,6 +40,10 @@ export interface PropertyFiltersValue {
 
 const SELECT_CLASS =
   "h-12 rounded-card border border-edge bg-surface px-3 text-sm text-ink outline-none focus:border-brand focus:ring-4 focus:ring-[var(--focus-ring)]";
+
+/** El `Listbox` de marca ya trae borde y foco; solo se ajusta la altura al formulario. */
+const LISTBOX_TRIGGER =
+  "h-12 rounded-card border border-edge bg-surface px-3 text-sm font-medium text-ink focus-visible:border-brand focus-visible:outline-4 focus-visible:outline-[var(--focus-ring)]";
 
 export function PropertyFiltersBar({ value, basePath }: { value: PropertyFiltersValue; basePath: string }) {
   const router = useRouter();
@@ -76,48 +82,37 @@ export function PropertyFiltersBar({ value, basePath }: { value: PropertyFilters
           defaultValue={draft.district}
           onBlur={(event) => applyDraft({ ...draft, district: event.target.value || undefined })}
         />
-        <select
-          className={SELECT_CLASS}
+        <Listbox
+          name="operation"
           value={draft.operation}
-          onChange={(event) =>
-            applyDraft({ ...draft, operation: event.target.value as ListingOperation })
-          }
-        >
-          {OPERATIONS.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-        <select
-          className={SELECT_CLASS}
+          options={OPERATIONS}
+          onValueChange={(value) => applyDraft({ ...draft, operation: value as ListingOperation })}
+          label="Operación"
+          triggerClassName={LISTBOX_TRIGGER}
+          listClassName="min-w-full"
+        />
+        <Listbox
+          name="type"
           value={draft.type ?? ""}
-          onChange={(event) =>
-            applyDraft({ ...draft, type: (event.target.value || undefined) as PropertyType | undefined })
+          options={TYPES}
+          onValueChange={(value) =>
+            applyDraft({ ...draft, type: (value || undefined) as PropertyType | undefined })
           }
-        >
-          {TYPES.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-        <select
-          className={SELECT_CLASS}
+          label="Tipo de propiedad"
+          triggerClassName={LISTBOX_TRIGGER}
+          listClassName="min-w-full"
+        />
+        <Listbox
+          name="roomsMin"
           value={draft.roomsMin ? String(draft.roomsMin) : ""}
-          onChange={(event) =>
-            applyDraft({
-              ...draft,
-              roomsMin: event.target.value ? Number(event.target.value) : undefined,
-            })
+          options={ROOM_OPTIONS}
+          onValueChange={(value) =>
+            applyDraft({ ...draft, roomsMin: value ? Number(value) : undefined })
           }
-        >
-          {ROOM_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
+          label="Dormitorios"
+          triggerClassName={LISTBOX_TRIGGER}
+          listClassName="min-w-full"
+        />
         <button
           type="button"
           onClick={() => setShowMore((prev) => !prev)}
@@ -180,7 +175,7 @@ export function PropertyFiltersBar({ value, basePath }: { value: PropertyFilters
   );
 }
 
-const SORT_OPTIONS: Array<{ value: SortOption; label: string }> = [
+const SORT_OPTIONS: readonly ListboxOption[] = [
   { value: "recent", label: "Más recientes" },
   { value: "price-asc", label: "Precio: menor a mayor" },
   { value: "price-desc", label: "Precio: mayor a menor" },
@@ -208,16 +203,15 @@ export function SortSelect({
   }
 
   return (
-    <select
-      className="h-10 rounded-card border border-edge bg-surface px-3 text-sm font-bold text-brand outline-none focus:border-brand"
+    <Listbox
+      name="sort"
       value={value ?? "recent"}
-      onChange={(event) => handleChange(event.target.value)}
-    >
-      {SORT_OPTIONS.map((option) => (
-        <option key={option.value} value={option.value}>
-          {option.label}
-        </option>
-      ))}
-    </select>
+      options={SORT_OPTIONS}
+      onValueChange={handleChange}
+      label="Ordenar resultados"
+      className="w-48"
+      triggerClassName="h-10 rounded-card border border-edge bg-surface px-3 text-sm font-bold text-brand focus-visible:border-brand"
+      listClassName="min-w-full"
+    />
   );
 }

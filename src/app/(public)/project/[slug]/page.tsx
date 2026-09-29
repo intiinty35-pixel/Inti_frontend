@@ -18,6 +18,7 @@ import {
 import { PropertyPhotoGallery } from "@/features/listings/components/property-photo-gallery";
 import { ExpandableText } from "@/features/listings/components/expandable-text";
 import { LazyPropertyLocationMap } from "@/features/listings/components/property-location-map-client";
+import { QuickQuestions } from "@/features/listings/components/Quickquestions";
 import { getProjectBySlugServer } from "@/features/projects/api/server";
 import type { ProjectApiDetail } from "@/features/projects/types/api";
 
@@ -532,6 +533,14 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               )}
             </div>
           </section>
+
+          {/* Preguntas rapidas: al final, despues del mapa. Abren un modal que
+              lleva al WhatsApp del anunciante. Misma logica que en propiedades. */}
+          <QuickQuestions
+            propertyTitle={project.name}
+            agentName={project.agent.name}
+            whatsappDigits={whatsappDigits}
+          />
         </main>
 
         <aside className="flex flex-col gap-4 lg:sticky lg:top-20">

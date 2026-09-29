@@ -85,3 +85,139 @@
   cursor: pointer;
 }
 }
+
+/**
+ * Popup de Leaflet en el mapa del buscador: se quita el chrome por defecto
+ * (marco blanco, padding y flecha) porque el contenido ya es una card de marca.
+ */
+.ariz-map-popup .leaflet-popup-content-wrapper {
+  padding: 0;
+  border: 1px solid var(--edge);
+  border-radius: var(--radius-md);
+  background-color: var(--surface);
+  box-shadow: var(--shadow-pop);
+}
+
+.ariz-map-popup .leaflet-popup-content {
+  margin: 0;
+  width: auto !important;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+}
+
+.ariz-map-popup .leaflet-popup-tip {
+  box-shadow: none;
+  background-color: var(--surface);
+}
+
+/**
+ * Seccion "SERVICIOS" (`src/features/services`).
+ *
+ * Variables de marca en un solo lugar: si el cliente pide otro azul o amarillo
+ * se cambia aqui y toda la seccion queda consistente, sin tocar el JSX.
+ */
+.ariz-services {
+  --azul: #0b1b5c;
+  --amarillo: #f5b800;
+  --gris: #f3f4f8;
+  --borde-suave: #e5e7eb;
+}
+
+/**
+ * Fade-in al hacer scroll. El estado inicial se aplica solo cuando el JS ya
+ * cargo (el observer vive en `RevealOnScroll`), asi que sin JS el contenido se
+ * ve igual porque nunca se le agrega la clase base.
+ */
+.ariz-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.ariz-reveal-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Accesibilidad: sin animacion para quien pidio menos movimiento. */
+@media (prefers-reduced-motion: reduce) {
+  .ariz-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/**
+ * Entrada del mapa a pantalla completa: el fondo hace fade y el panel escala
+ * desde el tamano de la miniatura (desktop) o sube desde abajo (movil). Se usan
+ * animaciones CSS en vez de estado de React para no encadenar renders al abrir.
+ */
+@keyframes ariz-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes ariz-sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ariz-zoom-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes categoryFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.ariz-fade-in {
+  animation: ariz-fade-in 0.25s ease-out both;
+}
+
+/* Movil: sube como hoja inferior. Desde `sm` escala en el centro. */
+.ariz-modal-in {
+  animation: ariz-sheet-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (min-width: 640px) {
+  .ariz-modal-in {
+    animation: ariz-zoom-in 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ariz-fade-in,
+  .ariz-modal-in,
+  .animate-\[categoryFadeIn_700ms_ease-out_both\] {
+    animation: none;
+  }
+}
+

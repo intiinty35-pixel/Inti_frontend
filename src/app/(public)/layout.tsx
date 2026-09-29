@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { Container } from "@/shared/ui/container";
-import { SparkleIcon } from "@/shared/ui";
+import { SparkleIcon, WhatsappIcon } from "@/shared/ui";
+import { buildServiceWhatsappUrl } from "@/features/services";
 import { getHomeRoute, ROUTES } from "@/shared/config/routes";
 import { getSession } from "@/features/auth/api/server";
 import { getMyProfile } from "@/features/owner/api/server";
@@ -71,6 +72,17 @@ export default async function PublicLayout({ children }: { children: ReactNode }
       <main className="flex flex-1 flex-col">{children}</main>
 
       <PublicFooter />
+
+      <a
+        href={buildServiceWhatsappUrl("información general")}
+        target="_blank"
+        rel="noreferrer"
+        aria-label="Escríbenos por WhatsApp"
+        title="Escríbenos por WhatsApp"
+        className="fixed right-5 bottom-20 z-50 flex size-12 items-center justify-center rounded-full bg-[#25d366] text-white shadow-[var(--shadow-pop)] transition-transform hover:scale-105 hover:bg-[#1fb857]"
+      >
+        <WhatsappIcon className="size-6" />
+      </a>
 
       <button
         type="button"

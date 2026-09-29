@@ -45,33 +45,50 @@ function Brand() {
   );
 }
 
+/**
+ * Cinta de cierre que aparece arriba del pie en todas las paginas publicas.
+ *
+ * El foco esta en dos publicos y en este orden:
+ * 1. Quien quiere publicar: es el mensaje principal, con el boton amarillo para
+ *    registrarse y publicar. Sin propiedades no hay busqueda, y publicar es la
+ *    accion que mas nos conviene empujar desde el cierre de la pagina.
+ * 2. Quien busca: boton secundario en vidrio, no compite con el principal.
+ */
 function ClosingCta() {
   return (
     <section className="bg-brand py-12 text-center text-white sm:py-14">
       <Container size="wide-tight">
-        <p className="text-[11px] font-bold tracking-[0.18em] text-accent uppercase">Empieza hoy</p>
+        <p className="text-[11px] font-bold tracking-[0.18em] text-accent uppercase">
+          Únete a Ariz
+        </p>
         <h2 className="mt-4 text-3xl font-light tracking-tight sm:text-4xl">
-          Tu próxima propiedad está más cerca
+          Publica tu propiedad y llega a miles de personas
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-sm text-white/80 sm:text-base">
-          Explora miles de opciones verificadas o publica tu propiedad con Ariz.
+          Crea tu cuenta gratis en minutos, publica tus propiedades y recibe solicitudes de
+          personas que ya están buscando.
         </p>
 
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Link
-            href={`${ROUTES.properties}?operation=buy`}
+            href={ROUTES.registerProfessional}
             className="flex h-11 items-center gap-2 rounded-card bg-accent px-6 text-sm font-bold text-on-accent transition-colors hover:bg-accent-hover"
           >
-            Buscar propiedades
+            Publica tu propiedad
             <ArrowRightIcon className="size-4" />
           </Link>
           <Link
-            href={ROUTES.registerProfessional}
+            href={`${ROUTES.properties}?operation=buy`}
             className="flex h-11 items-center rounded-card border border-white/45 px-6 text-sm font-bold text-white transition-colors hover:bg-white/10"
           >
-            Publicar una propiedad
+            Quiero buscar propiedad
           </Link>
         </div>
+
+        {/* Refuerzo para quien todavia no decide: explica el registro en 3 pasos. */}
+        <p className="mt-6 text-xs text-white/60">
+          Registrarte es gratis y no necesitas tarjeta. Publicar toma menos de 5 minutos.
+        </p>
       </Container>
     </section>
   );

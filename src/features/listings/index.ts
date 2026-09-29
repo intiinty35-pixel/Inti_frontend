@@ -33,6 +33,14 @@ export { ListingCard } from "@/features/listings/components/listing-card";
 export { ListingGrid } from "@/features/listings/components/listing-grid";
 export { SimilarListingsSection } from "@/features/listings/components/similar-listings-section";
 export { MapListingCard } from "@/features/listings/components/map-listing-card";
+export { ListingsMapPanel } from "@/features/listings/components/listings-map-panel";
+export type { ListingsMapPanelProps } from "@/features/listings/components/listings-map-panel";
+export { ListingsMapExperience } from "@/features/listings/components/listings-map-experience";
+export { MapPreviewCard } from "@/features/listings/components/map-preview-card";
+export { MapModal } from "@/features/listings/components/map-modal";
+export { ListingsMapCard, buildWhatsappUrl } from "@/features/listings/components/listings-map-card";
+export type { MapPointCard } from "@/features/listings/components/listings-map-card";
+export type { MapPoint } from "@/features/listings/components/listings-map";
 export { OwnerListingCard } from "@/features/listings/components/owner-listing-card";
 export { ProjectCard } from "@/features/listings/components/project-card";
 export {
