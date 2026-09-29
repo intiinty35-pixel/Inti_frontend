@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/shared/ui";
+import { Button, ConfirmDialog } from "@/shared/ui";
 import { updatePlan } from "@/features/admin/api/client";
 import type { Plan } from "@/features/owner/types/plan";
 
 export function PlanActiveToggle({ plan }: { plan: Plan }) {
   const router = useRouter();
+  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   async function toggle() {
@@ -25,6 +26,7 @@ export function PlanActiveToggle({ plan }: { plan: Plan }) {
         highlight: plan.highlight,
         isActive: !plan.isActive,
       });
+      setOpen(false);
       router.refresh();
     } finally {
       setLoading(false);
@@ -32,8 +34,20 @@ export function PlanActiveToggle({ plan }: { plan: Plan }) {
   }
 
   return (
-    <Button variant="secondary" size="sm" onClick={toggle} disabled={loading}>
-      {plan.isActive ? "Desactivar" : "Activar"}
-    </Button>
+    <>
+      <Button variant="secondary" size="sm" onClick={() => setOpen(true)}>
+        {plan.isActive ? "Desactivar" : "Activar"}
+      </Button>
+      <ConfirmDialog
+        open={open}
+        title={plan.isActive ? `¿Desactivar el plan "${plan.name}"?` : `¿Activar el plan "${plan.name}"?`}
+        description={plan.isActive ? "Las inmobiliarias ya no podrán elegirlo mientras esté inactivo." : undefined}
+        confirmLabel={plan.isActive ? "Desactivar" : "Activar"}
+        variant={plan.isActive ? "danger" : "primary"}
+        loading={loading}
+        onConfirm={toggle}
+        onCancel={() => setOpen(false)}
+      />
+    </>
   );
 }
