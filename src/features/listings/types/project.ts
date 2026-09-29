@@ -22,4 +22,5 @@ export interface Project {
   deliveryStage?: string;
   features: string[];
   status: ProjectStatus;
+  publishedAt: string;
 }

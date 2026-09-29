@@ -4,9 +4,10 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { PinIcon } from "@/shared/ui/icons";
+import { ClockIcon, PinIcon } from "@/shared/ui/icons";
 import { cn } from "@/shared/lib/cn";
 import { ROUTES } from "@/shared/config/routes";
+import { formatPublishedDate } from "@/shared/lib/published-date";
 import { Listbox, type ListboxOption } from "@/shared/ui";
 import { ListingImage } from "@/features/listings/components/listing-image";
 import type { MapPoint } from "@/features/listings/components/listings-map";
@@ -100,12 +101,19 @@ export function ListingsMapPanel({
   const [district, setDistrict] = useState(filters.district ?? "");
 
   const isOverlay = variant === "overlay";
-  /** En overlay el alto lo manda el contenedor (modal/sheet); en inline es fijo. */
-  const mapHeight = isOverlay ? "h-full min-h-[320px]" : "h-[420px] lg:h-[560px]";
+  /**
+   * En overlay el alto lo manda el contenedor (vista a pantalla completa); en
+   * inline es fijo. En movil el panel se reparte 60/40 entre mapa y lista.
+   */
+  const mapHeight = isOverlay ? "h-full min-h-[280px]" : "h-[420px] lg:h-[560px]";
   const listHeight = isOverlay
-    ? "lg:max-h-none flex-1 min-h-0"
+    ? "max-h-[38vh] shrink-0 lg:max-h-none lg:min-h-0 lg:flex-1"
     : "max-h-[420px] lg:max-h-[560px]";
 
+  /**
+   * El filtro de tipo queda inutil en modo proyectos: los proyectos son un
+   * conjunto propio (`/projects`) y el selector de inmuebles los vaciaria.
+   */
   function push(next: Partial<ListingsMapPanelProps["filters"]>) {
     const params = new URLSearchParams();
     const merged = { ...filters, ...next };
@@ -121,13 +129,25 @@ export function ListingsMapPanel({
     router.push(`${ROUTES.properties}?${params.toString()}`);
   }
 
+  /** Titulo y contador del panel, con la unidad correcta en cada modo. */
+  const unit = isProjectMode ? "proyecto" : "inmueble";
+  const panelTitle = isProjectMode ? "Proyectos en el mapa" : "Propiedades en el mapa";
+  const countLabel = points.length === 1 ? `1 ${unit}` : `${points.length} ${unit}s`;
+
   return (
     <section
       className={cn("flex flex-col gap-3", isOverlay && "h-full min-h-0", className)}
-      aria-label="Mapa de resultados"
+      aria-label={panelTitle}
     >
+      {/* Encabezado: la vista a pantalla completa y la columna lateral lo repiten. */}
+      <div className="flex shrink-0 items-center gap-2">
+        <PinIcon className="size-4 shrink-0 text-brand" />
+        <h3 className="truncate text-sm font-bold text-ink">{panelTitle}</h3>
+        <span className="ml-auto shrink-0 text-[11px] font-bold text-muted">{countLabel}</span>
+      </div>
+
       {/* Franja de filtros horizontal: replica los accesos del menu del home. */}
-      <div className="flex flex-wrap items-center gap-2 rounded-card border border-edge bg-surface p-2.5 shadow-[var(--shadow-card)]">
+      <div className="flex flex-nowrap items-center gap-2 overflow-x-auto rounded-card border border-edge bg-surface p-2.5 shadow-[var(--shadow-card)] sm:flex-wrap sm:overflow-visible">
         <Listbox
           name="mapOperation"
           value={filters.operation}
@@ -137,15 +157,17 @@ export function ListingsMapPanel({
           triggerClassName={FIELD_TRIGGER}
           listClassName="min-w-36"
         />
-        <Listbox
-          name="mapType"
-          value={filters.type ?? ""}
-          options={MAP_FILTER_TYPE}
-          onValueChange={(value) => push({ type: value || undefined })}
-          label="Tipo de inmueble"
-          triggerClassName={FIELD_TRIGGER}
-          listClassName="min-w-48"
-        />
+        {isProjectMode ? null : (
+          <Listbox
+            name="mapType"
+            value={filters.type ?? ""}
+            options={MAP_FILTER_TYPE}
+            onValueChange={(value) => push({ type: value || undefined })}
+            label="Tipo de inmueble"
+            triggerClassName={FIELD_TRIGGER}
+            listClassName="min-w-48"
+          />
+        )}
         <Listbox
           name="mapRooms"
           value={filters.roomsMin ? String(filters.roomsMin) : ""}
@@ -180,15 +202,15 @@ export function ListingsMapPanel({
           className="h-10 w-40 rounded-card border border-edge bg-surface px-3 text-xs font-bold text-brand outline-none placeholder:font-semibold placeholder:text-muted focus:border-brand"
         />
 
-        <span className="ml-auto flex items-center gap-1.5 text-[11px] font-bold text-muted">
+        <span className="ml-auto hidden shrink-0 text-[11px] font-bold text-muted sm:flex sm:items-center sm:gap-1.5">
           <PinIcon className="size-3.5 text-brand" />
-          {points.length} en el mapa
+          {countLabel} en el mapa
         </span>
       </div>
 
       <div
         className={cn(
-          "grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]",
+          "grid gap-3 lg:grid-cols-[minmax(0,1fr)_380px] xl:gap-4",
           isOverlay && "min-h-0 flex-1",
         )}
       >
@@ -225,33 +247,49 @@ export function ListingsMapPanel({
             listHeight,
           )}
         >
-          {points.map((point) => (
-            <li key={point.id} className="snap-start">
-              <Link
-                href={point.href}
-                onMouseEnter={() => setActiveId(point.id)}
-                onFocus={() => setActiveId(point.id)}
-                className={cn(
-                  "flex gap-3 rounded-card border bg-surface p-2.5 shadow-[var(--shadow-card)] transition-colors",
-                  point.id === activeId
-                    ? "border-brand bg-brand-soft"
-                    : "border-edge hover:border-brand",
-                )}
-              >
-                <ListingImage
-                  src={point.coverImage}
-                  className="aspect-[4/3] w-24 shrink-0 rounded-lg"
-                />
-                <span className="flex min-w-0 flex-1 flex-col gap-0.5 py-0.5">
-                  <span className="text-sm font-bold text-brand">{point.priceLabel}</span>
-                  <span className="line-clamp-2 text-xs leading-snug font-semibold text-ink">
-                    {point.title}
+          {points.map((point) => {
+            const published = formatPublishedDate(point.publishedAt);
+
+            return (
+              <li key={point.id} className="snap-start">
+                <Link
+                  href={point.href}
+                  onMouseEnter={() => setActiveId(point.id)}
+                  onFocus={() => setActiveId(point.id)}
+                  className={cn(
+                    "flex gap-3 rounded-card border bg-surface p-2.5 shadow-[var(--shadow-card)] transition-colors",
+                    point.id === activeId
+                      ? "border-brand bg-brand-soft"
+                      : "border-edge hover:border-brand",
+                  )}
+                >
+                  <ListingImage
+                    src={point.coverImage}
+                    className={cn(
+                      "aspect-[4/3] shrink-0 rounded-lg",
+                      // En la vista a pantalla completa la lista es la columna de
+                      // apoyo: miniatura chica para que quepan mas propiedades sin
+                      // perder el precio ni el titulo. Inline conserva el tamano.
+                      isOverlay ? "w-16" : "w-24",
+                    )}
+                  />
+                  <span className="flex min-w-0 flex-1 flex-col gap-0.5 py-0.5">
+                    <span className="text-sm font-bold text-brand">{point.priceLabel}</span>
+                    <span className="line-clamp-2 text-xs leading-snug font-semibold text-ink">
+                      {point.title}
+                    </span>
+                    <span className="truncate text-[11px] text-muted">{point.districtLabel}</span>
+                    {published ? (
+                      <time dateTime={published.iso} className="flex items-center gap-1 text-[11px] text-muted">
+                        <ClockIcon className="size-3" />
+                        {published.fullWithPrefix}
+                      </time>
+                    ) : null}
                   </span>
-                  <span className="truncate text-[11px] text-muted">{point.districtLabel}</span>
-                </span>
-              </Link>
-            </li>
-          ))}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </div>
     </section>

@@ -54,5 +54,6 @@ export function toProjectCardModel(project: ProjectApiSummary): Project {
     deliveryStage: PROJECT_STAGE_LABELS[stage],
     features: [],
     status: stage,
+    publishedAt: project.publishedAt,
   };
 }

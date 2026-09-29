@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Container } from "@/shared/ui";
 import { cn } from "@/shared/lib/cn";
 import { formatPrice } from "@/shared/lib/format";
+import { formatPublishedDate } from "@/shared/lib/published-date";
 import { buildMetadata } from "@/shared/lib/seo";
 import {
   AreaIcon,
@@ -11,6 +12,7 @@ import {
   BuildingIcon,
   CalendarIcon,
   CheckIcon,
+  ClockIcon,
   PinIcon,
   RulerIcon,
   WhatsappIcon,
@@ -187,6 +189,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   const agentTypeLabel = AGENT_TYPE_LABEL[project.agent.type] ?? "Agente inmobiliario";
   const hasFullData =
     detailRows.length > 0 || project.amenities.length > 0 || project.services.length > 0;
+  const published = formatPublishedDate(project.publishedAt, project.createdAt);
 
   return (
     <Container size="full" className="flex flex-1 flex-col py-6 lg:py-8">
@@ -215,6 +218,12 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               <PinIcon className="size-4 shrink-0 text-brand lg:size-5" />
               <span className="line-clamp-2">{locationLine}</span>
             </p>
+            {published ? (
+              <time dateTime={published.iso} className="mt-2 flex items-center gap-2 text-sm font-semibold text-muted">
+                <ClockIcon className="size-4 shrink-0 text-brand" />
+                {published.fullWithPrefix}
+              </time>
+            ) : null}
           </header>
 
           <section className="mt-6 grid gap-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center lg:mt-8">
@@ -541,6 +550,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             propertyTitle={project.name}
             agentName={project.agent.name}
             whatsappDigits={whatsappDigits}
+            context="project"
           />
         </main>
 

@@ -1,6 +1,7 @@
 export { ServicesSection } from "@/features/services/components/services-section";
 export { ServicesHero } from "@/features/services/components/services-hero";
 export { ServiceBlock, type ServiceBlockProps } from "@/features/services/components/service-block";
+export { ServiceImage, type ServiceImageProps } from "@/features/services/components/service-image";
 export { TrustCards } from "@/features/services/components/trust-cards";
 export { ServicesCta } from "@/features/services/components/services-cta";
 export { RevealOnScroll, type RevealOnScrollProps } from "@/features/services/components/reveal-on-scroll";
@@ -11,6 +12,8 @@ export {
   PROJECT_CAPABILITIES,
   SERVICES,
   SERVICES_CONTACT_HREF,
+  SERVICES_HERO_IMAGE,
+  SERVICE_IMAGE_FALLBACK,
   TRUST_LOGOS,
   type Capability,
   type ServiceIcon,

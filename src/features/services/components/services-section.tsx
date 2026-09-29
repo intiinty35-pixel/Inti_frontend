@@ -14,7 +14,7 @@ import { ServicesCta } from "@/features/services/components/services-cta";
  */
 export function ServicesSection() {
   return (
-    <section id="servicios" className="ariz-services bg-canvas py-14 sm:py-16">
+    <section id="servicios" className="ariz-services bg-canvas py-12 sm:py-16 xl:py-20">
       {/* ---- Encabezado de la seccion ---- */}
       <Container size="wide-tight">
         <RevealOnScroll className="mx-auto max-w-3xl text-center">
@@ -35,7 +35,7 @@ export function ServicesSection() {
       <div className="mt-6">
         {SERVICES.map((service, index) => (
           <RevealOnScroll key={service.key}>
-            <Container size="wide-tight" className="py-10 sm:py-12">
+            <Container size="wide-tight" className="py-8 sm:py-12 xl:py-14">
               <ServiceBlock service={service} reversed={index % 2 === 1} />
             </Container>
           </RevealOnScroll>
@@ -51,8 +51,13 @@ export function ServicesSection() {
         </Container>
       </div>
 
-      {/* ---- Cierre de seccion ---- */}
-      <ServicesCta />
+      {/* ---- Cierre de seccion -----
+          La banda azul deja de estar pegada a la fila "Respaldo integral":
+          `pt-20` (80px) en movil y `sm:pt-24` (96px) en escritorio le dan aire
+          suficiente antes del cambio de color. */}
+      <div className="pt-20 sm:pt-24">
+        <ServicesCta />
+      </div>
     </section>
   );
 }

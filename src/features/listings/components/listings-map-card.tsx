@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRightIcon, WhatsappIcon } from "@/shared/ui/icons";
+import { ArrowRightIcon, ClockIcon, WhatsappIcon } from "@/shared/ui/icons";
 import { ROUTES } from "@/shared/config/routes";
-import { formatPrice } from "@/shared/lib/format";
+import { formatPublishedDate } from "@/shared/lib/published-date";
 import { ListingImage } from "@/features/listings/components/listing-image";
 
 /**
@@ -23,14 +23,23 @@ export interface MapPointCard {
   whatsappUrl?: string;
   /** Etiqueta corta de la operacion o etapa ("VENTA", "En preventa"…). */
   badge?: string;
+  publishedAt?: string;
 }
 
-/** Card flotante que se abre al pulsar un punto del mapa. */
+/**
+ * Card flotante que se abre al pulsar un punto del mapa.
+ *
+ * Compacta a proposito: el popup de Leaflet no tiene scroll propio, asi que una
+ * card alta se sale del mapa en pantallas bajas (laptops de 768px de alto). Con
+ * miniatura de 80px y acciones de 32px la card completa mide ~150px.
+ */
 export function ListingsMapCard({ point }: { point: MapPointCard }) {
+  const published = formatPublishedDate(point.publishedAt);
+
   return (
-    <article className="w-60">
+    <article className="w-56">
       <div className="relative">
-        <ListingImage src={point.coverImage} className="h-28 w-full" />
+        <ListingImage src={point.coverImage} className="h-20 w-full" />
         {point.badge ? (
           <span className="absolute top-2 left-2 rounded-full bg-brand px-2 py-0.5 text-[10px] font-black tracking-[0.08em] text-on-brand">
             {point.badge}
@@ -42,6 +51,12 @@ export function ListingsMapCard({ point }: { point: MapPointCard }) {
         <p className="text-sm font-bold text-brand">{point.priceLabel}</p>
         <h3 className="line-clamp-2 text-xs leading-snug font-semibold text-ink">{point.title}</h3>
         <p className="truncate text-[11px] text-muted">{point.districtLabel}</p>
+        {published ? (
+          <time dateTime={published.iso} className="flex items-center gap-1 text-[11px] text-muted">
+            <ClockIcon className="size-3" />
+            {published.fullWithPrefix}
+          </time>
+        ) : null}
 
         <div className="mt-2 flex items-center gap-2">
           <Link

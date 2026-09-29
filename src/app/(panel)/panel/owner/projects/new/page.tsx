@@ -1,9 +1,17 @@
+import { redirect } from "next/navigation";
 import { getSession } from "@/features/auth";
 import { PREVIEW_ARIZ_PROJECTS } from "@/features/listings";
+import { getMyProfile } from "@/features/owner/api/server";
+import { canManageProjects } from "@/features/owner/lib/profile-permissions";
 import { ProjectPublishWizard } from "@/features/projects";
+import { ROUTES } from "@/shared/config/routes";
 
 export default async function NewProjectPage() {
   const session = await getSession();
+  const profile = await getMyProfile().catch(() => null);
+  if (!canManageProjects(profile)) {
+    redirect(ROUTES.panel.owner.listings);
+  }
 
   const approved = session?.professionalStatus === "APPROVED";
 

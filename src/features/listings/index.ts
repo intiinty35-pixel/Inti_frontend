@@ -42,7 +42,7 @@ export { ListingsMapCard, buildWhatsappUrl } from "@/features/listings/component
 export type { MapPointCard } from "@/features/listings/components/listings-map-card";
 export type { MapPoint } from "@/features/listings/components/listings-map";
 export { OwnerListingCard } from "@/features/listings/components/owner-listing-card";
-export { ProjectCard } from "@/features/listings/components/project-card";
+export { ProjectCard, ProjectListingCard } from "@/features/listings/components/project-card";
 export {
   rankSimilarListings,
   scoreSimilarity,

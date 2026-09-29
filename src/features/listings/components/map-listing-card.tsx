@@ -1,11 +1,14 @@
-import { PinIcon } from "@/shared/ui/icons";
+import { ClockIcon, PinIcon } from "@/shared/ui/icons";
 import { formatPrice } from "@/shared/lib/format";
+import { formatPublishedDate } from "@/shared/lib/published-date";
 import type { Listing } from "@/features/listings/types/listing";
 import { ListingImage } from "@/features/listings/components/listing-image";
 import { ListingSpecs } from "@/features/listings/components/listing-specs";
 
 /** Card horizontal para el listado scrollable de la sección de mapa. */
 export function MapListingCard({ listing }: { listing: Listing }) {
+  const published = formatPublishedDate(listing.publishedAt);
+
   return (
     <article className="flex snap-start gap-3 rounded-card border border-edge bg-surface p-3 shadow-[var(--shadow-card)]">
       <ListingImage
@@ -24,6 +27,12 @@ export function MapListingCard({ listing }: { listing: Listing }) {
           <PinIcon className="size-3 shrink-0" />
           {listing.location.district}, {listing.location.department}
         </p>
+        {published ? (
+          <time dateTime={published.iso} className="flex items-center gap-1.5 text-[11px] text-muted">
+            <ClockIcon className="size-3 shrink-0" />
+            {published.relative}
+          </time>
+        ) : null}
         <ListingSpecs listing={listing} className="mt-auto pt-1.5" />
       </div>
     </article>

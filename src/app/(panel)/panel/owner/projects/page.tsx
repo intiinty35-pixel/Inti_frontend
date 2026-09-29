@@ -1,7 +1,10 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { PlusIcon, SparkleIcon } from "@/shared/ui";
 import { ROUTES } from "@/shared/config/routes";
 import { getOwnerProjectsPagedServer } from "@/features/projects/api/server";
+import { getMyProfile } from "@/features/owner/api/server";
+import { canManageProjects } from "@/features/owner/lib/profile-permissions";
 import { OwnerProjectCard } from "@/features/projects/components/owner-project-card";
 import { Pagination } from "@/shared/ui/pagination";
 
@@ -11,6 +14,11 @@ export default async function PanelOwnerProjectsPage({
   searchParams: Promise<{ page?: string }>;
 }) {
   const { page: pageParam } = await searchParams;
+  const profile = await getMyProfile().catch(() => null);
+  if (!canManageProjects(profile)) {
+    redirect(ROUTES.panel.owner.listings);
+  }
+
   const page = Math.max(1, Number(pageParam) || 1);
   const { items: projects, total, pageSize } = await getOwnerProjectsPagedServer(page);
 

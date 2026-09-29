@@ -14,16 +14,22 @@ function daysRemaining(expiresAt: string | null): number | null {
   return Math.max(0, Math.ceil((new Date(expiresAt).getTime() - Date.now()) / 86_400_000));
 }
 
+function isProjectFeature(feature: string) {
+  return feature.toLowerCase().includes("proyecto");
+}
+
 export function PlansView({
   plans,
   subscription,
   propertiesCount,
   projectsCount,
+  canManageProjects = false,
 }: {
   plans: Plan[];
   subscription: Subscription | null;
   propertiesCount: number;
   projectsCount: number;
+  canManageProjects?: boolean;
 }) {
   const router = useRouter();
   const [modalPlan, setModalPlan] = useState<Plan | null>(null);
@@ -88,12 +94,14 @@ export function PlansView({
                   {propertiesCount}/{subscription!.plan.propertyLimit}
                 </p>
               </div>
-              <div>
-                <p className="text-white/60">Proyectos</p>
-                <p className="font-semibold">
-                  {projectsCount}/{subscription!.plan.projectLimit}
-                </p>
-              </div>
+              {canManageProjects ? (
+                <div>
+                  <p className="text-white/60">Proyectos</p>
+                  <p className="font-semibold">
+                    {projectsCount}/{subscription!.plan.projectLimit}
+                  </p>
+                </div>
+              ) : null}
             </div>
           ) : null}
         </div>
@@ -105,6 +113,9 @@ export function PlansView({
         {visiblePlans.map((plan) => {
           const isCurrent = subscription?.plan.id === plan.id && hasActive;
           const isRequestedPending = subscription?.plan.id === plan.id && isPending;
+          const features = canManageProjects
+            ? plan.features
+            : plan.features.filter((feature) => !isProjectFeature(feature));
 
           return (
             <Card
@@ -147,6 +158,11 @@ export function PlansView({
                   <p className="mt-1 text-sm font-semibold text-ink">
                     {plan.propertyLimit === 1 ? "propiedad activa" : "propiedades activas"}
                   </p>
+                  {canManageProjects && plan.projectLimit > 0 ? (
+                    <p className="mt-2 text-xs font-bold text-brand">
+                      + {plan.projectLimit} {plan.projectLimit === 1 ? "proyecto" : "proyectos"} para inmobiliarias
+                    </p>
+                  ) : null}
                 </div>
 
                 <div className="rounded-card border border-edge bg-canvas px-4 py-3">
@@ -158,7 +174,7 @@ export function PlansView({
                 </div>
 
                 <ul className="flex flex-1 flex-col gap-2 text-left text-xs text-ink">
-                  {plan.features.map((feature) => (
+                  {features.map((feature) => (
                     <li key={feature} className="flex items-start gap-2">
                       <CheckIcon className="mt-0.5 size-3.5 shrink-0 text-success" />
                       <span>{feature}</span>

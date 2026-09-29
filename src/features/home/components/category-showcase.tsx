@@ -70,6 +70,13 @@ const categories: readonly Category[] = [
   },
 ];
 
+/**
+ * Rejilla de categorias: 6 columnas solo en `xl` (>=1280px). Antes entraban en
+ * `lg` (1024px) y con el ancho de contenedor anterior las tarjetas quedaban por
+ * debajo de 100px, demasiado finas para el texto. `gap-4` y `mt-8` les dan aire.
+ */
+const GRID = "mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-6";
+
 function CategoryCard({ category, index }: { category: Category; index: number }) {
   const [imageFailed, setImageFailed] = useState(false);
 
@@ -82,10 +89,9 @@ function CategoryCard({ category, index }: { category: Category; index: number }
         href={category.href}
         aria-label={`Ver ${category.label.toLowerCase()} en ARIZ`}
         className={cn(
-          "group relative flex h-28 min-w-[44vw] snap-start overflow-hidden rounded-xl bg-[linear-gradient(135deg,#2a3b85_0%,#0B1B5C_100%)] p-3 shadow-[0_10px_28px_rgb(11_27_92_/_0.14)] transition duration-500 ease-out sm:h-32",
+          "group relative flex h-40 overflow-hidden rounded-xl bg-[linear-gradient(135deg,#2a3b85_0%,#0B1B5C_100%)] p-3.5 shadow-[0_10px_28px_rgb(11_27_92_/_0.14)] transition duration-500 ease-out sm:h-44 lg:h-48",
           "hover:-translate-y-1.5 hover:shadow-[0_24px_55px_rgb(11_27_92_/_0.22)]",
           "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#F5B800]",
-          "sm:min-w-0",
         )}
       >
         {!imageFailed ? (
@@ -143,7 +149,7 @@ export function CategoryShowcase() {
         </div>
       </div>
 
-      <ul className="mt-8 flex snap-x gap-4 overflow-x-auto scroll-smooth pb-4 sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0 lg:grid-cols-6">
+      <ul className={GRID}>
         {categories.map((category, index) => (
           <CategoryCard key={category.slug} category={category} index={index} />
         ))}

@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { PinIcon, WhatsappIcon } from "@/shared/ui/icons";
+import { ClockIcon, PinIcon, WhatsappIcon } from "@/shared/ui/icons";
 import { ROUTES } from "@/shared/config/routes";
 import { formatPrice } from "@/shared/lib/format";
+import { formatPublishedDate } from "@/shared/lib/published-date";
 import type { Listing } from "@/features/listings/types/listing";
 import { ListingImage } from "@/features/listings/components/listing-image";
 import { ListingSpecs } from "@/features/listings/components/listing-specs";
@@ -13,6 +14,8 @@ const OPERATION_LABEL: Record<string, string> = {
 };
 
 export function ListingCard({ listing }: { listing: Listing }) {
+  const published = formatPublishedDate(listing.publishedAt);
+
   return (
     <article className="flex flex-col overflow-hidden rounded-card border border-edge bg-surface shadow-[var(--shadow-card)] transition-[box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-pop)] md:grid md:grid-cols-[minmax(220px,32%)_1fr] md:items-stretch">
       <div className="relative min-w-0">
@@ -25,6 +28,11 @@ export function ListingCard({ listing }: { listing: Listing }) {
         {listing.images.length > 1 ? (
           <span className="absolute right-2.5 bottom-2.5 rounded-full bg-brand/75 px-2 py-0.5 text-[10px] font-bold text-on-brand backdrop-blur">
             {listing.images.length} fotos
+          </span>
+        ) : null}
+        {published?.isNew ? (
+          <span className="absolute bottom-2.5 left-2.5 rounded-full bg-accent px-2.5 py-1 text-[10px] font-black tracking-[0.08em] text-brand">
+            NUEVO
           </span>
         ) : null}
       </div>
@@ -41,6 +49,12 @@ export function ListingCard({ listing }: { listing: Listing }) {
           <PinIcon className="size-3.5 shrink-0" />
           {listing.location.district}, {listing.location.department}
         </p>
+        {published ? (
+          <time dateTime={published.iso} className="flex items-center gap-1.5 text-xs text-muted">
+            <ClockIcon className="size-3.5 shrink-0" />
+            {published.relative}
+          </time>
+        ) : null}
         {listing.description ? (
           <p className="line-clamp-2 text-xs leading-relaxed text-muted">{listing.description}</p>
         ) : null}

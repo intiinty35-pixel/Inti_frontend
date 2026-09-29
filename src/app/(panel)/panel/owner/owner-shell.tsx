@@ -13,10 +13,11 @@ import { OwnerNav } from "@/app/(panel)/panel/owner/owner-nav";
 export interface OwnerShellProps {
   name: string;
   roleLabel: string;
+  canManageProjects?: boolean;
   children: ReactNode;
 }
 
-export function OwnerShell({ name, roleLabel, children }: OwnerShellProps) {
+export function OwnerShell({ name, roleLabel, canManageProjects = true, children }: OwnerShellProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const initial = name.trim().charAt(0).toUpperCase() || "A";
@@ -67,7 +68,7 @@ export function OwnerShell({ name, roleLabel, children }: OwnerShellProps) {
         )}
 
         <div className="mt-4 flex-1 overflow-y-auto">
-          <OwnerNav collapsed={collapsed} />
+          <OwnerNav collapsed={collapsed} canManageProjects={canManageProjects} />
         </div>
 
         <div className="mt-4 flex flex-col gap-1 border-t border-edge pt-3">
@@ -102,7 +103,11 @@ export function OwnerShell({ name, roleLabel, children }: OwnerShellProps) {
             </Link>
             <p className="px-2 text-[10px] font-bold tracking-[0.22em] text-muted uppercase">Panel profesional</p>
             <div className="flex-1 overflow-y-auto">
-              <OwnerNav mobile onNavigate={() => setMobileOpen(false)} />
+              <OwnerNav
+                mobile
+                canManageProjects={canManageProjects}
+                onNavigate={() => setMobileOpen(false)}
+              />
             </div>
             <LogoutButton />
           </aside>

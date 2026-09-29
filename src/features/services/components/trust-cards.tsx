@@ -13,7 +13,7 @@ const ROW_TITLE = "text-center text-[11px] font-bold tracking-[0.18em] text-acce
 
 function RowHeading({ children }: { children: string }) {
   return (
-    <div className="mb-5 flex items-center justify-center gap-4">
+    <div className="mb-6 flex items-center justify-center gap-4">
       <span aria-hidden className="h-px w-8 bg-edge sm:w-16" />
       <h3 className={ROW_TITLE}>{children}</h3>
       <span aria-hidden className="h-px w-8 bg-edge sm:w-16" />
@@ -86,7 +86,8 @@ function CapabilityRow({
 /** Las 3 filas de cards que respaldan la propuesta de servicios. */
 export function TrustCards() {
   return (
-    <div className={cn("grid gap-12")}>
+    /* `gap-16` = 64px de aire entre filas; antes quedaban pegadas. */
+    <div className={cn("grid gap-16")}>
       <TrustLogosRow />
       <CapabilityRow title="Todo lo que necesita tu proyecto" items={PROJECT_CAPABILITIES} />
       <CapabilityRow title="Respaldo integral" items={INTEGRAL_SUPPORT} />

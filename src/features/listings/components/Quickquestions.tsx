@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { WhatsappIcon } from "@/shared/ui/icons";
 
-const QUESTIONS = [
+const PROPERTY_QUESTIONS = [
   "¿Sigue disponible?",
   "¿Cuándo puedo visitarlo?",
   "¿El precio es negociable?",
@@ -12,11 +12,20 @@ const QUESTIONS = [
   "¿Tiene ascensor?",
 ];
 
+const PROJECT_QUESTIONS = [
+  "¿Quedan unidades disponibles?",
+  "¿Cuál es la fecha de entrega?",
+  "¿Cuál es la cuota inicial?",
+  "¿Tienen financiamiento disponible?",
+  "¿Puedo visitar la sala de ventas?",
+];
+
 export interface QuickQuestionsProps {
   propertyTitle: string;
   agentName: string;
   /** Solo digitos, con codigo de pais (ej. 51999999999). */
   whatsappDigits?: string;
+  context?: "property" | "project";
 }
 
 function QuestionModal({
@@ -100,16 +109,18 @@ function QuestionModal({
 
 export function QuickQuestions(props: QuickQuestionsProps) {
   const [selected, setSelected] = useState<string | null>(null);
+  const isProject = props.context === "project";
+  const questions = isProject ? PROJECT_QUESTIONS : PROPERTY_QUESTIONS;
 
   return (
     <section className="mt-9">
       <h2 className="font-display text-xl font-black tracking-tight text-brand lg:text-2xl">
-        Preguntas para la inmobiliaria
+        {isProject ? "Preguntas sobre el proyecto" : "Preguntas para la inmobiliaria"}
       </h2>
       <p className="mt-1.5 text-sm text-muted">Selecciona una pregunta y contáctalos directo.</p>
 
       <div className="mt-4 flex flex-wrap gap-2.5">
-        {QUESTIONS.map((question) => (
+        {questions.map((question) => (
           <button
             key={question}
             type="button"

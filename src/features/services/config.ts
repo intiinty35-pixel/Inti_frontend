@@ -36,6 +36,21 @@ export function buildServiceWhatsappUrl(serviceName: string): string {
 /** Ancla de la seccion de contacto donde apunta el boton "Cotiza". */
 export const SERVICES_CONTACT_HREF = "#contacto";
 
+/**
+ * Foto de fondo de la cinta del hero (`/servicios`). Vive en `public/` para no
+ * depender de Cloudinary: los assets antiguos devolvian 404 y dejaban la cinta
+ * sin imagen.
+ */
+export const SERVICES_HERO_IMAGE = "/servicios/servicios.png";
+
+/**
+ * Degradado azul marino de respaldo. Se pinta detras de cada foto: si la imagen
+ * falla o aun no cargo, el hueco nunca queda vacio y la marca se mantiene.
+ */
+export const SERVICE_IMAGE_FALLBACK =
+  "linear-gradient(135deg, #0B1B5C 0%, #00124f 100%)";
+
+
 export interface ServiceItem {
   /** Identificador estable: se usa como `id` de bloque y como `key`. */
   key: string;
@@ -48,7 +63,7 @@ export interface ServiceItem {
   /** Cuatro viñetas de alcance, con check amarillo en la UI. */
   bullets: readonly string[];
   icon: ServiceIcon;
-  /** Foto del servicio en Cloudinary (bordes redondeados y overlay azul). */
+  /** Foto del servicio servida desde `public/` (bordes redondeados y overlay azul). */
   image: string;
   /** Texto alternativo descriptivo para accesibilidad. */
   imageAlt: string;
@@ -72,7 +87,7 @@ export const SERVICES: readonly ServiceItem[] = [
       "Identificación de oportunidades de inversión",
     ],
     icon: SearchIcon,
-    image: "ariz/services/prospeccion",
+    image: "/servcios/teerrenos).jpg",
     imageAlt:
       "Equipo de ARIZ Proyectos revisando planos sobre un terreno durante la evaluación de un lote",
   },
@@ -89,7 +104,7 @@ export const SERVICES: readonly ServiceItem[] = [
       "Habilitación urbana, licencias y conformidad de obra",
     ],
     icon: FileIcon,
-    image: "ariz/services/legal",
+    image: "/servcios/legal.jpg",
     imageAlt:
       "Abogados firmando contratos junto a la maqueta de un proyecto inmobiliario",
   },
@@ -106,7 +121,7 @@ export const SERVICES: readonly ServiceItem[] = [
       "Informes financieros para inversionistas y bancos",
     ],
     icon: ChartIcon,
-    image: "ariz/services/contable",
+    image: "/servcios/contable.jpg",
     imageAlt:
       "Contador revisando reportes financieros en su laptop durante el control contable de un proyecto",
   },

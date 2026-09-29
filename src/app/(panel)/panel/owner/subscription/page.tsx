@@ -1,11 +1,13 @@
 import { PlansView } from "@/features/owner/components/plans-view";
-import { getMySubscription, listMyProperties, listPlans } from "@/features/owner/api/server";
+import { getMyProfile, getMySubscription, listMyProperties, listPlans } from "@/features/owner/api/server";
+import { canManageProjects } from "@/features/owner/lib/profile-permissions";
 
 export default async function OwnerSubscriptionPage() {
-  const [plans, subscription, properties] = await Promise.all([
+  const [plans, subscription, properties, profile] = await Promise.all([
     listPlans(),
     getMySubscription(),
     listMyProperties(),
+    getMyProfile().catch(() => null),
   ]);
 
   return (
@@ -23,6 +25,7 @@ export default async function OwnerSubscriptionPage() {
         subscription={subscription}
         propertiesCount={properties.length}
         projectsCount={0}
+        canManageProjects={canManageProjects(profile)}
       />
     </div>
   );

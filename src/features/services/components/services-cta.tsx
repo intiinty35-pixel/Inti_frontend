@@ -1,10 +1,18 @@
 import { ArrowRightIcon, Container } from "@/shared/ui";
 import { buildServiceWhatsappUrl } from "@/features/services/config";
 
-/** Cierre de la seccion: banda azul marino con acentos amarillos. */
+/**
+ * Cierre de la seccion: banda azul marino con acentos amarillos.
+ *
+ * Lleva margen inferior propio (`mb-16` = 64px) para que la banda no quede
+ * pegada al footer cuando la pagina se monta sin un espaciador extra.
+ */
 export function ServicesCta() {
   return (
-    <section id="contacto" className="relative overflow-hidden bg-brand py-14 text-white sm:py-16">
+    <section
+      id="contacto"
+      className="relative mb-16 overflow-hidden bg-brand py-14 text-white sm:py-16"
+    >
       {/* Detalle amarillo: una barra superior y un halo radial de marca. */}
       <span aria-hidden className="absolute inset-x-0 top-0 h-1 bg-accent" />
       <span

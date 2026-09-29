@@ -4,9 +4,11 @@ import { useState } from "react";
 import Link from "next/link";
 import { createPortal } from "react-dom";
 import { PinIcon } from "@/shared/ui";
+import { ClockIcon } from "@/shared/ui/icons";
 import { cn } from "@/shared/lib/cn";
 import { ROUTES } from "@/shared/config/routes";
 import { formatArea, formatPrice } from "@/shared/lib/format";
+import { formatPublishedDate } from "@/shared/lib/published-date";
 import {
   PROJECT_STATUS_LABELS,
   type ApiProjectStatus,
@@ -40,6 +42,7 @@ export function OwnerProjectCard({ project }: { project: ProjectApiSummary }) {
   const [publishing, setPublishing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const portalTarget = typeof document === "undefined" ? null : document.body;
+  const published = formatPublishedDate(project.publishedAt);
 
   async function handlePublish() {
     setPublishing(true);
@@ -83,6 +86,11 @@ export function OwnerProjectCard({ project }: { project: ProjectApiSummary }) {
             {project.images.length} fotos
           </span>
         ) : null}
+        {published?.isNew ? (
+          <span className="absolute bottom-2.5 left-2.5 rounded-full bg-accent px-2.5 py-1 text-[10px] font-black tracking-[0.08em] text-brand">
+            NUEVO
+          </span>
+        ) : null}
       </div>
 
       <div className="flex flex-1 flex-col p-3.5">
@@ -100,6 +108,14 @@ export function OwnerProjectCard({ project }: { project: ProjectApiSummary }) {
             {district}, {project.location.department}
           </span>
         </p>
+        {published ? (
+          <time dateTime={published.iso} className="mt-1.5 flex items-center gap-1.5 text-xs text-muted">
+            <ClockIcon className="size-3.5 shrink-0" />
+            <span>
+              Fecha de publicación: <span className="font-semibold">{published.full}</span>
+            </span>
+          </time>
+        ) : null}
 
         {project.description ? (
           <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-muted">

@@ -31,7 +31,7 @@ export async function FeaturedListingsSection() {
         }
       />
 
-      <ul className="mt-6 grid w-full gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+      <ul className="mt-8 grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {listings.items.map((listing) => (
           <li key={listing.id}>
             <FeaturedListingCard listing={listing} />
@@ -39,7 +39,7 @@ export async function FeaturedListingsSection() {
         ))}
       </ul>
       {listings.items.length === 0 ? (
-        <div className="mt-6 rounded-card border border-dashed border-edge bg-surface-muted p-8 text-center text-sm text-muted">
+        <div className="mt-8 rounded-card border border-dashed border-edge bg-surface-muted p-8 text-center text-sm text-muted">
           Aún no hay propiedades publicadas.
         </div>
       ) : null}

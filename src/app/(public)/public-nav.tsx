@@ -76,14 +76,15 @@ const ITEMS: readonly NavItem[] = [
   },
   {
     label: "Proyectos",
-    // Sin esto, el tipo todavia no tiene soporte real en el backend.
+    href: ROUTES.projects,
+    isActive: (path, _operation, type) =>
+      path === ROUTES.projects || (path === ROUTES.properties && type === "projects"),
   },
   {
     label: "Terrenos",
     href: `${ROUTES.properties}?operation=buy&type=land`,
     isActive: (path, _operation, type) => path === ROUTES.properties && type === "land",
   },
-  { label: "Propiedades nuevas" },
   { label: "Mapa" },
 ];
 
@@ -151,9 +152,12 @@ function MegaMenu({ operation, label }: { operation: "buy" | "rent"; label: stri
           </h3>
           <ul className="mt-4 grid gap-3">
             <li>
-              <span title="Disponible próximamente" className="cursor-default text-sm text-muted">
+              <Link
+                href={ROUTES.projects}
+                className="text-sm text-ink transition-colors hover:text-brand"
+              >
                 Proyectos
-              </span>
+              </Link>
             </li>
           </ul>
         </div>

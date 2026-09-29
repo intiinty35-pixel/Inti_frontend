@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Container, Pagination } from "@/shared/ui";
 import { buildMetadata } from "@/shared/lib/seo";
 import { formatPrice } from "@/shared/lib/format";
-import { getListings, ListingCard, ProjectCard, type ListingFilters } from "@/features/listings";
+import { getListings, ListingCard, ProjectListingCard, type ListingFilters } from "@/features/listings";
 import { getPropertyTypeLabel } from "@/features/search";
 import type {
   Listing,
@@ -18,7 +18,6 @@ import {
   type PropertyFiltersValue,
 } from "@/features/listings/components/property-filters-bar";
 import { ListingsMapExperience } from "@/features/listings/components/listings-map-experience";
-import { ListingsMapPanel } from "@/features/listings/components/listings-map-panel";
 import type { MapPoint } from "@/features/listings/components/listings-map";
 import { getPublicProjectsServer } from "@/features/projects/api/server";
 import { toProjectCardModel } from "@/features/projects/lib/project-card";
@@ -43,7 +42,7 @@ function numberOf(input: string | string[] | undefined) {
 }
 
 const FILTERABLE_TYPES = new Set<PropertyType>(["houses", "apartments", "land", "country-lots", "commercial"]);
-const PAGE_SIZE = 12;
+const PAGE_SIZE = 10;
 
 /** Cuantos proyectos se traen al mapa: el endpoint publico no pagina por tipo. */
 const PROJECT_MAP_LIMIT = 60;
@@ -67,6 +66,7 @@ function toListingPoints(items: readonly Listing[]): MapPoint[] {
         coverImage: listing.images[0],
         href: `/propiedades/${listing.slug}`,
         badge: listing.operation === "rent" ? "ALQUILER" : "VENTA",
+        publishedAt: listing.publishedAt,
       },
     ];
   });
@@ -97,6 +97,7 @@ function toProjectPoints(items: readonly ProjectApiSummary[]): {
         coverImage: project.images[0],
         href: `/project/${project.slug}`,
         badge: project.developer,
+        publishedAt: project.publishedAt,
       },
     ];
   });
@@ -126,11 +127,11 @@ async function ProjectsResults({
   const { cards, points } = toProjectPoints(items);
 
   return (
-    <>
+    <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(340px,380px)] 2xl:grid-cols-[minmax(0,1fr)_400px]">
       {cards.length > 0 ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+        <div className="flex min-w-0 flex-col gap-4">
           {cards.map((project) => (
-            <ProjectCard key={project.id} project={project} />
+            <ProjectListingCard key={project.id} project={project} />
           ))}
         </div>
       ) : (
@@ -139,12 +140,12 @@ async function ProjectsResults({
         </div>
       )}
 
-      <ListingsMapPanel
+      <ListingsMapExperience
         points={points}
-        filters={{ operation, district }}
+        filters={{ operation, type: "projects", district }}
         isProjectMode
       />
-    </>
+    </div>
   );
 }
 
@@ -175,7 +176,15 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
     page,
     pageSize: PAGE_SIZE,
   };
-  const result = await getListings(filters);
+  const result = isProjectMode
+    ? { items: [], total: 0, page, pageSize: PAGE_SIZE, hasMore: false }
+    : await getListings(filters).catch(() => ({
+        items: [],
+        total: 0,
+        page,
+        pageSize: PAGE_SIZE,
+        hasMore: false,
+      }));
   // En modo proyectos el listado real viene de /projects: el contador de
   // propiedades no aplica y se omite en vez de mostrar un "0" enganoso.
   const totalLabel = isProjectMode

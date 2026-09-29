@@ -197,7 +197,9 @@ export function Listbox({
           role="listbox"
           aria-labelledby={labelledBy ?? triggerId}
           className={cn(
-            "absolute top-full left-0 z-40 mt-2 max-h-64 w-full overflow-y-auto rounded-card border border-edge bg-surface p-1 shadow-[var(--shadow-pop)]",
+            // z-70: el panel del mapa vive dentro de un modal (z-60) y la lista de
+            // opciones tiene que quedar por encima del mapa y de su propia cabecera.
+            "absolute top-full left-0 z-70 mt-2 max-h-64 w-full overflow-y-auto rounded-card border border-edge bg-surface p-1 shadow-[var(--shadow-pop)]",
             listClassName ?? "min-w-56",
           )}
         >

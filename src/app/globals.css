@@ -202,6 +202,11 @@
   animation: ariz-fade-in 0.25s ease-out both;
 }
 
+/* Entrada de la vista a pantalla completa del mapa (antes modal centrado). */
+.ariz-map-view {
+  animation: ariz-zoom-in 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 /* Movil: sube como hoja inferior. Desde `sm` escala en el centro. */
 .ariz-modal-in {
   animation: ariz-sheet-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -216,6 +221,7 @@
 @media (prefers-reduced-motion: reduce) {
   .ariz-fade-in,
   .ariz-modal-in,
+  .ariz-map-view,
   .animate-\[categoryFadeIn_700ms_ease-out_both\] {
     animation: none;
   }

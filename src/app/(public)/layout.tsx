@@ -17,6 +17,21 @@ function Logo() {
   );
 }
 
+/**
+ * Cabecera, pie y flotantes del sitio.
+ *
+ * El mapa a pantalla completa (`map-modal.tsx`) marca este bloque como `inert`
+ * mientras esta abierto, asi el tabulador y los lectores de pantalla se quedan
+ * dentro del mapa aunque visualmente ya lo tape todo.
+ */
+function PublicShell({ children }: { children: ReactNode }) {
+  return (
+    <div id="ariz-public-shell" className="flex min-h-screen flex-col">
+      {children}
+    </div>
+  );
+}
+
 export default async function PublicLayout({ children }: { children: ReactNode }) {
   const session = await getSession();
   let accountName = session?.name;
@@ -31,7 +46,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <PublicShell>
       <header className="sticky top-0 z-40 border-b border-edge bg-surface">
         <Container size="wide" className="flex flex-wrap items-center justify-between gap-x-6 lg:h-[60px] lg:flex-nowrap">
           <div className="flex h-[60px] items-center">
@@ -92,6 +107,6 @@ export default async function PublicLayout({ children }: { children: ReactNode }
         <SparkleIcon className="size-3.5" />
         Asistente inmobiliario
       </button>
-    </div>
+    </PublicShell>
   );
 }

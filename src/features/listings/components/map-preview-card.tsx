@@ -70,6 +70,13 @@ export interface MapPreviewCardProps {
   /** true mientras llegan los datos del servidor (esqueleto). */
   isLoading?: boolean;
   className?: string;
+  /** "Popiedades" en el buscador; "Proyectos" en el listado de proyectos. */
+  countLabel?: string;
+  /**
+   * `sidebar` (por defecto): retrato en la columna lateral. `header`: banda ancha
+   * y baja en el encabezado del listado, con las acciones centradas.
+   */
+  layout?: "sidebar" | "header";
 }
 
 /**
@@ -82,18 +89,21 @@ export function MapPreviewCard({
   onOpen,
   isLoading = false,
   className,
+  countLabel = "propiedad",
+  layout = "sidebar",
 }: MapPreviewCardProps) {
   const [focused, setFocused] = useState(false);
   const hasPoints = points.length > 0;
   const disabled = isLoading || !hasPoints;
+  const isHeader = layout === "header";
 
   /** Mensaje visible: mismo dato que el contador "N en el mapa" del panel. */
   const counterLabel = useMemo(() => {
-    if (!hasPoints) return "Sin propiedades en el mapa";
+    if (!hasPoints) return "Sin resultados en el mapa";
     return points.length === 1
-      ? "1 propiedad en el mapa"
-      : `${points.length} propiedades en el mapa`;
-  }, [hasPoints, points.length]);
+      ? `1 ${countLabel} en el mapa`
+      : `${points.length} ${countLabel}s en el mapa`;
+  }, [countLabel, hasPoints, points.length]);
 
   return (
     <button
@@ -104,8 +114,9 @@ export function MapPreviewCard({
       aria-haspopup="dialog"
       className={cn(
         "group relative block w-full overflow-hidden rounded-2xl border border-edge bg-surface text-left shadow-[var(--shadow-card)] transition",
-        // Relacion retrato en la columna lateral; banda corta en el banner de tablet.
-        "aspect-[4/5]",
+        // Relacion retrato en la columna lateral; el encabezado del listado fija
+        // su propia altura con `className`.
+        !isHeader && "aspect-[4/5]",
         disabled
           ? "cursor-not-allowed opacity-95"
           : "cursor-pointer hover:-translate-y-1 hover:border-brand/30 hover:shadow-[var(--shadow-pop)]",
@@ -126,7 +137,7 @@ export function MapPreviewCard({
         ) : (
           <span className="flex h-full w-full flex-col items-center justify-center gap-2 bg-surface-muted p-6 text-center">
             <PinIcon className="size-8 text-brand/30" />
-            <span className="text-sm font-bold text-ink">Sin propiedades en el mapa</span>
+            <span className="text-sm font-bold text-ink">Sin resultados en el mapa</span>
             <span className="text-xs text-muted">
               Prueba quitando el distrito o ampliando el rango de precio.
             </span>
@@ -137,10 +148,18 @@ export function MapPreviewCard({
       {/* Overlay inferior con degradado azul marino y contador. */}
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-brand via-brand/70 to-transparent"
+        className={cn(
+          "pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-brand via-brand/70 to-transparent",
+          isHeader ? "h-3/5" : "h-2/5",
+        )}
       />
 
-      <span className="absolute inset-x-0 bottom-0 flex flex-col gap-2.5 p-4">
+      <span
+        className={cn(
+          "absolute inset-x-0 bottom-0 flex flex-col gap-2.5 p-4",
+          isHeader && "items-center text-center",
+        )}
+      >
         <span className="flex items-center gap-1.5 text-xs font-bold text-white">
           <PinIcon className="size-4 shrink-0 text-accent" />
           Ver en el mapa

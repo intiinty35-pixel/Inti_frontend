@@ -19,8 +19,8 @@ export default async function AdminPlansPage({ searchParams }: AdminPlansPagePro
     <div className="flex flex-col gap-6">
       <AdminPageHeader
         eyebrow="Suscripciones"
-        title="Planes de suscripción"
-        description="Estos planes son los que ven las inmobiliarias en su panel al elegir una suscripción."
+        title="Planes de suscripcion"
+        description="Estos planes son los que ven las inmobiliarias en su panel al elegir una suscripcion."
       />
 
       <PlanForm />
@@ -56,7 +56,12 @@ export default async function AdminPlansPage({ searchParams }: AdminPlansPagePro
                     {plan.isFree ? "Sin costo" : formatPrice(Number(plan.price), plan.currency)}
                   </p>
                   <p className="text-sm text-muted">
-                    {plan.propertyLimit} propiedades · {plan.projectLimit} proyectos · {plan.durationDays} días
+                    Agentes: {plan.propertyLimit} propiedades - {plan.durationDays} dias
+                    {plan.projectLimit > 0 ? (
+                      <span className="block">
+                        Inmobiliarias: {plan.propertyLimit} propiedades - {plan.projectLimit} proyectos
+                      </span>
+                    ) : null}
                   </p>
                 </div>
               </div>

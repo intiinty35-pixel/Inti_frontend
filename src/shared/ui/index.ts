@@ -21,6 +21,7 @@ export {
   CheckIcon,
   ChevronDownIcon,
   ChevronLeftIcon,
+  ClockIcon,
   CrosshairIcon,
   FileIcon,
   HeartIcon,

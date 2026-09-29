@@ -12,37 +12,61 @@ export interface ListingsMapExperienceProps {
   points: readonly MapPoint[];
   filters: ListingsMapPanelProps["filters"];
   isProjectMode: boolean;
+  /**
+   * `sidebar` (por defecto, usado por Propiedades): la vista previa vive en la
+   * columna lateral del listado. `header` (usado por Proyectos): Proyectos se
+   * muestra en tarjetas a todo lo ancho, asi que el mapa va arriba, a ancho
+   * completo, con los filtros de busqueda ya aplicados en la pagina.
+   */
+  layout?: "sidebar" | "header";
 }
 
 /**
- * Orquesta las tres formas del mapa del buscador sin duplicar logica:
+ * Orquesta las formas del mapa del buscador sin duplicar logica:
  *
- * - Escritorio: columna derecha sticky con la vista previa en retrato.
- * - Tablet: la misma vista previa como banner horizontal arriba de la lista.
- * - Movil: boton flotante "Mapa"; la preview se oculta y el modal abre a pantalla
- *   completa con la lista en hoja inferior.
+ * - Escritorio: columna lateral sticky con la vista previa en retrato.
+ * - Escritorio (vista amplia): panel de mapa embebido y sincronizado con la
+ *   busqueda; los filtros de arriba son los mismos del panel.
+ * - Tablet ancha: cabecera con filtros + mapa y, debajo, la lista en tarjetas.
+ * - Movil: boton flotante "Mapa"; la vista a pantalla completa lleva los filtros
+ *   en una franja con scroll horizontal y la lista de inmuebles debajo del mapa.
  *
- * Al abrir/cerrar el modal, los filtros, el scroll de la pagina y la posicion de
- * la lista se conservan: la lista de cards nunca se desmonta.
+ * Al abrir/cerrar la vista completa, los filtros, el scroll de la pagina y la
+ * posicion de la lista se conservan: la lista de cards nunca se desmonta.
  */
 export function ListingsMapExperience({
   points,
   filters,
   isProjectMode,
+  layout = "sidebar",
 }: ListingsMapExperienceProps) {
   const [open, setOpen] = useState(false);
   const hasPoints = points.length > 0;
+  const isHeader = layout === "header";
 
   return (
     <>
-      {/* Vista previa: banner horizontal en tablet, retrato sticky en escritorio. */}
-      <div className="lg:sticky lg:top-24">
-        <MapPreviewCard
-          points={points}
-          onOpen={() => setOpen(true)}
-          className="max-lg:aspect-auto max-lg:h-40"
-        />
-      </div>
+      {/* `header`: mapa a ancho completo arriba de la grilla de proyectos. */}
+      {isHeader ? (
+        <div className="w-full">
+          <MapPreviewCard
+            points={points}
+            onOpen={() => setOpen(true)}
+            layout="header"
+            countLabel={isProjectMode ? "proyecto" : "propiedad"}
+            className="aspect-auto h-52 sm:h-64 lg:h-72"
+          />
+        </div>
+      ) : (
+        /* Vista previa: banner horizontal en tablet, retrato sticky en escritorio. */
+        <div className="lg:sticky lg:top-24">
+          <MapPreviewCard
+            points={points}
+            onOpen={() => setOpen(true)}
+            className="max-lg:aspect-auto max-lg:h-40"
+          />
+        </div>
+      )}
 
       {/* Boton flotante movil: subido sobre WhatsApp y Asistente para no taparlos. */}
       <button

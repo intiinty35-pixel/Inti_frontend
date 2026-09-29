@@ -9,11 +9,13 @@ import {
   BedIcon,
   CarIcon,
   CheckIcon,
+  ClockIcon,
   HomeIcon,
   PinIcon,
 } from "@/shared/ui/icons";
 import { buildMetadata } from "@/shared/lib/seo";
 import { formatPrice } from "@/shared/lib/format";
+import { formatPublishedDate } from "@/shared/lib/published-date";
 import { getListingBySlug, getListings, SimilarListingsSection } from "@/features/listings";
 import type { PropertyDetail } from "@/features/listings";
 import { PropertyPhotoGallery } from "@/features/listings/components/property-photo-gallery";
@@ -188,6 +190,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
   const operationPhrase = property.operation === "rent" ? "en alquiler" : property.operation === "buy" ? "en venta" : "disponible";
   const agentTypeLabel =
     AGENT_TYPE_LABEL[String(property.agent.type).toUpperCase()] ?? "Agente inmobiliario";
+  const published = formatPublishedDate(property.publishedAt);
 
   return (
     <Container size="full" className="flex flex-1 flex-col py-6 lg:py-8">
@@ -205,6 +208,12 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
               <PinIcon className="size-4 shrink-0 text-brand lg:size-5" />
               <span className="line-clamp-2">{locationLine}</span>
             </p>
+            {published ? (
+              <time dateTime={published.iso} className="mt-2 flex items-center gap-2 text-sm font-semibold text-muted">
+                <ClockIcon className="size-4 shrink-0 text-brand" />
+                {published.fullWithPrefix}
+              </time>
+            ) : null}
           </header>
 
           {/* Precio + datos clave */}

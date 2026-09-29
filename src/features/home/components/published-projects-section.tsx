@@ -26,7 +26,7 @@ export async function PublishedProjectsSection() {
         }
       />
 
-      <ul className="mt-6 grid w-full gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+      <ul className="mt-8 grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {projects.map((project) => (
           <li key={project.id}>
             <ProjectCard project={project} />

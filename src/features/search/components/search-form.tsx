@@ -21,17 +21,16 @@ interface SearchTab {
   operation: SearchOperation;
   fixedType?: SearchPropertyType;
   /** Sin esto, el tipo todavía no tiene soporte real en el backend. */
-  disabled?: boolean;
 }
 
 const TABS: readonly SearchTab[] = [
   { key: "buy", label: "Comprar", operation: "buy" },
   { key: "rent", label: "Alquilar", operation: "rent" },
-  { key: "projects", label: "Proyectos", operation: "buy", fixedType: "projects", disabled: true },
+  { key: "projects", label: "Proyectos", operation: "buy", fixedType: "projects" },
   { key: "land", label: "Terrenos", operation: "buy", fixedType: "land" },
 ];
 
-const UNSUPPORTED_TYPES = new Set<SearchPropertyType>(["projects", "country-lots"]);
+const UNSUPPORTED_TYPES = new Set<SearchPropertyType>(["country-lots"]);
 const SELECTABLE_TYPES = SEARCH_PROPERTY_TYPES.filter((option) => !UNSUPPORTED_TYPES.has(option.value));
 const CURRENCY_OPTIONS: readonly ListboxOption[] = [
   { value: "PEN", label: "PEN · S/" },
@@ -106,21 +105,15 @@ export function SearchForm() {
             type="button"
             role="tab"
             aria-selected={item.key === tab.key}
-            aria-disabled={item.disabled}
-            disabled={item.disabled}
-            title={item.disabled ? "Disponible próximamente" : undefined}
             onClick={() => {
-              if (item.disabled) return;
               setTabKey(item.key);
               setType("all");
             }}
             className={cn(
               "-mb-px border-b-2 px-5 py-3.5 text-[13px] font-bold transition-colors sm:px-7",
-              item.disabled
-                ? "cursor-not-allowed border-transparent text-muted/50"
-                : item.key === tab.key
-                  ? "border-accent text-brand"
-                  : "border-transparent text-muted hover:text-brand",
+              item.key === tab.key
+                ? "border-accent text-brand"
+                : "border-transparent text-muted hover:text-brand",
             )}
           >
             {item.label}

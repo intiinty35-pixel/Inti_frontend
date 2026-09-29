@@ -68,7 +68,7 @@ export function MapListingsMap({ markers }: { markers: MapListingMarker[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div ref={containerRef} className="relative h-[420px] overflow-hidden rounded-card border border-edge bg-surface-muted">
+    <div ref={containerRef} className="relative h-[420px] overflow-hidden rounded-card border border-edge bg-surface-muted lg:h-[560px] xl:h-[640px]">
       <MapContainer center={DEFAULT_CENTER} zoom={11} scrollWheelZoom className="h-full w-full">
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'

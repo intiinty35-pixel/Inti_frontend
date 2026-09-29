@@ -83,7 +83,7 @@ function specs(property: SavedProperty): string {
 /** Vista de la app: muestra el resultado de tener la búsqueda centralizada en la cuenta. */
 function AccountPreview() {
   return (
-    <div className="rounded-card border border-edge bg-surface p-5 shadow-[var(--shadow-pop)]">
+    <div className="rounded-card border border-edge bg-surface p-5 shadow-[var(--shadow-pop)] xl:p-7">
       <div className="flex items-center justify-between gap-3">
         <span className="flex items-center gap-2">
           <img src="/logo/logo.png" alt="Ariz" className="h-7 w-auto" />
@@ -95,9 +95,9 @@ function AccountPreview() {
         </span>
       </div>
 
-      <ul className="mt-5 grid gap-2.5 sm:grid-cols-2">
+      <ul className="mt-5 grid gap-2.5 sm:grid-cols-2 xl:gap-4">
         {SAVED.map((property) => (
-          <li key={property.id} className="rounded-card border border-edge bg-surface-muted p-3">
+          <li key={property.id} className="rounded-card border border-edge bg-surface-muted p-3 xl:p-4">
             <p className="text-base font-bold text-brand">{formatPrice(property.price)}</p>
             <p className="mt-1 text-[13px] font-semibold text-ink">{property.title}</p>
             <p className="mt-1 text-[11px] text-muted">{specs(property)}</p>
@@ -134,19 +134,19 @@ export function AccountCtaSection() {
         style={{ backgroundImage: BACKDROP }}
       />
 
-      <Container size="wide-tight" className="relative grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
+      <Container size="wide-tight" className="relative grid items-center gap-10 lg:grid-cols-2 lg:gap-14 xl:gap-20">
         <div>
           <p className="text-[11px] font-bold tracking-[0.18em] text-accent uppercase">
             Tu búsqueda, siempre contigo
           </p>
-          <h2 className="mt-4 text-3xl font-light tracking-tight text-brand sm:text-4xl">
+          <h2 className="mt-4 text-3xl font-light tracking-tight text-brand sm:text-4xl xl:text-5xl">
             Encuentra tu próximo espacio sin perder ninguna oportunidad
           </h2>
-          <p className="mt-4 max-w-lg text-sm text-muted sm:text-base">
+          <p className="mt-4 max-w-xl text-sm text-muted sm:text-base">
             Crea una cuenta gratuita y organiza toda tu búsqueda inmobiliaria desde un solo lugar.
           </p>
 
-          <ul className="mt-8 grid gap-x-6 gap-y-7 sm:grid-cols-2">
+          <ul className="mt-8 grid gap-x-8 gap-y-7 sm:grid-cols-2 xl:gap-x-12">
             {FEATURES.map((feature) => {
               const Icon = feature.icon;
 

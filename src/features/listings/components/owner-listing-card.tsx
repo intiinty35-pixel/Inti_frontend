@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { PinIcon } from "@/shared/ui";
+import { ClockIcon, PinIcon } from "@/shared/ui";
 import { cn } from "@/shared/lib/cn";
 import { ROUTES } from "@/shared/config/routes";
 import { formatArea, formatPrice } from "@/shared/lib/format";
+import { formatPublishedDate } from "@/shared/lib/published-date";
 import type { Listing } from "@/features/listings/types/listing";
 import { DataCell, DataGrid } from "@/features/listings/components/data-grid";
 import { ListingImage } from "@/features/listings/components/listing-image";
@@ -29,6 +30,7 @@ const OPERATION_LABEL: Record<string, string> = {
 
 export function OwnerListingCard({ listing }: { listing: Listing }) {
   const status = listing.status ?? "disponible";
+  const published = formatPublishedDate(listing.publishedAt);
 
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-card border border-edge bg-surface shadow-[var(--shadow-card)] transition-[box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-pop)]">
@@ -55,6 +57,11 @@ export function OwnerListingCard({ listing }: { listing: Listing }) {
             {listing.images.length} fotos
           </span>
         ) : null}
+        {published?.isNew ? (
+          <span className="absolute bottom-2.5 left-2.5 rounded-full bg-accent px-2.5 py-1 text-[10px] font-black tracking-[0.08em] text-brand">
+            NUEVO
+          </span>
+        ) : null}
       </div>
 
       <div className="flex flex-1 flex-col p-3.5">
@@ -75,6 +82,14 @@ export function OwnerListingCard({ listing }: { listing: Listing }) {
             {listing.location.district}, {listing.location.department}
           </span>
         </p>
+        {published ? (
+          <time dateTime={published.iso} className="mt-1.5 flex items-center gap-1.5 text-xs text-muted">
+            <ClockIcon className="size-3.5 shrink-0" />
+            <span>
+              Fecha de publicación: <span className="font-semibold">{published.full}</span>
+            </span>
+          </time>
+        ) : null}
 
         {listing.description ? (
           <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-muted">

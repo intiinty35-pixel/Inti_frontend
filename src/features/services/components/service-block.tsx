@@ -1,11 +1,11 @@
 import { CheckIcon, WhatsappIcon } from "@/shared/ui";
 import { cn } from "@/shared/lib/cn";
-import { cloudinaryImage } from "@/shared/lib/cloudinary";
 import {
   buildServiceWhatsappUrl,
   SERVICES_CONTACT_HREF,
   type ServiceItem,
 } from "@/features/services/config";
+import { ServiceImage } from "@/features/services/components/service-image";
 
 export interface ServiceBlockProps {
   service: ServiceItem;
@@ -19,7 +19,8 @@ export interface ServiceBlockProps {
  */
 const PHOTO_OVERLAY = "linear-gradient(180deg, rgb(0 18 79 / 0.10) 0%, rgb(0 18 79 / 0.55) 100%)";
 
-const PHOTO = "h-72 w-full rounded-2xl object-cover sm:h-80 lg:h-[420px]";
+/** Altura fija por breakpoint: sin ella la foto colapsa y no se ve. */
+const PHOTO_BOX = "h-64 w-full rounded-2xl sm:h-72 lg:h-[400px] xl:h-[460px]";
 
 export function ServiceBlock({ service, reversed = false }: ServiceBlockProps) {
   const Icon = service.icon;
@@ -34,12 +35,10 @@ export function ServiceBlock({ service, reversed = false }: ServiceBlockProps) {
     >
       {/* ---- Foto con overlay azul y etiqueta flotante del icono ---- */}
       <div className="relative">
-        <img
-          src={cloudinaryImage(service.image, "f_auto,q_auto,c_fill,w_1200,h_860")}
+        <ServiceImage
+          src={service.image}
           alt={service.imageAlt}
-          loading="lazy"
-          decoding="async"
-          className={PHOTO}
+          className={PHOTO_BOX}
         />
         <div
           aria-hidden

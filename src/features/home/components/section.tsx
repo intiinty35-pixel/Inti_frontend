@@ -11,7 +11,7 @@ export interface HomeSectionProps {
 /** Bloque vertical del home con el gutter reducido (`wide-tight`). */
 export function HomeSection({ children, id, className }: HomeSectionProps) {
   return (
-    <section id={id} className={cn("py-12 sm:py-16", className)}>
+    <section id={id} className={cn("py-10 sm:py-14 xl:py-16", className)}>
       <Container size="wide-tight">{children}</Container>
     </section>
   );

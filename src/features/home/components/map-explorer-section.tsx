@@ -61,8 +61,8 @@ export async function MapExplorerSection() {
         description="Revisa las propiedades disponibles por zona y elige la que mejor se adapte a ti."
       />
 
-      <div className="mt-6 grid gap-4 lg:grid-cols-2">
-        <ul className="order-2 flex max-h-[520px] snap-y snap-proximity flex-col gap-3 overflow-y-auto pr-1 lg:order-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-edge">
+      <div className="mt-8 grid gap-5 lg:grid-cols-2 xl:gap-6">
+        <ul className="order-2 flex max-h-[520px] snap-y snap-proximity flex-col gap-3 overflow-y-auto pr-1 lg:order-1 lg:h-[560px] lg:max-h-none xl:h-[640px] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-edge">
           {PREVIEW_MAP_LISTINGS.map((listing) => (
             <li key={listing.id}>
               <MapListingCard listing={listing} />

@@ -27,6 +27,7 @@ export const PREVIEW_ARIZ_PROJECTS: readonly Project[] = [
     deliveryAt: "2027-06",
     features: ["Servicios básicos", "Área verde común", "Seguridad 24/7"],
     status: "preventa",
+    publishedAt: "2026-09-20",
   },
   {
     id: "prj-ariz-miraflores",
@@ -45,6 +46,7 @@ export const PREVIEW_ARIZ_PROJECTS: readonly Project[] = [
     deliveryAt: "2028-03",
     features: ["Terraza BBQ", "Gimnasio", "Estacionamiento subterráneo"],
     status: "en-construccion",
+    publishedAt: "2026-09-17",
   },
   {
     id: "prj-torres-ariz-san-borja",
@@ -63,6 +65,7 @@ export const PREVIEW_ARIZ_PROJECTS: readonly Project[] = [
     deliveryAt: "2029-01",
     features: ["Jardines interiores", "Coworking", "Sala de reuniones"],
     status: "preventa",
+    publishedAt: "2026-09-10",
   },
   {
     id: "prj-lotes-ariz-punta-hermosa",
@@ -81,6 +84,7 @@ export const PREVIEW_ARIZ_PROJECTS: readonly Project[] = [
     deliveryAt: "2027-11",
     features: ["Acceso a playa", "Servicios básicos", "Oficina de ventas"],
     status: "preventa",
+    publishedAt: "2026-09-08",
   },
   {
     id: "prj-torres-ariz-los-olivos",
@@ -100,6 +104,7 @@ export const PREVIEW_ARIZ_PROJECTS: readonly Project[] = [
     deliveryAt: "2028-11",
     features: ["Coworking", "Gimnasio", "Ciclositorquios"],
     status: "preventa",
+    publishedAt: "2026-09-02",
   },
 ];
 

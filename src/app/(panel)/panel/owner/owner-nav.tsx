@@ -42,17 +42,22 @@ function isActiveOwnerRoute(pathname: string, href: string) {
 export function OwnerNav({
   collapsed = false,
   mobile = false,
+  canManageProjects = true,
   onNavigate,
 }: {
   collapsed?: boolean;
   mobile?: boolean;
+  canManageProjects?: boolean;
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
 
   return (
     <nav className={cn(mobile ? "flex flex-col gap-1" : "flex flex-col gap-1.5")}>
-      {NAV_ITEMS.map((item) => {
+      {NAV_ITEMS.filter((item) => {
+        if (canManageProjects) return true;
+        return item.key !== "projects" && item.key !== "new-project";
+      }).map((item) => {
         const active = isActiveOwnerRoute(pathname, item.href);
         const Icon = item.Icon;
 

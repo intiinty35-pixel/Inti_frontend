@@ -8,6 +8,7 @@ export const ROUTES = {
   registerProfessional: "/register/professional",
   properties: "/propiedades",
   property: (slug: string): string => `/propiedades/${slug}`,
+  projects: "/proyectos",
   project: (slug: string): string => `/project/${slug}`,
   services: "/servicios",
   panel: {

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRightIcon, Container } from "@/shared/ui";
+import { Container } from "@/shared/ui";
 import { ROUTES } from "@/shared/config/routes";
 
 interface FooterLink {
@@ -45,112 +45,59 @@ function Brand() {
   );
 }
 
-/**
- * Cinta de cierre que aparece arriba del pie en todas las paginas publicas.
- *
- * El foco esta en dos publicos y en este orden:
- * 1. Quien quiere publicar: es el mensaje principal, con el boton amarillo para
- *    registrarse y publicar. Sin propiedades no hay busqueda, y publicar es la
- *    accion que mas nos conviene empujar desde el cierre de la pagina.
- * 2. Quien busca: boton secundario en vidrio, no compite con el principal.
- */
-function ClosingCta() {
-  return (
-    <section className="bg-brand py-12 text-center text-white sm:py-14">
-      <Container size="wide-tight">
-        <p className="text-[11px] font-bold tracking-[0.18em] text-accent uppercase">
-          Únete a Ariz
-        </p>
-        <h2 className="mt-4 text-3xl font-light tracking-tight sm:text-4xl">
-          Publica tu propiedad y llega a miles de personas
-        </h2>
-        <p className="mx-auto mt-4 max-w-xl text-sm text-white/80 sm:text-base">
-          Crea tu cuenta gratis en minutos, publica tus propiedades y recibe solicitudes de
-          personas que ya están buscando.
-        </p>
-
-        <div className="mt-8 flex flex-wrap justify-center gap-3">
-          <Link
-            href={ROUTES.registerProfessional}
-            className="flex h-11 items-center gap-2 rounded-card bg-accent px-6 text-sm font-bold text-on-accent transition-colors hover:bg-accent-hover"
-          >
-            Publica tu propiedad
-            <ArrowRightIcon className="size-4" />
-          </Link>
-          <Link
-            href={`${ROUTES.properties}?operation=buy`}
-            className="flex h-11 items-center rounded-card border border-white/45 px-6 text-sm font-bold text-white transition-colors hover:bg-white/10"
-          >
-            Quiero buscar propiedad
-          </Link>
-        </div>
-
-        {/* Refuerzo para quien todavia no decide: explica el registro en 3 pasos. */}
-        <p className="mt-6 text-xs text-white/60">
-          Registrarte es gratis y no necesitas tarjeta. Publicar toma menos de 5 minutos.
-        </p>
-      </Container>
-    </section>
-  );
-}
-
 export function PublicFooter() {
   return (
-    <>
-      <ClosingCta />
+    <footer className="border-t border-edge bg-surface">
+      <Container size="wide" className="py-14 sm:py-16">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_repeat(3,1fr)] lg:gap-8">
+          <div>
+            <Brand />
+            <p className="mt-5 max-w-xs text-sm leading-relaxed text-muted">
+              Conectamos personas, propiedades y oportunidades con una experiencia más clara y
+              confiable.
+            </p>
+          </div>
 
-      <footer className="border-t border-edge bg-surface">
-        <Container size="wide" className="py-12 sm:py-14">
-          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_repeat(3,1fr)] lg:gap-8">
-            <div>
-              <Brand />
-              <p className="mt-5 max-w-xs text-sm leading-relaxed text-muted">
-                Conectamos personas, propiedades y oportunidades con una experiencia más clara y
-                confiable.
-              </p>
+          {GROUPS.map((group) => (
+            <div key={group.title}>
+              <h2 className="text-[11px] font-bold tracking-[0.18em] text-brand uppercase">
+                {group.title}
+              </h2>
+              <ul className="mt-4 flex flex-col gap-2.5">
+                {group.links.map((link) => (
+                  <li key={link.label}>
+                    {link.href ? (
+                      <Link
+                        href={link.href}
+                        className="text-sm text-muted transition-colors hover:text-brand"
+                      >
+                        {link.label}
+                      </Link>
+                    ) : (
+                      <span
+                        title="Disponible próximamente"
+                        className="cursor-default text-sm text-muted"
+                      >
+                        {link.label}
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
             </div>
+          ))}
+        </div>
 
-            {GROUPS.map((group) => (
-              <div key={group.title}>
-                <h2 className="text-[11px] font-bold tracking-[0.18em] text-brand uppercase">
-                  {group.title}
-                </h2>
-                <ul className="mt-4 flex flex-col gap-2.5">
-                  {group.links.map((link) => (
-                    <li key={link.label}>
-                      {link.href ? (
-                        <Link
-                          href={link.href}
-                          className="text-sm text-muted transition-colors hover:text-brand"
-                        >
-                          {link.label}
-                        </Link>
-                      ) : (
-                        <span
-                          title="Disponible próximamente"
-                          className="cursor-default text-sm text-muted"
-                        >
-                          {link.label}
-                        </span>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-12 flex flex-col gap-3 border-t border-edge pt-6 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
-            <span>© {new Date().getFullYear()} Ariz Proyectos</span>
-            <span
-              title="Disponible próximamente"
-              className="cursor-default font-semibold text-brand"
-            >
-              Términos y privacidad
-            </span>
-          </div>
-        </Container>
-      </footer>
-    </>
+        <div className="mt-12 flex flex-col gap-3 border-t border-edge pt-6 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
+          <span>© {new Date().getFullYear()} Ariz Proyectos</span>
+          <span
+            title="Disponible próximamente"
+            className="cursor-default font-semibold text-brand"
+          >
+            Términos y privacidad
+          </span>
+        </div>
+      </Container>
+    </footer>
   );
 }
