@@ -39,7 +39,15 @@ async function request<T>(path: string, init: ApiInit = {}): Promise<T> {
   });
 
   if (!response.ok) {
-    throw new ApiError(`${method} ${path} responded ${response.status}`, response.status);
+    let message = `${method} ${path} responded ${response.status}`;
+    try {
+      const body = (await response.json()) as { message?: unknown };
+      if (typeof body.message === "string") message = body.message;
+      else if (Array.isArray(body.message)) message = body.message.join(" ");
+    } catch {
+      // Mantiene el mensaje de estado HTTP si la respuesta no contiene JSON.
+    }
+    throw new ApiError(message, response.status);
   }
 
   return response.json() as Promise<T>;

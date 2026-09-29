@@ -74,7 +74,9 @@ export function PlansView({
             ) : (
               <>
                 <p className="text-lg font-semibold">No tienes un plan activo</p>
-                <p className="text-sm text-white/70">Activa un paquete para comenzar a publicar.</p>
+                <p className="text-sm text-white/70">
+                  Solicita la activación de un paquete al administrador para publicar.
+                </p>
               </>
             )}
           </div>

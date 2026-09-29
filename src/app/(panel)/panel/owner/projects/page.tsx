@@ -29,7 +29,7 @@ export default async function PanelOwnerProjectsPage({
             <p className="mt-2 text-sm font-medium text-muted">
               {total > 0
                 ? `Gestionas ${total} ${total === 1 ? "proyecto" : "proyectos"}. Revisa su estado, lotes y disponibilidad.`
-                : "Publica tu primer proyecto y empieza a recibir contactos."}
+                : "Crea tu primer proyecto y guárdalo como borrador para publicarlo cuando estés listo."}
             </p>
           </div>
           <Link
@@ -37,7 +37,7 @@ export default async function PanelOwnerProjectsPage({
             className="flex h-11 shrink-0 items-center justify-center gap-2 rounded-card bg-brand px-5 text-sm font-bold text-on-brand transition-colors hover:bg-brand-hover"
           >
             <PlusIcon className="size-4" />
-            Publicar proyecto
+            Crear proyecto
           </Link>
         </div>
       </div>
@@ -65,15 +65,15 @@ export default async function PanelOwnerProjectsPage({
             Aún no tienes proyectos
           </p>
           <p className="mx-auto mt-2 max-w-md text-sm text-muted">
-            Completa el asistente de publicación con fotos, ubicación exacta, inventario de lotes y
-            precios. Tus proyectos aparecerán aquí para gestionarlos.
+            Completa el asistente para guardar tu proyecto como borrador. Luego podrás publicarlo
+            desde aquí cuando tengas crédito disponible en tu suscripción.
           </p>
           <Link
             href={ROUTES.panel.owner.newProject}
             className="mt-6 inline-flex h-11 items-center justify-center gap-2 rounded-card bg-brand px-5 text-sm font-bold text-on-brand transition-colors hover:bg-brand-hover"
           >
             <PlusIcon className="size-4" />
-            Publicar mi primer proyecto
+            Crear mi primer proyecto
           </Link>
         </div>
       )}

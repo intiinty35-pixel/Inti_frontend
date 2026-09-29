@@ -19,6 +19,7 @@ export interface ListboxProps {
   label?: string;
   labelledBy?: string;
   triggerClassName?: string;
+  listClassName?: string;
   className?: string;
   id?: string;
 }
@@ -37,6 +38,7 @@ export function Listbox({
   label,
   labelledBy,
   triggerClassName,
+  listClassName,
   className,
   id,
 }: ListboxProps) {
@@ -194,7 +196,10 @@ export function Listbox({
           ref={listRef}
           role="listbox"
           aria-labelledby={labelledBy ?? triggerId}
-          className="absolute top-full left-0 z-40 mt-2 max-h-64 w-full min-w-56 overflow-y-auto rounded-card border border-edge bg-surface p-1 shadow-[var(--shadow-pop)]"
+          className={cn(
+            "absolute top-full left-0 z-40 mt-2 max-h-64 w-full overflow-y-auto rounded-card border border-edge bg-surface p-1 shadow-[var(--shadow-pop)]",
+            listClassName ?? "min-w-56",
+          )}
         >
           {options.map((option, index) => {
             const isSelected = option.value === value;

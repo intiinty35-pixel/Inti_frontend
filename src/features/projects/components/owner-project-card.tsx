@@ -1,9 +1,18 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
+import { createPortal } from "react-dom";
 import { PinIcon } from "@/shared/ui";
 import { cn } from "@/shared/lib/cn";
 import { ROUTES } from "@/shared/config/routes";
 import { formatArea, formatPrice } from "@/shared/lib/format";
-import { PROJECT_STATUS_LABELS, type ApiProjectStatus, type ProjectApiSummary } from "@/features/projects/types/api";
+import {
+  PROJECT_STATUS_LABELS,
+  type ApiProjectStatus,
+  type ProjectApiSummary,
+} from "@/features/projects/types/api";
+import { publishProject } from "@/features/projects/api";
 import { PROJECT_STAGE_LABELS } from "@/features/projects/data/project-catalogs";
 import type { ProjectStage } from "@/features/projects/types/draft";
 import { DataCell, DataGrid } from "@/features/listings/components/data-grid";
@@ -27,6 +36,29 @@ const STAGE_LABELS: Record<string, ProjectStage> = {
 
 export function OwnerProjectCard({ project }: { project: ProjectApiSummary }) {
   const district = project.location.district;
+  const [status, setStatus] = useState(project.status);
+  const [publishing, setPublishing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const portalTarget = typeof document === "undefined" ? null : document.body;
+
+  async function handlePublish() {
+    setPublishing(true);
+    setError(null);
+    try {
+      const published = await publishProject(project.id);
+      setStatus(published.status);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "No se pudo publicar el proyecto.");
+    } finally {
+      setPublishing(false);
+    }
+  }
+
+  const needsSubscription =
+    error !== null &&
+    (error.toLowerCase().includes("suscrip") ||
+      error.toLowerCase().includes("crédito") ||
+      error.toLowerCase().includes("credito"));
 
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-card border border-edge bg-surface shadow-[var(--shadow-card)] transition-[box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-pop)]">
@@ -40,10 +72,10 @@ export function OwnerProjectCard({ project }: { project: ProjectApiSummary }) {
         <span
           className={cn(
             "absolute top-2.5 right-2.5 rounded-full px-2.5 py-1 text-[10px] font-black tracking-[0.08em] uppercase backdrop-blur",
-            STATUS_STYLE[project.status],
+            STATUS_STYLE[status],
           )}
         >
-          {PROJECT_STATUS_LABELS[project.status]}
+          {PROJECT_STATUS_LABELS[status]}
         </span>
 
         {project.images.length > 1 ? (
@@ -83,16 +115,25 @@ export function OwnerProjectCard({ project }: { project: ProjectApiSummary }) {
         </DataGrid>
 
         <div className="mt-auto flex gap-2 pt-3.5">
-          {project.status === "PUBLISHED" ? (
+          {status === "PUBLISHED" ? (
             <Link
               href={ROUTES.project(project.slug)}
               className="flex h-9 flex-1 items-center justify-center rounded-card bg-brand px-2.5 text-xs font-bold text-on-brand transition-colors hover:bg-brand-hover"
             >
               Ver publicación
             </Link>
+          ) : status === "DRAFT" ? (
+            <button
+              type="button"
+              onClick={() => void handlePublish()}
+              disabled={publishing}
+              className="flex h-9 flex-1 items-center justify-center rounded-card bg-brand px-2.5 text-xs font-bold text-on-brand transition-colors hover:bg-brand-hover disabled:cursor-wait disabled:opacity-60"
+            >
+              {publishing ? "Publicando…" : "Publicar"}
+            </button>
           ) : (
             <span className="flex h-9 flex-1 items-center justify-center rounded-card bg-surface-muted px-2.5 text-xs font-bold text-muted">
-              {project.status === "DRAFT" ? "Borrador" : "No publicado"}
+              No publicado
             </span>
           )}
           <Link
@@ -103,6 +144,53 @@ export function OwnerProjectCard({ project }: { project: ProjectApiSummary }) {
           </Link>
         </div>
       </div>
+
+      {error && portalTarget
+        ? createPortal(
+            <div
+              className="fixed inset-0 z-[100] flex items-center justify-center bg-brand/45 p-4 backdrop-blur-sm"
+              onMouseDown={(event) => {
+                if (event.target === event.currentTarget) setError(null);
+              }}
+            >
+              <section
+                className="w-full max-w-md rounded-card border border-edge bg-surface p-6 shadow-[var(--shadow-pop)]"
+                role="alertdialog"
+                aria-modal="true"
+                aria-labelledby={`publish-error-title-${project.id}`}
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <h2
+                      id={`publish-error-title-${project.id}`}
+                      className="font-display text-xl font-black text-brand"
+                    >
+                      {needsSubscription ? "No se pudo publicar" : "Error al publicar el proyecto"}
+                    </h2>
+                    <p className="mt-2 text-sm text-muted">{error}</p>
+                    {needsSubscription ? (
+                      <Link
+                        href={ROUTES.panel.owner.subscription}
+                        className="mt-5 inline-flex rounded-card bg-brand px-4 py-2.5 text-sm font-bold text-on-brand transition-colors hover:bg-brand-hover"
+                      >
+                        Consultar suscripción
+                      </Link>
+                    ) : null}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setError(null)}
+                    aria-label="Cerrar mensaje"
+                    className="flex size-8 shrink-0 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface-muted hover:text-brand"
+                  >
+                    ×
+                  </button>
+                </div>
+              </section>
+            </div>,
+            portalTarget,
+          )
+        : null}
     </article>
   );
 }

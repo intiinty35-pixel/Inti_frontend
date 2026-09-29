@@ -11,7 +11,6 @@ import { WizardStepper, type StepStatus, type WizardStepMeta } from "@/shared/ui
 import {
   buildProjectPayload,
   createProject,
-  publishProject,
   toProjectInput,
   uploadProjectFiles,
   type CreateProjectPayload,
@@ -83,7 +82,6 @@ export function ProjectPublishWizard({ previewProjects, onSave }: ProjectPublish
   const [payload, setPayload] = useState<CreateProjectPayload | null>(null);
   const [reviewedLots, setReviewedLots] = useState<readonly LotDraft[]>([]);
   const [saved, setSaved] = useState(false);
-  const [publishedSlug, setPublishedSlug] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -152,7 +150,6 @@ export function ProjectPublishWizard({ previewProjects, onSave }: ProjectPublish
     setPayload(null);
     setReviewedLots([]);
     setSaved(false);
-    setPublishedSlug(null);
     setError(null);
   }, [reset]);
 
@@ -165,7 +162,7 @@ export function ProjectPublishWizard({ previewProjects, onSave }: ProjectPublish
       setPayload(buildProjectPayload(draft));
     })();
 
-  // Sube los adjuntos a Cloudinary, crea el proyecto y lo publica.
+  // Sube los adjuntos y guarda el proyecto como borrador.
   const confirm = useCallback(
     async (next: CreateProjectPayload) => {
       setSaving(true);
@@ -179,14 +176,12 @@ export function ProjectPublishWizard({ previewProjects, onSave }: ProjectPublish
           images.length + plans.length,
         );
 
-        const created = await createProject(toProjectInput(next, [...images, ...plans, ...renders]));
-        const published = await publishProject(created.id);
+        await createProject(toProjectInput(next, [...images, ...plans, ...renders]));
 
-        setPublishedSlug(published.slug);
         onSave?.(next);
         setSaved(true);
       } catch (cause) {
-        setError(cause instanceof Error ? cause.message : "No se pudo publicar el proyecto.");
+        setError(cause instanceof Error ? cause.message : "No se pudo guardar el proyecto.");
       } finally {
         setSaving(false);
       }
@@ -201,18 +196,15 @@ export function ProjectPublishWizard({ previewProjects, onSave }: ProjectPublish
           <CheckCircleIcon className="size-8" />
         </span>
         <p className="text-[11px] font-black tracking-[0.2em] text-accent uppercase">
-          Proyecto publicado
+          Borrador guardado
         </p>
         <h2 className="font-display text-3xl font-black tracking-tight text-brand">
           {payload?.name}
         </h2>
         <p className="max-w-md text-sm text-muted">
-          El proyecto quedó publicado con {payload?.lots.length ?? 0} lotes. Ya es visible en el
-          catálogo de proyectos.
+          El proyecto quedó guardado con {payload?.lots.length ?? 0} lotes. Puedes publicarlo desde
+          Mis proyectos cuando tengas crédito disponible en tu suscripción.
         </p>
-        {publishedSlug ? (
-          <p className="font-mono text-xs text-muted">{publishedSlug}</p>
-        ) : null}
         <div className="mt-2 flex flex-col-reverse gap-3 sm:flex-row">
           <Button type="button" variant="secondary" onClick={startOver}>
             Crear otro proyecto

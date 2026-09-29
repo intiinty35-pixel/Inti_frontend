@@ -3,7 +3,6 @@
 import { useId, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import {
-  ChevronDownIcon,
   CrosshairIcon,
   Listbox,
   MapIcon,
@@ -34,10 +33,16 @@ const TABS: readonly SearchTab[] = [
 
 const UNSUPPORTED_TYPES = new Set<SearchPropertyType>(["projects", "country-lots"]);
 const SELECTABLE_TYPES = SEARCH_PROPERTY_TYPES.filter((option) => !UNSUPPORTED_TYPES.has(option.value));
+const CURRENCY_OPTIONS: readonly ListboxOption[] = [
+  { value: "PEN", label: "PEN · S/" },
+  { value: "USD", label: "USD · $" },
+];
 
 const FIELD_LABEL = "text-[10px] font-bold tracking-[0.12em] text-brand";
 const FIELD_CONTROL =
   "w-full bg-transparent text-sm text-ink placeholder:text-muted/70 focus:outline-none";
+const PRICE_CONTROL =
+  "h-9 w-full min-w-0 rounded bg-surface-muted/60 px-3 text-sm font-medium text-ink placeholder:text-muted/70 transition-colors focus:bg-surface focus:outline-none focus:ring-2 focus:ring-brand/30";
 
 const TRIGGER_CONTROL = "w-full text-sm text-ink";
 
@@ -59,6 +64,9 @@ export function SearchForm() {
   const typeLabelId = useId();
   const [tabKey, setTabKey] = useState<string>(TABS[0].key);
   const [type, setType] = useState<SearchPropertyType>("all");
+  const [currency, setCurrency] = useState("PEN");
+  const [priceMin, setPriceMin] = useState("");
+  const [priceMax, setPriceMax] = useState("");
   const tab = TABS.find((item) => item.key === tabKey) ?? TABS[0];
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -120,7 +128,7 @@ export function SearchForm() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 gap-5 p-5 md:grid-cols-2 lg:grid-cols-[1.35fr_1.1fr_1.4fr_auto] lg:items-center lg:gap-0 lg:p-0">
+      <div className="grid grid-cols-1 gap-5 p-5 md:grid-cols-2 lg:grid-cols-[1.2fr_1fr_1.8fr_auto] lg:items-center lg:gap-0 lg:p-0">
         <label className="flex flex-col gap-1.5 lg:px-6 lg:py-5">
           <span className={FIELD_LABEL}>UBICACIÓN</span>
           <span className="flex items-center gap-2 text-muted">
@@ -147,43 +155,49 @@ export function SearchForm() {
             disabled={Boolean(tab.fixedType)}
             labelledBy={typeLabelId}
             triggerClassName={TRIGGER_CONTROL}
+            listClassName="min-w-0"
           />
         </div>
 
-        <div className="flex flex-col gap-1.5 md:col-span-2 lg:col-span-1 lg:border-l lg:border-edge lg:px-6 lg:py-5">
-          <span className={FIELD_LABEL}>RANGO DE PRECIO</span>
-          <div className="flex items-center gap-2">
-            <span className="relative flex items-center">
-              <select
-                name="currency"
-                aria-label="Moneda"
-                className="cursor-pointer appearance-none bg-transparent pr-4 text-xs font-bold text-ink focus:outline-none"
-              >
-                <option value="PEN">PEN / S/</option>
-                <option value="USD">USD / $</option>
-              </select>
-              <ChevronDownIcon className="pointer-events-none absolute right-0 size-3.5 text-muted" />
-            </span>
+        <div className="flex flex-col gap-1.5 md:col-span-2 lg:col-span-1 lg:px-5 lg:py-4">
+          <div className="flex items-center justify-between gap-3">
+            <span className={FIELD_LABEL}>RANGO DE PRECIO</span>
+            <Listbox
+              name="currency"
+              value={currency}
+              options={CURRENCY_OPTIONS}
+              onValueChange={setCurrency}
+              label="Moneda"
+              className="w-28 shrink-0"
+              triggerClassName="h-7 rounded bg-surface-muted/60 px-2.5 text-xs font-bold focus-visible:ring-2 focus-visible:ring-brand/30"
+              listClassName="min-w-0"
+            />
+          </div>
+          <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2">
             <input
               name="priceMin"
-              type="number"
-              min={0}
+              type="text"
+              pattern="[0-9]*"
               inputMode="numeric"
-              placeholder="Mín."
+              placeholder="Mínimo"
               aria-label="Precio mínimo"
-              className={cn(FIELD_CONTROL, "min-w-0 flex-1")}
+              className={PRICE_CONTROL}
+              value={priceMin}
+              onChange={(event) => setPriceMin(event.target.value.replace(/\D/g, ""))}
             />
             <span aria-hidden className="text-muted">
               —
             </span>
             <input
               name="priceMax"
-              type="number"
-              min={0}
+              type="text"
+              pattern="[0-9]*"
               inputMode="numeric"
-              placeholder="Máx."
+              placeholder="Máximo"
               aria-label="Precio máximo"
-              className={cn(FIELD_CONTROL, "min-w-0 flex-1")}
+              className={PRICE_CONTROL}
+              value={priceMax}
+              onChange={(event) => setPriceMax(event.target.value.replace(/\D/g, ""))}
             />
           </div>
         </div>

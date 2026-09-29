@@ -14,7 +14,7 @@ export default async function OwnerSubscriptionPage() {
         <p className="text-[11px] font-bold tracking-[0.18em] text-accent uppercase">Planes y suscripcion</p>
         <h1 className="mt-1 text-3xl font-light tracking-tight text-brand">Elige el plan para tu negocio</h1>
         <p className="mt-2 text-sm text-muted">
-          Los limites y precios se obtienen de la configuracion comercial.
+          Consulta los planes y solicita al administrador la activación o renovación de tu suscripción.
         </p>
       </div>
 

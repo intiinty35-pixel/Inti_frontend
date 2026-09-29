@@ -94,9 +94,8 @@ export function ProjectReview({
         <div>
           <p className="text-sm font-semibold text-ink">Borrador validado correctamente</p>
           <p className="mt-1 text-xs text-muted">
-            Al confirmarlo se suben las imágenes a Cloudinary y el proyecto se crea y publica en el
-            backend (<code className="font-mono">POST /projects</code>). El JSON de abajo es el
-            borrador antes de convertirlo a los enums del backend.
+            Al confirmarlo se suben las imágenes y el proyecto se guarda como borrador. Podrás
+            publicarlo después desde Mis proyectos si tienes crédito disponible en tu suscripción.
           </p>
         </div>
       </div>
@@ -237,7 +236,7 @@ export function ProjectReview({
         </Button>
         <Button type="button" onClick={() => void onSave(payload)} disabled={saving}>
           <CheckCircleIcon className="h-4 w-4" />
-          {saving ? "Publicando proyecto…" : "Crear y publicar"}
+          {saving ? "Guardando borrador…" : "Guardar borrador"}
         </Button>
       </div>
     </div>

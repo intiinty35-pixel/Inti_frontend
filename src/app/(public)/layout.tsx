@@ -2,7 +2,9 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { Container } from "@/shared/ui/container";
 import { SparkleIcon } from "@/shared/ui";
-import { ROUTES } from "@/shared/config/routes";
+import { getHomeRoute, ROUTES } from "@/shared/config/routes";
+import { getSession } from "@/features/auth/api/server";
+import { getMyProfile } from "@/features/owner/api/server";
 import { PublicNav } from "@/app/(public)/public-nav";
 import { PublicFooter } from "@/app/(public)/public-footer";
 
@@ -14,7 +16,19 @@ function Logo() {
   );
 }
 
-export default function PublicLayout({ children }: { children: ReactNode }) {
+export default async function PublicLayout({ children }: { children: ReactNode }) {
+  const session = await getSession();
+  let accountName = session?.name;
+
+  if (session?.role === "REAL_ESTATE") {
+    try {
+      const profile = await getMyProfile();
+      accountName = profile.businessName?.trim() || session.name;
+    } catch {
+      accountName = session.name;
+    }
+  }
+
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-40 border-b border-edge bg-surface">
@@ -27,20 +41,30 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
             <PublicNav />
           </div>
 
-          <div className="grid grid-cols-2 gap-2">
+          {session ? (
             <Link
-              href={ROUTES.login}
-              className="flex h-10 items-center justify-center rounded-card border border-edge bg-surface px-4 text-xs font-bold whitespace-nowrap text-brand transition-colors hover:border-brand"
+              href={getHomeRoute(session.role)}
+              title={accountName}
+              className="inline-flex h-10 max-w-52 items-center truncate rounded-card border border-edge bg-surface px-4 text-xs font-bold text-brand transition-colors hover:border-brand"
             >
-              Iniciar sesión
+              {accountName}
             </Link>
-            <Link
-              href={ROUTES.register}
-              className="flex h-10 items-center justify-center rounded-card bg-brand px-4 text-xs font-bold whitespace-nowrap text-on-brand transition-colors hover:bg-brand-hover"
-            >
-              Registro
-            </Link>
-          </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-2">
+              <Link
+                href={ROUTES.login}
+                className="flex h-10 items-center justify-center rounded-card border border-edge bg-surface px-4 text-xs font-bold whitespace-nowrap text-brand transition-colors hover:border-brand"
+              >
+                Iniciar sesión
+              </Link>
+              <Link
+                href={ROUTES.register}
+                className="flex h-10 items-center justify-center rounded-card bg-brand px-4 text-xs font-bold whitespace-nowrap text-on-brand transition-colors hover:bg-brand-hover"
+              >
+                Registro
+              </Link>
+            </div>
+          )}
         </Container>
       </header>
 
