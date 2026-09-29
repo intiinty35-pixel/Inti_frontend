@@ -21,6 +21,7 @@ import { LazyPropertyLocationMap } from "@/features/listings/components/property
 import { QuickQuestions } from "@/features/listings/components/Quickquestions";
 import { getProjectBySlugServer } from "@/features/projects/api/server";
 import type { ProjectApiDetail } from "@/features/projects/types/api";
+import { LeadForm } from "@/features/leads";
 
 interface ProjectPageProps {
   params: Promise<{ slug: string }>;
@@ -546,31 +547,13 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         <aside className="flex flex-col gap-4 lg:sticky lg:top-20">
           <div className="rounded-2xl border border-edge bg-surface p-5 xl:p-6">
             <h2 className="text-base font-bold text-ink xl:text-lg">Contacta al desarrollador</h2>
-            <p className="mt-2 text-sm text-muted">
-              Escríbele por WhatsApp para recibir el plan de pagos, la ficha técnica y agendar una
-              visita al terreno.
-            </p>
-            {whatsappUrl ? (
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-card bg-brand text-sm font-bold text-accent transition-opacity hover:opacity-90"
-              >
-                <WhatsappIcon className="size-4" />
-                Contactar por WhatsApp
-              </a>
-            ) : (
-              <p className="mt-4 text-sm text-muted">El desarrollador no publiko un número de contacto.</p>
-            )}
-            {project.agent.email ? (
-              <a
-                href={`mailto:${project.agent.email}`}
-                className="mt-3 block text-center text-xs font-bold text-brand"
-              >
-                {project.agent.email}
-              </a>
-            ) : null}
+            <LeadForm
+              projectId={project.id}
+              source="PROJECT_FORM"
+              compact
+              whatsappUrl={whatsappUrl}
+              defaultMessage={`¡Hola! Quiero que se comuniquen conmigo para recibir más información sobre el proyecto ${project.name} que vi en ARIZ.`}
+            />
           </div>
 
           <Link

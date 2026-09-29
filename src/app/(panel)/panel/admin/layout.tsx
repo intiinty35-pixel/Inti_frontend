@@ -1,18 +1,14 @@
 import type { ReactNode } from "react";
 import { requireRole } from "@/features/auth";
-import { getModulesForRole } from "@/shared/config/modules";
-import { GenericPanelShell } from "@/app/(panel)/panel/generic-panel-shell";
+import { ROLE_LABELS } from "@/shared/config/roles";
+import { AdminShell } from "@/app/(panel)/panel/admin/admin-shell";
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   const session = await requireRole("ADMIN");
 
   return (
-    <GenericPanelShell
-      name={session.name}
-      role={session.role}
-      modules={getModulesForRole(session.role)}
-    >
+    <AdminShell name={session.name} roleLabel={ROLE_LABELS[session.role]}>
       {children}
-    </GenericPanelShell>
+    </AdminShell>
   );
 }

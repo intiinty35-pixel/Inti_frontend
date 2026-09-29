@@ -4,17 +4,16 @@ import { useEffect, useState, type FormEvent } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { createLead } from "@/features/leads/api";
-import type { LeadSource } from "@/features/leads/types/lead";
+import type { LeadSource, LeadTarget } from "@/features/leads/types/lead";
 import { WhatsappIcon } from "@/shared/ui/icons";
 
-export interface LeadFormProps {
-  propertyId: string;
+export type LeadFormProps = {
   source?: LeadSource;
   defaultMessage?: string;
   compact?: boolean;
   /** Enlace wa.me del anunciante. Sin enlace, el boton se muestra deshabilitado. */
   whatsappUrl?: string;
-}
+} & LeadTarget;
 
 const field =
   "h-12 w-full rounded-xl border border-ink/60 bg-transparent px-4 text-sm text-ink outline-none transition-colors placeholder:text-muted focus:border-[#0f6148] focus:ring-2 focus:ring-[#0f6148]/20";
@@ -66,7 +65,7 @@ function SuccessModal({ onClose }: { onClose: () => void }) {
         <h3 id="lead-success-title" className="mt-4 text-lg font-bold text-ink">
           ¡Mensaje enviado correctamente!
         </h3>
-        <p className="mt-1.5 text-sm text-muted">El anunciante recibirá tu consulta y se comunicará contigo.</p>
+        <p className="mt-1.5 text-sm text-muted">El contacto de la publicación recibirá tu consulta y se comunicará contigo.</p>
         <button
           type="button"
           autoFocus
@@ -83,11 +82,13 @@ function SuccessModal({ onClose }: { onClose: () => void }) {
 
 export function LeadForm({
   propertyId,
+  projectId,
   source = "PROPERTY_FORM",
   defaultMessage = "¡Hola! Quiero que se comuniquen conmigo por este inmueble que vi en ARIZ.",
   compact = false,
   whatsappUrl,
 }: LeadFormProps) {
+  const targetId = propertyId ?? projectId;
   const [showSuccess, setShowSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -106,7 +107,7 @@ export function LeadForm({
 
     try {
       await createLead({
-        propertyId,
+        ...(propertyId ? { propertyId } : { projectId: projectId! }),
         source,
         name: String(form.get("name") ?? "").trim(),
         email: String(form.get("email") ?? "").trim(),
@@ -138,11 +139,11 @@ export function LeadForm({
       <input name="dni" type="text" placeholder="DNI" inputMode="numeric" maxLength={12} className={field} />
 
       <div className="rounded-xl border border-ink/60 px-4 pt-1.5 pb-2 transition-colors focus-within:border-[#0f6148] focus-within:ring-2 focus-within:ring-[#0f6148]/20">
-        <label htmlFor={`lead-message-${propertyId}`} className="block text-[11px] text-muted">
+        <label htmlFor={`lead-message-${targetId}`} className="block text-[11px] text-muted">
           Mensaje
         </label>
         <textarea
-          id={`lead-message-${propertyId}`}
+          id={`lead-message-${targetId}`}
           name="message"
           required
           rows={3}

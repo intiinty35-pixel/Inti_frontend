@@ -1,8 +1,10 @@
 import { revalidatePath } from "next/cache";
-import { Button, Card, CardContent } from "@/shared/ui";
+import { Card, CardContent, Pagination } from "@/shared/ui";
 import { ROUTES } from "@/shared/config/routes";
 import { listProfessionals, setProfessionalStatus } from "@/features/admin/api/server";
 import type { ApprovalStatus } from "@/features/auth";
+import { AdminPageHeader } from "@/app/(panel)/panel/admin/admin-shell";
+import { ConfirmSubmitButton } from "@/features/admin/components/confirm-submit-button";
 
 const TYPE_LABELS = {
   INDEPENDENT_AGENT: "Agente independiente",
@@ -36,18 +38,23 @@ async function updateStatus(formData: FormData) {
   revalidatePath(ROUTES.panel.admin.base);
 }
 
-export default async function PanelAdminPage() {
-  const professionals = await listProfessionals();
+interface PanelAdminPageProps {
+  searchParams: Promise<{ page?: string }>;
+}
+
+export default async function PanelAdminPage({ searchParams }: PanelAdminPageProps) {
+  const { page: pageParam } = await searchParams;
+  const page = Math.max(1, Number(pageParam) || 1);
+  const { items: professionals, total, pageSize } = await listProfessionals(page);
   const pending = professionals.filter((item) => item.status === "PENDING").length;
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-3xl font-light text-brand">Cuentas profesionales</h1>
-        <p className="mt-1 text-sm text-muted">
-          {pending} pendientes de validación · {professionals.length} en total
-        </p>
-      </div>
+      <AdminPageHeader
+        eyebrow="Cuentas"
+        title="Cuentas profesionales"
+        description={`${pending} pendientes de validación en esta página · ${total} en total`}
+      />
 
       {professionals.length === 0 ? (
         <Card>
@@ -56,48 +63,73 @@ export default async function PanelAdminPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="flex flex-col gap-3">
-          {professionals.map((item) => {
-            const name = item.businessName ?? `${item.user.firstName} ${item.user.lastName ?? ""}`;
+        <>
+          <div className="grid gap-4 lg:grid-cols-2">
+            {professionals.map((item) => {
+              const name = (item.businessName ?? `${item.user.firstName} ${item.user.lastName ?? ""}`).trim();
+              const initial = name.charAt(0).toUpperCase() || "A";
 
-            return (
-              <Card key={item.id}>
-                <CardContent className="flex flex-col gap-4 pt-6 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="flex flex-col gap-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <p className="font-semibold text-ink">{name.trim()}</p>
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${STATUS_STYLES[item.status]}`}
-                      >
-                        {STATUS_LABELS[item.status]}
-                      </span>
+              return (
+                <Card key={item.id} className="p-5">
+                  <div className="flex items-start gap-4">
+                    <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-brand text-lg font-black text-on-brand">
+                      {initial}
+                    </span>
+                    <div className="flex min-w-0 flex-1 flex-col gap-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="text-base font-bold text-ink">{name}</p>
+                        <span
+                          className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${STATUS_STYLES[item.status]}`}
+                        >
+                          {STATUS_LABELS[item.status]}
+                        </span>
+                      </div>
+                      <p className="text-sm text-muted">
+                        {TYPE_LABELS[item.type]} · {item.ruc ? `RUC ${item.ruc}` : `DNI ${item.dni ?? "—"}`} ·{" "}
+                        {item.city}
+                      </p>
+                      <p className="text-sm text-muted">
+                        {item.user.email} · WhatsApp {item.whatsapp ?? "—"}
+                      </p>
+                      <form action={updateStatus} className="mt-3 flex gap-2">
+                        <input type="hidden" name="id" value={item.id} />
+                        {item.status !== "APPROVED" ? (
+                          <ConfirmSubmitButton
+                            name="status"
+                            value="APPROVED"
+                            size="sm"
+                            confirmTitle={`¿Aprobar la cuenta de ${name}?`}
+                            confirmLabel="Aprobar"
+                          >
+                            Aprobar
+                          </ConfirmSubmitButton>
+                        ) : null}
+                        {item.status !== "REJECTED" ? (
+                          <ConfirmSubmitButton
+                            name="status"
+                            value="REJECTED"
+                            size="sm"
+                            variant="secondary"
+                            confirmTitle={`¿Rechazar la cuenta de ${name}?`}
+                            confirmLabel="Rechazar"
+                          >
+                            Rechazar
+                          </ConfirmSubmitButton>
+                        ) : null}
+                      </form>
                     </div>
-                    <p className="text-xs text-muted">
-                      {TYPE_LABELS[item.type]} · {item.ruc ? `RUC ${item.ruc}` : `DNI ${item.dni ?? "—"}`} ·{" "}
-                      {item.city}
-                    </p>
-                    <p className="text-xs text-muted">
-                      {item.user.email} · WhatsApp {item.whatsapp ?? "—"}
-                    </p>
                   </div>
-                  <form action={updateStatus} className="flex gap-2">
-                    <input type="hidden" name="id" value={item.id} />
-                    {item.status !== "APPROVED" ? (
-                      <Button type="submit" name="status" value="APPROVED" size="sm">
-                        Aprobar
-                      </Button>
-                    ) : null}
-                    {item.status !== "REJECTED" ? (
-                      <Button type="submit" name="status" value="REJECTED" size="sm" variant="secondary">
-                        Rechazar
-                      </Button>
-                    ) : null}
-                  </form>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
+                </Card>
+              );
+            })}
+          </div>
+          <Pagination
+            page={page}
+            pageSize={pageSize}
+            total={total}
+            buildHref={(p) => `${ROUTES.panel.admin.base}?page=${p}`}
+          />
+        </>
       )}
     </div>
   );
