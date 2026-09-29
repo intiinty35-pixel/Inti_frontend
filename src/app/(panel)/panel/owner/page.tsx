@@ -91,7 +91,7 @@ export default async function OwnerDashboardPage() {
   const topActivity = properties
     .map((property) => ({
       label: property.title,
-      value: leads.filter((lead) => lead.property.id === property.id).length,
+      value: leads.filter((lead) => lead.property?.id === property.id).length,
       color: CATEGORICAL[0],
     }))
     .sort((a, b) => b.value - a.value);

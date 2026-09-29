@@ -106,9 +106,10 @@ export interface Lead {
   email: string;
   phone: string | null;
   message: string;
-  source: "PROPERTY_FORM" | "WHATSAPP" | "QUICK_QUESTION" | "PHONE";
+  source: "PROPERTY_FORM" | "PROJECT_FORM" | "WHATSAPP" | "QUICK_QUESTION" | "PHONE";
   createdAt: string;
-  property: { id: string; slug: string; title: string };
+  property: { id: string; slug: string; title: string } | null;
+  project: { id: string; slug: string; name: string } | null;
 }
 
 export interface PagedResult<T> {

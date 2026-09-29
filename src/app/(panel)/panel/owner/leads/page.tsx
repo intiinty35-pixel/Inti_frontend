@@ -5,6 +5,7 @@ import { listMyLeadsPaged } from "@/features/owner/api/server";
 
 const SOURCE_LABELS: Record<string, string> = {
   PROPERTY_FORM: "Formulario de propiedad",
+  PROJECT_FORM: "Formulario de proyecto",
   WHATSAPP: "WhatsApp",
   QUICK_QUESTION: "Pregunta rápida",
   PHONE: "Teléfono",
@@ -48,7 +49,10 @@ export default async function OwnerLeadsPage({
                     </span>
                   </div>
                   <p className="text-xs text-muted">
-                    Interesado en <span className="font-medium text-ink">{lead.property.title}</span>
+                    Interesado en{" "}
+                    <span className="font-medium text-ink">
+                      {lead.project?.name ?? lead.property?.title ?? "Publicación"}
+                    </span>
                   </p>
                   <p className="text-sm text-ink">{lead.message}</p>
                   <p className="text-xs text-muted">

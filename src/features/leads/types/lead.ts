@@ -1,4 +1,8 @@
-export type LeadSource = "PROPERTY_FORM" | "WHATSAPP" | "QUICK_QUESTION" | "PHONE";
+export type LeadSource = "PROPERTY_FORM" | "PROJECT_FORM" | "WHATSAPP" | "QUICK_QUESTION" | "PHONE";
+
+export type LeadTarget =
+  | { propertyId: string; projectId?: never }
+  | { projectId: string; propertyId?: never };
 
 export interface Lead {
   id: string;
@@ -7,16 +11,16 @@ export interface Lead {
   email?: string;
   message?: string;
   source: LeadSource;
-  propertyId: string;
+  propertyId?: string;
+  projectId?: string;
   createdAt: string;
 }
 
-export interface LeadInput {
+export type LeadInput = {
   name: string;
   phone: string;
   email?: string;
   message?: string;
   source: LeadSource;
-  propertyId: string;
   utm?: Record<string, string | undefined>;
-}
+} & LeadTarget;

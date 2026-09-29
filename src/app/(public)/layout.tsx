@@ -75,9 +75,9 @@ export default async function PublicLayout({ children }: { children: ReactNode }
       <button
         type="button"
         title="Disponible próximamente"
-        className="fixed right-5 bottom-5 z-50 flex h-11 items-center gap-2 rounded-full bg-accent px-5 text-sm font-bold text-on-accent shadow-[var(--shadow-pop)] transition-colors hover:bg-accent-hover"
+        className="fixed right-4 bottom-4 z-50 flex h-9 items-center gap-1.5 rounded-full bg-accent px-3.5 text-xs font-bold text-on-accent shadow-[var(--shadow-pop)] transition-colors hover:bg-accent-hover"
       >
-        <SparkleIcon className="size-4" />
+        <SparkleIcon className="size-3.5" />
         Asistente inmobiliario
       </button>
     </div>

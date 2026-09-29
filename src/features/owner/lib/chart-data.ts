@@ -26,13 +26,20 @@ export function leadsPerDay(leads: Lead[], days: number, now: number): { label: 
 
 const SOURCE_LABELS: Record<Lead["source"], string> = {
   PROPERTY_FORM: "Formulario",
+  PROJECT_FORM: "Formulario de proyecto",
   WHATSAPP: "WhatsApp",
   QUICK_QUESTION: "Pregunta rápida",
   PHONE: "Teléfono",
 };
 
 export function leadsBySource(leads: Lead[]) {
-  const order: Lead["source"][] = ["PROPERTY_FORM", "WHATSAPP", "QUICK_QUESTION", "PHONE"];
+  const order: Lead["source"][] = [
+    "PROPERTY_FORM",
+    "PROJECT_FORM",
+    "WHATSAPP",
+    "QUICK_QUESTION",
+    "PHONE",
+  ];
   const counts = new Map<Lead["source"], number>();
   for (const lead of leads) {
     counts.set(lead.source, (counts.get(lead.source) ?? 0) + 1);

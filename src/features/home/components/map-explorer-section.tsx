@@ -1,16 +1,59 @@
-import { formatPrice } from "@/shared/lib/format";
 import { MapListingCard, PREVIEW_MAP_LISTINGS } from "@/features/listings";
+import { getListings } from "@/features/listings/api";
 import { HomeSection, SectionHeading } from "@/features/home/components/section";
-import { MapPlaceholder, type MapMarker } from "@/features/home/components/map-placeholder";
+import { MapListingsMapClient, type MapListingMarker } from "@/features/home/components/map-listings-map-client";
+import { getPublicProjectsServer } from "@/features/projects/api/server";
+import { formatPrice } from "@/shared/lib/format";
 
-const MARKERS: readonly MapMarker[] = PREVIEW_MAP_LISTINGS.map((listing) => ({
-  id: listing.id,
-  price: formatPrice(listing.price.amount, listing.price.currency),
-  lat: listing.location.lat,
-  lng: listing.location.lng,
-}));
+const MAP_PAGE_SIZE = 50;
 
-export function MapExplorerSection() {
+export async function MapExplorerSection() {
+  const [propertyMarkers, projectMarkers] = await Promise.all([
+    getListings({ sort: "recent", pageSize: MAP_PAGE_SIZE })
+      .then(({ items }) =>
+        items.flatMap((listing): MapListingMarker[] => {
+          const { lat, lng } = listing.location;
+          if (lat === undefined || lng === undefined || !Number.isFinite(lat) || !Number.isFinite(lng)) {
+            return [];
+          }
+
+          return [{
+            id: `property-${listing.id}`,
+            href: `/propiedades/${listing.slug}`,
+            kind: "property",
+            title: listing.title,
+            district: listing.location.district,
+            price: formatPrice(listing.price.amount, listing.price.currency),
+            lat,
+            lng,
+          }];
+        }),
+      )
+      .catch(() => [] as MapListingMarker[]),
+    getPublicProjectsServer(MAP_PAGE_SIZE)
+      .then(({ items }) =>
+        items.flatMap((project): MapListingMarker[] => {
+          const { lat, lng } = project.location;
+          if (lat == null || lng == null || !Number.isFinite(lat) || !Number.isFinite(lng)) {
+            return [];
+          }
+
+          return [{
+            id: `project-${project.id}`,
+            href: `/project/${project.slug}`,
+            kind: "project",
+            title: project.name,
+            district: project.location.district,
+            price: `Desde ${formatPrice(project.priceFrom, project.currency)}`,
+            lat,
+            lng,
+          }];
+        }),
+      )
+      .catch(() => [] as MapListingMarker[]),
+  ]);
+  const mapMarkers = [...propertyMarkers, ...projectMarkers];
+
   return (
     <HomeSection id="mapa">
       <SectionHeading
@@ -28,7 +71,7 @@ export function MapExplorerSection() {
         </ul>
 
         <div className="order-1 lg:order-2">
-          <MapPlaceholder markers={MARKERS} />
+          <MapListingsMapClient markers={mapMarkers} />
         </div>
       </div>
     </HomeSection>

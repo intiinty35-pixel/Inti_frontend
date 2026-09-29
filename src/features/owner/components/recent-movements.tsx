@@ -56,7 +56,7 @@ function buildMovements(properties: OwnerProperty[], leads: Lead[], subscription
   const leadMovements = leads.map<Movement>((lead) => ({
     id: `lead-${lead.id}`,
     kind: "lead",
-    title: lead.property.title,
+    title: lead.project?.name ?? lead.property?.title ?? "Publicación",
     detail: `Nueva consulta de ${lead.name}`,
     date: lead.createdAt,
   }));
