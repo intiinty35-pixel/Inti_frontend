@@ -28,7 +28,7 @@ export function StepTimeline() {
         <div className="grid gap-4 sm:grid-cols-2">
           <TextField<ProjectDraft>
             name="constructionStart"
-            label="Inicio de construcción"
+            label="Inicio de Obras"
             type="date"
             error={startError}
             hint="Opcional."

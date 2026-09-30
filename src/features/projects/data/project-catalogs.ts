@@ -81,6 +81,7 @@ export const PROJECT_SERVICE_LABELS: Record<ServiceKey, string> = PROJECT_SERVIC
 }, {} as Record<ServiceKey, string>);
 
 export const FINANCING_CONDITIONS: readonly ChipOption[] = [
+  { value: "cash", label: "Contado (cash)" },
   { value: "credito-hipotecario", label: "Crédito hipotecario" },
   { value: "financiamiento-directo", label: "Financiamiento directo del desarrollador" },
   { value: "caja-piura", label: "Caja Piura" },
