@@ -85,7 +85,11 @@ const ITEMS: readonly NavItem[] = [
     href: `${ROUTES.properties}?operation=buy&type=land`,
     isActive: (path, _operation, type) => path === ROUTES.properties && type === "land",
   },
-  { label: "Mapa" },
+  {
+    label: "Mapa",
+    href: ROUTES.map,
+    isActive: (path) => path === ROUTES.map,
+  },
 ];
 
 const BASE = "relative flex h-full items-center gap-1 px-3 text-xs font-bold whitespace-nowrap";

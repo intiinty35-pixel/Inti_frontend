@@ -11,6 +11,7 @@ export interface Project {
   propertyType: PropertyType;
   location: LocationRef;
   images: string[];
+  tourUrl?: string;
   startingPrice: PriceInfo;
   areaRange: {
     min: number;

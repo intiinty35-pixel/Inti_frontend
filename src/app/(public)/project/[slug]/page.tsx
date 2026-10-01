@@ -18,6 +18,7 @@ import {
   WhatsappIcon,
 } from "@/shared/ui/icons";
 import { PropertyPhotoGallery } from "@/features/listings/components/property-photo-gallery";
+import { ProjectTourVideo } from "@/features/listings/components/project-tour-video";
 import { ExpandableText } from "@/features/listings/components/expandable-text";
 import { LazyPropertyLocationMap } from "@/features/listings/components/property-location-map-client";
 import { QuickQuestions } from "@/features/listings/components/Quickquestions";
@@ -186,7 +187,9 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   const half = Math.ceil(project.amenities.length / 2);
   const amenitiesA = project.amenities.slice(0, half);
   const amenitiesB = project.amenities.slice(half);
-  const agentTypeLabel = AGENT_TYPE_LABEL[project.agent.type] ?? "Agente inmobiliario";
+  const agentTypeLabel = project.agent.type === "ADMIN"
+    ? "Publicado por ARIZ"
+    : AGENT_TYPE_LABEL[project.agent.type] ?? "Agente inmobiliario";
   const hasFullData =
     detailRows.length > 0 || project.amenities.length > 0 || project.services.length > 0;
   const published = formatPublishedDate(project.publishedAt, project.createdAt);
@@ -210,6 +213,13 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                 </span>
               ) : null}
             </div>
+            {project.tourUrl ? (
+              <ProjectTourVideo
+                projectName={project.name}
+                url={project.tourUrl}
+                className="absolute right-3 bottom-3 z-10 sm:right-4 sm:bottom-4"
+              />
+            ) : null}
           </PropertyPhotoGallery>
 
           <header className="mt-5 lg:mt-6">
@@ -566,28 +576,44 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             />
           </div>
 
-          <Link
-            href={`/agentes/${project.agent.id}`}
-            aria-label={`Ver perfil de ${project.agent.name}`}
-            className="flex items-center gap-4 rounded-2xl border border-edge bg-surface p-5 transition-colors hover:border-brand"
-          >
-            <span className="flex h-14 w-24 shrink-0 items-center justify-center rounded-md bg-brand font-display text-2xl font-black text-accent">
-              {project.agent.name.charAt(0).toUpperCase()}
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="block truncate text-sm font-bold text-ink uppercase">
-                {project.agent.name}
+          {project.agent.id ? (
+            <Link
+              href={`/agentes/${project.agent.id}`}
+              aria-label={`Ver perfil de ${project.agent.name}`}
+              className="flex items-center gap-4 rounded-2xl border border-edge bg-surface p-5 transition-colors hover:border-brand"
+            >
+              <span className="flex h-14 w-24 shrink-0 items-center justify-center rounded-md bg-brand font-display text-2xl font-black text-accent">
+                {project.agent.name.charAt(0).toUpperCase()}
               </span>
-              <span className="block truncate text-xs text-muted">{agentTypeLabel}</span>
-              {project.agent.status === "APPROVED" ? (
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-sm font-bold text-ink uppercase">
+                  {project.agent.name}
+                </span>
+                <span className="block truncate text-xs text-muted">{agentTypeLabel}</span>
+                {project.agent.status === "APPROVED" ? (
+                  <span className="mt-1 flex items-center gap-1 text-xs font-bold text-success">
+                    <CheckIcon className="size-3.5" />
+                    Verificado por ARIZ
+                  </span>
+                ) : null}
+              </span>
+              <span className="shrink-0 text-sm font-bold text-ink">Ver perfil</span>
+            </Link>
+          ) : (
+            <div className="flex items-center gap-4 rounded-2xl border border-edge bg-surface p-5">
+              <span className="flex h-14 w-24 shrink-0 items-center justify-center rounded-md bg-brand font-display text-2xl font-black text-accent">
+                AR
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-sm font-bold text-ink uppercase">{project.agent.name}</span>
+                <span className="block truncate text-xs text-muted">{agentTypeLabel}</span>
                 <span className="mt-1 flex items-center gap-1 text-xs font-bold text-success">
                   <CheckIcon className="size-3.5" />
-                  Verificado por ARIZ
+                  Publicado por ARIZ
                 </span>
-              ) : null}
-            </span>
-            <span className="shrink-0 text-sm font-bold text-ink">Ver perfil</span>
-          </Link>
+              </span>
+            </div>
+          )}
         </aside>
       </div>
     </Container>

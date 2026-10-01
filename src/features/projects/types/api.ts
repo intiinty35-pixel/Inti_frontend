@@ -19,6 +19,8 @@ export type ApiProjectStatus =
   | "REJECTED"
   | "ARCHIVED";
 
+export type ApiProjectOrigin = "AGENT" | "ADMIN";
+
 export type ApiLotMode = "INDIVIDUAL" | "GROUP";
 
 export type ApiLotStatus = "AVAILABLE" | "RESERVED" | "SOLD" | "BLOCKED";
@@ -43,6 +45,7 @@ export interface ProjectApiLocation {
 
 export interface ProjectApiSummary {
   id: string;
+  origin: ApiProjectOrigin;
   slug: string;
   name: string;
   description: string;
@@ -61,6 +64,7 @@ export interface ProjectApiSummary {
   location: ProjectApiLocation;
   coverImage?: string;
   images: string[];
+  tourUrl?: string | null;
   status: ApiProjectStatus;
   featured: boolean;
   publishedAt: string;
@@ -103,7 +107,7 @@ export interface ProjectApiMedia {
 }
 
 export interface ProjectApiAgent {
-  id: string;
+  id: string | null;
   name: string;
   type: string;
   status: string;

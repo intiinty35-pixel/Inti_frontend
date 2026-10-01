@@ -42,6 +42,7 @@ export function toProjectCardModel(project: ProjectApiSummary): Project {
     propertyType: "projects",
     location: toLocationRef(project.location),
     images: project.images.length > 0 ? project.images : project.coverImage ? [project.coverImage] : [],
+    tourUrl: project.tourUrl ?? undefined,
     startingPrice: {
       amount: project.priceFrom,
       currency: project.currency as Currency,
