@@ -19,22 +19,11 @@ export const metadata = buildMetadata({
   path: "/",
 });
 
-/**
- * Velo del hero, en dos capas:
- * - la horizontal tiñe de azul de marca desde la izquierda y se desvanece hacia
- *   la derecha, que es donde la foto queda limpia;
- * - la vertical solo apega el contraste del titulo arriba y del buscador abajo,
- *   con el centro casi libre para que la imagen se vea nitida.
- */
 const HERO_OVERLAY = [
   "linear-gradient(180deg, rgb(0 0 0 / 0.18) 0%, rgb(0 0 0 / 0.02) 45%, rgb(0 0 0 / 0.14) 100%)",
   "linear-gradient(90deg, rgb(0 18 79 / 0.72) 0%, rgb(0 18 79 / 0.44) 46%, rgb(0 18 79 / 0.16) 100%)",
 ].join(", ");
 
-/**
- * Ancho de la cabecera: el mismo tope que las secciones (`wide-tight`) para que
- * el titular, el filtro y las grillas queden alineados por el mismo canal.
- */
 const HERO_SHELL = "mx-auto w-full max-w-[942px]";
 
 function SearchFormFallback() {
@@ -44,21 +33,7 @@ function SearchFormFallback() {
 export default function PublicHomePage() {
   return (
     <>
-      {/*
-        Cabecera con las 4 fotos de `public/home/` como fondo en carrusel. El
-        fondo cubre toda la seccion (titulo y filtro incluidos) y el velo
-        garantiza que el texto se lea sobre cualquier foto.
-
-        El fondo va en `absolute inset-0`, asi que el alto de la seccion lo
-        mandan el padding y el contenido: subir el padding vertical agranda el
-        hero y la foto se estiran juntos.
-
-        El margen negativo sube el hero por debajo del header para que la foto
-        del carrusel se vea detras de el, y el padding suma la altura del
-        header (`--header-h`) para que el contenido no se mueva. Los dos se
-        compensan: el bloque se ve igual, solo la foto gana los 105px de arriba.
-      */}
-      <section className="relative isolate overflow-visible -mt-[var(--header-h)] px-4 pt-[calc(var(--header-h)+5rem)] pb-12 text-center text-white sm:px-6 sm:pt-[calc(var(--header-h)+6.25rem)] sm:pb-14 lg:px-6 lg:pt-[calc(var(--header-h)+7rem)] xl:px-8">
+      <section className="relative isolate overflow-visible -mt-[var(--header-h)] px-4 pt-[calc(var(--header-h)+7rem)] pb-20 text-center text-white sm:px-6 sm:pt-[calc(var(--header-h)+8.5rem)] sm:pb-24 lg:px-6 lg:pt-[calc(var(--header-h)+6rem)] xl:px-8">
         <HomeHeroBackground />
         <span
           aria-hidden
