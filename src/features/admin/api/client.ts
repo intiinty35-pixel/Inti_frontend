@@ -53,6 +53,13 @@ export function updatePlan(id: string, input: PlanFormInput & { isActive: boolea
   return request<Plan>(`/admin/plans/${id}`, { method: "PATCH", body: JSON.stringify(input) });
 }
 
+export function setOfficialDeveloper(id: string, isOfficialDeveloper: boolean): Promise<void> {
+  return request<void>(`/admin/professionals/${id}/official-developer`, {
+    method: "PATCH",
+    body: JSON.stringify({ isOfficialDeveloper }),
+  });
+}
+
 export function reviewSubscription(
   id: string,
   status: "ACTIVE" | "REJECTED",
