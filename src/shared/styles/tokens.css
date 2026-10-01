@@ -43,6 +43,17 @@
   --radius-md: 10px;
   --radius-lg: 18px;
 
+  /*
+   * Alto real de la cabecera publica. En movil el nav colapsa en el menu
+   * hamburguesa, asi que la cabecera es una sola fila de 60px; en `lg` el nav
+   * se despliega en linea y el alto es el mismo.
+   *
+   * La fuente unica de este numero: el hero lo descuenta con margen negativo
+   * para subir por debajo del header, y su padding lo suma para no mover el
+   * contenido. Si cambia el alto del header, solo se toca aqui.
+   */
+  --header-h: 61px;
+
   --shadow-card: 0 1px 2px rgb(11 20 55 / 0.05), 0 18px 40px -18px rgb(11 20 55 / 0.22);
   --shadow-pop: 0 18px 48px -16px rgb(11 20 55 / 0.32);
 }

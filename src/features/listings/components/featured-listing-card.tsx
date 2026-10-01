@@ -59,7 +59,7 @@ export function FeaturedListingCard({ listing }: { listing: Listing }) {
         <div className="mt-auto pt-2.5">
           <Link
             href={ROUTES.property(listing.slug)}
-            className="flex h-9 w-full items-center justify-center rounded-card bg-brand px-3 text-xs font-bold text-on-brand transition-colors hover:bg-brand-hover"
+            className="flex h-9 w-full items-center justify-center rounded bg-accent px-3 text-xs font-bold text-on-accent transition-colors hover:bg-accent-hover"
           >
             Ver propiedad
           </Link>

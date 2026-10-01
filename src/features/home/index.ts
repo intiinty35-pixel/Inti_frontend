@@ -7,4 +7,5 @@ export {
   type HomeHeroBackgroundProps,
 } from "@/features/home/components/home-hero-background";
 export { PublishedProjectsSection } from "@/features/home/components/published-projects-section";
+export { WhyChooseArizSection } from "@/features/home/components/why-choose-ariz-section";
 export { MapExplorerSection } from "@/features/home/components/map-explorer-section";

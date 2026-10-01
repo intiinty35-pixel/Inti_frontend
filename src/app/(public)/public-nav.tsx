@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { ChevronDownIcon } from "@/shared/ui/icons";
+import { ArrowRightIcon, ChevronDownIcon } from "@/shared/ui/icons";
 import { ROUTES } from "@/shared/config/routes";
 import { cn } from "@/shared/lib/cn";
 
@@ -11,7 +11,11 @@ interface TypeOption {
   type: "houses" | "apartments" | "land" | "commercial";
 }
 
-const TYPE_OPTIONS: readonly TypeOption[] = [
+/**
+ * Tipos de propiedad. Se exportan porque el menu movil los reutiliza como
+ * subenlaces de "Comprar" y "Alquilar", donde no hay mega menu desplegable.
+ */
+export const NAV_TYPE_OPTIONS: readonly TypeOption[] = [
   { label: "Casas", type: "houses" },
   { label: "Departamentos", type: "apartments" },
   { label: "Terrenos", type: "land" },
@@ -48,14 +52,20 @@ function priceHref(operation: "buy" | "rent", range: PriceRange): string {
   return `${ROUTES.properties}?${params.toString()}`;
 }
 
-interface NavItem {
+export interface NavItem {
   label: string;
   href?: string;
   operation?: "buy" | "rent";
   isActive?: (pathname: string, operation: string | null, type: string | null) => boolean;
 }
 
-const ITEMS: readonly NavItem[] = [
+/** Se exporta porque el menu movil construye la misma lista en vertical. */
+export const NAV_ITEMS: readonly NavItem[] = [
+  {
+    label: "Inicio",
+    href: ROUTES.home,
+    isActive: (path) => path === ROUTES.home,
+  },
   {
     label: "Servicios",
     href: ROUTES.services,
@@ -94,6 +104,22 @@ const ITEMS: readonly NavItem[] = [
 
 const BASE = "relative flex h-full items-center gap-1 px-3 text-xs font-bold whitespace-nowrap";
 
+/**
+ * Color del enlace segun el fondo del header.
+ *
+ * Con header transparente el texto va en blanco y "Inicio" en el amarillo de
+ * marca. Con header solido todo el nav va en azul, incluido "Inicio": el
+ * amarillo sobre blanco no llega al contraste minimo.
+ */
+function linkTone(item: NavItem, overlay: boolean): string {
+  const accent = overlay && item.label === "Inicio";
+  return accent
+    ? "text-accent transition-colors hover:text-accent-hover"
+    : overlay
+      ? "text-white transition-colors hover:text-white/75"
+      : "text-brand transition-colors hover:text-brand-hover";
+}
+
 function MegaMenu({ operation, label }: { operation: "buy" | "rent"; label: string }) {
   return (
     <div className="invisible fixed top-[60px] left-1/2 z-50 w-[860px] -translate-x-1/2 translate-y-1 rounded-2xl border border-edge bg-surface opacity-0 shadow-[var(--shadow-pop)] transition-[opacity,transform] duration-150 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
@@ -103,7 +129,7 @@ function MegaMenu({ operation, label }: { operation: "buy" | "rent"; label: stri
             Tipo de propiedad
           </h3>
           <ul className="mt-4 grid gap-3">
-            {TYPE_OPTIONS.map((option) => (
+            {NAV_TYPE_OPTIONS.map((option) => (
               <li key={option.type}>
                 <Link
                   href={`${ROUTES.properties}?operation=${operation}&type=${option.type}`}
@@ -177,7 +203,12 @@ function MegaMenu({ operation, label }: { operation: "buy" | "rent"; label: stri
   );
 }
 
-export function PublicNav() {
+export interface PublicNavProps {
+  /** `true` cuando el header esta transparente sobre un hero oscuro. */
+  overlay?: boolean;
+}
+
+export function PublicNav({ overlay = false }: PublicNavProps = {}) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const operation = searchParams.get("operation");
@@ -185,13 +216,13 @@ export function PublicNav() {
 
   return (
     <nav aria-label="Principal" className="flex h-full items-stretch">
-      {ITEMS.map((item) => {
+      {NAV_ITEMS.map((item) => {
         if (!item.href) {
           return (
             <span
               key={item.label}
               title="Disponible próximamente"
-              className={cn(BASE, "cursor-default text-muted")}
+              className={cn(BASE, "cursor-default", overlay ? "text-white/70" : "text-muted")}
             >
               {item.label}
             </span>
@@ -206,7 +237,7 @@ export function PublicNav() {
               <Link
                 href={item.href}
                 aria-current={active ? "page" : undefined}
-                className={cn(BASE, "text-brand transition-colors hover:text-brand-hover")}
+                className={cn(BASE, linkTone(item, overlay))}
               >
                 {item.label}
                 <ChevronDownIcon className="size-3.5 transition-transform group-hover:-rotate-180" />
@@ -224,7 +255,7 @@ export function PublicNav() {
             key={item.label}
             href={item.href}
             aria-current={active ? "page" : undefined}
-            className={cn(BASE, "text-brand transition-colors hover:text-brand-hover")}
+            className={cn(BASE, linkTone(item, overlay))}
           >
             {item.label}
             {active ? (
@@ -234,5 +265,87 @@ export function PublicNav() {
         );
       })}
     </nav>
+  );
+}
+
+export interface PublicMobileNavProps {
+  /** Se dispara en cada enlace para que el header cierre el panel. */
+  onNavigate?: () => void;
+}
+
+/**
+ * Version vertical del nav para el menu hamburguesa.
+ *
+ * El mega menu de escritorio no cabe en movil, asi que "Comprar" y "Alquilar"
+ * se resuelven del lado del cliente: el enlace principal mas una rejilla con los
+ * tipos de propiedad. El panel siempre va en version solida (no el overlay del
+ * header) porque necesita ser legible sobre el hero como sobre cualquier pagina.
+ */
+export function PublicMobileNav({ onNavigate }: PublicMobileNavProps = {}) {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const operation = searchParams.get("operation");
+  const type = searchParams.get("type");
+
+  return (
+    <ul className="divide-y divide-edge">
+      {NAV_ITEMS.map((item) => {
+        const active = item.isActive?.(pathname, operation, type) ?? false;
+
+        if (!item.href) {
+          return (
+            <li key={item.label}>
+              <span
+                title="Disponible próximamente"
+                className="flex items-center justify-between px-4 py-3.5 text-sm font-bold text-muted"
+              >
+                {item.label}
+                <span className="text-[10px] font-black tracking-[0.08em] uppercase opacity-70">
+                  Próximo
+                </span>
+              </span>
+            </li>
+          );
+        }
+
+        return (
+          <li key={item.label}>
+            <Link
+              href={item.href}
+              onClick={onNavigate}
+              aria-current={active ? "page" : undefined}
+              className={cn(
+                "flex items-center justify-between gap-3 px-4 py-3.5 text-sm font-bold transition-colors hover:bg-surface-muted",
+                active ? "text-brand" : "text-ink",
+              )}
+            >
+              {item.label}
+              {active ? (
+                <span className="rounded-full bg-accent px-2 py-0.5 text-[10px] font-black tracking-[0.08em] text-on-accent uppercase">
+                  Actual
+                </span>
+              ) : (
+                <ArrowRightIcon className="size-4 shrink-0 text-muted" />
+              )}
+            </Link>
+
+            {item.operation ? (
+              <div className="grid grid-cols-2 gap-2 px-4 pb-3.5">
+                {NAV_TYPE_OPTIONS.map((option) => (
+                  <Link
+                    key={option.type}
+                    href={`${ROUTES.properties}?operation=${item.operation}&type=${option.type}`}
+                    onClick={onNavigate}
+                    className="rounded-card bg-surface-muted px-3 py-2 text-xs font-semibold text-ink transition-colors hover:bg-surface hover:text-brand"
+                  >
+                    {option.label}
+                  </Link>
+                ))}
+              </div>
+            ) : null}
+          </li>
+        );
+      })}
+    </ul>
   );
 }

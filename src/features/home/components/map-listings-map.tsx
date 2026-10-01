@@ -84,8 +84,8 @@ export function MapListingsMap({ markers }: { markers: MapListingMarker[] }) {
             icon={marker.kind === "project" ? projectMarkerIcon : propertyMarkerIcon}
             position={[marker.lat, marker.lng]}
           >
-            <Popup>
-              <div className="grid gap-1">
+            <Popup className="[&_.leaflet-popup-content-wrapper]:rounded-sm [&_.mapboxgl-popup-content]:rounded-sm">
+              <div className="grid gap-1 p-1">
                 <span className="text-[10px] font-bold uppercase tracking-wide text-muted">
                   {marker.kind === "project" ? "Proyecto" : "Propiedad"}
                 </span>

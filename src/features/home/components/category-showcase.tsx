@@ -2,72 +2,93 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import {
+  ArrowRight,
+  Construction,
+  Hammer,
+  HandCoins,
+  House,
+  KeyRound,
+  TrendingUp,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { ArrowRightIcon } from "@/shared/ui";
 import { ROUTES } from "@/shared/config/routes";
 import { cn } from "@/shared/lib/cn";
-import type { PropertyType } from "@/features/listings/types/listing";
 import { HomeSection } from "@/features/home/components/section";
 
 interface Category {
-  slug: PropertyType;
+  slug: string;
   label: string;
   subtitle: string;
   href: string;
   image: string;
   alt: string;
+  /** Icono que resume la accion. */
+  Icon: LucideIcon;
 }
 
 const imageParams = "?auto=format&fit=crop&w=800&q=80";
 
+/**
+ * Los seis caminos de entrada de ARIZ. Antes eran las categorias de inmueble;
+ * ahora cada tarjeta es una accion (comprar, vender, invertir...) y el icono
+ * marca la accion mientras la foto da el ambiente de cada una.
+ */
 const categories: readonly Category[] = [
   {
-    slug: "houses",
-    label: "Casas",
-    subtitle: "Fachadas modernas y jardines",
-    href: `${ROUTES.properties}?operation=buy&type=houses`,
+    slug: "comprar",
+    label: "Comprar propiedad",
+    subtitle: "Encuentra tu hogar ideal.",
+    href: `${ROUTES.properties}?operation=buy`,
     image: `https://images.unsplash.com/photo-1600585154340-be6161a56a0c${imageParams}`,
     alt: "Casa moderna con jardin y fachada elegante al atardecer",
+    Icon: House,
   },
   {
-    slug: "apartments",
-    label: "Departamentos",
-    subtitle: "Vistas urbanas y espacios luminosos",
-    href: `${ROUTES.properties}?operation=buy&type=apartments`,
-    image: `https://images.unsplash.com/photo-1494526585095-c41746248156${imageParams}`,
-    alt: "Interior luminoso de departamento con vista a la ciudad",
-  },
-  {
-    slug: "projects",
-    label: "Proyectos",
-    subtitle: "Edificios y preventas seleccionadas",
-    href: "/proyectos",
+    slug: "proyectos",
+    label: "Ver proyectos",
+    subtitle: "Conoce nuestros desarrollos inmobiliarios.",
+    href: ROUTES.projects,
     image: `https://images.unsplash.com/photo-1545324418-cc1a3fa10c00${imageParams}`,
     alt: "Edificio residencial moderno visto desde abajo",
+    Icon: Construction,
   },
   {
-    slug: "land",
-    label: "Terrenos",
-    subtitle: "Lotes amplios para invertir",
-    href: `${ROUTES.properties}?operation=buy&type=land`,
-    image: `https://images.unsplash.com/photo-1503387762-592deb58ef4e${imageParams}`,
-    alt: "Terreno amplio con cielo despejado y maquinaria de construccion",
-  },
-  {
-    slug: "country-lots",
-    label: "Lotes campestres",
-    subtitle: "Campo, verde y aire abierto",
-    href: `${ROUTES.properties}?operation=buy&type=country-lots`,
+    slug: "invertir",
+    label: "Invertir con Ariz",
+    subtitle: "Oportunidades con alta plusvalía.",
+    href: `${ROUTES.properties}?operation=buy&type=projects`,
     image: `https://images.unsplash.com/photo-1500530855697-b586d89ba3ee${imageParams}`,
     alt: "Paisaje campestre verde con montanas y cielo despejado",
+    Icon: TrendingUp,
   },
   {
-    slug: "commercial",
-    label: "Locales comerciales",
-    subtitle: "Ubicaciones para negocios",
-    href: `${ROUTES.properties}?operation=buy&type=commercial`,
+    slug: "vender",
+    label: "Vender mi propiedad",
+    subtitle: "Publica y vende con el mejor respaldo.",
+    href: ROUTES.registerProfessional,
+    image: `https://images.unsplash.com/photo-1494526585095-c41746248156${imageParams}`,
+    alt: "Interior luminoso de departamento con vista a la ciudad",
+    Icon: HandCoins,
+  },
+  {
+    slug: "construir",
+    label: "Construir mi casa",
+    subtitle: "Hacemos realidad tu proyecto.",
+    href: ROUTES.services,
+    image: `https://images.unsplash.com/photo-1503387762-592deb58ef4e${imageParams}`,
+    alt: "Terreno amplio con cielo despejado y maquinaria de construccion",
+    Icon: Hammer,
+  },
+  {
+    slug: "alquilar",
+    label: "Alquilar mi propiedad",
+    subtitle: "Encuentra o publica en alquiler.",
+    href: `${ROUTES.properties}?operation=rent`,
     image: `https://images.unsplash.com/photo-1441986300917-64674bd600d8${imageParams}`,
     alt: "Fachada de local comercial moderno en una avenida",
+    Icon: KeyRound,
   },
 ];
 
@@ -80,6 +101,7 @@ const GRID = "mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-6";
 
 function CategoryCard({ category, index }: { category: Category; index: number }) {
   const [imageFailed, setImageFailed] = useState(false);
+  const { Icon } = category;
 
   return (
     <li
@@ -88,7 +110,7 @@ function CategoryCard({ category, index }: { category: Category; index: number }
     >
       <Link
         href={category.href}
-        aria-label={`Ver ${category.label.toLowerCase()} en ARIZ`}
+        aria-label={category.label}
         className={cn(
           "group relative flex h-40 overflow-hidden rounded-xl bg-[linear-gradient(135deg,#2a3b85_0%,#0B1B5C_100%)] p-3.5 shadow-[0_10px_28px_rgb(11_27_92_/_0.14)] transition duration-500 ease-out sm:h-44 lg:h-48",
           "hover:-translate-y-1.5 hover:shadow-[0_24px_55px_rgb(11_27_92_/_0.22)]",
@@ -106,10 +128,23 @@ function CategoryCard({ category, index }: { category: Category; index: number }
           />
         ) : null}
         <span className="absolute inset-0 bg-[linear-gradient(180deg,rgb(11_27_92_/_0)_0%,rgb(11_27_92_/_0.85)_78%)] transition-colors duration-500 group-hover:bg-[linear-gradient(180deg,rgb(11_27_92_/_0.08)_0%,rgb(11_27_92_/_0.92)_78%)]" />
+
+        {/*
+          Icono de la accion. Va arriba a la izquierda con el mismo cristal y el
+          mismo viraje a amarillo que la flecha de abajo a la derecha: los dos
+          elementos de esquina comparten el mismo lenguaje visual.
+        */}
+        <span
+          aria-hidden
+          className="absolute top-3.5 left-3.5 z-10 grid size-9 place-items-center rounded-xl border border-white/45 bg-white/12 text-white backdrop-blur-sm transition-colors duration-300 group-hover:border-[#F5B800] group-hover:bg-[#F5B800] group-hover:text-[#0B1B5C]"
+        >
+          <Icon className="size-[18px]" strokeWidth={1.9} />
+        </span>
+
         <span className="relative z-10 mt-auto min-w-0 pr-9">
           <span className="block text-base font-bold text-white">{category.label}</span>
           <span className="mt-1 block h-0.5 w-7 bg-[#F5B800] transition-all duration-300 group-hover:w-12" />
-          <span className="mt-1 block truncate text-[11px] font-medium leading-4 text-white/80">
+          <span className="mt-1 block text-[11px] font-medium leading-4 text-white/80">
             {category.subtitle}
           </span>
         </span>
@@ -130,13 +165,13 @@ export function CategoryShowcase() {
       <div className="flex items-end justify-between gap-4">
         <div>
           <p className="mb-2 text-[11px] font-bold tracking-[0.18em] text-[#F5B800] uppercase">
-            CATEGORÍAS
+            QUÉ HACEMOS POR TI
           </p>
           <h2 className="font-display text-3xl font-bold tracking-tight text-[#0B1B5C] sm:text-4xl">
             Explora propiedades
           </h2>
           <p className="mt-2 max-w-2xl text-sm text-[#6B7280]">
-            Elige el tipo de inmueble y descubre opciones con todos los detalles que necesitas.
+            Compra, vende, invierte o construye con ARIZ. Elige cómo quieres empezar.
           </p>
         </div>
         <div className="pb-1">
