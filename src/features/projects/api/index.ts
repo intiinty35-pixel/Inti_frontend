@@ -413,8 +413,16 @@ export async function createProject(input: CreateProjectInput): Promise<ProjectA
   return apiClient.post<ProjectApiSummary>("/projects", input);
 }
 
+export async function createAdminProject(input: CreateProjectInput): Promise<ProjectApiSummary> {
+  return apiClient.post<ProjectApiSummary>("/admin/projects", input);
+}
+
 export async function publishProject(id: string): Promise<ProjectApiSummary> {
   return apiClient.patch<ProjectApiSummary>(`/projects/${encodeURIComponent(id)}/publish`);
+}
+
+export async function publishAdminProject(id: string): Promise<ProjectApiSummary> {
+  return apiClient.patch<ProjectApiSummary>(`/admin/projects/${encodeURIComponent(id)}/publish`);
 }
 
 export async function getOwnerProjects(): Promise<ProjectApiSummary[]> {

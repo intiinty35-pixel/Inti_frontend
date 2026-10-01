@@ -25,6 +25,7 @@ export interface ProfessionalRecord {
   businessName: string | null;
   whatsapp: string | null;
   city: string;
+  isOfficialDeveloper: boolean;
   createdAt: string;
   user: {
     id: string;

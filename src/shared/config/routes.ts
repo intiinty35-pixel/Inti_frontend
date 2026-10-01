@@ -7,6 +7,7 @@ export const ROUTES = {
   registerCustomer: "/register/customer",
   registerProfessional: "/register/professional",
   properties: "/propiedades",
+  map: "/mapa",
   property: (slug: string): string => `/propiedades/${slug}`,
   projects: "/proyectos",
   project: (slug: string): string => `/project/${slug}`,
@@ -16,6 +17,8 @@ export const ROUTES = {
       base: "/panel/admin",
       plans: "/panel/admin/plans",
       subscriptions: "/panel/admin/subscriptions",
+      projects: "/panel/admin/projects",
+      newProject: "/panel/admin/projects/new",
     },
     client: {
       base: "/panel/client",

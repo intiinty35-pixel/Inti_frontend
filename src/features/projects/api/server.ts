@@ -1,6 +1,6 @@
 import { backendFetch } from "@/shared/lib/api/server";
 import { env } from "@/shared/lib/env";
-import type { ProjectApiDetail, ProjectApiPaged } from "@/features/projects/types/api";
+import type { ApiProjectStatus, ProjectApiDetail, ProjectApiPaged } from "@/features/projects/types/api";
 
 const PUBLIC_REVALIDATE_SECONDS = 60;
 
@@ -9,10 +9,17 @@ const PUBLIC_REVALIDATE_SECONDS = 60;
  * cache de ISR: la home sigue siendo estatica y se refresca sola cuando alguien
  * publica un proyecto.
  */
-export async function getPublicProjectsServer(pageSize = 10): Promise<ProjectApiPaged> {
-  const response = await fetch(`${env.backendUrl}/projects?pageSize=${pageSize}`, {
+export async function getPublicProjectsServer(
+  pageSize = 10,
+  origin?: "ADMIN" | "AGENT",
+): Promise<ProjectApiPaged> {
+  const params = new URLSearchParams({ pageSize: String(pageSize) });
+  if (origin) params.set("origin", origin);
+  const response = await fetch(`${env.backendUrl}/projects?${params.toString()}`, {
     headers: { Accept: "application/json" },
-    next: { revalidate: PUBLIC_REVALIDATE_SECONDS },
+    ...(origin === "ADMIN"
+      ? { cache: "no-store" as const }
+      : { next: { revalidate: PUBLIC_REVALIDATE_SECONDS } }),
   });
 
   if (!response.ok) {
@@ -48,6 +55,23 @@ export async function getOwnerProjectsPagedServer(
 
   if (!response.ok) {
     throw new Error(`No se pudieron cargar tus proyectos (${response.status})`);
+  }
+
+  return (await response.json()) as ProjectApiPaged;
+}
+
+/** Proyectos creados desde el panel ARIZ; status permite consultar borradores únicamente. */
+export async function getAdminProjectsPagedServer(
+  page: number,
+  status?: ApiProjectStatus,
+  pageSize = 9,
+): Promise<ProjectApiPaged> {
+  const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
+  if (status) params.set("status", status);
+
+  const response = await backendFetch(`/admin/projects?${params.toString()}`);
+  if (!response.ok) {
+    throw new Error(`No se pudieron cargar los proyectos de ARIZ (${response.status})`);
   }
 
   return (await response.json()) as ProjectApiPaged;

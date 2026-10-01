@@ -6,6 +6,7 @@ import { ROUTES } from "@/shared/config/routes";
 import type { Project, ProjectStatus } from "@/features/listings/types/project";
 import { DataCell, DataGrid } from "@/features/listings/components/data-grid";
 import { ListingImage } from "@/features/listings/components/listing-image";
+import { ProjectTourVideo } from "@/features/listings/components/project-tour-video";
 
 const STATUS_LABELS: Record<ProjectStatus, string> = {
   preventa: "En preventa",
@@ -18,16 +19,25 @@ export function ProjectCard({ project }: { project: Project }) {
 
   return (
     <article className="flex h-full flex-col overflow-hidden rounded-card border border-edge bg-surface shadow-[var(--shadow-card)]">
-      <ListingImage src={project.images[0]} className="h-40 sm:h-48 xl:h-52">
-        <span className="absolute top-2 left-2 rounded-full bg-accent px-1.5 py-0.5 text-[9px] font-bold text-on-accent">
-          {STATUS_LABELS[project.status]}
-        </span>
-        {published?.isNew ? (
-          <span className="absolute top-2 right-2 rounded-full bg-accent px-2.5 py-1 text-[10px] font-black text-brand">
-            NUEVO
+      <div className="relative">
+        <ListingImage src={project.images[0]} className="h-40 sm:h-48 xl:h-52">
+          <span className="absolute top-2 left-2 rounded-full bg-accent px-1.5 py-0.5 text-[9px] font-bold text-on-accent">
+            {STATUS_LABELS[project.status]}
           </span>
+          {published?.isNew ? (
+            <span className="absolute top-2 right-2 rounded-full bg-accent px-2.5 py-1 text-[10px] font-black text-brand">
+              NUEVO
+            </span>
+          ) : null}
+        </ListingImage>
+        {project.tourUrl ? (
+          <ProjectTourVideo
+            projectName={project.name}
+            url={project.tourUrl}
+            className="absolute right-2 bottom-2"
+          />
         ) : null}
-      </ListingImage>
+      </div>
 
       <div className="flex flex-1 flex-col p-3.5 xl:p-4">
         <p className="text-[9px] font-bold tracking-[0.16em] text-accent uppercase">
@@ -86,13 +96,17 @@ export function ProjectListingCard({ project }: { project: Project }) {
             NUEVO
           </span>
         ) : null}
+        {project.tourUrl ? (
+          <ProjectTourVideo
+            projectName={project.name}
+            url={project.tourUrl}
+            className="absolute top-2 right-2 z-10"
+          />
+        ) : null}
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col gap-1.5 p-4">
-        <p className="text-lg font-bold text-brand">
-          Desde {formatPrice(project.startingPrice.amount, project.startingPrice.currency)}
-        </p>
-        <h3 className="text-sm font-semibold text-ink">{project.name}</h3>
+        <h3 className="text-base font-bold text-ink">{project.name}</h3>
         <p className="flex items-center gap-1.5 text-xs text-muted">
           <PinIcon className="size-3.5 shrink-0" />
           {project.location.district}, {project.location.department}
@@ -114,19 +128,24 @@ export function ProjectListingCard({ project }: { project: Project }) {
           <DataCell label="Distrito" value={project.location.district} />
         </DataGrid>
 
-        <div className="mt-auto flex flex-wrap justify-end gap-2 pt-4">
-          <Link
-            href={ROUTES.project(project.slug)}
-            className="flex h-10 items-center justify-center rounded-card bg-brand px-4 text-sm font-bold text-on-brand transition-colors hover:bg-brand-hover"
-          >
-            Ver proyecto
-          </Link>
-          <Link
-            href={`${ROUTES.project(project.slug)}#contacto`}
-            className="flex h-10 items-center justify-center rounded-card border border-edge px-4 text-sm font-bold text-brand transition-colors hover:border-brand"
-          >
-            Contactar
-          </Link>
+        <div className="mt-auto flex flex-wrap items-center justify-between gap-2 pt-4">
+          <p className="mr-auto text-base font-bold text-brand">
+            Desde {formatPrice(project.startingPrice.amount, project.startingPrice.currency)}
+          </p>
+          <div className="flex flex-wrap justify-end gap-2">
+            <Link
+              href={ROUTES.project(project.slug)}
+              className="flex h-10 items-center justify-center rounded-card bg-brand px-4 text-sm font-bold text-on-brand transition-colors hover:bg-brand-hover"
+            >
+              Ver proyecto
+            </Link>
+            <Link
+              href={`${ROUTES.project(project.slug)}#contacto`}
+              className="flex h-10 items-center justify-center rounded-card border border-edge px-4 text-sm font-bold text-brand transition-colors hover:border-brand"
+            >
+              Contactar
+            </Link>
+          </div>
         </div>
       </div>
     </article>

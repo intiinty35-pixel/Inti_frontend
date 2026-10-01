@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { ArrowRightIcon } from "@/shared/ui";
 import { ROUTES } from "@/shared/config/routes";
-import { FeaturedListingCard, getListings } from "@/features/listings";
+import { FeaturedListingCard } from "@/features/listings";
+import { getPublicListingsServer } from "@/features/listings/api/server";
 import { HomeSection, SectionHeading } from "@/features/home/components/section";
 
 export async function FeaturedListingsSection() {
-  // La home es estatica y se prerrenderiza en el build. Si la API no responde en ese
-  // momento, no debe romper el build completo: se muestra el estado vacio.
-  const listings = await getListings({ sort: "recent", pageSize: 5 }).catch(() => ({
+  // Si el backend no responde, conservamos el resto de la Home y mostramos el estado vacio.
+  const listings = await getPublicListingsServer(5).catch(() => ({
     items: [],
     total: 0,
     page: 1,

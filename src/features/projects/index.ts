@@ -46,9 +46,11 @@ export {
 } from "@/features/projects/lib/project-summary";
 export {
   buildProjectPayload,
+  createAdminProject,
   createProject,
   getOwnerProjects,
   publishProject,
+  publishAdminProject,
   toProjectInput,
   uploadProjectFiles,
   type CreateProjectInput,

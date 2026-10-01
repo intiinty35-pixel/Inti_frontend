@@ -34,6 +34,7 @@ export interface ProjectReviewProps {
   payload: CreateProjectPayload;
   lots: readonly LotDraft[];
   previewProjects: readonly ProjectPreview[];
+  adminMode?: boolean;
   onSave: (payload: CreateProjectPayload) => void | Promise<void>;
   onDone: () => void;
   saving?: boolean;
@@ -77,6 +78,7 @@ export function ProjectReview({
   payload,
   lots,
   previewProjects,
+  adminMode = false,
   onSave,
   onDone,
   saving = false,
@@ -94,8 +96,9 @@ export function ProjectReview({
         <div>
           <p className="text-sm font-semibold text-ink">Borrador validado correctamente</p>
           <p className="mt-1 text-xs text-muted">
-            Al confirmarlo se suben las imágenes y el proyecto se guarda como borrador. Podrás
-            publicarlo después desde Mis proyectos si tienes crédito disponible en tu suscripción.
+            Al confirmarlo se suben las imágenes y el proyecto se guarda como borrador. {adminMode
+              ? "Desde Proyectos ARIZ podrás publicarlo directamente, sin consumir créditos."
+              : "Podrás publicarlo después desde Mis proyectos si tienes crédito disponible en tu suscripción."}
           </p>
         </div>
       </div>
@@ -236,7 +239,7 @@ export function ProjectReview({
         </Button>
         <Button type="button" onClick={() => void onSave(payload)} disabled={saving}>
           <CheckCircleIcon className="h-4 w-4" />
-          {saving ? "Guardando borrador…" : "Guardar borrador"}
+          {saving ? "Guardando borrador…" : adminMode ? "Guardar borrador ARIZ" : "Guardar borrador"}
         </Button>
       </div>
     </div>

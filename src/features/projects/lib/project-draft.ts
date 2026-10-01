@@ -41,7 +41,7 @@ export const PROJECT_DRAFT_DEFAULTS: ProjectDraft = {
   businessName: "",
   downPayment: undefined,
   monthlyPayment: undefined,
-  financing: [],
+  financing: ["cash"],
   totalBlocks: undefined,
   totalLots: undefined,
 

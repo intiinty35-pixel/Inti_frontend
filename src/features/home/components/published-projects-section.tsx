@@ -7,7 +7,7 @@ import { HomeSection, SectionHeading } from "@/features/home/components/section"
 export async function PublishedProjectsSection() {
   // La home se prerrenderiza: si la API no responde la seccion simplemente no
   // se pinta, sin romper el build ni la pagina.
-  const projects = await getPublicProjectsServer(5)
+  const projects = await getPublicProjectsServer(5, "AGENT")
     .then((page) => page.items.map(toProjectCardModel))
     .catch(() => []);
 

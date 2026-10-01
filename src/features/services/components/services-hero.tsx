@@ -21,7 +21,7 @@ export function ServicesHero() {
       {/* Fondo: la foto cubre toda la cinta y el degradado garantiza contraste. */}
       <ServiceImage
         src={SERVICES_HERO_IMAGE}
-        alt="Proyecto inmobiliario moderno con luz cálida al atardecer"
+        alt="Proyecto moderno con luz cálida al atardecer"
         priority
         className="absolute inset-0 -z-10 size-full"
       />
@@ -41,14 +41,13 @@ export function ServicesHero() {
           ARIZ Proyectos
         </p>
         <h1 className="mt-4 max-w-3xl text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
-          Servicios para tu proyecto inmobiliario
+          Servicios para hacer crecer tu proyecto
         </h1>
         <p className="mt-4 max-w-2xl text-sm leading-relaxed text-white/85 sm:text-base">
-          Corretaje inmobiliario más el respaldo de un grupo de profesionales que acompaña al
-          desarrollador desde la idea hasta la venta.
+          Un equipo de profesionales te acompaña desde la planificación hasta alcanzar tus
+          objetivos.
         </p>
       </Container>
     </section>
   );
 }
-

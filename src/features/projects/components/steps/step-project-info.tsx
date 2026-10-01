@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { FieldPath } from "react-hook-form";
+import { useFormContext, type FieldPath } from "react-hook-form";
 import { FieldSet, useFieldError } from "@/shared/ui/field-shell";
 import { Checkbox } from "@/shared/ui/checkbox";
 import { ChipGroup, RadioGroup } from "@/shared/ui/radio-group";
@@ -29,7 +29,9 @@ const SOCIAL_FIELDS: readonly {
 export function StepProjectInfo() {
   const amenitiesError = useFieldError<ProjectDraft>("amenities");
   const descriptionError = useFieldError<ProjectDraft>("description");
+  const { getValues, setValue } = useFormContext<ProjectDraft>();
   const [withSocial, setWithSocial] = useState(false);
+  const [withMoreFinancing, setWithMoreFinancing] = useState(false);
 
   return (
     <div className="flex flex-col gap-6">
@@ -150,9 +152,41 @@ export function StepProjectInfo() {
 
       <FieldSet
         legend="Condiciones de financiamiento"
-        description="Opcional. Marca las modalidades que ofrece el proyecto; se muestran en la ficha pública."
+        description="Contado está seleccionado por defecto. Las modalidades elegidas se muestran en la ficha pública."
       >
-        <ChipGroup<ProjectDraft> name="financing" options={FINANCING_CONDITIONS} />
+        <div className="flex flex-col gap-4">
+          <ChipGroup<ProjectDraft>
+            name="financing"
+            options={FINANCING_CONDITIONS.slice(0, 1)}
+          />
+          <Checkbox
+            checked={withMoreFinancing}
+            onChange={(event) => {
+              const enabled = event.target.checked;
+              setWithMoreFinancing(enabled);
+
+              if (!enabled) {
+                const financing = getValues("financing") ?? [];
+                setValue(
+                  "financing",
+                  financing.filter((value) => value === "cash"),
+                  { shouldDirty: true, shouldValidate: true },
+                );
+              }
+            }}
+            label="Agregar otras opciones de financiamiento"
+            labelClassName="text-[13px] font-semibold text-brand"
+          />
+          {withMoreFinancing ? (
+            <div className="grid gap-2 border-l-2 border-brand/15 pl-4">
+              <p className="text-xs font-medium text-muted">Selecciona las modalidades adicionales:</p>
+              <ChipGroup<ProjectDraft>
+                name="financing"
+                options={FINANCING_CONDITIONS.slice(1)}
+              />
+            </div>
+          ) : null}
+        </div>
       </FieldSet>
 
       <FieldSet

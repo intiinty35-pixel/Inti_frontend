@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { ArrowRightIcon } from "@/shared/ui";
 import { ROUTES } from "@/shared/config/routes";
 import { cn } from "@/shared/lib/cn";
@@ -116,7 +117,7 @@ function CategoryCard({ category, index }: { category: Category; index: number }
           aria-hidden
           className="absolute bottom-3 right-3 z-10 grid size-6 place-items-center rounded-full border border-white/45 bg-white/12 text-sm font-bold text-white transition-colors duration-300 group-hover:border-[#F5B800] group-hover:bg-[#F5B800] group-hover:text-[#0B1B5C]"
         >
-          →
+          <ArrowRight className="size-3.5 transition-transform duration-300 group-hover:translate-x-0.5" />
         </span>
       </Link>
     </li>

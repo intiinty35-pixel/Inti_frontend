@@ -5,6 +5,7 @@ import { listProfessionals, setProfessionalStatus } from "@/features/admin/api/s
 import type { ApprovalStatus } from "@/features/auth";
 import { AdminPageHeader } from "@/app/(panel)/panel/admin/admin-shell";
 import { ConfirmSubmitButton } from "@/features/admin/components/confirm-submit-button";
+import { OfficialDeveloperToggle } from "@/features/admin/components/official-developer-toggle";
 
 const TYPE_LABELS = {
   INDEPENDENT_AGENT: "Agente independiente",
@@ -83,6 +84,11 @@ export default async function PanelAdminPage({ searchParams }: PanelAdminPagePro
                         >
                           {STATUS_LABELS[item.status]}
                         </span>
+                        {item.isOfficialDeveloper ? (
+                          <span className="rounded-full bg-accent/15 px-2.5 py-1 text-[11px] font-bold text-accent">
+                            PROYECTOS ARIZ
+                          </span>
+                        ) : null}
                       </div>
                       <p className="text-sm text-muted">
                         {TYPE_LABELS[item.type]} · {item.ruc ? `RUC ${item.ruc}` : `DNI ${item.dni ?? "—"}`} ·{" "}
@@ -91,32 +97,41 @@ export default async function PanelAdminPage({ searchParams }: PanelAdminPagePro
                       <p className="text-sm text-muted">
                         {item.user.email} · WhatsApp {item.whatsapp ?? "—"}
                       </p>
-                      <form action={updateStatus} className="mt-3 flex gap-2">
-                        <input type="hidden" name="id" value={item.id} />
-                        {item.status !== "APPROVED" ? (
-                          <ConfirmSubmitButton
-                            name="status"
-                            value="APPROVED"
-                            size="sm"
-                            confirmTitle={`¿Aprobar la cuenta de ${name}?`}
-                            confirmLabel="Aprobar"
-                          >
-                            Aprobar
-                          </ConfirmSubmitButton>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        <form action={updateStatus} className="flex gap-2">
+                          <input type="hidden" name="id" value={item.id} />
+                          {item.status !== "APPROVED" ? (
+                            <ConfirmSubmitButton
+                              name="status"
+                              value="APPROVED"
+                              size="sm"
+                              confirmTitle={`¿Aprobar la cuenta de ${name}?`}
+                              confirmLabel="Aprobar"
+                            >
+                              Aprobar
+                            </ConfirmSubmitButton>
+                          ) : null}
+                          {item.status !== "REJECTED" ? (
+                            <ConfirmSubmitButton
+                              name="status"
+                              value="REJECTED"
+                              size="sm"
+                              variant="secondary"
+                              confirmTitle={`¿Rechazar la cuenta de ${name}?`}
+                              confirmLabel="Rechazar"
+                            >
+                              Rechazar
+                            </ConfirmSubmitButton>
+                          ) : null}
+                        </form>
+                        {item.status === "APPROVED" ? (
+                          <OfficialDeveloperToggle
+                            id={item.id}
+                            name={name}
+                            isOfficialDeveloper={item.isOfficialDeveloper}
+                          />
                         ) : null}
-                        {item.status !== "REJECTED" ? (
-                          <ConfirmSubmitButton
-                            name="status"
-                            value="REJECTED"
-                            size="sm"
-                            variant="secondary"
-                            confirmTitle={`¿Rechazar la cuenta de ${name}?`}
-                            confirmLabel="Rechazar"
-                          >
-                            Rechazar
-                          </ConfirmSubmitButton>
-                        ) : null}
-                      </form>
+                      </div>
                     </div>
                   </div>
                 </Card>

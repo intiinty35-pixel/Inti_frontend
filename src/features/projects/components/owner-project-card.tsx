@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 import { PinIcon } from "@/shared/ui";
 import { ClockIcon } from "@/shared/ui/icons";
@@ -14,11 +15,12 @@ import {
   type ApiProjectStatus,
   type ProjectApiSummary,
 } from "@/features/projects/types/api";
-import { publishProject } from "@/features/projects/api";
+import { publishAdminProject, publishProject } from "@/features/projects/api";
 import { PROJECT_STAGE_LABELS } from "@/features/projects/data/project-catalogs";
 import type { ProjectStage } from "@/features/projects/types/draft";
 import { DataCell, DataGrid } from "@/features/listings/components/data-grid";
 import { ListingImage } from "@/features/listings/components/listing-image";
+import { ProjectTourVideo } from "@/features/listings/components/project-tour-video";
 
 const STATUS_STYLE: Record<ApiProjectStatus, string> = {
   DRAFT: "bg-surface/90 text-muted",
@@ -36,7 +38,8 @@ const STAGE_LABELS: Record<string, ProjectStage> = {
   DELIVERED: "entregado",
 };
 
-export function OwnerProjectCard({ project }: { project: ProjectApiSummary }) {
+export function OwnerProjectCard({ project, adminMode = false }: { project: ProjectApiSummary; adminMode?: boolean }) {
+  const router = useRouter();
   const district = project.location.district;
   const [status, setStatus] = useState(project.status);
   const [publishing, setPublishing] = useState(false);
@@ -48,8 +51,9 @@ export function OwnerProjectCard({ project }: { project: ProjectApiSummary }) {
     setPublishing(true);
     setError(null);
     try {
-      const published = await publishProject(project.id);
+      const published = await (adminMode ? publishAdminProject(project.id) : publishProject(project.id));
       setStatus(published.status);
+      router.refresh();
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "No se pudo publicar el proyecto.");
     } finally {
@@ -58,6 +62,7 @@ export function OwnerProjectCard({ project }: { project: ProjectApiSummary }) {
   }
 
   const needsSubscription =
+    !adminMode &&
     error !== null &&
     (error.toLowerCase().includes("suscrip") ||
       error.toLowerCase().includes("crédito") ||
@@ -152,8 +157,11 @@ export function OwnerProjectCard({ project }: { project: ProjectApiSummary }) {
               No publicado
             </span>
           )}
+          {project.tourUrl ? (
+            <ProjectTourVideo projectName={project.name} url={project.tourUrl} className="size-9 shrink-0" />
+          ) : null}
           <Link
-            href={ROUTES.panel.owner.base}
+            href={adminMode ? ROUTES.panel.admin.projects : ROUTES.panel.owner.base}
             className="flex h-9 items-center justify-center rounded-card border border-edge px-2.5 text-xs font-bold text-brand transition-colors hover:border-brand"
           >
             Panel

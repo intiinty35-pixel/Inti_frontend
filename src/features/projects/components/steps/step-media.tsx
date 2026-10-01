@@ -71,14 +71,15 @@ export function StepMedia() {
 
       <FieldSet
         legend="Recorrido virtual"
-        description="Enlace a Matterport, Kuula o cualquier visor 360°."
+        description="Pega el enlace público de YouTube; el video se reproducirá dentro de la tarjeta del proyecto."
       >
         <TextField<ProjectDraft>
           name="tourUrl"
           label="Enlace del recorrido virtual"
           type="url"
           inputMode="url"
-          placeholder="https://my.matterport.com/show/?m=abc123"
+          placeholder="https://www.youtube.com/watch?v=..."
+          hint="También puedes pegar un enlace corto de YouTube (youtu.be)."
           error={tourError}
         />
       </FieldSet>

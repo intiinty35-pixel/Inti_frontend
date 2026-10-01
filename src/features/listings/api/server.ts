@@ -19,6 +19,17 @@ export interface PagedListings {
   hasMore: boolean;
 }
 
+/** Propiedades publicadas para las secciones públicas del sitio. */
+export async function getPublicListingsServer(pageSize = 5): Promise<PagedListings> {
+  const response = await backendFetch(`/properties?sort=recent&pageSize=${pageSize}`);
+
+  if (!response.ok) {
+    throw new Error(`No se pudieron cargar las propiedades (${response.status})`);
+  }
+
+  return (await response.json()) as PagedListings;
+}
+
 export async function getOwnerListingsPagedServer(page: number, pageSize = 6): Promise<PagedListings> {
   const response = await backendFetch(`/properties/owner/me?page=${page}&pageSize=${pageSize}`);
 

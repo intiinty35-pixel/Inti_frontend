@@ -10,6 +10,7 @@ import { ArrowRightIcon, CheckCircleIcon, ChevronLeftIcon } from "@/shared/ui/ic
 import { WizardStepper, type StepStatus, type WizardStepMeta } from "@/shared/ui/stepper";
 import {
   buildProjectPayload,
+  createAdminProject,
   createProject,
   toProjectInput,
   uploadProjectFiles,
@@ -56,6 +57,7 @@ function StepHeader({ current, title, detail }: { current: number; title: string
 
 export interface ProjectPublishWizardProps {
   previewProjects: readonly ProjectPreview[];
+  adminMode?: boolean;
   /**
    * Se invoca al confirmar el resumen. Opcional mientras no exista
    * `POST /projects`: el borrador se confirma igual en pantalla.
@@ -63,7 +65,7 @@ export interface ProjectPublishWizardProps {
   onSave?: (payload: CreateProjectPayload) => void;
 }
 
-export function ProjectPublishWizard({ previewProjects, onSave }: ProjectPublishWizardProps) {
+export function ProjectPublishWizard({ previewProjects, adminMode = false, onSave }: ProjectPublishWizardProps) {
   const form = useForm<ProjectDraft>({
     resolver: zodResolver(projectDraftSchema),
     defaultValues: PROJECT_DRAFT_DEFAULTS,
@@ -176,7 +178,8 @@ export function ProjectPublishWizard({ previewProjects, onSave }: ProjectPublish
           images.length + plans.length,
         );
 
-        await createProject(toProjectInput(next, [...images, ...plans, ...renders]));
+        const input = toProjectInput(next, [...images, ...plans, ...renders]);
+        await (adminMode ? createAdminProject(input) : createProject(input));
 
         onSave?.(next);
         setSaved(true);
@@ -186,7 +189,7 @@ export function ProjectPublishWizard({ previewProjects, onSave }: ProjectPublish
         setSaving(false);
       }
     },
-    [getValues, onSave],
+    [adminMode, getValues, onSave],
   );
 
   if (saved) {
@@ -202,16 +205,17 @@ export function ProjectPublishWizard({ previewProjects, onSave }: ProjectPublish
           {payload?.name}
         </h2>
         <p className="max-w-md text-sm text-muted">
-          El proyecto quedó guardado con {payload?.lots.length ?? 0} lotes. Puedes publicarlo desde
-          Mis proyectos cuando tengas crédito disponible en tu suscripción.
+          El proyecto quedó guardado con {payload?.lots.length ?? 0} lotes. {adminMode
+            ? "Puedes publicarlo desde Proyectos ARIZ sin consumir créditos."
+            : "Puedes publicarlo desde Mis proyectos cuando tengas crédito disponible en tu suscripción."}
         </p>
         <div className="mt-2 flex flex-col-reverse gap-3 sm:flex-row">
           <Button type="button" variant="secondary" onClick={startOver}>
             Crear otro proyecto
           </Button>
-          <Link href={ROUTES.panel.owner.projects}>
+          <Link href={adminMode ? ROUTES.panel.admin.projects : ROUTES.panel.owner.projects}>
             <Button type="button">
-              Ver mis proyectos
+              {adminMode ? "Ver proyectos ARIZ" : "Ver mis proyectos"}
               <ArrowRightIcon className="size-4" />
             </Button>
           </Link>
@@ -229,6 +233,7 @@ export function ProjectPublishWizard({ previewProjects, onSave }: ProjectPublish
             payload={payload}
             lots={reviewedLots}
             previewProjects={previewProjects}
+            adminMode={adminMode}
             saving={saving}
             error={error}
             onSave={confirm}
