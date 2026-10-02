@@ -15,7 +15,13 @@ const LeafletMap = dynamic(
   { ssr: false, loading: MapSkeleton },
 );
 
-export function MapListingsMapClient({ markers }: { markers: MapListingMarker[] }) {
+export function MapListingsMapClient({
+  markers,
+  mapHref,
+}: {
+  markers: MapListingMarker[];
+  mapHref?: string;
+}) {
   if (markers.length === 0) {
     return (
       <div className="flex h-[420px] flex-col items-center justify-center gap-3 rounded-card border border-dashed border-edge bg-surface-muted px-6 text-center text-sm text-muted lg:h-[560px] xl:h-[640px]">
@@ -25,5 +31,5 @@ export function MapListingsMapClient({ markers }: { markers: MapListingMarker[] 
     );
   }
 
-  return <LeafletMap markers={markers} />;
+  return <LeafletMap markers={markers} mapHref={mapHref} />;
 }

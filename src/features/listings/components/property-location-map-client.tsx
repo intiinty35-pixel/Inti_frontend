@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import type { PropertyLocationMapProps } from "./property-location-map";
 
-export interface LazyPropertyLocationMapProps extends PropertyLocationMapProps {}
+export type LazyPropertyLocationMapProps = PropertyLocationMapProps;
 
 const MapSkeleton = ({ className }: { className?: string }) => (
   <div className={`animate-pulse rounded-card border border-edge bg-surface-muted ${className ?? "h-80 w-full"}`} />

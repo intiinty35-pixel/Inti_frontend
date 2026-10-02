@@ -64,7 +64,7 @@ function MapResize({ containerRef }: { containerRef: RefObject<HTMLDivElement | 
   return null;
 }
 
-export function MapListingsMap({ markers }: { markers: MapListingMarker[] }) {
+export function MapListingsMap({ markers, mapHref }: { markers: MapListingMarker[]; mapHref?: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   return (
@@ -84,8 +84,8 @@ export function MapListingsMap({ markers }: { markers: MapListingMarker[] }) {
             icon={marker.kind === "project" ? projectMarkerIcon : propertyMarkerIcon}
             position={[marker.lat, marker.lng]}
           >
-            <Popup>
-              <div className="grid gap-1">
+            <Popup className="[&_.leaflet-popup-content-wrapper]:rounded-sm [&_.mapboxgl-popup-content]:rounded-sm">
+              <div className="grid gap-1 p-1">
                 <span className="text-[10px] font-bold uppercase tracking-wide text-muted">
                   {marker.kind === "project" ? "Proyecto" : "Propiedad"}
                 </span>
@@ -104,6 +104,18 @@ export function MapListingsMap({ markers }: { markers: MapListingMarker[] }) {
       <span className="pointer-events-none absolute top-4 right-4 z-[400] rounded-full bg-surface px-3 py-1.5 text-[11px] font-bold text-brand shadow-[var(--shadow-card)]">
         {markers.length} {markers.length === 1 ? "publicación" : "publicaciones"}
       </span>
+
+      {mapHref ? (
+        <Link
+          href={mapHref}
+          aria-label="Ver mapa completo con propiedades y proyectos"
+          className="absolute inset-0 z-[450] flex items-end justify-end p-4"
+        >
+          <span className="rounded-full bg-brand px-4 py-2 text-xs font-black text-on-brand shadow-[var(--shadow-pop)] transition-colors hover:bg-brand-hover">
+            Ver mapa completo
+          </span>
+        </Link>
+      ) : null}
     </div>
   );
 }

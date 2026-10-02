@@ -22,14 +22,12 @@ export function DonutChart({ data, centerLabel = "total" }: DonutChartProps) {
   const total = data.reduce((sum, datum) => sum + datum.value, 0);
   const hasData = total > 0;
 
-  let offset = 0;
   const segments = (hasData ? data : [])
-    .map((datum) => {
+    .reduce<{ label: string; color: string; length: number; offset: number }[]>((items, datum) => {
+      const offset = items.reduce((sum, item) => sum + item.length, 0);
       const length = (datum.value / total) * CIRC;
-      const segment = { label: datum.label, color: datum.color, length, offset };
-      offset += length;
-      return segment;
-    })
+      return [...items, { label: datum.label, color: datum.color, length, offset }];
+    }, [])
     .filter((segment) => segment.length > 0);
 
   return (

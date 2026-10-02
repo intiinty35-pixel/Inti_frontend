@@ -1,38 +1,44 @@
 import { ProjectCard } from "@/features/listings";
 import { getPublicProjectsServer } from "@/features/projects/api/server";
 import { toProjectCardModel } from "@/features/projects/lib/project-card";
-import { HomeSection, SectionHeading } from "@/features/home/components/section";
 
-/** Proyectos publicados por los agentes, servidos por el backend. */
+/** Proyectos destacados de agentes, servidos por el backend. */
 export async function PublishedProjectsSection() {
-  // La home se prerrenderiza: si la API no responde la seccion simplemente no
-  // se pinta, sin romper el build ni la pagina.
-  const projects = await getPublicProjectsServer(5, "AGENT")
-    .then((page) => page.items.map(toProjectCardModel))
-    .catch(() => []);
+  const page = await getPublicProjectsServer(5, "AGENT", "featured").catch(() => null);
+  const projects = page?.items.map(toProjectCardModel) ?? [];
 
-  if (projects.length === 0) return null;
+  if (!page || projects.length === 0) return null;
 
   return (
-    <HomeSection>
-      <SectionHeading
-        eyebrow="Publicados en Ariz"
-        title="Proyectos publicados"
-        description="Lotizaciones y edificios en preventa que los agentes de Ariz publican en tiempo real."
-        action={
-          <span title="Disponible próximamente" className="shrink-0 text-xs font-bold text-muted">
-            Ver todos
-          </span>
-        }
-      />
+    <section className="bg-[#F3F4F8] px-3 pt-3 pb-8 sm:px-4 lg:px-5 xl:px-6">
+      <div className="mx-auto w-full">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
+            <h2 className="text-xl leading-none font-black tracking-tight text-[#071A5A] sm:text-2xl">
+              Proyectos destacados
+            </h2>
+            <span aria-hidden className="hidden h-0.5 w-7 rounded-full bg-accent sm:block" />
+            <p className="text-[10px] leading-none font-bold text-[#596273] sm:text-[11px]">
+              Los 5 proyectos con mayor destaque
+            </p>
+          </div>
 
-      <ul className="mt-8 grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-        {projects.map((project) => (
-          <li key={project.id}>
-            <ProjectCard project={project} />
-          </li>
-        ))}
-      </ul>
-    </HomeSection>
+          <span
+            title="Disponible proximamente"
+            className="shrink-0 text-[10px] font-black text-[#596273] sm:text-xs"
+          >
+            Ver todos los proyectos
+          </span>
+        </div>
+
+        <ul className="mt-5 grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          {projects.map((project) => (
+            <li key={project.id}>
+              <ProjectCard project={project} />
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
   );
 }

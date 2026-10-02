@@ -20,22 +20,17 @@ export interface RevealOnScrollProps {
  */
 export function RevealOnScroll({ children, delay = 0, className }: RevealOnScrollProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(() => {
+    if (typeof window === "undefined") return false;
+    if (typeof IntersectionObserver === "undefined") return true;
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  });
 
   useEffect(() => {
+    if (visible) return;
+
     const node = ref.current;
     if (!node) return;
-
-    // Sin soporte de IntersectionObserver el contenido debe verse igual.
-    if (typeof IntersectionObserver === "undefined") {
-      setVisible(true);
-      return;
-    }
-
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setVisible(true);
-      return;
-    }
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -52,7 +47,7 @@ export function RevealOnScroll({ children, delay = 0, className }: RevealOnScrol
 
     observer.observe(node);
     return () => observer.disconnect();
-  }, []);
+  }, [visible]);
 
   return (
     <div

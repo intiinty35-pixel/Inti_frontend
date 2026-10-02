@@ -32,6 +32,26 @@
 
   html {
     scroll-behavior: smooth;
+
+    /*
+     * La barra vertical del navegador (borde derecho de la ventana) no se
+     * dibuja en escritorio: el scroll sigue funcionando con rueda, trackpad,
+     * teclado y barra espaciadora, solo desaparece el cromo del sistema.
+     *
+     * Se limita al scroller raiz (`html`) a proposito: las barras internas que
+     * si son necesarias para entender la interfaz --listados con scroll propio,
+     * menus desplegables, panel de mapa-- conservan las suyas.
+     *
+     * `scrollbar-width` es la via estandar (Firefox, Chrome 121+),
+     * `::-webkit-scrollbar` cubre el motor de Blink/WebKit anterior y
+     * `-ms-overflow-style` el Edge heredado.
+     */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  html::-webkit-scrollbar {
+    display: none;
   }
 
   body {

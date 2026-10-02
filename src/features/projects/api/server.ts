@@ -12,9 +12,11 @@ const PUBLIC_REVALIDATE_SECONDS = 60;
 export async function getPublicProjectsServer(
   pageSize = 10,
   origin?: "ADMIN" | "AGENT",
+  sort?: "recent" | "price-asc" | "price-desc" | "featured",
 ): Promise<ProjectApiPaged> {
   const params = new URLSearchParams({ pageSize: String(pageSize) });
   if (origin) params.set("origin", origin);
+  if (sort) params.set("sort", sort);
   const response = await fetch(`${env.backendUrl}/projects?${params.toString()}`, {
     headers: { Accept: "application/json" },
     ...(origin === "ADMIN"

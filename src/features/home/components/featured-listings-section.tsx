@@ -3,10 +3,8 @@ import { ArrowRightIcon } from "@/shared/ui";
 import { ROUTES } from "@/shared/config/routes";
 import { FeaturedListingCard } from "@/features/listings";
 import { getPublicListingsServer } from "@/features/listings/api/server";
-import { HomeSection, SectionHeading } from "@/features/home/components/section";
 
 export async function FeaturedListingsSection() {
-  // Si el backend no responde, conservamos el resto de la Home y mostramos el estado vacio.
   const listings = await getPublicListingsServer(5).catch(() => ({
     items: [],
     total: 0,
@@ -16,33 +14,42 @@ export async function FeaturedListingsSection() {
   }));
 
   return (
-    <HomeSection>
-      <SectionHeading
-        title="Propiedades destacadas"
-        description="Una selección de inmuebles con excelente ubicación, valor y potencial."
-        action={
+    <section className="bg-[#F3F4F8] px-3 pt-3 pb-8 sm:px-4 lg:px-5 xl:px-6">
+      <div className="mx-auto w-full">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
+            <h2 className="text-xl leading-none font-black tracking-tight text-[#071A5A] sm:text-2xl">
+              Propiedades destacadas
+            </h2>
+            <span aria-hidden className="hidden h-0.5 w-7 rounded-full bg-accent sm:block" />
+            <p className="text-[10px] leading-none font-bold text-[#596273] sm:text-[11px]">
+              Inmuebles con ubicacion, valor y potencial
+            </p>
+          </div>
+
           <Link
             href={ROUTES.properties}
-            className="flex shrink-0 items-center gap-2 text-xs font-bold text-brand"
+            className="flex shrink-0 items-center gap-2 text-[10px] font-black text-[#071A5A] transition-colors hover:text-brand sm:text-xs"
           >
-            Ver todas
-            <ArrowRightIcon className="size-4" />
+            Ver todas las propiedades
+            <ArrowRightIcon className="size-3.5" />
           </Link>
-        }
-      />
-
-      <ul className="mt-8 grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-        {listings.items.map((listing) => (
-          <li key={listing.id}>
-            <FeaturedListingCard listing={listing} />
-          </li>
-        ))}
-      </ul>
-      {listings.items.length === 0 ? (
-        <div className="mt-8 rounded-card border border-dashed border-edge bg-surface-muted p-8 text-center text-sm text-muted">
-          Aún no hay propiedades publicadas.
         </div>
-      ) : null}
-    </HomeSection>
+
+        <ul className="mt-5 grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          {listings.items.map((listing) => (
+            <li key={listing.id}>
+              <FeaturedListingCard listing={listing} />
+            </li>
+          ))}
+        </ul>
+
+        {listings.items.length === 0 ? (
+          <div className="mt-5 rounded-card border border-dashed border-edge bg-surface p-8 text-center text-sm text-muted">
+            Aun no hay propiedades publicadas.
+          </div>
+        ) : null}
+      </div>
+    </section>
   );
 }

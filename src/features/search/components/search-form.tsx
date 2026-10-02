@@ -3,12 +3,9 @@
 import { useId, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import {
-  CrosshairIcon,
   Listbox,
-  MapIcon,
   PinIcon,
   SearchIcon,
-  SlidersIcon,
   type ListboxOption,
 } from "@/shared/ui";
 import { cn } from "@/shared/lib/cn";
@@ -92,12 +89,12 @@ export function SearchForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full rounded-2xl bg-surface text-left shadow-[var(--shadow-pop)]"
+      className="w-full rounded-md bg-surface text-left shadow-[0_10px_24px_rgb(11_27_92_/_0.16)]"
     >
       <div
         role="tablist"
         aria-label="Tipo de búsqueda"
-        className="flex justify-center rounded-t-2xl border-b border-edge"
+        className="grid grid-cols-4 rounded-t-md border-b border-edge bg-white"
       >
         {TABS.map((item) => (
           <button
@@ -110,7 +107,7 @@ export function SearchForm() {
               setType("all");
             }}
             className={cn(
-              "-mb-px border-b-2 px-5 py-3.5 text-[13px] font-bold transition-colors sm:px-7",
+              "-mb-px border-b-2 px-3 py-2.5 text-[12px] font-bold transition-colors",
               item.key === tab.key
                 ? "border-accent text-brand"
                 : "border-transparent text-muted hover:text-brand",
@@ -121,8 +118,8 @@ export function SearchForm() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 gap-5 p-5 md:grid-cols-2 lg:grid-cols-[1.2fr_1fr_1.8fr_auto] lg:items-center lg:gap-0 lg:p-0">
-        <label className="flex flex-col gap-1.5 lg:px-6 lg:py-5">
+      <div className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 lg:grid-cols-[1.1fr_0.95fr_1.65fr_auto] lg:items-center lg:gap-0 lg:p-0">
+        <label className="flex flex-col gap-1.5 lg:px-5 lg:py-3.5">
           <span className={FIELD_LABEL}>UBICACIÓN</span>
           <span className="flex items-center gap-2 text-muted">
             <PinIcon className="size-4 shrink-0" />
@@ -136,7 +133,7 @@ export function SearchForm() {
           </span>
         </label>
 
-        <div className="flex flex-col gap-1.5 lg:border-l lg:border-edge lg:px-6 lg:py-5">
+        <div className="flex flex-col gap-1.5 lg:border-l lg:border-edge lg:px-5 lg:py-3.5">
           <span className={FIELD_LABEL} id={typeLabelId}>
             TIPO DE PROPIEDAD
           </span>
@@ -152,7 +149,7 @@ export function SearchForm() {
           />
         </div>
 
-        <div className="flex flex-col gap-1.5 md:col-span-2 lg:col-span-1 lg:px-5 lg:py-4">
+        <div className="flex flex-col gap-1.5 md:col-span-2 lg:col-span-1 lg:px-5 lg:py-3">
           <div className="flex items-center justify-between gap-3">
             <span className={FIELD_LABEL}>RANGO DE PRECIO</span>
             <Listbox
@@ -195,10 +192,10 @@ export function SearchForm() {
           </div>
         </div>
 
-        <div className="md:col-span-2 lg:col-span-1 lg:px-5">
+        <div className="md:col-span-2 lg:col-span-1 lg:px-4">
           <button
             type="submit"
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand px-6 text-sm font-bold whitespace-nowrap text-on-brand transition-colors hover:bg-brand-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand lg:w-auto"
+            className="flex h-11 w-full items-center justify-center gap-2 rounded-md bg-accent px-5 text-sm font-bold whitespace-nowrap text-on-accent transition-colors hover:bg-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand lg:w-auto"
           >
             <SearchIcon className="size-4" />
             Buscar propiedades
@@ -206,22 +203,6 @@ export function SearchForm() {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-edge px-5 py-3 text-[11px] font-semibold text-ink lg:px-6">
-        {[
-          { icon: <SlidersIcon className="size-4 text-muted" />, label: "Más filtros" },
-          { icon: <CrosshairIcon className="size-4 text-muted" />, label: "Propiedades cerca de mí" },
-          { icon: <MapIcon className="size-4 text-muted" />, label: "Buscar en mapa" },
-        ].map((item) => (
-          <span
-            key={item.label}
-            title="Disponible próximamente"
-            className="flex cursor-default items-center gap-2"
-          >
-            {item.icon}
-            {item.label}
-          </span>
-        ))}
-      </div>
     </form>
   );
 }

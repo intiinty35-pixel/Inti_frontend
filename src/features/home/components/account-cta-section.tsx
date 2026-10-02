@@ -1,9 +1,20 @@
 import Link from "next/link";
 import type { ComponentType, SVGProps } from "react";
-import { ArrowRightIcon, BellIcon, ChatIcon, Container, HeartIcon, HomeIcon, PinIcon, SearchIcon, SlidersIcon, SoonButton } from "@/shared/ui";
-import { formatArea, formatBathrooms, formatPrice, formatRooms } from "@/shared/lib/format";
-import { cloudinaryImage } from "@/shared/lib/cloudinary";
+import {
+  ArrowRightIcon,
+  BellIcon,
+  ChatIcon,
+  Container,
+  HeartIcon,
+  SlidersIcon,
+  SoonButton,
+} from "@/shared/ui";
 import { ROUTES } from "@/shared/config/routes";
+import { formatPrice } from "@/shared/lib/format";
+import { getPublicProjectsServer } from "@/features/projects/api/server";
+import { toProjectCardModel } from "@/features/projects/lib/project-card";
+import { AccountProjectMapPreview } from "@/features/home/components/account-project-map-preview";
+import type { MapPoint } from "@/features/listings/components/listings-map";
 
 type IconType = ComponentType<SVGProps<SVGSVGElement>>;
 
@@ -17,7 +28,7 @@ interface Feature {
 const FEATURES: readonly Feature[] = [
   {
     key: "precisas",
-    title: "Búsquedas más precisas",
+    title: "Busquedas mas precisas",
     description: "Aplica filtros y encuentra propiedades que realmente encajan contigo.",
     icon: SlidersIcon,
   },
@@ -30,7 +41,7 @@ const FEATURES: readonly Feature[] = [
   {
     key: "alertas",
     title: "Alertas personalizadas",
-    description: "Conoce nuevas oportunidades según ubicación, tipo y presupuesto.",
+    description: "Conoce nuevas oportunidades segun ubicacion, tipo y presupuesto.",
     icon: BellIcon,
   },
   {
@@ -41,109 +52,45 @@ const FEATURES: readonly Feature[] = [
   },
 ];
 
-interface Tab {
-  key: string;
-  label: string;
-  icon: IconType;
-}
+export async function AccountCtaSection() {
+  const projectPoints: MapPoint[] = await getPublicProjectsServer(20)
+    .then(({ items }) =>
+      items
+        .map(toProjectCardModel)
+        .flatMap((project): MapPoint[] => {
+          const { lat, lng } = project.location;
+          if (lat == null || lng == null || !Number.isFinite(lat) || !Number.isFinite(lng)) {
+            return [];
+          }
 
-const TABS: readonly Tab[] = [
-  { key: "inicio", label: "Inicio", icon: HomeIcon },
-  { key: "buscar", label: "Buscar", icon: SearchIcon },
-  { key: "favoritos", label: "Favoritos", icon: HeartIcon },
-];
+          return [{
+            id: project.id,
+            lat,
+            lng,
+            priceLabel: `Desde ${formatPrice(project.startingPrice.amount, project.startingPrice.currency)}`,
+            title: project.name,
+            districtLabel: `${project.location.district}, ${project.location.department}`,
+            coverImage: project.images[0],
+            href: ROUTES.project(project.slug),
+            badge: project.deliveryStage,
+            publishedAt: project.publishedAt,
+          }];
+        }),
+    )
+    .catch(() => []);
 
-const ACTIVE_TAB = "buscar";
-
-/** Fondo decorativo de la columna derecha: la imagen se funde con el color de la sección. */
-const BACKDROP = [
-  "linear-gradient(90deg, var(--brand-soft) 0%, rgb(232 236 248 / 0.45) 40%, rgb(232 236 248 / 0.12) 100%)",
-  `url(${cloudinaryImage("ariz/home/account-cta", "f_auto,q_auto,c_fill,w_1280,h_960")})`,
-  "linear-gradient(135deg, #2a3b85 0%, #00124f 100%)",
-].join(", ");
-
-interface SavedProperty {
-  id: string;
-  title: string;
-  price: number;
-  areaM2: number;
-  rooms: number;
-  bathrooms: number;
-}
-
-const SAVED: readonly SavedProperty[] = [
-  { id: "miraflores", title: "Departamento en Miraflores", price: 650000, areaM2: 112, rooms: 3, bathrooms: 3 },
-  { id: "surco", title: "Departamento en Surco", price: 420000, areaM2: 90, rooms: 3, bathrooms: 2 },
-];
-
-function specs(property: SavedProperty): string {
-  return [formatArea(property.areaM2), formatRooms(property.rooms), formatBathrooms(property.bathrooms)].join(" · ");
-}
-
-/** Vista de la app: muestra el resultado de tener la búsqueda centralizada en la cuenta. */
-function AccountPreview() {
   return (
-    <div className="rounded-card border border-edge bg-surface p-5 shadow-[var(--shadow-pop)] xl:p-7">
-      <div className="flex items-center justify-between gap-3">
-        <span className="flex items-center gap-2">
-          <img src="/logo/logo.png" alt="Ariz" className="h-7 w-auto" />
-          <span className="text-base font-extrabold tracking-wide text-brand">ARIZ</span>
-        </span>
-        <span className="flex items-center gap-1 text-[11px] font-semibold text-muted">
-          <PinIcon className="size-3.5" />
-          Miraflores, Lima
-        </span>
-      </div>
-
-      <ul className="mt-5 grid gap-2.5 sm:grid-cols-2 xl:gap-4">
-        {SAVED.map((property) => (
-          <li key={property.id} className="rounded-card border border-edge bg-surface-muted p-3 xl:p-4">
-            <p className="text-base font-bold text-brand">{formatPrice(property.price)}</p>
-            <p className="mt-1 text-[13px] font-semibold text-ink">{property.title}</p>
-            <p className="mt-1 text-[11px] text-muted">{specs(property)}</p>
-          </li>
-        ))}
-      </ul>
-
-      <nav aria-label="Navegación de la app" className="mt-5 flex items-stretch border-t border-edge pt-3">
-        {TABS.map((tab) => {
-          const Icon = tab.icon;
-          const active = tab.key === ACTIVE_TAB;
-
-          return (
-            <span
-              key={tab.key}
-              className={`flex flex-1 flex-col items-center gap-1 text-[10px] font-bold ${active ? "text-brand" : "text-muted"}`}
-            >
-              <Icon className="size-[18px]" />
-              {tab.label}
-            </span>
-          );
-        })}
-      </nav>
-    </div>
-  );
-}
-
-export function AccountCtaSection() {
-  return (
-    <section className="relative overflow-hidden bg-brand-soft py-12 sm:py-16">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-y-0 right-0 hidden w-1/2 bg-cover bg-center opacity-80 lg:block"
-        style={{ backgroundImage: BACKDROP }}
-      />
-
-      <Container size="wide-tight" className="relative grid items-center gap-10 lg:grid-cols-2 lg:gap-14 xl:gap-20">
+    <section className="relative -mt-1 overflow-hidden bg-brand-soft pt-8 pb-12 sm:pt-10 sm:pb-16">
+      <Container size="wide-tight" className="relative grid items-center gap-10 lg:grid-cols-[1fr_420px] lg:gap-14 xl:gap-20">
         <div>
-          <p className="text-[11px] font-bold tracking-[0.18em] text-accent uppercase">
-            Tu búsqueda, siempre contigo
+          <p className="text-[11px] font-black tracking-[0.18em] text-accent uppercase">
+            Tu busqueda, siempre contigo
           </p>
-          <h2 className="mt-4 text-3xl font-light tracking-tight text-brand sm:text-4xl xl:text-5xl">
-            Encuentra tu próximo espacio sin perder ninguna oportunidad
+          <h2 className="mt-3 max-w-3xl text-2xl leading-tight font-black tracking-tight text-[#071A5A] sm:text-3xl lg:text-4xl">
+            Encuentra tu proximo espacio sin perder ninguna oportunidad
           </h2>
-          <p className="mt-4 max-w-xl text-sm text-muted sm:text-base">
-            Crea una cuenta gratuita y organiza toda tu búsqueda inmobiliaria desde un solo lugar.
+          <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted sm:text-base">
+            Crea una cuenta gratuita y organiza toda tu busqueda inmobiliaria desde un solo lugar.
           </p>
 
           <ul className="mt-8 grid gap-x-8 gap-y-7 sm:grid-cols-2 xl:gap-x-12">
@@ -152,11 +99,11 @@ export function AccountCtaSection() {
 
               return (
                 <li key={feature.key} className="flex gap-3">
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-card bg-surface text-brand shadow-[var(--shadow-card)]">
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-[6px] bg-white text-brand shadow-[var(--shadow-card)]">
                     <Icon className="size-[18px]" />
                   </span>
                   <div>
-                    <h3 className="text-sm font-bold text-brand">{feature.title}</h3>
+                    <h3 className="text-sm font-black text-brand">{feature.title}</h3>
                     <p className="mt-1 text-[13px] leading-relaxed text-muted">{feature.description}</p>
                   </div>
                 </li>
@@ -167,7 +114,7 @@ export function AccountCtaSection() {
           <div className="mt-9 flex flex-wrap gap-3">
             <Link
               href={ROUTES.registerCustomer}
-              className="flex h-11 items-center gap-2 rounded-card bg-brand px-6 text-sm font-bold text-on-brand transition-colors hover:bg-brand-hover"
+              className="flex h-11 items-center gap-2 rounded-[6px] bg-brand px-6 text-sm font-black text-on-brand transition-colors hover:bg-brand-hover"
             >
               Crear cuenta gratuita
               <ArrowRightIcon className="size-4" />
@@ -178,7 +125,7 @@ export function AccountCtaSection() {
           </div>
         </div>
 
-        <AccountPreview />
+        <AccountProjectMapPreview points={projectPoints} href={ROUTES.projects} />
       </Container>
     </section>
   );

@@ -4,7 +4,6 @@ import { ROUTES } from "@/shared/config/routes";
 import { ProjectCard } from "@/features/listings";
 import { getPublicProjectsServer } from "@/features/projects/api/server";
 import { toProjectCardModel } from "@/features/projects/lib/project-card";
-import { HomeSection, SectionHeading } from "@/features/home/components/section";
 
 export async function ArizProjectsSection() {
   const projects = await getPublicProjectsServer(5, "ADMIN")
@@ -12,32 +11,42 @@ export async function ArizProjectsSection() {
     .catch(() => []);
 
   return (
-    <HomeSection>
-      <SectionHeading
-        eyebrow="Ariz Proyectos"
-        title="Proyectos Ariz"
-        description="Proyectos inmobiliarios desarrollados y publicados por ARIZ."
-        action={
-          <Link href={ROUTES.projects} className="flex shrink-0 items-center gap-2 text-xs font-bold text-brand">
-            Ver todos
-            <ArrowRightIcon className="size-4" />
-          </Link>
-        }
-      />
+    <section className="bg-[#F3F4F8] px-3 pt-3 pb-8 sm:px-4 lg:px-5 xl:px-6">
+      <div className="mx-auto w-full">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
+            <h2 className="text-xl leading-none font-black tracking-tight text-[#071A5A] sm:text-2xl">
+              Proyectos Ariz
+            </h2>
+            <span aria-hidden className="hidden h-0.5 w-7 rounded-full bg-accent sm:block" />
+            <p className="text-[10px] leading-none font-bold text-[#596273] sm:text-[11px]">
+              Desarrollos que transforman Tumbes
+            </p>
+          </div>
 
-      {projects.length > 0 ? (
-        <ul className="mt-8 grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-          {projects.map((project) => (
-            <li key={project.id}>
-              <ProjectCard project={project} />
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="mt-8 rounded-card border border-dashed border-edge bg-surface-muted p-8 text-center text-sm text-muted">
-          Pronto verás aquí los proyectos publicados por ARIZ.
-        </p>
-      )}
-    </HomeSection>
+          <Link
+            href={ROUTES.projects}
+            className="flex shrink-0 items-center gap-2 text-[10px] font-black text-[#071A5A] transition-colors hover:text-brand sm:text-xs"
+          >
+            Ver todos los proyectos
+            <ArrowRightIcon className="size-3.5" />
+          </Link>
+        </div>
+
+        {projects.length > 0 ? (
+          <ul className="mt-5 grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            {projects.map((project) => (
+              <li key={project.id}>
+                <ProjectCard project={project} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="mt-5 rounded-card border border-dashed border-edge bg-surface p-8 text-center text-sm text-muted">
+            Pronto veras aqui los proyectos publicados por ARIZ.
+          </p>
+        )}
+      </div>
+    </section>
   );
 }

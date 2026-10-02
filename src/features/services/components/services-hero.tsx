@@ -14,10 +14,14 @@ const HERO_OVERLAY =
  * Cabecera de la pagina `/servicios`: cinta con foto de fondo de un proyecto
  * inmobiliario, overlay azul marino y la linea amarilla de marca al pie.
  * Sin migas de pan: el titulo y el subtitulo son el unico contenido.
+ *
+ * Igual que el hero del home, sube por debajo del header transparente con
+ * margen negativo. Como esta cinta tiene alto minimo y maximo, `--header-h` se
+ * suma tambien a las alturas: si no, el `lg:max-h` recortaria el titulo.
  */
 export function ServicesHero() {
   return (
-    <section className="relative isolate overflow-hidden bg-brand min-h-[320px] text-white sm:min-h-[380px] lg:min-h-[420px] lg:max-h-[440px]">
+    <section className="relative isolate overflow-hidden -mt-[var(--header-h)] bg-brand min-h-[calc(320px+var(--header-h))] text-white sm:min-h-[calc(380px+var(--header-h))] lg:min-h-[calc(420px+var(--header-h))] lg:max-h-[calc(440px+var(--header-h))]">
       {/* Fondo: la foto cubre toda la cinta y el degradado garantiza contraste. */}
       <ServiceImage
         src={SERVICES_HERO_IMAGE}
@@ -35,7 +39,7 @@ export function ServicesHero() {
 
       <Container
         size="wide-tight"
-        className="relative flex min-h-[320px] flex-col justify-center py-16 sm:min-h-[380px] sm:py-20 lg:min-h-[420px] lg:py-24"
+        className="relative flex min-h-[calc(320px+var(--header-h))] flex-col justify-center pt-[calc(var(--header-h)+4rem)] pb-16 sm:min-h-[calc(380px+var(--header-h))] sm:pt-[calc(var(--header-h)+5rem)] sm:pb-20 lg:min-h-[calc(420px+var(--header-h))] lg:pt-[calc(var(--header-h)+6rem)] lg:pb-24"
       >
         <p className="text-[11px] font-bold tracking-[0.18em] text-accent uppercase">
           ARIZ Proyectos

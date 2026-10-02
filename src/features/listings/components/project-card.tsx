@@ -64,7 +64,7 @@ export function ProjectCard({ project }: { project: Project }) {
         <div className="mt-auto flex pt-2.5">
           <Link
             href={ROUTES.project(project.slug)}
-            className="inline-flex h-9 w-full items-center justify-center gap-1 rounded-card bg-brand px-2.5 text-xs font-medium text-on-brand transition-colors hover:bg-brand-hover"
+            className="inline-flex h-9 w-full items-center justify-center gap-1 rounded bg-accent px-2.5 text-xs font-bold text-on-accent transition-colors hover:bg-accent-hover"
           >
             Ver proyecto
           </Link>
@@ -135,7 +135,7 @@ export function ProjectListingCard({ project }: { project: Project }) {
           <div className="flex flex-wrap justify-end gap-2">
             <Link
               href={ROUTES.project(project.slug)}
-              className="flex h-10 items-center justify-center rounded-card bg-brand px-4 text-sm font-bold text-on-brand transition-colors hover:bg-brand-hover"
+              className="flex h-10 items-center justify-center rounded bg-accent px-4 text-sm font-bold text-on-accent transition-colors hover:bg-accent-hover"
             >
               Ver proyecto
             </Link>

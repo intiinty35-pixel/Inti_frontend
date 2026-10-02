@@ -4,10 +4,11 @@ import { HomeSection, SectionHeading } from "@/features/home/components/section"
 import { MapListingsMapClient, type MapListingMarker } from "@/features/home/components/map-listings-map-client";
 import { getPublicProjectsServer } from "@/features/projects/api/server";
 import { formatPrice } from "@/shared/lib/format";
+import { ROUTES } from "@/shared/config/routes";
 
 const MAP_PAGE_SIZE = 50;
 
-export async function MapExplorerSection() {
+export async function MapExplorerSection({ linkToFullMap = false }: { linkToFullMap?: boolean } = {}) {
   const [propertyPage, projectMarkers] = await Promise.all([
     getPublicListingsServer(MAP_PAGE_SIZE)
       .catch(() => ({ items: [], total: 0, page: 1, pageSize: MAP_PAGE_SIZE, hasMore: false })),
@@ -74,7 +75,7 @@ export async function MapExplorerSection() {
         </ul>
 
         <div className="order-1 lg:order-2">
-          <MapListingsMapClient markers={mapMarkers} />
+          <MapListingsMapClient markers={mapMarkers} mapHref={linkToFullMap ? ROUTES.map : undefined} />
         </div>
       </div>
     </HomeSection>

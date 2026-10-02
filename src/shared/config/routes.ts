@@ -12,6 +12,7 @@ export const ROUTES = {
   projects: "/proyectos",
   project: (slug: string): string => `/project/${slug}`,
   services: "/servicios",
+  investments: "/inversiones",
   panel: {
     admin: {
       base: "/panel/admin",
@@ -48,4 +49,18 @@ export function getHomeRoute(role: UserRole): string {
     default:
       return ROUTES.panel.client.base;
   }
+}
+
+/**
+ * Rutas cuyo primer pantallón es un hero oscuro: el header va transparente y con
+ * texto blanco sobre ellas, porque es lo unico que se lee bien.
+ *
+ * En el resto de paginas publicas (`/propiedades`, `/mapa`, ...) el contenido
+ * arranca sobre fondo claro, asi que el header vuelve a su estilo solido con
+ * texto azul.
+ */
+const OVERLAY_HEADER_ROUTES: readonly string[] = [ROUTES.home, ROUTES.services];
+
+export function hasOverlayHeader(pathname: string): boolean {
+  return OVERLAY_HEADER_ROUTES.includes(pathname);
 }

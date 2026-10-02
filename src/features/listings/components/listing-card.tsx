@@ -70,7 +70,7 @@ export function ListingCard({ listing }: { listing: Listing }) {
           <div className="flex flex-wrap justify-end gap-2">
             <Link
               href={ROUTES.property(listing.slug)}
-              className="flex h-10 items-center justify-center rounded-card bg-brand px-4 text-sm font-bold text-on-brand transition-colors hover:bg-brand-hover"
+              className="flex h-10 items-center justify-center rounded bg-accent px-4 text-sm font-bold text-on-accent transition-colors hover:bg-accent-hover"
             >
               Ver propiedad
             </Link>

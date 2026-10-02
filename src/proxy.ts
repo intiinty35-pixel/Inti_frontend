@@ -13,6 +13,8 @@ export function proxy(request: NextRequest) {
 
     return NextResponse.redirect(url);
   }
+
+  return NextResponse.next();
 }
 
 export const config = {

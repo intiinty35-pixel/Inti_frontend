@@ -1,123 +1,110 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import { ArrowRightIcon } from "@/shared/ui";
+import {
+  ArrowRight,
+  Construction,
+  Hammer,
+  HandCoins,
+  House,
+  KeyRound,
+  TrendingUp,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { ROUTES } from "@/shared/config/routes";
 import { cn } from "@/shared/lib/cn";
-import type { PropertyType } from "@/features/listings/types/listing";
-import { HomeSection } from "@/features/home/components/section";
 
 interface Category {
-  slug: PropertyType;
+  slug: string;
   label: string;
   subtitle: string;
   href: string;
-  image: string;
-  alt: string;
+  Icon: LucideIcon;
 }
-
-const imageParams = "?auto=format&fit=crop&w=800&q=80";
 
 const categories: readonly Category[] = [
   {
-    slug: "houses",
-    label: "Casas",
-    subtitle: "Fachadas modernas y jardines",
-    href: `${ROUTES.properties}?operation=buy&type=houses`,
-    image: `https://images.unsplash.com/photo-1600585154340-be6161a56a0c${imageParams}`,
-    alt: "Casa moderna con jardin y fachada elegante al atardecer",
+    slug: "comprar",
+    label: "Comprar propiedad",
+    subtitle: "Encuentra tu hogar ideal en Tumbes.",
+    href: `${ROUTES.properties}?operation=buy`,
+    Icon: House,
   },
   {
-    slug: "apartments",
-    label: "Departamentos",
-    subtitle: "Vistas urbanas y espacios luminosos",
-    href: `${ROUTES.properties}?operation=buy&type=apartments`,
-    image: `https://images.unsplash.com/photo-1494526585095-c41746248156${imageParams}`,
-    alt: "Interior luminoso de departamento con vista a la ciudad",
+    slug: "proyectos",
+    label: "Ver proyectos",
+    subtitle: "Conoce nuestros desarrollos inmobiliarios.",
+    href: ROUTES.projects,
+    Icon: Construction,
   },
   {
-    slug: "projects",
-    label: "Proyectos",
-    subtitle: "Edificios y preventas seleccionadas",
-    href: "/proyectos",
-    image: `https://images.unsplash.com/photo-1545324418-cc1a3fa10c00${imageParams}`,
-    alt: "Edificio residencial moderno visto desde abajo",
+    slug: "invertir",
+    label: "Invertir con Ariz",
+    subtitle: "Oportunidades con alta plusvalia.",
+    href: `${ROUTES.properties}?operation=buy&type=projects`,
+    Icon: TrendingUp,
   },
   {
-    slug: "land",
-    label: "Terrenos",
-    subtitle: "Lotes amplios para invertir",
-    href: `${ROUTES.properties}?operation=buy&type=land`,
-    image: `https://images.unsplash.com/photo-1503387762-592deb58ef4e${imageParams}`,
-    alt: "Terreno amplio con cielo despejado y maquinaria de construccion",
+    slug: "vender",
+    label: "Vender mi propiedad",
+    subtitle: "Publica y vende con el mejor respaldo.",
+    href: ROUTES.registerProfessional,
+    Icon: HandCoins,
   },
   {
-    slug: "country-lots",
-    label: "Lotes campestres",
-    subtitle: "Campo, verde y aire abierto",
-    href: `${ROUTES.properties}?operation=buy&type=country-lots`,
-    image: `https://images.unsplash.com/photo-1500530855697-b586d89ba3ee${imageParams}`,
-    alt: "Paisaje campestre verde con montanas y cielo despejado",
+    slug: "construir",
+    label: "Construir mi casa",
+    subtitle: "Hacemos realidad tu proyecto.",
+    href: ROUTES.services,
+    Icon: Hammer,
   },
   {
-    slug: "commercial",
-    label: "Locales comerciales",
-    subtitle: "Ubicaciones para negocios",
-    href: `${ROUTES.properties}?operation=buy&type=commercial`,
-    image: `https://images.unsplash.com/photo-1441986300917-64674bd600d8${imageParams}`,
-    alt: "Fachada de local comercial moderno en una avenida",
+    slug: "alquilar",
+    label: "Alquilar mi propiedad",
+    subtitle: "Encuentra o publica en alquiler.",
+    href: `${ROUTES.properties}?operation=rent`,
+    Icon: KeyRound,
   },
 ];
 
-/**
- * Rejilla de categorias: 6 columnas solo en `xl` (>=1280px). Antes entraban en
- * `lg` (1024px) y con el ancho de contenedor anterior las tarjetas quedaban por
- * debajo de 100px, demasiado finas para el texto. `gap-4` y `mt-8` les dan aire.
- */
-const GRID = "mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-6";
+const GRID =
+  "mt-8 flex gap-4 overflow-x-auto pb-1 sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0 lg:grid-cols-6";
 
 function CategoryCard({ category, index }: { category: Category; index: number }) {
-  const [imageFailed, setImageFailed] = useState(false);
+  const { Icon } = category;
 
   return (
     <li
       className="animate-[categoryFadeIn_700ms_ease-out_both]"
-      style={{ animationDelay: `${index * 90}ms` }}
+      style={{ animationDelay: `${index * 70}ms` }}
     >
       <Link
         href={category.href}
-        aria-label={`Ver ${category.label.toLowerCase()} en ARIZ`}
+        aria-label={`${category.label}. ${category.subtitle}`}
         className={cn(
-          "group relative flex h-40 overflow-hidden rounded-xl bg-[linear-gradient(135deg,#2a3b85_0%,#0B1B5C_100%)] p-3.5 shadow-[0_10px_28px_rgb(11_27_92_/_0.14)] transition duration-500 ease-out sm:h-44 lg:h-48",
-          "hover:-translate-y-1.5 hover:shadow-[0_24px_55px_rgb(11_27_92_/_0.22)]",
+          "group flex h-[144px] w-[214px] shrink-0 flex-col rounded-[6px] border border-[#E9EDF5] bg-white px-5 pt-4 pb-3 shadow-[0_6px_16px_rgb(13_32_80_/_0.045)] transition-colors duration-200 sm:w-auto",
+          "hover:border-[#F5B800]/60 hover:shadow-[0_8px_18px_rgb(13_32_80_/_0.07)]",
           "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#F5B800]",
         )}
       >
-        {!imageFailed ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={category.image}
-            alt={category.alt}
-            loading="lazy"
-            onError={() => setImageFailed(true)}
-            className="absolute inset-0 size-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.06]"
-          />
-        ) : null}
-        <span className="absolute inset-0 bg-[linear-gradient(180deg,rgb(11_27_92_/_0)_0%,rgb(11_27_92_/_0.85)_78%)] transition-colors duration-500 group-hover:bg-[linear-gradient(180deg,rgb(11_27_92_/_0.08)_0%,rgb(11_27_92_/_0.92)_78%)]" />
-        <span className="relative z-10 mt-auto min-w-0 pr-9">
-          <span className="block text-base font-bold text-white">{category.label}</span>
-          <span className="mt-1 block h-0.5 w-7 bg-[#F5B800] transition-all duration-300 group-hover:w-12" />
-          <span className="mt-1 block truncate text-[11px] font-medium leading-4 text-white/80">
+        <span aria-hidden className="mb-2 grid size-7 place-items-center text-[#F5B800]">
+          <Icon className="size-6" strokeWidth={2.6} fill="currentColor" fillOpacity={0.18} />
+        </span>
+
+        <span className="min-w-0 text-center">
+          <span className="mx-auto block max-w-[8.6rem] text-[13px] leading-4 font-black text-[#071A5A]">
+            {category.label}
+          </span>
+          <span className="mx-auto mt-1 block max-w-[8.8rem] text-[9.5px] leading-3 font-semibold text-[#596273]">
             {category.subtitle}
           </span>
         </span>
+
         <span
           aria-hidden
-          className="absolute bottom-3 right-3 z-10 grid size-6 place-items-center rounded-full border border-white/45 bg-white/12 text-sm font-bold text-white transition-colors duration-300 group-hover:border-[#F5B800] group-hover:bg-[#F5B800] group-hover:text-[#0B1B5C]"
+          className="mt-auto grid size-5 place-items-center rounded-full bg-[#F4F6FA] text-[#071A5A] transition-colors duration-200 group-hover:bg-[#F5B800]"
         >
-          <ArrowRight className="size-3.5 transition-transform duration-300 group-hover:translate-x-0.5" />
+          <ArrowRight className="size-3" strokeWidth={2.4} />
         </span>
       </Link>
     </li>
@@ -126,35 +113,23 @@ function CategoryCard({ category, index }: { category: Category; index: number }
 
 export function CategoryShowcase() {
   return (
-    <HomeSection className="overflow-hidden bg-[#F3F4F8]">
-      <div className="flex items-end justify-between gap-4">
-        <div>
-          <p className="mb-2 text-[11px] font-bold tracking-[0.18em] text-[#F5B800] uppercase">
-            CATEGORÍAS
-          </p>
-          <h2 className="font-display text-3xl font-bold tracking-tight text-[#0B1B5C] sm:text-4xl">
-            Explora propiedades
+    <section className="overflow-hidden bg-[#F3F4F8] pt-28 pb-7 sm:pt-32">
+      <div className="mx-auto w-full px-3 sm:px-4 lg:px-5 xl:px-6">
+        <div className="flex items-start justify-between gap-4">
+          <h2 className="text-base leading-none font-black tracking-tight text-[#071A5A] sm:text-lg">
+            ¿Qué quieres hacer hoy?
           </h2>
-          <p className="mt-2 max-w-2xl text-sm text-[#6B7280]">
-            Elige el tipo de inmueble y descubre opciones con todos los detalles que necesitas.
+          <p className="hidden pt-0.5 text-[8px] leading-none font-bold text-[#596273] sm:block">
+            Todo lo que necesitas en un solo lugar
           </p>
         </div>
-        <div className="pb-1">
-          <Link
-            href={ROUTES.properties}
-            className="group flex shrink-0 items-center gap-2 text-sm font-bold text-brand transition-colors hover:text-[#0B1B5C]"
-          >
-            Ver todas
-            <ArrowRightIcon className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
-          </Link>
-        </div>
-      </div>
 
-      <ul className={GRID}>
-        {categories.map((category, index) => (
-          <CategoryCard key={category.slug} category={category} index={index} />
-        ))}
-      </ul>
-    </HomeSection>
+        <ul className={GRID}>
+          {categories.map((category, index) => (
+            <CategoryCard key={category.slug} category={category} index={index} />
+          ))}
+        </ul>
+      </div>
+    </section>
   );
 }
