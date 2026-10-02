@@ -23,9 +23,19 @@ import { getPublicProjectsServer } from "@/features/projects/api/server";
 import { toProjectCardModel } from "@/features/projects/lib/project-card";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Propiedades en venta y alquiler | ARIZ",
-  description: "Encuentra casas, departamentos, terrenos y locales publicados en ARIZ.",
+  title: "Propiedades en venta y alquiler en Peru",
+  description:
+    "Encuentra propiedades en venta y alquiler: casas, departamentos, terrenos, lotes, locales y proyectos inmobiliarios publicados en Ariz Proyectos.",
   path: "/propiedades",
+  keywords: [
+    "propiedades en venta",
+    "propiedades en alquiler",
+    "casas en venta",
+    "departamentos en alquiler",
+    "terrenos en venta",
+    "lotes en venta",
+    "locales comerciales",
+  ],
 });
 
 interface PropertiesPageProps {

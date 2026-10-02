@@ -6,7 +6,7 @@ RUN corepack enable
 
 FROM base AS deps
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile --dangerously-allow-all-builds
 
 FROM deps AS build
 ARG NEXT_PUBLIC_API_URL=/api

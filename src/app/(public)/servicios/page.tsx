@@ -3,10 +3,18 @@ import { buildMetadata } from "@/shared/lib/seo";
 import { ROUTES } from "@/shared/config/routes";
 
 export const metadata = buildMetadata({
-  title: "Servicios — Ariz Proyectos",
+  title: "Servicios inmobiliarios, corretaje y proyectos",
   description:
-    "Corretaje inmobiliario y servicios de prospección, legal y contable para proyectos inmobiliarios en Perú. Te acompañamos desde la idea hasta la venta.",
+    "Servicios inmobiliarios para venta, alquiler, intermediacion, corretaje, prospeccion, gestion legal y comercializacion de proyectos inmobiliarios en Peru.",
   path: ROUTES.services,
+  keywords: [
+    "servicios inmobiliarios",
+    "intermediacion inmobiliaria",
+    "corretaje inmobiliario",
+    "asesoria inmobiliaria",
+    "comercializacion de proyectos",
+    "ganar comisiones inmobiliarias",
+  ],
 });
 
 export default function ServicesPage() {
