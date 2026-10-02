@@ -1,76 +1,50 @@
-import { Card, CardContent, Pagination } from "@/shared/ui";
-import { ROUTES } from "@/shared/config/routes";
+import { ChatIcon, SparkleIcon } from "@/shared/ui";
 import { OwnerPageHeader } from "@/app/(panel)/panel/owner/owner-shell";
-import { listMyLeadsPaged } from "@/features/owner/api/server";
 
-const SOURCE_LABELS: Record<string, string> = {
-  PROPERTY_FORM: "Formulario de propiedad",
-  PROJECT_FORM: "Formulario de proyecto",
-  WHATSAPP: "WhatsApp",
-  QUICK_QUESTION: "Pregunta rápida",
-  PHONE: "Teléfono",
-};
+const FEATURES = [
+  "Todas tus consultas en una bandeja organizada por estado",
+  "Historial de conversación con cada cliente",
+  "Recordatorios de seguimiento para no perder una oportunidad",
+];
 
-export default async function OwnerLeadsPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ page?: string }>;
-}) {
-  const { page: pageParam } = await searchParams;
-  const page = Math.max(1, Number(pageParam) || 1);
-  const { items: leads, total, pageSize } = await listMyLeadsPaged(page);
-
+export default function OwnerLeadsPage() {
   return (
     <div className="flex flex-col gap-6">
       <OwnerPageHeader eyebrow="Contactos" title="Leads y consultas" />
-      <p className="-mt-4 text-sm text-muted">
-        Personas interesadas en tus publicaciones. {total} en total.
-      </p>
 
-      {leads.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center gap-2 py-16 text-center">
-            <p className="text-sm font-semibold text-ink">Sin información todavía</p>
-            <p className="text-xs text-muted">
-              Las consultas realizadas desde tus propiedades y proyectos aparecerán aquí.
-            </p>
-          </CardContent>
-        </Card>
-      ) : (
-        <>
-          <div className="flex flex-col gap-3">
-            {leads.map((lead) => (
-              <Card key={lead.id}>
-                <CardContent className="flex flex-col gap-1 pt-6">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <p className="font-semibold text-ink">{lead.name}</p>
-                    <span className="text-[11px] font-bold text-muted uppercase">
-                      {SOURCE_LABELS[lead.source]}
-                    </span>
-                  </div>
-                  <p className="text-xs text-muted">
-                    Interesado en{" "}
-                    <span className="font-medium text-ink">
-                      {lead.project?.name ?? lead.property?.title ?? "Publicación"}
-                    </span>
-                  </p>
-                  <p className="text-sm text-ink">{lead.message}</p>
-                  <p className="text-xs text-muted">
-                    {lead.email}
-                    {lead.phone ? ` · ${lead.phone}` : ""}
-                  </p>
-                </CardContent>
-              </Card>
+      <div className="relative overflow-hidden rounded-card border border-edge bg-[linear-gradient(180deg,#ffffff_0%,#f9fafc_100%)] p-8 text-center shadow-[var(--shadow-card)] sm:p-12">
+        <div className="absolute inset-x-0 top-0 h-1.5 bg-brand" aria-hidden />
+
+        <div className="mx-auto flex max-w-xl flex-col items-center">
+          <span className="flex size-16 items-center justify-center rounded-2xl bg-brand text-on-brand">
+            <ChatIcon className="size-8" />
+          </span>
+
+          <p className="mt-5 flex items-center gap-1.5 text-[11px] font-black tracking-[0.2em] text-accent uppercase">
+            <SparkleIcon className="size-3.5" />
+            En construcción
+          </p>
+          <h2 className="mt-2 font-display text-2xl font-black tracking-tight text-brand sm:text-3xl">
+            Se está creando el CRM
+          </h2>
+          <p className="mt-3 text-sm leading-6 text-muted">
+            Estamos construyendo un espacio dedicado para gestionar todas tus consultas y leads en
+            un solo lugar. Muy pronto podrás darle seguimiento a cada contacto desde aquí.
+          </p>
+
+          <ul className="mt-6 flex w-full flex-col gap-2.5 text-left">
+            {FEATURES.map((feature) => (
+              <li
+                key={feature}
+                className="flex items-center gap-3 rounded-card border border-edge bg-surface px-4 py-3 text-sm font-medium text-ink"
+              >
+                <span className="size-1.5 shrink-0 rounded-full bg-accent" aria-hidden />
+                {feature}
+              </li>
             ))}
-          </div>
-          <Pagination
-            page={page}
-            pageSize={pageSize}
-            total={total}
-            buildHref={(p) => `${ROUTES.panel.owner.leads}?page=${p}`}
-          />
-        </>
-      )}
+          </ul>
+        </div>
+      </div>
     </div>
   );
 }
