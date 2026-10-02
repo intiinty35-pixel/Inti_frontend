@@ -1,9 +1,9 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
 import { Button, Card, CardContent, CATEGORICAL, DonutChart, RankChart, STATUS, TrendChart } from "@/shared/ui";
 import { ROUTES } from "@/shared/config/routes";
 import { getSession } from "@/features/auth";
 import { getMySubscription, listMyLeads, listMyProperties } from "@/features/owner/api/server";
+import { DashboardPanel, EmptyChart, StatCard } from "@/features/owner/components/dashboard-ui";
 import { PublicationCalendar } from "@/features/owner/components/publication-calendar";
 import { RecentMovements } from "@/features/owner/components/recent-movements";
 import { leadsBySource, leadsPerDay } from "@/features/owner/lib/chart-data";
@@ -19,40 +19,6 @@ const STATUS_NOTICES = {
     text: "Tu perfil no fue aprobado. Comunicate con Ariz Proyectos para mas informacion.",
   },
 } as const;
-
-function StatCard({ label, value, hint }: { label: string; value: string; hint: string }) {
-  return (
-    <div className="relative overflow-hidden rounded-card border border-edge bg-surface px-5 py-5 text-center shadow-[var(--shadow-card)]">
-      <span className="absolute inset-x-0 top-0 h-1 bg-accent" aria-hidden />
-      <p className="text-[11px] font-black tracking-wide text-muted uppercase">{label}</p>
-      <p className="mt-2 font-display text-3xl font-black tracking-tight text-brand">{value}</p>
-      <p className="mt-1 text-[11px] font-semibold text-muted">{hint}</p>
-    </div>
-  );
-}
-
-function DashboardPanel({ children }: { children: ReactNode }) {
-  return (
-    <Card className="min-h-72 min-w-0 overflow-hidden border-edge bg-[linear-gradient(180deg,#ffffff_0%,#f9fafc_100%)]">
-      <div className="h-1 bg-brand" aria-hidden />
-      <CardContent className="flex min-h-72 flex-col items-center pt-6 text-center">{children}</CardContent>
-    </Card>
-  );
-}
-
-function EmptyChart({ message }: { message: string }) {
-  return (
-    <div className="flex flex-col items-center py-8 text-center">
-      <div aria-hidden className="flex h-9 items-end gap-1 opacity-40">
-        {[45, 70, 40, 90, 55, 80].map((height, index) => (
-          <span key={index} className="w-3 rounded-sm bg-edge" style={{ height: `${height}%` }} />
-        ))}
-      </div>
-      <p className="mt-3 text-xs font-semibold text-ink">Sin datos todavia</p>
-      <p className="mt-0.5 text-[11px] text-muted">{message}</p>
-    </div>
-  );
-}
 
 export default async function OwnerDashboardPage() {
   const [session, properties, leads, subscription] = await Promise.all([
@@ -169,75 +135,67 @@ export default async function OwnerDashboardPage() {
           </div>
 
           <section className="grid min-w-0 grid-cols-1 gap-5 min-[1320px]:grid-cols-2 min-[1900px]:grid-cols-3">
-            <DashboardPanel>
-            <div className="flex items-center justify-center gap-2">
-              <p className="font-semibold text-ink">Consultas - ultimos 14 dias</p>
-              <span className="rounded-full bg-brand-soft px-2.5 py-1 text-xs font-black text-brand">{total14}</span>
-            </div>
-            {total14 > 0 ? (
-              <div className="mt-4 w-full">
-                <TrendChart data={trend} color={CATEGORICAL[0]} />
-              </div>
-            ) : (
-              <div className="mt-4 flex flex-1 items-center">
-                <EmptyChart message="Las consultas nuevas apareceran aqui" />
-              </div>
-            )}
-            </DashboardPanel>
-
-            <DashboardPanel>
-            <p className="font-semibold text-ink">Propiedades por estado</p>
-            {totalStatus > 0 ? (
-              <div className="mt-4 w-full">
-                <DonutChart data={statusDonut} centerLabel="propiedades" />
-              </div>
-            ) : (
-              <div className="mt-4 flex flex-1 items-center">
-                <EmptyChart message="Publica tu primera propiedad para ver este grafico" />
-              </div>
-            )}
-            </DashboardPanel>
-
-            <DashboardPanel>
-            <p className="font-semibold text-ink">Actividad reciente</p>
-            {sources.length > 0 ? (
-              <div className="mt-4 w-full">
-                <div className="flex h-3 w-full overflow-hidden rounded-full">
-                  {sources.map((source) => (
-                    <span
-                      key={source.label}
-                      style={{ width: `${(source.value / totalLeads) * 100}%`, backgroundColor: source.color }}
-                    />
-                  ))}
+            <DashboardPanel
+              title="Consultas - ultimos 14 dias"
+              badge={
+                <span className="rounded-full bg-brand-soft px-2.5 py-1 text-xs font-black text-brand">
+                  {total14}
+                </span>
+              }
+            >
+              {total14 > 0 ? (
+                <div className="mt-4 w-full">
+                  <TrendChart data={trend} color={CATEGORICAL[0]} />
                 </div>
-                <ul className="mt-4 flex flex-col gap-2 text-xs">
-                  {sources.map((source) => (
-                    <li key={source.label} className="flex items-center gap-2">
-                      <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: source.color }} />
-                      <span className="text-ink">{source.label}</span>
-                      <span className="ml-auto font-semibold text-muted">{source.value}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : (
-              <div className="mt-4 flex flex-1 items-center">
+              ) : (
                 <EmptyChart message="Las consultas nuevas apareceran aqui" />
-              </div>
-            )}
+              )}
             </DashboardPanel>
 
-            <DashboardPanel>
-            <p className="font-semibold text-ink">Publicaciones con mas vistas</p>
-            {topActivity.length > 0 && topActivity[0].value > 0 ? (
-              <div className="mt-4 w-full">
-                <RankChart data={topActivity} />
-              </div>
-            ) : (
-              <div className="mt-4 flex flex-1 items-center">
+            <DashboardPanel title="Propiedades por estado">
+              {totalStatus > 0 ? (
+                <div className="mt-4 w-full">
+                  <DonutChart data={statusDonut} centerLabel="propiedades" />
+                </div>
+              ) : (
+                <EmptyChart message="Publica tu primera propiedad para ver este grafico" />
+              )}
+            </DashboardPanel>
+
+            <DashboardPanel title="Actividad reciente">
+              {sources.length > 0 ? (
+                <div className="mt-4 w-full">
+                  <div className="flex h-3 w-full overflow-hidden rounded-full">
+                    {sources.map((source) => (
+                      <span
+                        key={source.label}
+                        style={{ width: `${(source.value / totalLeads) * 100}%`, backgroundColor: source.color }}
+                      />
+                    ))}
+                  </div>
+                  <ul className="mt-4 flex flex-col gap-2 text-xs">
+                    {sources.map((source) => (
+                      <li key={source.label} className="flex items-center gap-2">
+                        <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: source.color }} />
+                        <span className="text-ink">{source.label}</span>
+                        <span className="ml-auto font-semibold text-muted">{source.value}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                <EmptyChart message="Las consultas nuevas apareceran aqui" />
+              )}
+            </DashboardPanel>
+
+            <DashboardPanel title="Publicaciones con mas vistas">
+              {topActivity.length > 0 && topActivity[0].value > 0 ? (
+                <div className="mt-4 w-full">
+                  <RankChart data={topActivity} />
+                </div>
+              ) : (
                 <EmptyChart message="Las estadisticas apareceran cuando tus publicaciones reciban visitas" />
-              </div>
-            )}
+              )}
             </DashboardPanel>
           </section>
         </div>
