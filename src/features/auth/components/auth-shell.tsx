@@ -85,7 +85,7 @@ export function AuthShell({
       <main
         className={cn(
           centeredBackground
-            ? "relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-12"
+            ? "relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-6 sm:py-12"
             : "flex items-center justify-center bg-canvas px-4 py-10 sm:px-8",
         )}
       >
@@ -104,9 +104,10 @@ export function AuthShell({
         ) : null}
         <div
           className={cn(
-            "relative z-10 w-full border border-edge bg-surface p-7 shadow-[var(--shadow-card)] sm:p-9",
-            centeredBackground ? "rounded-card" : "rounded-2xl",
-            showCardLogo && "pt-14 sm:pt-16",
+            "relative z-10 w-full border border-edge bg-surface shadow-[var(--shadow-card)]",
+            centeredBackground
+              ? "rounded-card p-5 pt-12 sm:p-9 sm:pt-16"
+              : cn("rounded-2xl p-7 sm:p-9", showCardLogo && "pt-14 sm:pt-16"),
             CARD_WIDTHS[cardWidth],
           )}
         >
@@ -138,11 +139,11 @@ export function AuthEyebrow({ children }: { children: ReactNode }) {
 }
 
 export function AuthTitle({ children }: { children: ReactNode }) {
-  return <h2 className="mt-2 text-3xl font-light tracking-tight text-brand">{children}</h2>;
+  return <h2 className="mt-2 text-2xl font-light tracking-tight text-brand sm:text-3xl">{children}</h2>;
 }
 
 export function AuthSubtitle({ children }: { children: ReactNode }) {
-  return <p className="mt-2 mb-6 text-xs text-muted">{children}</p>;
+  return <p className="mt-2 mb-4 text-xs text-muted sm:mb-6">{children}</p>;
 }
 
 export function AuthAlert({ messages }: { messages: string[] }) {
