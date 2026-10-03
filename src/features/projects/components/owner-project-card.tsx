@@ -21,6 +21,7 @@ import type { ProjectStage } from "@/features/projects/types/draft";
 import { DataCell, DataGrid } from "@/features/listings/components/data-grid";
 import { ListingImage } from "@/features/listings/components/listing-image";
 import { ProjectTourVideo } from "@/features/listings/components/project-tour-video";
+import { ReviewPublishModal } from "@/shared/ui/review-publish-modal";
 
 const STATUS_STYLE: Record<ApiProjectStatus, string> = {
   DRAFT: "bg-surface/90 text-muted",
@@ -38,12 +39,23 @@ const STAGE_LABELS: Record<string, ProjectStage> = {
   DELIVERED: "entregado",
 };
 
-export function OwnerProjectCard({ project, adminMode = false }: { project: ProjectApiSummary; adminMode?: boolean }) {
+export function OwnerProjectCard({
+  project,
+  adminMode = false,
+  isAgency = false,
+  agencyName,
+}: {
+  project: ProjectApiSummary;
+  adminMode?: boolean;
+  isAgency?: boolean;
+  agencyName?: string;
+}) {
   const router = useRouter();
   const district = project.location.district;
   const [status, setStatus] = useState(project.status);
   const [publishing, setPublishing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [reviewOpen, setReviewOpen] = useState(false);
   const portalTarget = typeof document === "undefined" ? null : document.body;
   const published = formatPublishedDate(project.publishedAt);
 
@@ -59,6 +71,12 @@ export function OwnerProjectCard({ project, adminMode = false }: { project: Proj
     } finally {
       setPublishing(false);
     }
+  }
+
+  async function handleReviewSubmit() {
+    const published = await publishProject(project.id);
+    setStatus(published.status);
+    router.refresh();
   }
 
   const needsSubscription =
@@ -143,6 +161,10 @@ export function OwnerProjectCard({ project, adminMode = false }: { project: Proj
             >
               Ver publicación
             </Link>
+          ) : status === "DRAFT" && isAgency && !adminMode ? (
+            <button type="button" onClick={() => setReviewOpen(true)} className="flex h-9 flex-1 items-center justify-center rounded-card bg-brand px-2.5 text-xs font-bold text-on-brand transition-colors hover:bg-brand-hover">
+              Publicar
+            </button>
           ) : status === "DRAFT" ? (
             <button
               type="button"
@@ -154,7 +176,7 @@ export function OwnerProjectCard({ project, adminMode = false }: { project: Proj
             </button>
           ) : (
             <span className="flex h-9 flex-1 items-center justify-center rounded-card bg-surface-muted px-2.5 text-xs font-bold text-muted">
-              No publicado
+              En revisión
             </span>
           )}
           {project.tourUrl ? (
@@ -215,6 +237,16 @@ export function OwnerProjectCard({ project, adminMode = false }: { project: Proj
             portalTarget,
           )
         : null}
+      {portalTarget ? (
+        <ReviewPublishModal
+          agencyName={agencyName}
+          itemName={project.name}
+          itemType="proyecto"
+          open={reviewOpen}
+          onClose={() => setReviewOpen(false)}
+          onSubmit={handleReviewSubmit}
+        />
+      ) : null}
     </article>
   );
 }

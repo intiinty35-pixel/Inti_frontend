@@ -15,10 +15,14 @@ export interface PublicHeaderProps {
   accountHref: string;
 }
 
-function Logo() {
+function Logo({ light }: { light: boolean }) {
   return (
     <Link href={ROUTES.home} className="flex items-center gap-2.5" aria-label="Ariz Proyectos">
-      <img src="/logo/logo.png" alt="Ariz Proyectos" className="h-12 w-auto" />
+      <img
+        src="/logo/logo.png"
+        alt="Ariz Proyectos"
+        className={cn("h-12 w-auto", light && "drop-shadow-[0_0_2px_rgb(255_255_255_/_0.95)]")}
+      />
     </Link>
   );
 }
@@ -95,13 +99,13 @@ export function PublicHeader({ isLoggedIn, accountName, accountHref }: PublicHea
       className={cn(
         "sticky top-0 z-40 border-b transition-colors duration-300",
         solid && "border-edge bg-surface/95 backdrop-blur",
-        !solid && !translucent && "border-white/15 bg-transparent",
-        translucent && "border-white/10 bg-ink/55 backdrop-blur-md",
+        !solid && !translucent && "border-transparent bg-transparent",
+        translucent && "border-transparent bg-ink/55 backdrop-blur-md",
         menuOpen && "bg-surface",
       )}
     >
       <Container size="wide" className="flex h-[72px] items-center justify-between gap-x-6">
-        <Logo />
+         <Logo light={!solid} />
 
         {/*
           Orden de las tres piezas visibles en escritorio: logo a la izquierda,

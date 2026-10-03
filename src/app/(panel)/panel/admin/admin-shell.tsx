@@ -36,7 +36,7 @@ export function AdminShell({ name, roleLabel, children }: AdminShellProps) {
                 AR
               </span>
             ) : (
-              <Image src="/logo/logo.png" alt="Ariz Proyectos" width={144} height={40} className="h-10 w-auto" />
+              <Image src="/logo/logo.png" alt="Ariz Proyectos" width={144} height={40} className="h-10 w-auto" style={{ width: "auto" }} />
             )}
           </Link>
           {!collapsed ? (
@@ -98,7 +98,7 @@ export function AdminShell({ name, roleLabel, children }: AdminShellProps) {
           />
           <aside className="relative flex h-full w-[280px] flex-col gap-5 border-r border-edge bg-surface p-5 shadow-[var(--shadow-pop)]">
             <Link href={ROUTES.home} className="flex h-12 items-center" aria-label="Ariz Proyectos">
-              <Image src="/logo/logo.png" alt="Ariz Proyectos" width={144} height={40} className="h-10 w-auto" />
+              <Image src="/logo/logo.png" alt="Ariz Proyectos" width={144} height={40} className="h-10 w-auto" style={{ width: "auto" }} />
             </Link>
             <p className="px-2 text-[10px] font-bold tracking-[0.22em] text-muted uppercase">Panel administrador</p>
             <div className="flex-1 overflow-y-auto">

@@ -4,6 +4,7 @@ import { ROUTES } from "@/shared/config/routes";
 import { getOwnerListingsPagedServer } from "@/features/listings/api/server";
 import { OwnerListingCard } from "@/features/listings/components/owner-listing-card";
 import { Pagination } from "@/shared/ui/pagination";
+import { getMyProfile } from "@/features/owner/api/server";
 
 export default async function PanelOwnerListingsPage({
   searchParams,
@@ -12,7 +13,7 @@ export default async function PanelOwnerListingsPage({
 }) {
   const { page: pageParam } = await searchParams;
   const page = Math.max(1, Number(pageParam) || 1);
-  const { items: listings, total, pageSize } = await getOwnerListingsPagedServer(page);
+  const [{ items: listings, total, pageSize }, profile] = await Promise.all([getOwnerListingsPagedServer(page), getMyProfile().catch(() => null)]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -46,7 +47,17 @@ export default async function PanelOwnerListingsPage({
         <>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {listings.map((listing) => (
-              <OwnerListingCard key={listing.id} listing={listing} />
+              <OwnerListingCard
+                key={listing.id}
+                listing={listing}
+                isAgency={profile?.type === "REAL_ESTATE_AGENCY"}
+                agencyName={
+                  profile?.type === "REAL_ESTATE_AGENCY"
+                    ? profile.businessName?.trim() ||
+                      [profile.user.firstName, profile.user.lastName].filter(Boolean).join(" ")
+                    : undefined
+                }
+              />
             ))}
           </div>
           <Pagination

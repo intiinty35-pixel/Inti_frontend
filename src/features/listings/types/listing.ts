@@ -10,7 +10,15 @@ export type PropertyType =
   | "country-lots"
   | "commercial";
 
-export type ListingStatus = "disponible" | "reservado" | "vendido" | "alquilado";
+export type PropertyReviewStatus = "DRAFT" | "PENDING_REVIEW" | "PUBLISHED" | "REJECTED";
+export type ListingStatus = "disponible" | "reservado" | "vendido" | "alquilado" | PropertyReviewStatus;
+
+export const PROPERTY_STATUS_LABELS: Record<PropertyReviewStatus, string> = {
+  DRAFT: "Borrador",
+  PENDING_REVIEW: "En revisión",
+  PUBLISHED: "Publicado",
+  REJECTED: "Rechazado",
+};
 
 export type SortOption = "recent" | "price-asc" | "price-desc";
 

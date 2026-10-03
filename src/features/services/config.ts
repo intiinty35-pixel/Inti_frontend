@@ -14,6 +14,7 @@ import {
   StoreIcon,
   UserIcon,
 } from "@/shared/ui/icons";
+import { ARIZ_WHATSAPP_DIGITS as SHARED_ARIZ_WHATSAPP_DIGITS } from "@/shared/lib/whatsapp";
 
 export type ServiceIcon = ComponentType<SVGProps<SVGSVGElement>>;
 
@@ -22,7 +23,7 @@ export type ServiceIcon = ComponentType<SVGProps<SVGSVGElement>>;
  * como lo exige la API de wa.me. Es el unico punto que hay que cambiar cuando
  * cambie la linea de atencion.
  */
-export const ARIZ_WHATSAPP_DIGITS = "51999999999";
+export const ARIZ_WHATSAPP_DIGITS = SHARED_ARIZ_WHATSAPP_DIGITS;
 
 /**
  * Arma el enlace de WhatsApp con el mensaje ya redactado para un servicio.

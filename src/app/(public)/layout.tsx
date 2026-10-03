@@ -59,19 +59,10 @@ export default async function PublicLayout({ children }: { children: ReactNode }
         rel="noreferrer"
         aria-label="Escríbenos por WhatsApp"
         title="Escríbenos por WhatsApp"
-        className="fixed right-5 bottom-20 z-50 flex size-12 items-center justify-center rounded-full bg-[#25d366] text-white shadow-[var(--shadow-pop)] transition-transform hover:scale-105 hover:bg-[#1fb857]"
+        className="fixed right-5 bottom-10 z-50 flex size-12 items-center justify-center rounded-full bg-[#25d366] text-white shadow-[var(--shadow-pop)] transition-transform hover:scale-105 hover:bg-[#1fb857]"
       >
         <WhatsappIcon className="size-6" />
       </a>
-
-      <button
-        type="button"
-        title="Disponible próximamente"
-        className="fixed right-4 bottom-4 z-50 flex h-9 items-center gap-1.5 rounded-full bg-accent px-3.5 text-xs font-bold text-on-accent shadow-[var(--shadow-pop)] transition-colors hover:bg-accent-hover"
-      >
-        <SparkleIcon className="size-3.5" />
-        Asistente inmobiliario
-      </button>
     </PublicShell>
   );
 }

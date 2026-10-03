@@ -77,6 +77,14 @@
     font: inherit;
   }
 
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px var(--surface) inset;
+    -webkit-text-fill-color: var(--ink);
+    caret-color: var(--ink);
+  }
+
   ::selection {
     background-color: var(--focus-ring);
   }
@@ -246,4 +254,3 @@
     animation: none;
   }
 }
-

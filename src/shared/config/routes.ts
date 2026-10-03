@@ -20,6 +20,10 @@ export const ROUTES = {
       subscriptions: "/panel/admin/subscriptions",
       projects: "/panel/admin/projects",
       newProject: "/panel/admin/projects/new",
+      developers: "/panel/admin/developers",
+      developer: (id: string): string => `/panel/admin/developers/${id}`,
+      agencies: "/panel/admin/agencies",
+      agency: (id: string): string => `/panel/admin/agencies/${id}`,
     },
     client: {
       base: "/panel/client",

@@ -54,7 +54,17 @@ export default async function PanelOwnerProjectsPage({
         <>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {projects.map((project) => (
-              <OwnerProjectCard key={project.id} project={project} />
+              <OwnerProjectCard
+                key={project.id}
+                project={project}
+                isAgency={profile?.type === "REAL_ESTATE_AGENCY"}
+                agencyName={
+                  profile?.type === "REAL_ESTATE_AGENCY"
+                    ? profile.businessName?.trim() ||
+                      [profile.user.firstName, profile.user.lastName].filter(Boolean).join(" ")
+                    : undefined
+                }
+              />
             ))}
           </div>
           <Pagination

@@ -1,18 +1,24 @@
+"use client";
+
 import Link from "next/link";
 import { ClockIcon, PinIcon } from "@/shared/ui";
 import { cn } from "@/shared/lib/cn";
 import { ROUTES } from "@/shared/config/routes";
 import { formatArea, formatPrice } from "@/shared/lib/format";
+import { useState } from "react";
 import { formatPublishedDate } from "@/shared/lib/published-date";
-import type { Listing } from "@/features/listings/types/listing";
+import { publishProperty } from "@/features/listings/api";
+import { PROPERTY_STATUS_LABELS, type Listing, type PropertyReviewStatus } from "@/features/listings/types/listing";
 import { DataCell, DataGrid } from "@/features/listings/components/data-grid";
 import { ListingImage } from "@/features/listings/components/listing-image";
+import { ReviewPublishModal } from "@/shared/ui/review-publish-modal";
 
 const STATUS_LABEL: Record<string, string> = {
   disponible: "Publicado",
   reservado: "Pausado",
   vendido: "Vendido",
   alquilado: "Alquilado",
+  ...PROPERTY_STATUS_LABELS,
 };
 
 const STATUS_STYLE: Record<string, string> = {
@@ -20,6 +26,9 @@ const STATUS_STYLE: Record<string, string> = {
   reservado: "bg-warning/15 text-warning",
   vendido: "bg-brand-soft text-brand",
   alquilado: "bg-brand-soft text-brand",
+  DRAFT: "bg-surface/90 text-muted",
+  PENDING_REVIEW: "bg-warning/15 text-warning",
+  REJECTED: "bg-error/12 text-error",
 };
 
 const OPERATION_LABEL: Record<string, string> = {
@@ -28,8 +37,18 @@ const OPERATION_LABEL: Record<string, string> = {
   invest: "INVERSIÓN",
 };
 
-export function OwnerListingCard({ listing }: { listing: Listing }) {
+export function OwnerListingCard({
+  listing,
+  isAgency = false,
+  agencyName,
+}: {
+  listing: Listing;
+  isAgency?: boolean;
+  agencyName?: string;
+}) {
   const status = listing.status ?? "disponible";
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [currentStatus, setCurrentStatus] = useState(status);
   const published = formatPublishedDate(listing.publishedAt);
 
   return (
@@ -46,10 +65,10 @@ export function OwnerListingCard({ listing }: { listing: Listing }) {
         <span
           className={cn(
             "absolute top-2.5 right-2.5 rounded-full px-2.5 py-1 text-[10px] font-black tracking-[0.08em] uppercase backdrop-blur",
-            STATUS_STYLE[status] ?? "bg-surface/90 text-muted",
+            STATUS_STYLE[currentStatus] ?? "bg-surface/90 text-muted",
           )}
         >
-          {STATUS_LABEL[status] ?? status}
+          {STATUS_LABEL[currentStatus] ?? currentStatus}
         </span>
 
         {listing.images.length > 1 ? (
@@ -105,12 +124,18 @@ export function OwnerListingCard({ listing }: { listing: Listing }) {
         </DataGrid>
 
         <div className="mt-auto flex gap-2 pt-3.5">
-          <Link
+          {isAgency && currentStatus === "DRAFT" ? (
+            <button type="button" onClick={() => setReviewOpen(true)} className="flex h-9 flex-1 items-center justify-center rounded-card bg-brand px-2.5 text-xs font-bold text-on-brand transition-colors hover:bg-brand-hover">Publicar</button>
+          ) : currentStatus === "PENDING_REVIEW" ? (
+            <span className="flex h-9 flex-1 items-center justify-center rounded-card bg-surface-muted px-2.5 text-xs font-bold text-muted">En revisión</span>
+          ) : (
+            <Link
             href={ROUTES.property(listing.slug)}
             className="flex h-9 flex-1 items-center justify-center rounded-card bg-brand px-2.5 text-xs font-bold text-on-brand transition-colors hover:bg-brand-hover"
           >
             Ver publicación
-          </Link>
+            </Link>
+          )}
           <Link
             href={`${ROUTES.panel.owner.base}?listing=${listing.id}`}
             className="flex h-9 items-center justify-center rounded-card border border-edge px-2.5 text-xs font-bold text-brand transition-colors hover:border-brand"
@@ -119,6 +144,17 @@ export function OwnerListingCard({ listing }: { listing: Listing }) {
           </Link>
         </div>
       </div>
+      <ReviewPublishModal
+        agencyName={agencyName}
+        itemName={listing.title}
+        itemType="propiedad"
+        open={reviewOpen}
+        onClose={() => setReviewOpen(false)}
+        onSubmit={async () => {
+          const result = await publishProperty(listing.id);
+          setCurrentStatus(result.status as PropertyReviewStatus);
+        }}
+      />
     </article>
   );
 }

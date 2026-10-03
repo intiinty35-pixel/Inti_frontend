@@ -3,11 +3,27 @@ import { getMyProfile, getMySubscription, listMyProperties, listPlans } from "@/
 import { canManageProjects } from "@/features/owner/lib/profile-permissions";
 
 export default async function OwnerSubscriptionPage() {
-  const [plans, subscription, properties, profile] = await Promise.all([
+  const profile = await getMyProfile().catch(() => null);
+  if (profile?.type === "REAL_ESTATE_AGENCY") {
+    return (
+      <div className="rounded-card border border-edge bg-surface p-8 text-center shadow-[var(--shadow-card)]">
+        <p className="text-[11px] font-bold tracking-[0.18em] text-accent uppercase">
+          Publicación para inmobiliarias
+        </p>
+        <h1 className="mt-2 font-display text-3xl font-black text-brand">
+          Solicita la habilitación de tus publicaciones
+        </h1>
+        <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted">
+          Las inmobiliarias no necesitan elegir un plan. Coordina el acuerdo con el gerente desde
+          cada propiedad o proyecto y, cuando esté acordado, envía la ficha a revisión.
+        </p>
+      </div>
+    );
+  }
+  const [plans, subscription, properties] = await Promise.all([
     listPlans(),
     getMySubscription(),
     listMyProperties(),
-    getMyProfile().catch(() => null),
   ]);
 
   return (

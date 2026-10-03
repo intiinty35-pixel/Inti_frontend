@@ -32,17 +32,15 @@ export default async function LoginPage({
     <AuthShell
       headline="Todo tu ecosistema inmobiliario en una sola cuenta."
       description="Accede a tus favoritos, consultas, publicaciones y herramientas profesionales."
+      centeredBackground
+      showCardLogo
     >
-      <AuthEyebrow>BIENVENIDO</AuthEyebrow>
-      <AuthTitle>Iniciar sesión</AuthTitle>
-      <AuthSubtitle>Ingresa con el correo asociado a tu cuenta.</AuthSubtitle>
+      <div className="flex flex-col items-center text-center">
+        <AuthEyebrow>BIENVENIDO</AuthEyebrow>
+        <AuthTitle>Iniciar sesión</AuthTitle>
+        <AuthSubtitle>Ingresa con el correo asociado a tu cuenta.</AuthSubtitle>
+      </div>
       <LoginForm next={next} />
-      {process.env.NODE_ENV !== "production" ? (
-        <div className="mt-5 rounded-card bg-surface-muted px-3 py-2.5 text-center text-[10px] text-muted">
-          <p className="font-bold tracking-wide text-ink">ACCESO ADMINISTRATIVO LOCAL</p>
-          <p className="mt-0.5">admin@ariz.local · Admin123!</p>
-        </div>
-      ) : null}
     </AuthShell>
   );
 }
