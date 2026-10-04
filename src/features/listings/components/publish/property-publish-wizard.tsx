@@ -105,6 +105,7 @@ export function PropertyPublishWizard({
   const errorsRef = useRef<HTMLDivElement>(null);
   const issuesRef = useRef<string[]>([]);
   const [step, setStep] = useState<Step>(1);
+  const [maxStepReached, setMaxStepReached] = useState<Step>(1);
   const [operationType, setOperationType] = useState<ApiOperationType>("SALE");
   const [propertyType, setPropertyType] = useState<ApiPropertyType>("APARTMENT");
   const [currency, setCurrency] = useState<"PEN" | "USD">("PEN");
@@ -120,6 +121,10 @@ export function PropertyPublishWizard({
   const [locating, setLocating] = useState(false);
   const [publishedSlug, setPublishedSlug] = useState<string | null>(null);
   const config = useMemo(() => PROPERTY_FORM_CONFIG[propertyType], [propertyType]);
+
+  useEffect(() => {
+    setMaxStepReached((current) => (step > current ? step : current));
+  }, [step]);
 
   useEffect(() => {
     void preloadLocationPicker();
@@ -583,27 +588,40 @@ export function PropertyPublishWizard({
           <p className="text-[11px] font-black tracking-[0.18em] text-accent uppercase">Publicar propiedad</p>
           <p className="mt-2 text-sm font-semibold text-ink">Completa cada etapa para enviar tu aviso.</p>
           <ol className="mt-5 grid gap-2">
-            {STEPS.map((item) => (
-              <li key={item.step}>
-                <button
-                  type="button"
-                  onClick={() => setStep(item.step)}
-                  className={`flex w-full items-start gap-3 rounded-card px-3 py-3 text-left transition-colors ${
-                    step === item.step ? "bg-brand text-on-brand shadow-[var(--shadow-card)]" : "bg-surface-muted text-ink hover:bg-brand-soft"
-                  }`}
-                >
-                  <span className={`flex size-8 shrink-0 items-center justify-center rounded-lg text-xs font-black ${
-                    step === item.step ? "bg-white/15 text-white" : "border border-edge bg-surface text-brand"
-                  }`}>
-                    {item.step}
-                  </span>
-                  <span className="min-w-0">
-                    <span className="block text-sm font-bold">{item.title}</span>
-                    <span className={`block text-xs ${step === item.step ? "text-white/75" : "text-muted"}`}>{item.detail}</span>
-                  </span>
-                </button>
-              </li>
-            ))}
+            {STEPS.map((item) => {
+              const reachable = item.step <= maxStepReached;
+              return (
+                <li key={item.step}>
+                  <button
+                    type="button"
+                    onClick={() => reachable && setStep(item.step)}
+                    disabled={!reachable}
+                    aria-current={step === item.step ? "step" : undefined}
+                    className={`flex w-full items-start gap-3 rounded-card px-3 py-3 text-left transition-colors ${
+                      step === item.step
+                        ? "bg-brand text-on-brand shadow-[var(--shadow-card)]"
+                        : reachable
+                          ? "bg-surface-muted text-ink hover:bg-brand-soft"
+                          : "cursor-not-allowed bg-surface-muted text-muted opacity-60"
+                    }`}
+                  >
+                    <span className={`flex size-8 shrink-0 items-center justify-center rounded-lg text-xs font-black ${
+                      step === item.step
+                        ? "bg-white/15 text-white"
+                        : reachable
+                          ? "border border-edge bg-surface text-brand"
+                          : "border border-edge bg-surface text-muted"
+                    }`}>
+                      {item.step}
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block text-sm font-bold">{item.title}</span>
+                      <span className={`block text-xs ${step === item.step ? "text-white/75" : "text-muted"}`}>{item.detail}</span>
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
           </ol>
         </div>
       </aside>
