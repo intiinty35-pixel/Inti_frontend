@@ -72,20 +72,20 @@ export default async function AdminAgencyDetailPage({
   return (
     <div className="flex flex-col gap-6">
       <header>
-        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
           <Link
             href={ROUTES.panel.admin.agencies}
-            className="inline-flex min-h-10 items-center justify-self-start gap-2 rounded-card border border-edge bg-surface px-3.5 py-2 text-sm font-bold text-brand transition-colors hover:border-accent hover:bg-accent/10"
+            className="inline-flex min-h-10 max-w-full items-center justify-self-start gap-2 rounded-card border border-edge bg-surface px-3.5 py-2 text-xs font-bold text-brand transition-colors hover:border-accent hover:bg-accent/10 sm:text-sm"
           >
             ← Volver a inmobiliarias
           </Link>
-          <h1 className="text-center text-3xl font-light tracking-tight text-brand">{name}</h1>
-          <span aria-hidden />
+          <h1 className="min-w-0 break-words text-2xl font-light tracking-tight text-brand sm:text-center sm:text-3xl">{name}</h1>
+          <span aria-hidden className="hidden sm:block" />
         </div>
         <p className="mt-1 text-center text-[11px] font-bold tracking-[0.18em] text-accent uppercase">
           Cola de revisión · Inmobiliaria
         </p>
-        <p className="mt-2 text-center text-sm text-muted">
+        <p className="mt-2 break-words text-center text-sm text-muted">
           {agency.city} · {agency.user.email} · WhatsApp {agency.whatsapp ?? "—"}
         </p>
       </header>
@@ -222,7 +222,7 @@ function ReviewItem({
   const ItemIcon = kind === "property" ? BuildingIcon : ChartIcon;
 
   return (
-    <Card className="flex flex-col gap-4 border-l-[3px] border-l-accent p-4 transition-shadow hover:shadow-[var(--shadow-pop)] sm:flex-row sm:items-center sm:justify-between">
+    <Card className="flex min-w-0 flex-col gap-4 border-l-[3px] border-l-accent p-4 transition-shadow hover:shadow-[var(--shadow-pop)] sm:flex-row sm:items-center sm:justify-between">
       <div className="flex w-full min-w-0 items-center gap-3 sm:flex-1">
         <span className="flex size-10 shrink-0 items-center justify-center rounded-md bg-accent/15 text-accent-hover">
           <ItemIcon className="size-5" />

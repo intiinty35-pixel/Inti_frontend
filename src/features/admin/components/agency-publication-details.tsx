@@ -48,8 +48,8 @@ function DetailValue({ label, value }: { label: string; value?: string | number 
   if (value === undefined || value === null || value === "") return null;
 
   return (
-    <div className="rounded-sm bg-surface-muted/70 px-3 py-2">
-      <p className="text-[10px] font-semibold tracking-wide text-muted uppercase">{label}</p>
+    <div className="min-w-0 rounded-sm bg-surface-muted/70 px-3 py-2">
+      <p className="break-words text-[10px] font-semibold tracking-wide text-muted uppercase">{label}</p>
       <p className="mt-0.5 break-words text-sm font-bold text-ink">{value}</p>
     </div>
   );
@@ -127,14 +127,14 @@ export function AgencyPublicationDetails({ kind, item }: AgencyPublicationDetail
 
       {open ? (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-ink/60 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto overscroll-contain bg-ink/60 p-2 backdrop-blur-sm sm:p-4"
           onMouseDown={(event) => event.target === event.currentTarget && setOpen(false)}
         >
           <section
             role="dialog"
             aria-modal="true"
             aria-labelledby={`agency-publication-title-${item.id}`}
-            className="my-auto max-h-[calc(100vh-2rem)] w-full max-w-4xl overflow-y-auto rounded-card border border-edge bg-surface shadow-[var(--shadow-pop)]"
+            className="my-auto max-h-[calc(100dvh-1rem)] min-w-0 w-full max-w-4xl overflow-x-hidden overflow-y-auto rounded-card border border-edge bg-surface shadow-[var(--shadow-pop)] sm:max-h-[calc(100vh-2rem)]"
           >
             {isProperty ? (
               <div className="relative">
@@ -176,11 +176,11 @@ export function AgencyPublicationDetails({ kind, item }: AgencyPublicationDetail
               </div>
             )}
 
-            <div className="p-5 sm:p-6">
-              <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="min-w-0 p-3 sm:p-6">
+              <div className="flex min-w-0 flex-wrap items-start justify-between gap-3">
                 <h2
                   id={`agency-publication-title-${item.id}`}
-                  className="min-w-0 flex-1 font-display text-xl font-black leading-snug text-brand"
+                  className="min-w-0 flex-1 break-words font-display text-xl font-black leading-snug text-brand [overflow-wrap:anywhere]"
                 >
                   {title}
                 </h2>
@@ -190,7 +190,7 @@ export function AgencyPublicationDetails({ kind, item }: AgencyPublicationDetail
               </div>
 
               {location ? (
-                <p className="mt-2 text-sm text-muted">
+                <p className="mt-2 break-words text-sm text-muted [overflow-wrap:anywhere]">
                   {[location.district, location.province, location.department].filter(Boolean).join(", ")}
                 </p>
               ) : null}
@@ -205,7 +205,7 @@ export function AgencyPublicationDetails({ kind, item }: AgencyPublicationDetail
                 </p>
               ) : projectDetail ? (
                 <div className="mt-5 space-y-5">
-                  <div className="grid gap-4 sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1.6fr)]">
+                  <div className="grid min-w-0 gap-4 sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1.6fr)]">
                     {coverImage ? (
                       <ListingImage src={coverImage} className="h-40 rounded-sm sm:h-48" />
                     ) : (
@@ -213,12 +213,12 @@ export function AgencyPublicationDetails({ kind, item }: AgencyPublicationDetail
                         <span className="font-display text-lg font-black text-brand">Proyecto</span>
                       </div>
                     )}
-                    <div className="rounded-sm border border-edge bg-surface-muted/40 p-4">
+                    <div className="min-w-0 rounded-sm border border-edge bg-surface-muted/40 p-4">
                       <p className="mb-2 text-[10px] font-bold tracking-wide text-muted uppercase">
                         Descripción
                       </p>
                       {projectDetail.description ? (
-                        <p className="whitespace-pre-line text-sm leading-relaxed text-ink">
+                        <p className="whitespace-pre-line break-words text-sm leading-relaxed text-ink [overflow-wrap:anywhere]">
                           {projectDetail.description}
                         </p>
                       ) : (
@@ -228,7 +228,7 @@ export function AgencyPublicationDetails({ kind, item }: AgencyPublicationDetail
                   </div>
 
                   {projectImages.length > 1 ? (
-                    <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
+                    <div className="grid grid-cols-2 gap-2 min-[420px]:grid-cols-3 sm:grid-cols-5">
                       {projectImages.slice(1, 6).map((image, index) => (
                         <ListingImage
                           key={`${image}-${index}`}
@@ -245,7 +245,7 @@ export function AgencyPublicationDetails({ kind, item }: AgencyPublicationDetail
                     </p>
                   ) : null}
 
-                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+                  <div className="grid grid-cols-1 gap-2 min-[360px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
                     <DetailValue
                       label="Precio desde"
                       value={
@@ -287,7 +287,7 @@ export function AgencyPublicationDetails({ kind, item }: AgencyPublicationDetail
 
                   {projectDetail.location ? (
                     <DetailSection title="Ubicación">
-                      <p className="text-sm leading-relaxed text-ink">
+                      <p className="break-words text-sm leading-relaxed text-ink [overflow-wrap:anywhere]">
                         {[
                           projectDetail.location.zone,
                           projectDetail.location.street,
@@ -312,13 +312,13 @@ export function AgencyPublicationDetails({ kind, item }: AgencyPublicationDetail
 
                   {(projectDetail.lots?.length ?? 0) > 0 ? (
                     <DetailSection title={`Lotes (${projectDetail.lots?.length ?? 0})`}>
-                      <div className="grid gap-2 sm:grid-cols-2">
+                      <div className="grid min-w-0 gap-2 sm:grid-cols-2">
                         {projectDetail.lots?.map((lot) => (
                           <div key={lot.id} className="rounded-sm border border-edge p-3 text-sm">
-                            <p className="font-bold text-ink">
+                            <p className="break-words font-bold text-ink">
                               Lote {lot.lotNumber}{lot.block ? ` · Manzana ${lot.block}` : ""}
                             </p>
-                            <p className="mt-1 text-muted">
+                            <p className="mt-1 break-words text-muted">
                               {formatArea(lot.areaM2)} · {projectDetail.currency ? formatPrice(lot.price, projectDetail.currency) : lot.price} · {lot.status}
                             </p>
                           </div>
@@ -344,7 +344,7 @@ export function AgencyPublicationDetails({ kind, item }: AgencyPublicationDetail
                 </div>
               ) : propertyDetail ? (
                 <div className="mt-5 space-y-4">
-                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                  <div className="grid grid-cols-1 gap-2 min-[360px]:grid-cols-2 sm:grid-cols-3">
                     <DetailValue label="Precio" value={propertyDetail.price ? formatPrice(propertyDetail.price.amount, propertyDetail.price.currency) : undefined} />
                     <DetailValue label="Área" value={propertyDetail.areaM2 !== undefined ? formatArea(propertyDetail.areaM2) : undefined} />
                     <DetailValue label="Tipo" value={propertyDetail.type ? PROPERTY_TYPE_LABELS[propertyDetail.type] ?? propertyDetail.type : undefined} />
@@ -356,7 +356,7 @@ export function AgencyPublicationDetails({ kind, item }: AgencyPublicationDetail
                   </div>
                   {propertyDetail.description ? (
                     <DetailSection title="Descripción">
-                      <p className="whitespace-pre-line text-sm leading-relaxed text-ink">{propertyDetail.description}</p>
+                      <p className="whitespace-pre-line break-words text-sm leading-relaxed text-ink [overflow-wrap:anywhere]">{propertyDetail.description}</p>
                     </DetailSection>
                   ) : null}
                   {(propertyDetail.amenities?.length ?? 0) > 0 ? (
@@ -364,7 +364,7 @@ export function AgencyPublicationDetails({ kind, item }: AgencyPublicationDetail
                   ) : null}
                 </div>
               ) : isProperty ? (
-                <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
+                <div className="mt-4 grid grid-cols-1 gap-2 min-[360px]:grid-cols-2 sm:grid-cols-3">
                   <DetailValue
                     label="Precio"
                     value={
@@ -380,7 +380,7 @@ export function AgencyPublicationDetails({ kind, item }: AgencyPublicationDetail
                   <DetailValue label="Baños" value={item.bathrooms} />
                 </div>
               ) : (
-                <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
+                <div className="mt-4 grid grid-cols-1 gap-2 min-[360px]:grid-cols-2 sm:grid-cols-3">
                   <DetailValue
                     label="Precio desde"
                     value={
