@@ -16,6 +16,8 @@ import {
 } from "@/features/home";
 import { ROUTES } from "@/shared/config/routes";
 import { buildMetadata } from "@/shared/lib/seo";
+import { getPublicProjectsServer } from "@/features/projects/api/server";
+import { ReferralCta } from "@/features/referrals/components/referral-cta";
 
 export const metadata = buildMetadata({
   title: "Inmobiliaria en Peru: venta, alquiler y proyectos",
@@ -45,7 +47,10 @@ function SearchFormFallback() {
   return <div className="h-[320px] w-full rounded-md bg-surface sm:h-[220px] lg:h-[118px]" />;
 }
 
-export default function PublicHomePage() {
+export default async function PublicHomePage() {
+  const projectsPage = await getPublicProjectsServer(100).catch(() => null);
+  const projects = (projectsPage?.items ?? []).map((p) => ({ id: p.id, name: p.name }));
+
   return (
     <>
       <section className="relative isolate -mt-[var(--header-h)] min-h-[540px] overflow-visible pr-4 pt-[calc(var(--header-h)+5rem)] pb-0 pl-6 text-left text-white sm:pr-6 sm:pl-7 sm:pt-[calc(var(--header-h)+6rem)] lg:pr-6 lg:pb-32 lg:pl-8 lg:pt-[calc(var(--header-h)+6rem)] xl:pr-8 xl:pl-9">
@@ -93,12 +98,7 @@ export default function PublicHomePage() {
             >
               Buscar propiedades
             </Link>
-            <Link
-              href={ROUTES.investments}
-              className="inline-flex h-11 items-center justify-center rounded-[6px] border border-[#25D366] bg-white/12 px-5 text-sm font-black text-white backdrop-blur-sm transition-colors hover:bg-white/18"
-            >
-              Invertir con Ariz
-            </Link>
+            <ReferralCta projects={projects} />
           </div>
         </div>
 
