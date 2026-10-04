@@ -24,12 +24,15 @@ export function Input({
 }: InputProps) {
   const generatedId = useId();
   const inputId = id ?? generatedId;
+  const hintId = hint ? `${inputId}-hint` : undefined;
+  const errorId = error ? `${inputId}-error` : undefined;
+  const describedBy = [props["aria-describedby"], errorId ?? hintId].filter(Boolean).join(" ") || undefined;
 
   const field = (
     <input
       id={inputId}
       className={cn(
-        "h-11 rounded-card border border-edge bg-surface px-3.5 text-sm text-ink placeholder:text-muted/70 focus:border-brand focus:outline-2 focus:outline-brand/25",
+        "h-11 rounded-card border border-edge bg-surface px-3.5 text-sm text-ink transition-colors placeholder:text-muted/70 focus:border-brand focus:outline-2 focus:outline-brand/25",
         leading || trailing
           ? "h-full min-w-0 flex-1 rounded-none border-0 bg-transparent focus:outline-none"
           : "",
@@ -37,6 +40,8 @@ export function Input({
         className,
       )}
       {...props}
+      aria-invalid={error ? true : props["aria-invalid"]}
+      aria-describedby={describedBy}
     />
   );
 
@@ -69,8 +74,16 @@ export function Input({
       ) : (
         field
       )}
-      {error ? <p className="text-xs text-error">{error}</p> : null}
-      {hint && !error ? <p className="text-xs text-muted">{hint}</p> : null}
+      {error ? (
+        <p id={errorId} className="text-xs font-medium text-error">
+          {error}
+        </p>
+      ) : null}
+      {hint && !error ? (
+        <p id={hintId} className="text-xs text-muted">
+          {hint}
+        </p>
+      ) : null}
     </div>
   );
 }

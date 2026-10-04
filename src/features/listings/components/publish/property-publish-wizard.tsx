@@ -91,8 +91,16 @@ const TYPE_ICONS: Record<ApiPropertyType, typeof HomeIcon> = {
   PARKING: ParkingIcon,
 };
 
-export function PropertyPublishWizard() {
+export function PropertyPublishWizard({
+  audience = "owner",
+}: {
+  audience?: "owner" | "customer";
+}) {
   const router = useRouter();
+  const listingsPath =
+    audience === "customer"
+      ? ROUTES.panel.client.properties
+      : ROUTES.panel.owner.listings;
   const formRef = useRef<HTMLFormElement>(null);
   const errorsRef = useRef<HTMLDivElement>(null);
   const issuesRef = useRef<string[]>([]);
@@ -153,11 +161,11 @@ export function PropertyPublishWizard() {
   useEffect(() => {
     if (!publishedSlug) return;
     const timer = window.setTimeout(() => {
-      router.push(ROUTES.panel.owner.listings);
+      router.push(listingsPath);
       router.refresh();
     }, 2200);
     return () => window.clearTimeout(timer);
-  }, [publishedSlug, router]);
+  }, [publishedSlug, router, listingsPath]);
 
   function saveDraft() {
     const form = formRef.current;
@@ -628,7 +636,7 @@ export function PropertyPublishWizard() {
                   Ver la publicacion
                 </Link>
                 <Link
-                  href={ROUTES.panel.owner.listings}
+                  href={listingsPath}
                   className="flex h-11 items-center justify-center gap-2 rounded-card bg-brand px-5 text-sm font-bold text-on-brand transition-colors hover:bg-brand-hover"
                 >
                   Ir a mis propiedades

@@ -1,18 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ChevronDown, Heart, UserRound } from "lucide-react";
 import { Container } from "@/shared/ui/container";
 import { MenuIcon, XIcon } from "@/shared/ui/icons";
 import { ROUTES, hasOverlayHeader } from "@/shared/config/routes";
+import type { UserRole } from "@/shared/config/roles";
 import { cn } from "@/shared/lib/cn";
 import { PublicMobileNav, PublicNav } from "@/app/(public)/public-nav";
 
 export interface PublicHeaderProps {
   isLoggedIn: boolean;
   accountName?: string;
+  accountAvatarUrl?: string;
   accountHref: string;
+  accountRole?: UserRole;
 }
 
 function Logo({ light }: { light: boolean }) {
@@ -44,11 +49,21 @@ function Logo({ light }: { light: boolean }) {
  * hamburguesa. El panel es una sola fila de 60px sobre la cabecera, que es lo
  * que mide `--header-h`.
  */
-export function PublicHeader({ isLoggedIn, accountName, accountHref }: PublicHeaderProps) {
+export function PublicHeader({
+  isLoggedIn,
+  accountName,
+  accountAvatarUrl,
+  accountHref,
+  accountRole,
+}: PublicHeaderProps) {
   const pathname = usePathname();
   const overlay = hasOverlayHeader(pathname);
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+  const desktopAccountMenuRef = useRef<HTMLDivElement>(null);
+  const mobileAccountMenuRef = useRef<HTMLDivElement>(null);
+  const isCustomer = isLoggedIn && accountRole === "USER";
 
   useEffect(() => {
     const sync = () => setScrolled(window.scrollY > 8);
@@ -64,18 +79,39 @@ export function PublicHeader({ isLoggedIn, accountName, accountHref }: PublicHea
   if (pathname !== lastPathname) {
     setLastPathname(pathname);
     setMenuOpen(false);
+    setAccountMenuOpen(false);
   }
 
   useEffect(() => {
-    if (!menuOpen) return;
+    if (!menuOpen && !accountMenuOpen) return;
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setMenuOpen(false);
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+        setAccountMenuOpen(false);
+      }
     };
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [menuOpen]);
+  }, [menuOpen, accountMenuOpen]);
+
+  useEffect(() => {
+    if (!accountMenuOpen) return;
+
+    const onPointerDown = (event: PointerEvent) => {
+      const target = event.target as Node;
+      if (
+        !desktopAccountMenuRef.current?.contains(target) &&
+        !mobileAccountMenuRef.current?.contains(target)
+      ) {
+        setAccountMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, [accountMenuOpen]);
 
   // Con el header transparente arriba y un velo al scrollear, ambas variantes
   // comparten texto blanco: solo cambia el fondo.
@@ -119,7 +155,83 @@ export function PublicHeader({ isLoggedIn, accountName, accountHref }: PublicHea
           <PublicNav overlay={!solid} />
         </div>
 
-        {isLoggedIn ? (
+        {isCustomer ? (
+          <div className="hidden items-center gap-2 lg:flex">
+            <Link href={ROUTES.registerProfessional} className={accountClass(true)}>
+              Publicar propiedad
+            </Link>
+            <div className="relative" ref={desktopAccountMenuRef}>
+              <button
+                type="button"
+                aria-label="Administrar mi cuenta"
+                aria-expanded={accountMenuOpen}
+                aria-controls="customer-account-menu"
+                title="Administrar mi cuenta"
+                onClick={() => setAccountMenuOpen((open) => !open)}
+                className={cn(
+                  "relative flex size-10 items-center justify-center overflow-hidden border transition-colors",
+                  accountAvatarUrl
+                    ? "rounded-full border-accent p-0 ring-2 ring-accent/20"
+                    : "rounded-card",
+                  solid
+                    ? accountAvatarUrl
+                      ? "bg-surface text-brand hover:border-brand"
+                      : "border-edge bg-surface text-brand hover:border-brand"
+                    : accountAvatarUrl
+                      ? "bg-white/10 text-white hover:border-white/70 hover:bg-white/15"
+                      : "border-white/35 bg-white/10 text-white hover:border-white/70 hover:bg-white/15",
+                )}
+              >
+                {accountAvatarUrl ? (
+                  <Image
+                    src={accountAvatarUrl}
+                    alt=""
+                    width={40}
+                    height={40}
+                    unoptimized
+                    className="block size-full rounded-full object-cover"
+                  />
+                ) : (
+                  <UserRound className="size-5" />
+                )}
+              </button>
+              {accountMenuOpen ? (
+                <div
+                  id="customer-account-menu"
+                  className="absolute top-full right-0 z-50 mt-3 w-64 overflow-hidden rounded-xl border border-edge bg-surface p-2 text-brand shadow-[var(--shadow-pop)]"
+                >
+                  <div className="border-b border-edge px-3 py-2.5">
+                    <p className="text-[11px] font-bold tracking-[0.12em] text-muted uppercase">
+                      Administra mi cuenta
+                    </p>
+                    {accountName ? (
+                      <p className="mt-1 truncate text-sm font-bold text-brand">{accountName}</p>
+                    ) : null}
+                  </div>
+                  <Link
+                    href={accountHref}
+                    onClick={() => setAccountMenuOpen(false)}
+                    className="mt-1 flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors hover:bg-surface-muted"
+                  >
+                    Mi cuenta
+                    <ChevronDown className="size-4 -rotate-90 text-muted" />
+                  </Link>
+                  <Link
+                    href={ROUTES.panel.client.favorites}
+                    onClick={() => setAccountMenuOpen(false)}
+                    className="flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors hover:bg-surface-muted"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Heart className="size-4 text-accent" />
+                      Mis favoritos
+                    </span>
+                    <ChevronDown className="size-4 -rotate-90 text-muted" />
+                  </Link>
+                </div>
+              ) : null}
+            </div>
+          </div>
+        ) : isLoggedIn ? (
           <Link
             href={accountHref}
             title={accountName}
@@ -147,23 +259,101 @@ export function PublicHeader({ isLoggedIn, accountName, accountHref }: PublicHea
           </div>
         )}
 
-        <button
-          type="button"
-          onClick={() => setMenuOpen((open) => !open)}
-          aria-expanded={menuOpen}
-          aria-controls="public-mobile-menu"
-          aria-label={menuOpen ? "Cerrar menu" : "Abrir menu"}
-          className={cn(
-            "flex size-10 items-center justify-center rounded-card border transition-colors lg:hidden",
-            menuOpen
-              ? "border-edge bg-surface text-brand"
-              : solid
+        <div className="ml-auto flex items-center gap-2 lg:hidden">
+          {isCustomer ? (
+            <div className="relative" ref={mobileAccountMenuRef}>
+              <button
+                type="button"
+                aria-label="Administrar mi cuenta"
+                aria-expanded={accountMenuOpen}
+                aria-controls="customer-account-menu-mobile"
+                title="Administrar mi cuenta"
+                onClick={() => setAccountMenuOpen((open) => !open)}
+                className={cn(
+                  "relative flex size-10 items-center justify-center overflow-hidden border transition-colors",
+                  accountAvatarUrl
+                    ? "rounded-full border-accent p-0 ring-2 ring-accent/20"
+                    : "rounded-card",
+                  solid
+                    ? accountAvatarUrl
+                      ? "bg-surface text-brand"
+                      : "border-edge bg-surface text-brand"
+                    : accountAvatarUrl
+                      ? "bg-white/10 text-white"
+                      : "border-white/35 bg-white/10 text-white",
+                )}
+              >
+                {accountAvatarUrl ? (
+                  <Image
+                    src={accountAvatarUrl}
+                    alt=""
+                    width={40}
+                    height={40}
+                    unoptimized
+                    className="block size-full rounded-full object-cover"
+                  />
+                ) : (
+                  <UserRound className="size-5" />
+                )}
+              </button>
+              {accountMenuOpen ? (
+                <div
+                  id="customer-account-menu-mobile"
+                  className="absolute top-full right-0 z-50 mt-3 w-64 overflow-hidden rounded-xl border border-edge bg-surface p-2 text-brand shadow-[var(--shadow-pop)]"
+                >
+                  <div className="border-b border-edge px-3 py-2.5">
+                    <p className="text-[11px] font-bold tracking-[0.12em] text-muted uppercase">
+                      Administra mi cuenta
+                    </p>
+                    {accountName ? (
+                      <p className="mt-1 truncate text-sm font-bold text-brand">{accountName}</p>
+                    ) : null}
+                  </div>
+                  <Link
+                    href={accountHref}
+                    onClick={() => setAccountMenuOpen(false)}
+                    className="mt-1 flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-semibold hover:bg-surface-muted"
+                  >
+                    Mi cuenta
+                    <ChevronDown className="size-4 -rotate-90 text-muted" />
+                  </Link>
+                  <Link
+                    href={ROUTES.panel.client.favorites}
+                    onClick={() => setAccountMenuOpen(false)}
+                    className="flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-semibold hover:bg-surface-muted"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Heart className="size-4 text-accent" />
+                      Mis favoritos
+                    </span>
+                    <ChevronDown className="size-4 -rotate-90 text-muted" />
+                  </Link>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+
+          <button
+            type="button"
+            onClick={() => {
+              setMenuOpen((open) => !open);
+              setAccountMenuOpen(false);
+            }}
+            aria-expanded={menuOpen}
+            aria-controls="public-mobile-menu"
+            aria-label={menuOpen ? "Cerrar menu" : "Abrir menu"}
+            className={cn(
+              "flex size-10 items-center justify-center rounded-card border transition-colors lg:hidden",
+              menuOpen
                 ? "border-edge bg-surface text-brand"
-                : "border-white/35 bg-white/10 text-white hover:bg-white/15",
-          )}
-        >
-          {menuOpen ? <XIcon className="size-5" /> : <MenuIcon className="size-5" />}
-        </button>
+                : solid
+                  ? "border-edge bg-surface text-brand"
+                  : "border-white/35 bg-white/10 text-white hover:bg-white/15",
+            )}
+          >
+            {menuOpen ? <XIcon className="size-5" /> : <MenuIcon className="size-5" />}
+          </button>
+        </div>
       </Container>
 
       {/*
@@ -178,7 +368,32 @@ export function PublicHeader({ isLoggedIn, accountName, accountHref }: PublicHea
           <PublicMobileNav onNavigate={() => setMenuOpen(false)} />
 
           <div className="border-t border-edge p-4">
-            {isLoggedIn ? (
+            {isCustomer ? (
+              <div className="grid grid-cols-2 gap-2">
+                <Link
+                  href={accountHref}
+                  onClick={() => setMenuOpen(false)}
+                  className="flex h-11 items-center justify-center rounded-card border border-edge px-3 text-sm font-bold text-brand"
+                >
+                  Mi cuenta
+                </Link>
+                <Link
+                  href={ROUTES.registerProfessional}
+                  onClick={() => setMenuOpen(false)}
+                  className="flex h-11 items-center justify-center rounded-card bg-accent px-3 text-sm font-bold text-on-accent"
+                >
+                  Publicar propiedad
+                </Link>
+                <Link
+                  href={ROUTES.panel.client.favorites}
+                  onClick={() => setMenuOpen(false)}
+                  className="col-span-2 flex h-11 items-center justify-center gap-2 rounded-card bg-brand px-3 text-sm font-bold text-on-brand"
+                >
+                  <Heart className="size-4" />
+                  Mis favoritos
+                </Link>
+              </div>
+            ) : isLoggedIn ? (
               <Link
                 href={accountHref}
                 onClick={() => setMenuOpen(false)}

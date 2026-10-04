@@ -14,6 +14,8 @@ export interface ServiceImageProps {
   imgClassName?: string;
   /** La foto principal del hero carga eager para no perder el primer pintado. */
   priority?: boolean;
+  /** Evita usar una variante optimizada almacenada en caché. */
+  unoptimized?: boolean;
 }
 
 /**
@@ -31,6 +33,7 @@ export function ServiceImage({
   className,
   imgClassName,
   priority = false,
+  unoptimized = false,
 }: ServiceImageProps) {
   const [failed, setFailed] = useState(false);
 
@@ -47,6 +50,7 @@ export function ServiceImage({
           sizes="(min-width: 1024px) 50vw, 100vw"
           priority={priority}
           loading={priority ? "eager" : "lazy"}
+          unoptimized={unoptimized}
           onError={() => setFailed(true)}
           className={cn("object-cover", imgClassName)}
         />
@@ -54,4 +58,3 @@ export function ServiceImage({
     </span>
   );
 }
-

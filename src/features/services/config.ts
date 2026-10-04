@@ -42,7 +42,7 @@ export const SERVICES_CONTACT_HREF = "#contacto";
  * depender de Cloudinary: los assets antiguos devolvian 404 y dejaban la cinta
  * sin imagen.
  */
-export const SERVICES_HERO_IMAGE = "/servicios/servicios.png";
+export const SERVICES_HERO_IMAGE = "/servicios/servicios.png?v=2";
 
 /**
  * Degradado azul marino de respaldo. Se pinta detras de cada foto: si la imagen

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRightIcon,
@@ -13,33 +14,10 @@ import {
   WhatsappIcon,
 } from "@/shared/ui";
 import { buildServiceWhatsappUrl } from "@/features/services/config";
-
-const opportunities = [
-  {
-    name: "Hacienda de Tumbes",
-    area: "Desde 120 m2",
-    price: 3000,
-    roi: 18,
-    location: "Tumbes",
-    target: "plusvalia",
-  },
-  {
-    name: "Kataleya",
-    area: "Desde 160 m2",
-    price: 8500,
-    roi: 21,
-    location: "Puerto Pizarro",
-    target: "construccion",
-  },
-  {
-    name: "Xenses",
-    area: "Desde 200 m2",
-    price: 14000,
-    roi: 24,
-    location: "Zorritos",
-    target: "renta",
-  },
-];
+import {
+  INVESTMENT_GOAL_LABELS,
+  type InvestmentOpportunity,
+} from "@/features/investment-opportunities/types";
 
 const goals = [
   { value: "plusvalia", label: "Plusvalia" },
@@ -54,18 +32,29 @@ const formatMoney = (value: number) =>
     maximumFractionDigits: 0,
   }).format(value);
 
-export function InvestmentsExperience() {
+export function InvestmentsExperience({
+  opportunities,
+  loadError,
+}: {
+  opportunities: InvestmentOpportunity[];
+  loadError?: string;
+}) {
   const [capital, setCapital] = useState(50000);
   const [term, setTerm] = useState(24);
   const [goal, setGoal] = useState("plusvalia");
 
   const compatible = useMemo(
-    () => opportunities.filter((item) => capital >= item.price && (item.target === goal || capital >= 20000)),
-    [capital, goal],
+    () =>
+      opportunities.filter(
+        (item) =>
+          capital >= item.initialInvestment &&
+          (item.investmentGoal === goal || capital >= 20000),
+      ),
+    [capital, goal, opportunities],
   );
 
   const averageRoi = compatible.length
-    ? compatible.reduce((sum, item) => sum + item.roi, 0) / compatible.length
+    ? compatible.reduce((sum, item) => sum + item.roiPercent, 0) / compatible.length
     : 14;
   const estimatedReturn = Math.round(capital * (averageRoi / 100) * (term / 12));
   const whatsappUrl = buildServiceWhatsappUrl("inversion inmobiliaria");
@@ -185,9 +174,29 @@ export function InvestmentsExperience() {
               </Link>
             </div>
 
+            {loadError ? (
+              <p role="alert" className="mt-5 rounded-[8px] border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+                {loadError}
+              </p>
+            ) : null}
+
             <div className="mt-5 grid gap-4 lg:grid-cols-3">
               {opportunities.map((item) => (
-                <article key={item.name} className="rounded-[8px] border border-edge bg-white p-5 shadow-sm">
+                <article key={item.id} className="overflow-hidden rounded-[8px] border border-edge bg-white shadow-sm">
+                  <Link
+                    href={`/inversiones/${item.slug}`}
+                    aria-label={`Ver oportunidad ${item.name}`}
+                    className="relative block aspect-[16/9] bg-[#E9ECF4]"
+                  >
+                    <Image
+                      src={item.coverImageUrl}
+                      alt={item.name}
+                      fill
+                      sizes="(min-width: 1024px) 30vw, 100vw"
+                      className="object-cover"
+                    />
+                  </Link>
+                  <div className="p-5">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <h3 className="text-lg font-black text-[#071A5A]">{item.name}</h3>
@@ -195,22 +204,22 @@ export function InvestmentsExperience() {
                         <PinIcon className="size-4 text-accent" />
                         {item.location}
                       </p>
+                      <p className="mt-2 text-sm leading-5 text-[#596273]">{item.summary}</p>
                     </div>
                     <span className="rounded-[6px] bg-accent/15 px-2.5 py-1 text-xs font-black text-[#071A5A]">
-                      {item.roi}% ROI
+                      {item.roiPercent}% ROI
                     </span>
                   </div>
 
                   <div className="mt-5 grid gap-3 text-sm">
-                    <OpportunityMetric Icon={RulerIcon} label="Metraje" value={item.area} />
-                    <OpportunityMetric Icon={ChartIcon} label="Inicial desde" value={formatMoney(item.price)} />
-                    <OpportunityMetric Icon={CalendarIcon} label="Perfil" value={item.target} />
+                    <OpportunityMetric Icon={RulerIcon} label="Metraje" value={item.areaLabel} />
+                    <OpportunityMetric Icon={ChartIcon} label="Inicial desde" value={formatMoney(item.initialInvestment)} />
+                    <OpportunityMetric Icon={CalendarIcon} label="Objetivo" value={INVESTMENT_GOAL_LABELS[item.investmentGoal]} />
                   </div>
 
                   <div className="mt-6 flex gap-2">
                     <Link
-                      href={whatsappUrl}
-                      target="_blank"
+                      href={`/inversiones/${item.slug}`}
                       className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-[6px] bg-[#071A5A] px-3 text-xs font-black text-white transition hover:bg-brand"
                     >
                       Detalle
@@ -225,21 +234,19 @@ export function InvestmentsExperience() {
                       Contacto
                     </Link>
                   </div>
+                  </div>
                 </article>
               ))}
             </div>
+            {!loadError && opportunities.length === 0 ? (
+              <p className="mt-5 rounded-[8px] border border-dashed border-edge bg-white p-8 text-center text-sm text-[#596273]">
+                Pronto publicaremos nuevas oportunidades de inversión.
+              </p>
+            ) : null}
           </div>
         </div>
       </section>
 
-      <Link
-        href={whatsappUrl}
-        target="_blank"
-        className="fixed right-4 bottom-4 z-30 inline-flex h-12 items-center justify-center gap-2 rounded-[6px] bg-accent px-4 text-sm font-black text-on-accent shadow-[0_14px_34px_rgb(0_0_0_/_0.18)] transition hover:bg-accent-hover"
-      >
-        <WhatsappIcon className="size-5" />
-        Consultar con un asesor
-      </Link>
     </main>
   );
 }

@@ -8,7 +8,7 @@ import {
   LoginForm,
   getSession,
 } from "@/features/auth";
-import { getHomeRoute, ROUTES } from "@/shared/config/routes";
+import { getAuthenticatedLandingRoute, ROUTES } from "@/shared/config/routes";
 import { buildMetadata } from "@/shared/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
@@ -25,7 +25,7 @@ export default async function LoginPage({
   const [session, { next }] = await Promise.all([getSession(), searchParams]);
 
   if (session) {
-    redirect(getHomeRoute(session.role));
+    redirect(getAuthenticatedLandingRoute(session.role));
   }
 
   return (

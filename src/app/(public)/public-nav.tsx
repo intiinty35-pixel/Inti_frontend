@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { ArrowRightIcon, ChevronDownIcon } from "@/shared/ui/icons";
 import { ROUTES } from "@/shared/config/routes";
@@ -287,6 +288,7 @@ export function PublicMobileNav({ onNavigate }: PublicMobileNavProps = {}) {
   const searchParams = useSearchParams();
   const operation = searchParams.get("operation");
   const type = searchParams.get("type");
+  const [expandedOperations, setExpandedOperations] = useState<Set<string>>(() => new Set());
 
   return (
     <ul className="divide-y divide-edge">
@@ -305,6 +307,61 @@ export function PublicMobileNav({ onNavigate }: PublicMobileNavProps = {}) {
                   Próximo
                 </span>
               </span>
+            </li>
+          );
+        }
+
+        if (item.operation) {
+          const currentOperation = item.operation;
+          const expanded = expandedOperations.has(currentOperation);
+          const panelId = `mobile-${currentOperation}-filters`;
+
+          return (
+            <li key={item.label}>
+              <button
+                type="button"
+                aria-expanded={expanded}
+                aria-controls={panelId}
+                onClick={() => {
+                  setExpandedOperations((current) => {
+                    const next = new Set(current);
+                    if (expanded) next.delete(currentOperation);
+                    else next.add(currentOperation);
+                    return next;
+                  });
+                }}
+                className={cn(
+                  "flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left text-sm font-bold transition-colors hover:bg-surface-muted",
+                  active ? "text-brand" : "text-ink",
+                )}
+              >
+                {item.label}
+                <ChevronDownIcon
+                  className={cn("size-4 shrink-0 text-muted transition-transform", expanded && "rotate-180")}
+                />
+              </button>
+
+              {expanded ? (
+                <div id={panelId} className="grid grid-cols-2 gap-2 px-4 pb-3.5">
+                  {NAV_TYPE_OPTIONS.map((option) => (
+                    <Link
+                      key={option.type}
+                      href={`${ROUTES.properties}?operation=${currentOperation}&type=${option.type}`}
+                      onClick={onNavigate}
+                      className="rounded-card bg-surface-muted px-3 py-2 text-xs font-semibold text-ink transition-colors hover:bg-surface hover:text-brand"
+                    >
+                      {option.label}
+                    </Link>
+                  ))}
+                  <Link
+                    href={item.href}
+                    onClick={onNavigate}
+                    className="col-span-2 rounded-card border border-edge px-3 py-2 text-center text-xs font-bold text-brand transition-colors hover:bg-surface-muted"
+                  >
+                    Ver todas las propiedades
+                  </Link>
+                </div>
+              ) : null}
             </li>
           );
         }
@@ -330,20 +387,6 @@ export function PublicMobileNav({ onNavigate }: PublicMobileNavProps = {}) {
               )}
             </Link>
 
-            {item.operation ? (
-              <div className="grid grid-cols-2 gap-2 px-4 pb-3.5">
-                {NAV_TYPE_OPTIONS.map((option) => (
-                  <Link
-                    key={option.type}
-                    href={`${ROUTES.properties}?operation=${item.operation}&type=${option.type}`}
-                    onClick={onNavigate}
-                    className="rounded-card bg-surface-muted px-3 py-2 text-xs font-semibold text-ink transition-colors hover:bg-surface hover:text-brand"
-                  >
-                    {option.label}
-                  </Link>
-                ))}
-              </div>
-            ) : null}
           </li>
         );
       })}

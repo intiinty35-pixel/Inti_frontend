@@ -7,7 +7,6 @@ import {
   Container,
   HeartIcon,
   SlidersIcon,
-  SoonButton,
 } from "@/shared/ui";
 import { ROUTES } from "@/shared/config/routes";
 import { formatPrice } from "@/shared/lib/format";
@@ -111,17 +110,20 @@ export async function AccountCtaSection() {
             })}
           </ul>
 
-          <div className="mt-9 flex flex-wrap gap-3">
+          <div className="mt-9 flex gap-2 sm:gap-3">
             <Link
               href={ROUTES.registerCustomer}
-              className="flex h-11 items-center gap-2 rounded-[6px] bg-brand px-6 text-sm font-black text-on-brand transition-colors hover:bg-brand-hover"
+              className="flex h-11 min-w-0 flex-1 items-center justify-center gap-1 rounded-[6px] bg-brand px-1.5 text-[10px] font-black whitespace-nowrap text-on-brand transition-colors hover:bg-brand-hover min-[360px]:px-2 min-[360px]:text-[11px] sm:flex-none sm:gap-2 sm:px-6 sm:text-sm"
             >
               Crear cuenta gratuita
-              <ArrowRightIcon className="size-4" />
+              <ArrowRightIcon className="size-3.5 shrink-0 sm:size-4" />
             </Link>
-            <SoonButton size="sm" className="h-11 px-6 text-sm">
-              Crear una alerta
-            </SoonButton>
+            <Link
+              href={ROUTES.services}
+              className="flex h-11 min-w-0 flex-1 items-center justify-center rounded-[6px] border border-edge bg-white px-3 text-xs font-black whitespace-nowrap text-brand transition-colors hover:border-brand sm:flex-none sm:px-6 sm:text-sm"
+            >
+              Conócenos
+            </Link>
           </div>
         </div>
 

@@ -1,11 +1,12 @@
 import type { ReactNode } from "react";
-import { SparkleIcon, WhatsappIcon } from "@/shared/ui";
-import { buildServiceWhatsappUrl } from "@/features/services";
 import { getHomeRoute, ROUTES } from "@/shared/config/routes";
 import { getSession } from "@/features/auth/api/server";
 import { getMyProfile } from "@/features/owner/api/server";
+import { getCustomerProfile } from "@/features/customer-account/api/server";
 import { PublicHeader } from "@/app/(public)/public-header";
 import { PublicFooter } from "@/app/(public)/public-footer";
+import { FavoritesProvider } from "@/features/favorites";
+import { FloatingWhatsapp } from "@/app/(public)/floating-whatsapp";
 
 /**
  * Cabecera, pie y flotantes del sitio.
@@ -25,6 +26,7 @@ function PublicShell({ children }: { children: ReactNode }) {
 export default async function PublicLayout({ children }: { children: ReactNode }) {
   const session = await getSession();
   let accountName = session?.name;
+  let accountAvatarUrl: string | undefined;
 
   if (session?.role === "REAL_ESTATE") {
     try {
@@ -33,6 +35,10 @@ export default async function PublicLayout({ children }: { children: ReactNode }
     } catch {
       accountName = session.name;
     }
+  } else if (session?.role === "USER") {
+    const profile = await getCustomerProfile();
+    accountName = [profile.firstName, profile.lastName].filter(Boolean).join(" ") || session.name;
+    accountAvatarUrl = profile.avatarUrl ?? undefined;
   }
 
   return (
@@ -46,23 +52,18 @@ export default async function PublicLayout({ children }: { children: ReactNode }
       <PublicHeader
         isLoggedIn={Boolean(session)}
         accountName={accountName}
+        accountAvatarUrl={accountAvatarUrl}
+        accountRole={session?.role}
         accountHref={session ? getHomeRoute(session.role) : ROUTES.login}
       />
 
-      <main className="flex flex-1 flex-col">{children}</main>
+      <FavoritesProvider isAuthenticated={Boolean(session)}>
+        <main className="flex flex-1 flex-col">{children}</main>
+      </FavoritesProvider>
 
       <PublicFooter />
 
-      <a
-        href={buildServiceWhatsappUrl("información general")}
-        target="_blank"
-        rel="noreferrer"
-        aria-label="Escríbenos por WhatsApp"
-        title="Escríbenos por WhatsApp"
-        className="fixed right-5 bottom-10 z-50 flex size-12 items-center justify-center rounded-full bg-[#25d366] text-white shadow-[var(--shadow-pop)] transition-transform hover:scale-105 hover:bg-[#1fb857]"
-      >
-        <WhatsappIcon className="size-6" />
-      </a>
+      <FloatingWhatsapp />
     </PublicShell>
   );
 }

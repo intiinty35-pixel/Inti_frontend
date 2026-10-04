@@ -24,7 +24,7 @@ export {
   getDistricts,
   getProvinces,
   isConsistentLocation,
-} from "@/features/projects/data/peru-locations";
+} from "@/shared/data/peru-locations";
 export {
   createEmptyLot,
   createEmptyMilestone,

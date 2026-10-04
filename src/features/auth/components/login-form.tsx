@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button, Checkbox, Input } from "@/shared/ui";
-import { getHomeRoute, ROUTES } from "@/shared/config/routes";
+import { getAuthenticatedLandingRoute, ROUTES } from "@/shared/config/routes";
 import { AuthAlert } from "@/features/auth/components/auth-shell";
 import { AuthRequestError, login, loginWithGoogle } from "@/features/auth/api/client";
 
@@ -37,7 +37,7 @@ export function LoginForm({ next }: LoginFormProps) {
         rememberMe: form.get("rememberMe") === "on",
       });
 
-      router.push(isSafePath(next) ? next : getHomeRoute(user.role));
+      router.push(isSafePath(next) ? next : getAuthenticatedLandingRoute(user.role));
       router.refresh();
     } catch (error) {
       setErrors(error instanceof AuthRequestError ? error.messages : ["Ocurrió un error inesperado."]);
@@ -51,7 +51,7 @@ export function LoginForm({ next }: LoginFormProps) {
 
     try {
       const user = await loginWithGoogle();
-      router.push(isSafePath(next) ? next : getHomeRoute(user.role));
+      router.push(isSafePath(next) ? next : getAuthenticatedLandingRoute(user.role));
       router.refresh();
     } catch (error) {
       setErrors(error instanceof AuthRequestError ? error.messages : ["Ocurrió un error inesperado."]);

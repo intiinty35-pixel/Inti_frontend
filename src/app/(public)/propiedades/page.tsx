@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Container, Pagination } from "@/shared/ui";
 import { buildMetadata } from "@/shared/lib/seo";
 import { formatPrice } from "@/shared/lib/format";
@@ -21,6 +22,9 @@ import { ListingsMapExperience } from "@/features/listings/components/listings-m
 import type { MapPoint } from "@/features/listings/components/listings-map";
 import { getPublicProjectsServer } from "@/features/projects/api/server";
 import { toProjectCardModel } from "@/features/projects/lib/project-card";
+import { FavoriteButton } from "@/features/favorites";
+import { ROUTES } from "@/shared/config/routes";
+import { InvestmentGrowthBanner } from "@/features/home";
 
 export const metadata: Metadata = buildMetadata({
   title: "Propiedades en venta y alquiler en Peru",
@@ -234,7 +238,8 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
   };
 
   return (
-    <Container size="full" className="flex flex-1 flex-col gap-6 py-8">
+    <>
+      <Container size="full" className="flex flex-1 flex-col gap-6 py-8">
       <PropertyFiltersBar basePath="/propiedades" value={filterBarValue} />
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -243,9 +248,12 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
           <h1 className="font-display text-3xl font-semibold text-ink">{heading}</h1>
         </div>
         <div className="flex items-center gap-2">
-          <button className="h-10 rounded-card border border-edge px-4 text-sm font-bold text-brand transition-colors hover:border-brand">
-            Crear alerta
-          </button>
+          <Link
+            href={ROUTES.services}
+            className="inline-flex h-10 items-center rounded-card border border-edge px-4 text-sm font-bold text-brand transition-colors hover:border-brand"
+          >
+            Conócenos
+          </Link>
           <SortSelect value={sort} basePath="/propiedades" currentParams={currentParams} />
         </div>
       </div>
@@ -258,7 +266,13 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
             {result.items.length > 0 ? (
               <div className="flex min-w-0 flex-col gap-4">
                 {result.items.map((listing) => (
-                  <ListingCard key={listing.id} listing={listing} />
+                  <ListingCard
+                    key={listing.id}
+                    listing={listing}
+                    favoriteAction={
+                      <FavoriteButton propertyId={listing.id} title={listing.title} />
+                    }
+                  />
                 ))}
               </div>
             ) : (
@@ -289,6 +303,8 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
           ) : null}
         </>
       )}
-    </Container>
+      </Container>
+      {operation === "buy" ? <InvestmentGrowthBanner /> : null}
+    </>
   );
 }

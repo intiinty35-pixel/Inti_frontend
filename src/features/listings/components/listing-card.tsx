@@ -6,6 +6,7 @@ import { formatPublishedDate } from "@/shared/lib/published-date";
 import type { Listing } from "@/features/listings/types/listing";
 import { ListingImage } from "@/features/listings/components/listing-image";
 import { ListingSpecs } from "@/features/listings/components/listing-specs";
+import type { ReactNode } from "react";
 
 const OPERATION_LABEL: Record<string, string> = {
   buy: "VENTA",
@@ -13,7 +14,13 @@ const OPERATION_LABEL: Record<string, string> = {
   invest: "INVERSIÓN",
 };
 
-export function ListingCard({ listing }: { listing: Listing }) {
+export function ListingCard({
+  listing,
+  favoriteAction,
+}: {
+  listing: Listing;
+  favoriteAction?: ReactNode;
+}) {
   const published = formatPublishedDate(listing.publishedAt);
   const isLandListing = listing.type === "land" || listing.type === "country-lots";
   const price = (
@@ -43,6 +50,9 @@ export function ListingCard({ listing }: { listing: Listing }) {
           <span className="absolute bottom-2.5 left-2.5 rounded-full bg-accent px-2.5 py-1 text-[10px] font-black tracking-[0.08em] text-brand">
             NUEVO
           </span>
+        ) : null}
+        {favoriteAction ? (
+          <div className="absolute top-2.5 right-2.5">{favoriteAction}</div>
         ) : null}
       </div>
 

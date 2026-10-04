@@ -3,6 +3,7 @@ import { ArrowRightIcon } from "@/shared/ui";
 import { ROUTES } from "@/shared/config/routes";
 import { FeaturedListingCard } from "@/features/listings";
 import { getPublicListingsServer } from "@/features/listings/api/server";
+import { FavoriteButton } from "@/features/favorites";
 
 export async function FeaturedListingsSection() {
   const listings = await getPublicListingsServer(5).catch(() => ({
@@ -36,10 +37,13 @@ export async function FeaturedListingsSection() {
           </Link>
         </div>
 
-        <ul className="mt-5 grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        <ul className="horizontal-scrollbar-hidden mt-5 flex w-full snap-x snap-mandatory gap-3 overflow-x-auto pb-3 sm:grid sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:pb-0 lg:grid-cols-3 xl:grid-cols-5">
           {listings.items.map((listing) => (
-            <li key={listing.id}>
-              <FeaturedListingCard listing={listing} />
+            <li key={listing.id} className="w-[calc((100vw_-_2.25rem)/2)] shrink-0 snap-start sm:w-auto">
+              <FeaturedListingCard
+                listing={listing}
+                favoriteAction={<FavoriteButton propertyId={listing.id} title={listing.title} />}
+              />
             </li>
           ))}
         </ul>

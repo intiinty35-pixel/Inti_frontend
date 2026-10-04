@@ -26,12 +26,21 @@ export interface SearchComboboxProps {
   hint?: string;
   error?: string;
   required?: boolean;
+  disabled?: boolean;
   emptyLabel?: string;
   id?: string;
   className?: string;
 }
 
 const MAX_RESULTS = 8;
+
+function normalizeSearchText(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLocaleLowerCase("es")
+    .trim();
+}
 
 /**
  * Combobox con búsqueda por texto, a diferencia de `Listbox`, que solo navega
@@ -47,6 +56,7 @@ export function SearchCombobox({
   hint,
   error,
   required = false,
+  disabled = false,
   emptyLabel = "Sin coincidencias",
   id,
   className,
@@ -74,14 +84,16 @@ export function SearchCombobox({
   }
 
   const results = useMemo(() => {
-    const term = query.trim().toLowerCase();
+    const term = normalizeSearchText(query);
 
-    if (term === "" || term === currentValue.toLowerCase()) {
+    if (term === "" || term === normalizeSearchText(currentValue)) {
       return options.slice(0, MAX_RESULTS);
     }
 
     return options
-      .filter((option) => `${option.label} ${option.description ?? ""}`.toLowerCase().includes(term))
+      .filter((option) =>
+        normalizeSearchText(`${option.label} ${option.description ?? ""}`).includes(term),
+      )
       .slice(0, MAX_RESULTS);
   }, [options, query, currentValue]);
 
@@ -195,10 +207,11 @@ export function SearchCombobox({
           type="text"
           role="combobox"
           autoComplete="off"
-          aria-expanded={open}
+          aria-expanded={disabled ? false : open}
           aria-controls={listId}
           aria-autocomplete="list"
           aria-invalid={error ? true : undefined}
+          disabled={disabled}
           aria-describedby={cn(hint && messageId, error && errorId) || undefined}
           aria-activedescendant={open && results.length > 0 ? `${baseId}-option-${activeIndex}` : undefined}
           value={query}
@@ -207,12 +220,15 @@ export function SearchCombobox({
             typeQuery(event.target.value);
             setOpen(true);
           }}
-          onFocus={() => setOpen(true)}
+          onFocus={() => {
+            if (!disabled) setOpen(true);
+          }}
           onKeyDown={handleKeyDown}
           className={cn(
             "h-11 w-full rounded-card border border-edge bg-surface pr-9 pl-9 text-sm text-ink placeholder:text-muted/70",
             "focus:border-brand focus:outline-2 focus:outline-brand/25",
             error && "border-error",
+            disabled && "cursor-not-allowed bg-canvas text-muted",
           )}
         />
         <ChevronDownIcon

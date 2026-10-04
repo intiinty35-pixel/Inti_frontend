@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { ArrowRightIcon } from "@/shared/ui";
 import { ROUTES } from "@/shared/config/routes";
 import { FeaturedListingCard } from "@/features/listings/components/featured-listing-card";
@@ -10,13 +11,19 @@ interface SimilarListingsSectionProps {
   /** Pool de candidatos ya descargado; el orden final lo define el algoritmo. */
   candidates: Listing[];
   limit?: number;
+  favoriteAction?: (listing: Listing) => ReactNode;
 }
 
 /**
  * Bloque de cierre del detalle: propiedades parecidas segun precio, zona y
  * caracteristicas. Se muestra al final del contenido, debajo del anunciante.
  */
-export function SimilarListingsSection({ property, candidates, limit = 5 }: SimilarListingsSectionProps) {
+export function SimilarListingsSection({
+  property,
+  candidates,
+  limit = 5,
+  favoriteAction,
+}: SimilarListingsSectionProps) {
   const matches = rankSimilarListings(property, candidates, { limit });
 
   if (matches.length === 0) {
@@ -53,7 +60,10 @@ export function SimilarListingsSection({ property, candidates, limit = 5 }: Simi
       <ul className="mt-4 grid w-full gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
         {matches.map(({ listing }) => (
           <li key={listing.id}>
-            <FeaturedListingCard listing={listing} />
+            <FeaturedListingCard
+              listing={listing}
+              favoriteAction={favoriteAction?.(listing)}
+            />
           </li>
         ))}
       </ul>

@@ -68,23 +68,24 @@ export function ListingsMapExperience({
         </div>
       )}
 
-      {/* Boton flotante movil: subido sobre WhatsApp y Asistente para no taparlos. */}
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        disabled={!hasPoints}
-        aria-label="Abrir mapa de propiedades"
-        aria-haspopup="dialog"
-        className={cn(
-          "fixed bottom-25 left-1/2 z-50 flex h-11 -translate-x-1/2 items-center gap-2 rounded-full px-5 text-sm font-bold shadow-[var(--shadow-pop)] transition-colors lg:hidden",
-          hasPoints
-            ? "bg-brand text-on-brand hover:bg-brand-hover"
-            : "cursor-not-allowed bg-ink/40 text-white/70",
-        )}
-      >
-        <PinIcon className="size-4" />
-        Mapa
-      </button>
+      <div className="flex justify-center py-3 lg:hidden">
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          disabled={!hasPoints}
+          aria-label="Abrir mapa de propiedades"
+          aria-haspopup="dialog"
+          className={cn(
+            "flex h-11 items-center gap-2 rounded-full px-5 text-sm font-bold shadow-[var(--shadow-pop)] transition-colors",
+            hasPoints
+              ? "bg-brand text-on-brand hover:bg-brand-hover"
+              : "cursor-not-allowed bg-ink/40 text-white/70",
+          )}
+        >
+          <PinIcon className="size-4" />
+          Mapa
+        </button>
+      </div>
 
       {open ? (
         <MapModal

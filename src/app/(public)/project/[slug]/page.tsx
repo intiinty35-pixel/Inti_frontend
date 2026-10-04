@@ -259,10 +259,10 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                 href={whatsappUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="flex h-11 items-center justify-center gap-2 rounded-card bg-brand px-5 text-sm font-bold text-accent transition-opacity hover:opacity-90"
+                className="flex h-11 items-center justify-center gap-2 rounded-card bg-[#25d366] px-5 text-sm font-bold text-white transition-colors hover:bg-[#1fb857]"
               >
                 <WhatsappIcon className="size-4" />
-                Contactar
+                Contactar por WhatsApp
               </a>
             ) : null}
           </section>

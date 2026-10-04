@@ -59,6 +59,7 @@
     color: var(--ink);
     font-family: var(--font-family-base);
     -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
   }
 
   h1,
@@ -112,6 +113,15 @@
   padding-right: 2.5rem;
   cursor: pointer;
 }
+}
+
+.horizontal-scrollbar-hidden {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.horizontal-scrollbar-hidden::-webkit-scrollbar {
+  display: none;
 }
 
 /**

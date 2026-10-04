@@ -19,6 +19,7 @@ const CARD_WIDTHS = {
 export interface AuthShellProps {
   headline: string;
   description: string;
+  sideImage?: string;
   cardWidth?: keyof typeof CARD_WIDTHS;
   centeredBackground?: boolean;
   showCardLogo?: boolean;
@@ -28,6 +29,7 @@ export interface AuthShellProps {
 export function AuthShell({
   headline,
   description,
+  sideImage,
   cardWidth = "sm",
   centeredBackground = false,
   showCardLogo = false,
@@ -41,25 +43,53 @@ export function AuthShell({
       )}
     >
       {!centeredBackground ? (
-        <aside className="relative flex flex-col overflow-hidden bg-brand px-8 py-8 text-white lg:sticky lg:top-0 lg:h-screen lg:px-14 lg:py-12">
-          <Link href={ROUTES.home} className="flex items-center gap-2.5" aria-label="Ariz Proyectos">
-            <Image
-              src="/logo/logo.png"
-              alt="Ariz Proyectos"
-              width={144}
-              height={40}
-              className="h-9 w-auto"
-              style={{ width: "auto" }}
-            />
-          </Link>
+        <aside
+          className={cn(
+            "relative flex flex-col overflow-hidden bg-brand px-8 py-8 text-white lg:sticky lg:top-0 lg:h-screen lg:px-14 lg:py-12",
+            sideImage && "min-h-[280px] px-6 py-6 sm:px-8 sm:py-8 lg:min-h-0",
+          )}
+        >
+          {sideImage ? (
+            <>
+              <Image
+                src={sideImage}
+                alt=""
+                fill
+                priority
+                sizes="(max-width: 1023px) 100vw, 42vw"
+                className="object-cover"
+              />
+              <div
+                aria-hidden
+                className="absolute inset-0 bg-gradient-to-br from-brand/90 via-brand/70 to-brand/35"
+              />
+            </>
+          ) : null}
 
-          <div className="relative z-10 my-10 flex flex-1 flex-col justify-center lg:my-0">
-            <p className="mb-4 text-[11px] font-bold tracking-[0.18em] text-accent">ARIZ PROYECTOS</p>
-            <h1 className="text-4xl leading-[1.05] font-light tracking-tight sm:text-5xl lg:text-[3.6rem]">
+          <div className="relative z-10 my-6 flex flex-1 flex-col items-center justify-center text-center lg:my-10">
+            <Link
+              href={ROUTES.home}
+              className={cn(
+                "mb-6 flex items-center justify-center rounded-xl",
+                sideImage && "bg-white/95 px-5 py-3 shadow-lg",
+              )}
+              aria-label="Ariz Proyectos"
+            >
+              <Image
+                src="/logo/logo.png"
+                alt="Ariz Proyectos"
+                width={280}
+                height={78}
+                className="h-14 w-auto sm:h-16"
+                style={{ width: "auto" }}
+              />
+            </Link>
+            <p className="mb-3 text-[11px] font-bold tracking-[0.18em] text-accent lg:mb-4">ARIZ PROYECTOS</p>
+            <h1 className="max-w-2xl text-3xl leading-[1.05] font-light tracking-tight sm:text-4xl lg:text-[3.2rem]">
               {headline}
             </h1>
-            <p className="mt-5 max-w-md text-sm leading-relaxed text-white/70">{description}</p>
-            <ul className="mt-8 hidden flex-col gap-2.5 text-xs text-white/80 lg:flex">
+            <p className="mt-3 max-w-md text-sm leading-relaxed text-white/85 lg:mt-5">{description}</p>
+            <ul className="mt-5 hidden flex-col items-start gap-2.5 text-left text-xs text-white/90 lg:mt-8 lg:flex">
               {BULLETS.map((bullet) => (
                 <li key={bullet} className="flex items-center gap-2">
                   <span aria-hidden className="text-accent">
@@ -86,7 +116,10 @@ export function AuthShell({
         className={cn(
           centeredBackground
             ? "relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-12"
-            : "flex items-center justify-center bg-canvas px-4 py-10 sm:px-8",
+            : cn(
+                "flex items-center justify-center bg-canvas px-4 py-10 sm:px-8",
+                sideImage && "py-7 sm:py-10",
+              ),
         )}
       >
         {centeredBackground ? (
@@ -106,22 +139,23 @@ export function AuthShell({
           className={cn(
             "relative z-10 w-full border border-edge bg-surface p-7 shadow-[var(--shadow-card)] sm:p-9",
             centeredBackground ? "rounded-card" : "rounded-2xl",
-            showCardLogo && "pt-14 sm:pt-16",
+            sideImage &&
+              "rounded-2xl p-5 shadow-[0_24px_70px_rgb(11_20_55_/_0.14)] sm:rounded-3xl sm:p-9",
             CARD_WIDTHS[cardWidth],
           )}
         >
           {showCardLogo ? (
             <Link
               href={ROUTES.home}
-              className="absolute -top-1 left-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center"
+              className="mb-6 flex w-full justify-center"
               aria-label="Ariz Proyectos"
             >
               <Image
                 src="/logo/logo.png"
                 alt="Ariz Proyectos"
-                width={144}
-                height={40}
-                className="h-8 w-auto drop-shadow-[0_0_2px_rgb(255_255_255_/_0.95)]"
+                width={180}
+                height={50}
+                className="h-10 w-auto"
                 style={{ width: "auto" }}
               />
             </Link>

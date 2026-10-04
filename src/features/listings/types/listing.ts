@@ -120,6 +120,7 @@ export interface Listing {
   status: ListingStatus;
   projectId?: string;
   publishedAt: string;
+  contactWhatsapp?: string | null;
   /** Codigos de servicios. El listado publico puede omitirlos; se usan para afinidad. */
   amenityCodes?: string[];
 }

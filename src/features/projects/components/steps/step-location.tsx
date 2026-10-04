@@ -16,7 +16,7 @@ import {
   buildProvinceOptions,
   getDistricts,
   parsePlaceValue,
-} from "@/features/projects/data/peru-locations";
+} from "@/shared/data/peru-locations";
 import type { ProjectDraft } from "@/features/projects/types/draft";
 
 const DEPARTMENT_OPTIONS = PERU_DEPARTMENTS.map((department) => ({ value: department, label: department }));

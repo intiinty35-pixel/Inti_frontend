@@ -8,7 +8,7 @@ import {
   RegisterCustomerForm,
   getSession,
 } from "@/features/auth";
-import { getHomeRoute, ROUTES } from "@/shared/config/routes";
+import { getAuthenticatedLandingRoute, ROUTES } from "@/shared/config/routes";
 import { buildMetadata } from "@/shared/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
@@ -21,13 +21,14 @@ export default async function RegisterCustomerPage() {
   const session = await getSession();
 
   if (session) {
-    redirect(getHomeRoute(session.role));
+    redirect(getAuthenticatedLandingRoute(session.role));
   }
 
   return (
     <AuthShell
       headline="Tu próxima propiedad comienza con una búsqueda mejor."
       description="Guarda propiedades, crea alertas y mantén tus consultas organizadas."
+      sideImage="/web_v/register.png"
       cardWidth="md"
     >
       <AuthEyebrow>CUENTA COMPRADOR</AuthEyebrow>

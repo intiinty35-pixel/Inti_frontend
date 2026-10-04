@@ -24,6 +24,7 @@ import { PriceAlertButton } from "@/features/listings/components/price-alert-but
 import { LazyPropertyLocationMap } from "@/features/listings/components/property-location-map-client";
 import { LeadForm } from "@/features/leads";
 import { QuickQuestions } from "@/features/listings/components/Quickquestions";
+import { FavoriteButton } from "@/features/favorites";
 
 interface PropertyPageProps {
   params: Promise<{ slug: string }>;
@@ -57,6 +58,7 @@ const AGENT_TYPE_LABEL: Record<string, string> = {
   REAL_ESTATE: "Inmobiliaria",
   AGENT: "Agente inmobiliario",
   INDEPENDENT: "Agente independiente",
+  INDIVIDUAL_OWNER: "Propietario particular",
   DEVELOPER: "Desarrollador",
   ARCHITECT: "Arquitecto",
 };
@@ -421,7 +423,14 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
           anunciante, no dentro de la columna de contenido. Al hacer scroll, la
           columna lateral ya termino y las 5 tarjetas se ven en una sola fila. */}
       {candidates.length > 0 ? (
-        <SimilarListingsSection property={property} candidates={candidates} limit={5} />
+        <SimilarListingsSection
+          property={property}
+          candidates={candidates}
+          limit={5}
+          favoriteAction={(listing) => (
+            <FavoriteButton propertyId={listing.id} title={listing.title} />
+          )}
+        />
       ) : null}
     </Container>
   );

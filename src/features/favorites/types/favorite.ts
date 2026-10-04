@@ -1,6 +1,11 @@
 export interface Favorite {
   id: string;
-  listingId: string;
-  title?: string;
+  userId: string;
+  propertyId: string;
   createdAt: string;
+  property: {
+    id: string;
+    slug: string;
+    title: string;
+  };
 }

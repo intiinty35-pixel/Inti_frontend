@@ -34,9 +34,9 @@ export async function ArizProjectsSection() {
         </div>
 
         {projects.length > 0 ? (
-          <ul className="mt-5 grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          <ul className="horizontal-scrollbar-hidden mt-5 flex w-full snap-x snap-mandatory gap-3 overflow-x-auto pb-3 sm:grid sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:pb-0 lg:grid-cols-3 xl:grid-cols-5">
             {projects.map((project) => (
-              <li key={project.id}>
+              <li key={project.id} className="w-[calc((100vw_-_2.25rem)/2)] shrink-0 snap-start sm:w-auto">
                 <ProjectCard project={project} />
               </li>
             ))}

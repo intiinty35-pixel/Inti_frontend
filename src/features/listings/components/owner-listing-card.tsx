@@ -41,10 +41,12 @@ export function OwnerListingCard({
   listing,
   isAgency = false,
   agencyName,
+  showMetrics = true,
 }: {
   listing: Listing;
   isAgency?: boolean;
   agencyName?: string;
+  showMetrics?: boolean;
 }) {
   const status = listing.status ?? "disponible";
   const [reviewOpen, setReviewOpen] = useState(false);
@@ -136,12 +138,14 @@ export function OwnerListingCard({
             Ver publicación
             </Link>
           )}
-          <Link
-            href={`${ROUTES.panel.owner.base}?listing=${listing.id}`}
-            className="flex h-9 items-center justify-center rounded-card border border-edge px-2.5 text-xs font-bold text-brand transition-colors hover:border-brand"
-          >
-            Rendimiento
-          </Link>
+          {showMetrics ? (
+            <Link
+              href={`${ROUTES.panel.owner.base}?listing=${listing.id}`}
+              className="flex h-9 items-center justify-center rounded-card border border-edge px-2.5 text-xs font-bold text-brand transition-colors hover:border-brand"
+            >
+              Rendimiento
+            </Link>
+          ) : null}
         </div>
       </div>
       <ReviewPublishModal

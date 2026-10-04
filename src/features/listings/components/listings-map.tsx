@@ -4,7 +4,6 @@ import "leaflet/dist/leaflet.css";
 import { useEffect, useRef, type RefObject } from "react";
 import L from "leaflet";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
-import { renderToStaticMarkup } from "react-dom/server";
 import { ListingsMapCard, type MapPointCard } from "@/features/listings/components/listings-map-card";
 
 export interface MapPoint extends MapPointCard {
@@ -35,54 +34,34 @@ export interface ListingsMapProps {
 const DEFAULT_CENTER: [number, number] = [-12.046374, -77.042793];
 const DEFAULT_ZOOM = 11;
 
-/** Pin con forma de precio, como en los portales inmobiliarios. */
-function buildPriceIcon(priceLabel: string, active: boolean, compact: boolean) {
-  if (compact) {
-    return new L.DivIcon({
-      className: "",
-      html: renderToStaticMarkup(
-        <span
-          className={
-            active
-              ? "flex size-5 items-center justify-center rounded-full bg-brand ring-2 ring-accent shadow-[0_4px_12px_rgb(0_18_79/0.5)]"
-              : "flex size-4 items-center justify-center rounded-full bg-accent ring-2 ring-white shadow-[0_4px_12px_rgb(0_18_79/0.4)]"
-          }
-        >
-          <span className={active ? "size-1.5 rounded-full bg-white" : "size-1.5 rounded-full bg-brand"} />
-        </span>,
-      ),
-      iconSize: [20, 20],
-      iconAnchor: [10, 10],
-    });
-  }
+/** Icono de ubicación de ARIZ; las miniaturas conservan los puntos compactos. */
+function buildPriceIcon(_priceLabel: string, active: boolean, compact: boolean) {
+  const size = compact ? 28 : active ? 48 : 42;
+  const anchor = compact ? 14 : active ? 46 : 40;
 
-  const html = renderToStaticMarkup(
-    <span
-      className={
-        active
-          ? "flex items-center gap-1 rounded-full bg-brand px-2.5 py-1 text-[11px] font-black whitespace-nowrap text-on-brand ring-2 ring-accent shadow-[0_8px_20px_rgb(0_18_79/0.45)]"
-          : "flex items-center gap-1 rounded-full bg-surface px-2.5 py-1 text-[11px] font-bold whitespace-nowrap text-brand ring-1 ring-edge shadow-[0_6px_16px_rgb(0_18_79/0.25)]"
-      }
-    >
-      {priceLabel}
-    </span>,
-  );
-
-  return new L.DivIcon({
-    className: "",
-    html,
-    iconSize: undefined,
-    iconAnchor: [0, 0],
+  return new L.Icon({
+    iconUrl: "/web_v/ubicacion.png",
+    iconSize: [size, size],
+    iconAnchor: compact ? [anchor, anchor] : [size / 2, anchor],
+    popupAnchor: [0, compact ? -anchor : -anchor],
+    className: active ? "drop-shadow-[0_8px_14px_rgb(0_18_79/0.45)]" : "",
+    alt: "Ubicación en el mapa",
   });
 }
 
 /** Encuadra el mapa para que todos los puntos entren en pantalla. */
-function FitToPoints({ points }: { points: readonly MapPoint[] }) {
+function FitToPoints({
+  points,
+  emptyCenter,
+}: {
+  points: readonly MapPoint[];
+  emptyCenter: [number, number];
+}) {
   const map = useMap();
 
   useEffect(() => {
     if (points.length === 0) {
-      map.setView(DEFAULT_CENTER, DEFAULT_ZOOM, { animate: false });
+      map.setView(emptyCenter, DEFAULT_ZOOM, { animate: false });
       return;
     }
 
@@ -95,7 +74,7 @@ function FitToPoints({ points }: { points: readonly MapPoint[] }) {
       L.latLngBounds(points.map((point) => [point.lat, point.lng] as [number, number])),
       { padding: [48, 48], maxZoom: 15 },
     );
-  }, [points, map]);
+  }, [points, emptyCenter, map]);
 
   return null;
 }
@@ -181,7 +160,7 @@ export function ListingsMap({
         />
 
         <MapResize containerRef={containerRef} />
-        <FitToPoints points={points} />
+        <FitToPoints points={points} emptyCenter={center} />
         <FlyToActive point={interactive ? activePoint : undefined} />
 
         {points.map((point) => (

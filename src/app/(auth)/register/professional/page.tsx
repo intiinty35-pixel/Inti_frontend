@@ -8,7 +8,7 @@ import {
   RegisterProfessionalForm,
   getSession,
 } from "@/features/auth";
-import { getHomeRoute, ROUTES } from "@/shared/config/routes";
+import { getAuthenticatedLandingRoute, ROUTES } from "@/shared/config/routes";
 import { buildMetadata } from "@/shared/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
@@ -21,13 +21,14 @@ export default async function RegisterProfessionalPage() {
   const session = await getSession();
 
   if (session) {
-    redirect(getHomeRoute(session.role));
+    redirect(getAuthenticatedLandingRoute(session.role));
   }
 
   return (
     <AuthShell
       headline="Herramientas para profesionales inmobiliarios."
       description="Crea tu identidad profesional y conecta tus futuras publicaciones con un único perfil."
+      sideImage="/web_v/register.png"
       cardWidth="lg"
     >
       <AuthEyebrow>CUENTA PROFESIONAL</AuthEyebrow>

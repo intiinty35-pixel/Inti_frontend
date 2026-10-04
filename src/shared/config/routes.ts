@@ -20,6 +20,7 @@ export const ROUTES = {
       subscriptions: "/panel/admin/subscriptions",
       projects: "/panel/admin/projects",
       newProject: "/panel/admin/projects/new",
+      investmentOpportunities: "/panel/admin/investment-opportunities",
       developers: "/panel/admin/developers",
       developer: (id: string): string => `/panel/admin/developers/${id}`,
       agencies: "/panel/admin/agencies",
@@ -28,6 +29,11 @@ export const ROUTES = {
     client: {
       base: "/panel/client",
       favorites: "/panel/client/favorites",
+      profile: "/panel/client/profile",
+      properties: "/panel/client/properties",
+      newProperty: "/panel/client/properties/new",
+      rentals: "/panel/client/rentals",
+      membership: "/panel/client/membership",
     },
     owner: {
       base: "/panel/owner",
@@ -53,6 +59,10 @@ export function getHomeRoute(role: UserRole): string {
     default:
       return ROUTES.panel.client.base;
   }
+}
+
+export function getAuthenticatedLandingRoute(role: UserRole): string {
+  return role === "USER" ? ROUTES.home : getHomeRoute(role);
 }
 
 /**

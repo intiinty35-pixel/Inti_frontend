@@ -68,7 +68,7 @@ const categories: readonly Category[] = [
 ];
 
 const GRID =
-  "mt-8 flex gap-4 overflow-x-auto pb-1 sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0 lg:grid-cols-6";
+  "horizontal-scrollbar-hidden mt-8 flex gap-4 overflow-x-auto pb-1 sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0 lg:grid-cols-6";
 
 function CategoryCard({ category, index }: { category: Category; index: number }) {
   const { Icon } = category;
@@ -92,10 +92,10 @@ function CategoryCard({ category, index }: { category: Category; index: number }
         </span>
 
         <span className="min-w-0 text-center">
-          <span className="mx-auto block max-w-[8.6rem] text-[13px] leading-4 font-black text-[#071A5A]">
+          <span className="mx-auto block max-w-[8.6rem] text-[14.5px] leading-5 font-black text-[#071A5A]">
             {category.label}
           </span>
-          <span className="mx-auto mt-1 block max-w-[8.8rem] text-[9.5px] leading-3 font-semibold text-[#596273]">
+          <span className="mx-auto mt-1 block max-w-[8.8rem] text-[11px] leading-4 font-semibold text-[#596273]">
             {category.subtitle}
           </span>
         </span>
@@ -113,13 +113,13 @@ function CategoryCard({ category, index }: { category: Category; index: number }
 
 export function CategoryShowcase() {
   return (
-    <section className="overflow-hidden bg-[#F3F4F8] pt-28 pb-7 sm:pt-32">
+    <section className="overflow-hidden bg-[#F3F4F8] pt-8 pb-7 lg:pt-32">
       <div className="mx-auto w-full px-3 sm:px-4 lg:px-5 xl:px-6">
         <div className="flex items-start justify-between gap-4">
-          <h2 className="text-base leading-none font-black tracking-tight text-[#071A5A] sm:text-lg">
+          <h2 className="text-lg leading-none font-black tracking-tight text-[#071A5A] sm:text-xl">
             ¿Qué quieres hacer hoy?
           </h2>
-          <p className="hidden pt-0.5 text-[8px] leading-none font-bold text-[#596273] sm:block">
+          <p className="hidden pt-0.5 text-[11px] leading-none font-bold text-[#596273] sm:block">
             Todo lo que necesitas en un solo lugar
           </p>
         </div>

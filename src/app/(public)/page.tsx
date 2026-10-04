@@ -42,13 +42,13 @@ const HERO_SHELL = "mx-auto w-full max-w-[1180px]";
 const HERO_TEXT = "w-full max-w-[1180px]";
 
 function SearchFormFallback() {
-  return <div className="h-[118px] w-full rounded-md bg-surface" />;
+  return <div className="h-[320px] w-full rounded-md bg-surface sm:h-[220px] lg:h-[118px]" />;
 }
 
 export default function PublicHomePage() {
   return (
     <>
-      <section className="relative isolate -mt-[var(--header-h)] min-h-[540px] overflow-visible pr-4 pt-[calc(var(--header-h)+5rem)] pb-32 pl-6 text-left text-white sm:pr-6 sm:pl-7 sm:pt-[calc(var(--header-h)+6rem)] lg:pr-6 lg:pl-8 lg:pt-[calc(var(--header-h)+6rem)] xl:pr-8 xl:pl-9">
+      <section className="relative isolate -mt-[var(--header-h)] min-h-[540px] overflow-visible pr-4 pt-[calc(var(--header-h)+5rem)] pb-0 pl-6 text-left text-white sm:pr-6 sm:pl-7 sm:pt-[calc(var(--header-h)+6rem)] lg:pr-6 lg:pb-32 lg:pl-8 lg:pt-[calc(var(--header-h)+6rem)] xl:pr-8 xl:pl-9">
         <HomeHeroBackground />
         <span
           aria-hidden
@@ -83,26 +83,26 @@ export default function PublicHomePage() {
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
               href={ROUTES.projects}
-              className="inline-flex h-11 items-center justify-center rounded-[6px] bg-accent px-5 text-sm font-black text-on-accent shadow-[0_10px_26px_rgb(0_0_0_/_0.18)] transition-colors hover:bg-accent-hover"
+              className="inline-flex h-11 items-center justify-center rounded-[6px] border border-[#25D366] bg-accent px-5 text-sm font-black text-on-accent shadow-[0_10px_26px_rgb(0_0_0_/_0.18)] transition-colors hover:bg-accent-hover"
             >
               Ver proyectos
             </Link>
             <Link
               href={ROUTES.properties}
-              className="inline-flex h-11 items-center justify-center rounded-[6px] border border-white/45 bg-white/12 px-5 text-sm font-black text-white backdrop-blur-sm transition-colors hover:border-white/75 hover:bg-white/18"
+              className="inline-flex h-11 items-center justify-center rounded-[6px] border border-[#25D366] bg-brand px-5 text-sm font-black text-on-brand shadow-[0_10px_26px_rgb(0_0_0_/_0.18)] transition-colors hover:bg-brand-hover"
             >
               Buscar propiedades
             </Link>
             <Link
               href={ROUTES.investments}
-              className="inline-flex h-11 items-center justify-center rounded-[6px] border border-white/45 bg-white/12 px-5 text-sm font-black text-white backdrop-blur-sm transition-colors hover:border-white/75 hover:bg-white/18"
+              className="inline-flex h-11 items-center justify-center rounded-[6px] border border-[#25D366] bg-white/12 px-5 text-sm font-black text-white backdrop-blur-sm transition-colors hover:bg-white/18"
             >
               Invertir con Ariz
             </Link>
           </div>
         </div>
 
-        <div className="absolute inset-x-4 bottom-0 z-10 translate-y-1/2 sm:inset-x-6 lg:inset-x-6 xl:inset-x-8">
+        <div className="relative z-10 mt-8 w-full lg:absolute lg:inset-x-6 lg:bottom-0 lg:mt-0 lg:translate-y-1/2 xl:inset-x-8">
           <div className={HERO_SHELL}>
             <Suspense fallback={<SearchFormFallback />}>
               <SearchForm />

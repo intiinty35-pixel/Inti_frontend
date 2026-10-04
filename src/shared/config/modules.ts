@@ -7,6 +7,10 @@ export type ModuleKey =
   | "admin-plans"
   | "admin-subscriptions"
   | "customer-home"
+  | "customer-profile"
+  | "customer-properties"
+  | "customer-rentals"
+  | "customer-membership"
   | "customer-favorites"
   | "owner-home"
   | "owner-listings";
@@ -60,6 +64,38 @@ export const MODULES: readonly ModuleConfig[] = [
     href: ROUTES.panel.client.favorites,
     roles: ["USER"],
     permission: "favorites:view",
+  },
+  {
+    key: "customer-profile",
+    label: "Mi perfil",
+    description: "Actualiza tus datos personales y contraseña",
+    href: ROUTES.panel.client.profile,
+    roles: ["USER"],
+    permission: "panel:customers",
+  },
+  {
+    key: "customer-properties",
+    label: "Mis propiedades",
+    description: "Administra tus publicaciones",
+    href: ROUTES.panel.client.properties,
+    roles: ["USER"],
+    permission: "panel:customers",
+  },
+  {
+    key: "customer-rentals",
+    label: "Mis alquileres",
+    description: "Propiedades que publicaste para alquilar",
+    href: ROUTES.panel.client.rentals,
+    roles: ["USER"],
+    permission: "panel:customers",
+  },
+  {
+    key: "customer-membership",
+    label: "Membresía",
+    description: "Consulta y solicita paquetes de publicación",
+    href: ROUTES.panel.client.membership,
+    roles: ["USER"],
+    permission: "panel:customers",
   },
   {
     key: "owner-home",

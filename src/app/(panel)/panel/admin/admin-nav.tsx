@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { key: "plans", label: "Planes", href: ROUTES.panel.admin.plans, Icon: ChartIcon },
   { key: "subscriptions", label: "Solicitudes de pago", href: ROUTES.panel.admin.subscriptions, Icon: FileIcon },
   { key: "projects", label: "Proyectos ARIZ", href: ROUTES.panel.admin.projects, Icon: ChartIcon },
+  { key: "investment-opportunities", label: "Proyectos de inversión", href: ROUTES.panel.admin.investmentOpportunities, Icon: ChartIcon },
   { key: "new-project", label: "Crear proyecto", href: ROUTES.panel.admin.newProject, Icon: PlusIcon },
 ] as const;
 

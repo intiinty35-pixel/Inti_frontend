@@ -1,18 +1,23 @@
 import type { ReactNode } from "react";
 import { requireRole } from "@/features/auth";
-import { getModulesForRole } from "@/shared/config/modules";
-import { GenericPanelShell } from "@/app/(panel)/panel/generic-panel-shell";
+import { ROLE_LABELS } from "@/shared/config/roles";
+import { CustomerShell } from "@/app/(panel)/panel/client/customer-shell";
+import { FavoritesProvider } from "@/features/favorites";
+import { getCustomerProfile } from "@/features/customer-account/api/server";
 
 export default async function ClientLayout({ children }: { children: ReactNode }) {
   const session = await requireRole("USER");
+  const profile = await getCustomerProfile();
 
   return (
-    <GenericPanelShell
-      name={session.name}
-      role={session.role}
-      modules={getModulesForRole(session.role)}
-    >
-      {children}
-    </GenericPanelShell>
+    <FavoritesProvider isAuthenticated>
+      <CustomerShell
+        name={profile.firstName || session.name}
+        roleLabel={ROLE_LABELS[session.role]}
+        avatarUrl={profile.avatarUrl}
+      >
+        {children}
+      </CustomerShell>
+    </FavoritesProvider>
   );
 }
