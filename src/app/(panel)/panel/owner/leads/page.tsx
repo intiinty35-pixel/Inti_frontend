@@ -1,5 +1,5 @@
 import { ChatIcon, SparkleIcon } from "@/shared/ui";
-import { OwnerPageHeader } from "@/app/(panel)/panel/owner/owner-shell";
+import { PageBanner } from "@/features/owner/components/dashboard-ui";
 
 const FEATURES = [
   "Todas tus consultas en una bandeja organizada por estado",
@@ -10,7 +10,7 @@ const FEATURES = [
 export default function OwnerLeadsPage() {
   return (
     <div className="flex flex-col gap-6">
-      <OwnerPageHeader eyebrow="Contactos" title="Leads y consultas" />
+      <PageBanner eyebrow="Contactos" title="Leads y consultas" />
 
       <div className="relative overflow-hidden rounded-card border border-edge bg-[linear-gradient(180deg,#ffffff_0%,#f9fafc_100%)] p-8 text-center shadow-[var(--shadow-card)] sm:p-12">
         <div className="absolute inset-x-0 top-0 h-1.5 bg-brand" aria-hidden />
