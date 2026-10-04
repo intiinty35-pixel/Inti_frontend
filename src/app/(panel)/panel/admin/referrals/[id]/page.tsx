@@ -15,10 +15,12 @@ const STATUS_LABELS: Record<ReferralStatus, string> = {
 async function updateReferralStatus(formData: FormData) {
   'use server';
   const id = String(formData.get('id') ?? '');
+  const referrerId = String(formData.get('referrerId') ?? '');
   const status = String(formData.get('status') ?? '') as ReferralStatus;
   if (!id || !(status in STATUS_LABELS)) return;
   await setReferralStatus(id, status);
   revalidatePath(ROUTES.panel.admin.referrals);
+  if (referrerId) revalidatePath(ROUTES.panel.admin.referrer(referrerId));
 }
 
 export default async function AdminReferrerDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -95,7 +97,7 @@ export default async function AdminReferrerDetailPage({ params }: { params: Prom
                     <p className="text-xs font-bold uppercase tracking-wide text-muted">Puntos referido</p>
                     <p className="mt-1 text-2xl font-black text-brand">{referral.points.toLocaleString('es-PE')}</p>
                   </div>
-                  <ReferralStatusForm action={updateReferralStatus} referral={referral} />
+                  <ReferralStatusForm action={updateReferralStatus} referral={referral} referrerId={referrer.id} />
                 </div>
               </Card>
             ))}
