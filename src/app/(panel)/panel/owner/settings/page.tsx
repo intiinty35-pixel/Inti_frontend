@@ -1,6 +1,5 @@
 import { BellIcon, CalendarIcon, ChartIcon, Checkbox, WhatsappIcon } from "@/shared/ui";
-import { OwnerPageHeader } from "@/app/(panel)/panel/owner/owner-shell";
-import { DashboardPanel } from "@/features/owner/components/dashboard-ui";
+import { DashboardPanel, PageBanner } from "@/features/owner/components/dashboard-ui";
 
 const SETTINGS = [
   {
@@ -28,8 +27,7 @@ const SETTINGS = [
 export default function OwnerSettingsPage() {
   return (
     <div className="flex flex-col gap-6">
-      <OwnerPageHeader eyebrow="Preferencias" title="Configuración" />
-      <p className="-mt-4 text-sm text-muted">Controla las notificaciones de tu cuenta.</p>
+      <PageBanner eyebrow="Preferencias" title="Configuración" description="Controla las notificaciones de tu cuenta." />
 
       <DashboardPanel title="Notificaciones">
         <div className="mt-4 flex w-full flex-col gap-3 text-left">
