@@ -73,7 +73,7 @@ export function PropertyFiltersBar({ value, basePath }: { value: PropertyFilters
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-card border border-edge bg-surface p-4 shadow-[var(--shadow-card)]"
+      className="relative z-10 isolate rounded-card border border-edge bg-surface p-4 shadow-[var(--shadow-card)]"
     >
       <div className="grid gap-3 md:grid-cols-[1.4fr_1fr_1fr_1fr_auto]">
         <input
@@ -203,15 +203,17 @@ export function SortSelect({
   }
 
   return (
-    <Listbox
-      name="sort"
-      value={value ?? "recent"}
-      options={SORT_OPTIONS}
-      onValueChange={handleChange}
-      label="Ordenar resultados"
-      className="w-48"
-      triggerClassName="h-10 rounded-card border border-edge bg-surface px-3 text-sm font-bold text-brand focus-visible:border-brand"
-      listClassName="min-w-full"
-    />
+    <div className="relative z-10 isolate w-48">
+      <Listbox
+        name="sort"
+        value={value ?? "recent"}
+        options={SORT_OPTIONS}
+        onValueChange={handleChange}
+        label="Ordenar resultados"
+        className="w-full"
+        triggerClassName="h-10 rounded-card border border-edge bg-surface px-3 text-sm font-bold text-brand focus-visible:border-brand"
+        listClassName="min-w-full"
+      />
+    </div>
   );
 }

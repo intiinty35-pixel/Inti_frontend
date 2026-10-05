@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { CalendarDays } from "lucide-react";
 import { Container } from "@/shared/ui";
 import {
   AreaIcon,
@@ -25,6 +26,7 @@ import { LazyPropertyLocationMap } from "@/features/listings/components/property
 import { LeadForm } from "@/features/leads";
 import { QuickQuestions } from "@/features/listings/components/Quickquestions";
 import { FavoriteButton } from "@/features/favorites";
+import { SharePropertyButton } from "@/features/listings/components/share-property-button";
 
 interface PropertyPageProps {
   params: Promise<{ slug: string }>;
@@ -62,26 +64,6 @@ const AGENT_TYPE_LABEL: Record<string, string> = {
   DEVELOPER: "Desarrollador",
   ARCHITECT: "Arquitecto",
 };
-
-/* Icono de calendario en linea fina (para la antiguedad). Vive aqui para no
-   depender de que exista en @/shared/ui/icons. */
-function CalendarLineIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.5}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      aria-hidden
-    >
-      <rect x="3.5" y="5" width="17" height="15.5" rx="3" />
-      <path d="M8 3v4M16 3v4M3.5 10.5h17" />
-    </svg>
-  );
-}
 
 export async function generateMetadata({ params }: PropertyPageProps): Promise<Metadata> {
   const { slug } = await params;
@@ -155,14 +137,14 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
   const age = Number.isFinite(constructionYear) && constructionYear > 1800
     ? Math.max(0, new Date().getFullYear() - constructionYear)
     : null;
-  const stripItems: Array<{ key: string; text: string; icon: typeof AreaIcon | typeof CalendarLineIcon }> = [
+  const stripItems: Array<{ key: string; text: string; icon: typeof AreaIcon | typeof CalendarDays }> = [
     ...detailItems.map((item) => ({
       key: `${item.value}-${item.label}`,
       text: `${item.value} ${item.short}`,
       icon: item.icon,
     })),
     ...(age !== null
-      ? [{ key: "age", text: age === 0 ? "A estrenar" : `${age} ${age === 1 ? "año" : "años"}`, icon: CalendarLineIcon }]
+      ? [{ key: "age", text: age === 0 ? "A estrenar" : `${age} ${age === 1 ? "año" : "años"}`, icon: CalendarDays }]
       : []),
   ];
 
@@ -204,18 +186,21 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             className="h-[300px] sm:h-[440px] lg:h-[520px] 2xl:h-[600px]"
           />
 
-          <header className="mt-5 lg:mt-6">
-            <h1 className="title-listing">{property.title}</h1>
-            <p className="mt-2 flex items-center gap-2 text-sm font-semibold text-muted lg:text-base">
-              <PinIcon className="size-4 shrink-0 text-brand lg:size-5" />
-              <span className="line-clamp-2">{locationLine}</span>
-            </p>
-            {published ? (
-              <time dateTime={published.iso} className="mt-2 flex items-center gap-2 text-sm font-semibold text-muted">
-                <ClockIcon className="size-4 shrink-0 text-brand" />
-                {published.fullWithPrefix}
-              </time>
-            ) : null}
+          <header className="mt-5 flex items-start justify-between gap-3 lg:mt-6">
+            <div className="min-w-0 flex-1">
+              <h1 className="title-listing">{property.title}</h1>
+              <p className="mt-2 flex items-center gap-2 text-sm font-semibold text-muted lg:text-base">
+                <PinIcon className="size-4 shrink-0 text-brand lg:size-5" />
+                <span className="line-clamp-2">{locationLine}</span>
+              </p>
+              {published ? (
+                <time dateTime={published.iso} className="mt-2 flex items-center gap-2 text-sm font-semibold text-muted">
+                  <ClockIcon className="size-4 shrink-0 text-brand" />
+                  {published.fullWithPrefix}
+                </time>
+              ) : null}
+            </div>
+            <SharePropertyButton title={property.title} />
           </header>
 
           {/* Precio + datos clave */}

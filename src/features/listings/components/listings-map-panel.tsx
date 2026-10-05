@@ -147,7 +147,7 @@ export function ListingsMapPanel({
       </div>
 
       {/* Franja de filtros horizontal: replica los accesos del menu del home. */}
-      <div className="flex flex-nowrap items-center gap-2 overflow-x-auto rounded-card border border-edge bg-surface p-2.5 shadow-[var(--shadow-card)] sm:flex-wrap sm:overflow-visible">
+      <div className="relative z-20 flex flex-nowrap items-center gap-2 overflow-x-auto overflow-y-visible rounded-card border border-edge bg-surface p-2.5 shadow-[var(--shadow-card)] sm:flex-wrap sm:overflow-visible">
         <Listbox
           name="mapOperation"
           value={filters.operation}

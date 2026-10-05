@@ -159,7 +159,7 @@ export function Listbox({
   }
 
   return (
-    <div ref={rootRef} className={cn("relative", className)}>
+    <div ref={rootRef} className={cn("relative z-[100] overflow-visible", className)}>
       <input type="hidden" name={name} value={value} />
 
       <button

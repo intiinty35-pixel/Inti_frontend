@@ -77,18 +77,18 @@ export function ListingCard({
         <ListingSpecs listing={listing} className="mt-2" />
         <div className={`mt-auto flex flex-wrap gap-2 pt-4 ${isLandListing ? "items-center justify-between" : "justify-end"}`}>
           {isLandListing ? price : null}
-          <div className="flex flex-wrap justify-end gap-2">
+          <div className="grid w-full grid-cols-2 gap-2 md:flex md:w-auto md:flex-wrap md:justify-end">
             <Link
               href={ROUTES.property(listing.slug)}
-              className="flex h-10 items-center justify-center rounded bg-accent px-4 text-sm font-bold text-on-accent transition-colors hover:bg-accent-hover"
+              className="flex h-11 min-w-0 items-center justify-center rounded bg-accent px-2 text-center text-[11px] leading-tight font-bold text-on-accent transition-colors hover:bg-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand sm:px-4 sm:text-sm md:h-10"
             >
               Ver propiedad
             </Link>
             <Link
               href={`${ROUTES.property(listing.slug)}#contacto`}
-              className="flex h-10 items-center justify-center gap-2 rounded-card bg-[#25d366] px-4 text-sm font-bold text-white transition-colors hover:bg-[#1fb857]"
+              className="flex h-11 min-w-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-card bg-[#25d366] px-2 text-[11px] leading-tight font-bold text-white transition-colors hover:bg-[#1fb857] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#168a43] sm:gap-2 sm:px-4 sm:text-sm md:h-10"
             >
-              <WhatsappIcon className="size-4" />
+              <WhatsappIcon className="size-4 shrink-0" />
               Contactar
             </Link>
           </div>

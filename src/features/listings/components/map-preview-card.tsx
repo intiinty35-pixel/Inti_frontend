@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
+import { Maximize } from "lucide-react";
 import { PinIcon } from "@/shared/ui/icons";
 import { cn } from "@/shared/lib/cn";
 import type { MapPoint } from "@/features/listings/components/listings-map";
@@ -39,26 +40,6 @@ function PreviewSkeleton() {
         <PinIcon className="size-8 text-brand/20" />
       </div>
     </div>
-  );
-}
-
-/** Icono de expandir (pantalla completa), en linea con el resto de los iconos. */
-function ExpandIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      width="1em"
-      height="1em"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.8}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-      className={className}
-    >
-      <path d="M9 4H4v5M15 4h5v5M15 20h5v-5M9 20H4v-5" />
-    </svg>
   );
 }
 
@@ -175,7 +156,7 @@ export function MapPreviewCard({
               : "bg-brand text-on-brand group-hover:bg-brand-hover",
           )}
         >
-          <ExpandIcon className="size-4" />
+          <Maximize className="size-4" aria-hidden />
           Abrir mapa
         </span>
       </span>

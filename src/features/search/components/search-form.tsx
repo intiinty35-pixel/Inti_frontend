@@ -89,7 +89,7 @@ export function SearchForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full rounded-md bg-surface text-left shadow-[0_10px_24px_rgb(11_27_92_/_0.16)]"
+      className="relative z-50 w-full overflow-visible rounded-md bg-surface text-left shadow-[0_10px_24px_rgb(11_27_92_/_0.16)]"
     >
       <div
         role="tablist"

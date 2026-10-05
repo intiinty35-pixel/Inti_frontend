@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { LogoutButton } from "@/features/auth/components/logout-button";
 import { Button, ChevronDownIcon } from "@/shared/ui";
+import { MenuIcon } from "@/shared/ui/icons";
 import { cn } from "@/shared/lib/cn";
 import { ROUTES } from "@/shared/config/routes";
 import { AdminNav } from "@/app/(panel)/panel/admin/admin-nav";
@@ -119,11 +120,12 @@ export function AdminShell({ name, roleLabel, children }: AdminShellProps) {
           <div className="flex min-w-0 items-center gap-3">
             <button
               type="button"
-              aria-label="Abrir menu"
+              aria-label="Abrir menú lateral"
+              title="Abrir menú lateral"
               onClick={() => setMobileOpen(true)}
-              className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-edge text-brand lg:hidden"
+              className="flex size-10 shrink-0 items-center justify-center text-brand lg:hidden"
             >
-              AR
+              <MenuIcon className="size-5" />
             </button>
             <div className="min-w-0">
               <p className="text-[11px] font-bold tracking-[0.18em] text-accent uppercase">Panel administrador</p>

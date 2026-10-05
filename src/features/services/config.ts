@@ -17,63 +17,32 @@ import {
 import { ARIZ_WHATSAPP_DIGITS as SHARED_ARIZ_WHATSAPP_DIGITS } from "@/shared/lib/whatsapp";
 
 export type ServiceIcon = ComponentType<SVGProps<SVGSVGElement>>;
-
-/**
- * Numero de WhatsApp de ARIZ Proyectos en formato internacional sin "+", tal
- * como lo exige la API de wa.me. Es el unico punto que hay que cambiar cuando
- * cambie la linea de atencion.
- */
 export const ARIZ_WHATSAPP_DIGITS = SHARED_ARIZ_WHATSAPP_DIGITS;
 
-/**
- * Arma el enlace de WhatsApp con el mensaje ya redactado para un servicio.
- * El texto va codificado para que los acentos y espacios no rompan la URL.
- */
 export function buildServiceWhatsappUrl(serviceName: string): string {
   const message = `Hola ARIZ Proyectos, quiero cotizar el servicio de ${serviceName} para mi proyecto inmobiliario`;
   return `https://wa.me/${ARIZ_WHATSAPP_DIGITS}?text=${encodeURIComponent(message)}`;
 }
 
-/** Ancla de la seccion de contacto donde apunta el boton "Cotiza". */
 export const SERVICES_CONTACT_HREF = "#contacto";
 
-/**
- * Foto de fondo de la cinta del hero (`/servicios`). Vive en `public/` para no
- * depender de Cloudinary: los assets antiguos devolvian 404 y dejaban la cinta
- * sin imagen.
- */
 export const SERVICES_HERO_IMAGE = "/servicios/servicios.png?v=2";
 
-/**
- * Degradado azul marino de respaldo. Se pinta detras de cada foto: si la imagen
- * falla o aun no cargo, el hueco nunca queda vacio y la marca se mantiene.
- */
 export const SERVICE_IMAGE_FALLBACK =
   "linear-gradient(135deg, #0B1B5C 0%, #00124f 100%)";
 
 
 export interface ServiceItem {
-  /** Identificador estable: se usa como `id` de bloque y como `key`. */
   key: string;
-  /** Nombre corto del servicio (PROSPECCIÓN, LEGAL, CONTABLE). */
   name: string;
-  /** Titulo comercial que se muestra en el bloque. */
   title: string;
-  /** Descripcion de 2-3 lineas, en tono profesional y cercano. */
   description: string;
-  /** Cuatro viñetas de alcance, con check amarillo en la UI. */
   bullets: readonly string[];
   icon: ServiceIcon;
-  /** Foto del servicio servida desde `public/` (bordes redondeados y overlay azul). */
   image: string;
-  /** Texto alternativo descriptivo para accesibilidad. */
   imageAlt: string;
 }
 
-/**
- * Los 3 servicios base de ARIZ. El orden define la alternancia izquierda/derecha
- * de la foto en el layout de escritorio.
- */
 export const SERVICES: readonly ServiceItem[] = [
   {
     key: "prospeccion",

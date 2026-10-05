@@ -79,7 +79,7 @@ export async function AccountCtaSection() {
     .catch(() => []);
 
   return (
-    <section className="relative -mt-1 overflow-hidden bg-brand-soft pt-8 pb-12 sm:pt-10 sm:pb-16">
+    <section className="relative isolate z-0 -mt-1 overflow-hidden bg-brand-soft pt-8 pb-12 sm:pt-10 sm:pb-16">
       <Container size="wide-tight" className="relative grid items-center gap-10 lg:grid-cols-[1fr_420px] lg:gap-14 xl:gap-20">
         <div>
           <p className="text-[11px] font-black tracking-[0.18em] text-accent uppercase">

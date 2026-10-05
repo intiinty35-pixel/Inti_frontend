@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 import { AlertIcon, XIcon } from "@/shared/ui/icons";
@@ -28,11 +29,17 @@ export function LogoutButton() {
     <>
       <button
         type="button"
-        className="flex h-8 w-full items-center justify-start rounded-sm px-3 text-sm font-medium text-error transition-colors hover:bg-error/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-error disabled:pointer-events-none disabled:opacity-50 cursor-pointer"
+        className="inline-flex h-8 w-full items-center justify-start gap-2 rounded-sm px-3 text-sm font-medium text-error transition-colors hover:bg-error/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-error disabled:pointer-events-none disabled:opacity-50 cursor-pointer"
         onClick={() => setConfirmOpen(true)}
         disabled={loading}
       >
-        Cerrar sesión
+        <LogOut
+          size={18}
+          strokeWidth={2.5}
+          className="!h-[18px] !w-[18px] shrink-0 text-error"
+          aria-hidden="true"
+        />
+        <span>Cerrar sesión</span>
       </button>
       {confirmOpen && portalTarget
         ? createPortal(

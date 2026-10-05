@@ -34,7 +34,7 @@ export function AccountProjectMapPreview({
     <Link
       href={href}
       aria-label="Ver proyectos en el mapa"
-      className="group relative mx-auto block h-[500px] w-full max-w-[360px] overflow-hidden rounded-[8px] border border-white/70 bg-[#DDE8F7] shadow-[0_24px_60px_rgb(7_26_90_/_0.18)] transition-transform hover:-translate-y-1"
+      className="group relative mx-auto block h-[380px] w-full max-w-[360px] overflow-hidden rounded-[8px] border border-white/70 bg-[#DDE8F7] shadow-[0_24px_60px_rgb(7_26_90_/_0.18)] transition-transform hover:-translate-y-1 sm:h-[420px] lg:h-[480px]"
     >
       {points.length > 0 ? (
         <ProjectMap points={points} className="h-full w-full" />

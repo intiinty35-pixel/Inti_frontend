@@ -22,6 +22,7 @@ import { ProjectTourVideo } from "@/features/listings/components/project-tour-vi
 import { ExpandableText } from "@/features/listings/components/expandable-text";
 import { LazyPropertyLocationMap } from "@/features/listings/components/property-location-map-client";
 import { QuickQuestions } from "@/features/listings/components/Quickquestions";
+import { SharePropertyButton } from "@/features/listings/components/share-property-button";
 import { getProjectBySlugServer } from "@/features/projects/api/server";
 import type { ProjectApiDetail } from "@/features/projects/types/api";
 import { LeadForm } from "@/features/leads";
@@ -222,18 +223,21 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             ) : null}
           </PropertyPhotoGallery>
 
-          <header className="mt-5 lg:mt-6">
-            <h1 className="title-listing">{project.name}</h1>
-            <p className="mt-2 flex items-center gap-2 text-sm font-semibold text-muted lg:text-base">
-              <PinIcon className="size-4 shrink-0 text-brand lg:size-5" />
-              <span className="line-clamp-2">{locationLine}</span>
-            </p>
-            {published ? (
-              <time dateTime={published.iso} className="mt-2 flex items-center gap-2 text-sm font-semibold text-muted">
-                <ClockIcon className="size-4 shrink-0 text-brand" />
-                {published.fullWithPrefix}
-              </time>
-            ) : null}
+          <header className="mt-5 flex items-start justify-between gap-3 lg:mt-6">
+            <div className="min-w-0 flex-1">
+              <h1 className="title-listing">{project.name}</h1>
+              <p className="mt-2 flex items-center gap-2 text-sm font-semibold text-muted lg:text-base">
+                <PinIcon className="size-4 shrink-0 text-brand lg:size-5" />
+                <span className="line-clamp-2">{locationLine}</span>
+              </p>
+              {published ? (
+                <time dateTime={published.iso} className="mt-2 flex items-center gap-2 text-sm font-semibold text-muted">
+                  <ClockIcon className="size-4 shrink-0 text-brand" />
+                  {published.fullWithPrefix}
+                </time>
+              ) : null}
+            </div>
+            <SharePropertyButton title={project.name} />
           </header>
 
           <section className="mt-6 grid gap-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center lg:mt-8">

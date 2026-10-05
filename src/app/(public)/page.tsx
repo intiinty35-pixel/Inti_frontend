@@ -37,10 +37,11 @@ export const metadata = buildMetadata({
 const HERO_OVERLAY =
   "linear-gradient(90deg, rgb(4 15 52 / 0.86) 0%, rgb(4 15 52 / 0.66) 32%, rgb(4 15 52 / 0.22) 52%, rgb(4 15 52 / 0.04) 68%, rgb(4 15 52 / 0) 82%), linear-gradient(180deg, rgb(0 0 0 / 0.12) 0%, rgb(0 0 0 / 0.01) 54%, rgb(0 0 0 / 0.14) 100%)";
 
+const HERO_OVERLAY_MOBILE =
+  "linear-gradient(180deg, rgb(4 15 52 / 0.45) 0%, rgb(4 15 52 / 0.3) 50%, rgb(4 15 52 / 0.5) 100%)";
+
 const HERO_SHELL = "mx-auto w-full max-w-[1180px]";
 
-// El texto del hero arranca pegado al borde izquierdo (sin mx-auto) para que no
-// quede centrado en pantallas anchas; mantiene el max-w para no perder legibilidad.
 const HERO_TEXT = "w-full max-w-[1180px]";
 
 function SearchFormFallback() {
@@ -53,16 +54,21 @@ export default async function PublicHomePage() {
 
   return (
     <>
-      <section className="relative isolate -mt-[var(--header-h)] min-h-[540px] overflow-visible pr-4 pt-[calc(var(--header-h)+5rem)] pb-0 pl-6 text-left text-white sm:pr-6 sm:pl-7 sm:pt-[calc(var(--header-h)+6rem)] lg:pr-6 lg:pb-32 lg:pl-8 lg:pt-[calc(var(--header-h)+6rem)] xl:pr-8 xl:pl-9">
+      <section className="relative isolate z-30 -mt-[var(--header-h)] min-h-[440px] overflow-visible pr-4 pt-[calc(var(--header-h)+3rem)] pb-[160px] pl-6 text-left text-white sm:min-h-[520px] sm:pr-6 sm:pl-7 sm:pt-[calc(var(--header-h)+4.5rem)] lg:min-h-[540px] lg:pb-32 lg:pr-6 lg:pl-8 lg:pt-[calc(var(--header-h)+6rem)] xl:pr-8 xl:pl-9">
         <HomeHeroBackground />
         <span
           aria-hidden
-          className="pointer-events-none absolute inset-0 -z-10"
+          className="pointer-events-none absolute inset-0 -z-10 lg:hidden"
+          style={{ backgroundImage: HERO_OVERLAY_MOBILE }}
+        />
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-0 -z-10 hidden lg:block"
           style={{ backgroundImage: HERO_OVERLAY }}
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute right-0 bottom-6 z-0 hidden w-[48vw] max-w-[760px] min-w-[520px] lg:block xl:right-8"
+          className="pointer-events-none absolute right-0 bottom-6 z-5 hidden w-[48vw] max-w-[760px] min-w-[520px] lg:block xl:right-8"
         >
           <Image
             src="/logo/image.png"
@@ -76,13 +82,13 @@ export default async function PublicHomePage() {
         <span aria-hidden className="absolute inset-x-0 bottom-0 h-1 bg-accent" />
 
         <div className={`${HERO_TEXT} relative z-10 flex flex-col items-start`}>
-          <p className="text-[11px] font-black tracking-[0.12em] text-white/90 uppercase">
+          <p className="text-[10px] font-black tracking-[0.12em] text-white/90 uppercase">
             Tumbes, un gran lugar para tu historia
           </p>
-          <h1 className="mt-3 max-w-2xl text-4xl leading-[1.02] font-black tracking-tight sm:text-5xl lg:text-6xl">
+          <h1 className="mt-2 max-w-2xl text-3xl leading-[1.05] font-black tracking-tight sm:text-4xl lg:text-6xl">
             Encuentra propiedades para vivir, invertir y crecer
           </h1>
-          <p className="mt-3 max-w-xl text-sm font-semibold text-white/90 sm:text-base">
+          <p className="mt-2 max-w-xl text-xs font-semibold text-white/90 sm:text-sm lg:text-base">
             Compra, vende, alquila e invierte con el respaldo de una empresa solida y confiable.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
@@ -102,7 +108,7 @@ export default async function PublicHomePage() {
           </div>
         </div>
 
-        <div className="relative z-10 mt-8 w-full lg:absolute lg:inset-x-6 lg:bottom-0 lg:mt-0 lg:translate-y-1/2 xl:inset-x-8">
+        <div className="absolute inset-x-0 bottom-0 z-10 translate-y-1/2 px-4 sm:px-6 lg:inset-x-6 lg:px-0 xl:inset-x-8">
           <div className={HERO_SHELL}>
             <Suspense fallback={<SearchFormFallback />}>
               <SearchForm />
@@ -112,9 +118,9 @@ export default async function PublicHomePage() {
       </section>
 
       <CategoryShowcase />
+      <ArizProjectsSection />
       <PublishedProjectsSection />
       <FeaturedListingsSection />
-      <ArizProjectsSection />
       <WhyChooseArizSection />
       <InvestmentEntrySection />
       <TestimonialsSection />

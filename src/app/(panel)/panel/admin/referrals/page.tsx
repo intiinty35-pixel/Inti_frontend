@@ -17,16 +17,16 @@ export default async function AdminReferralsPage({ searchParams }: { searchParam
         description={`${data.total} referentes registrados · Los puntos se calculan automáticamente según los estados alcanzados.`}
       />
 
-      <Card>
-        <CardContent className="flex flex-wrap gap-3">
-          {data.statusPoints.map((point) => (
-            <div key={point.status} className="rounded-xl bg-brand-soft px-4 py-3">
-              <p className="text-xs font-bold uppercase tracking-wide text-muted">{point.label}</p>
-              <p className="mt-1 text-lg font-black text-brand">+{point.points} puntos</p>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
+      <div className="horizontal-scrollbar-hidden flex flex-nowrap gap-3 overflow-x-auto sm:flex-wrap sm:overflow-visible">
+        {data.statusPoints.map((point) => (
+          <div key={point.status} className="shrink-0 rounded-xl bg-brand-soft px-3 py-2.5 sm:px-4 sm:py-3">
+            <p className="text-[10px] font-bold uppercase tracking-wide text-muted sm:text-xs">
+              {point.label}
+            </p>
+            <p className="mt-1 text-sm font-black text-brand sm:text-lg">+{point.points} puntos</p>
+          </div>
+        ))}
+      </div>
 
       {data.items.length === 0 ? (
         <Card><CardContent className="py-10 text-center text-sm text-muted">Aún no hay referentes registrados.</CardContent></Card>

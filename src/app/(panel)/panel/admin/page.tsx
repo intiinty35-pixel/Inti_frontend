@@ -65,20 +65,22 @@ export default async function PanelAdminPage({ searchParams }: PanelAdminPagePro
         </Card>
       ) : (
         <>
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="grid min-w-0 gap-4 lg:grid-cols-2">
             {professionals.map((item) => {
               const name = (item.businessName ?? `${item.user.firstName} ${item.user.lastName ?? ""}`).trim();
               const initial = name.charAt(0).toUpperCase() || "A";
 
               return (
-                <Card key={item.id} className="p-5">
-                  <div className="flex items-start gap-4">
+                <Card key={item.id} className="min-w-0 p-3 sm:p-5">
+                  <div className="flex min-w-0 items-start gap-3 sm:gap-4">
                     <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-brand text-lg font-black text-on-brand">
                       {initial}
                     </span>
                     <div className="flex min-w-0 flex-1 flex-col gap-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <p className="text-base font-bold text-ink">{name}</p>
+                        <p className="min-w-0 break-words text-base font-bold text-ink [overflow-wrap:anywhere]">
+                          {name}
+                        </p>
                         <span
                           className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${STATUS_STYLES[item.status]}`}
                         >
@@ -94,7 +96,7 @@ export default async function PanelAdminPage({ searchParams }: PanelAdminPagePro
                         {TYPE_LABELS[item.type]} · {item.ruc ? `RUC ${item.ruc}` : `DNI ${item.dni ?? "—"}`} ·{" "}
                         {item.city}
                       </p>
-                      <p className="text-sm text-muted">
+                      <p className="break-words text-sm text-muted [overflow-wrap:anywhere]">
                         {item.user.email} · WhatsApp {item.whatsapp ?? "—"}
                       </p>
                       <div className="mt-3 flex flex-wrap gap-2">
