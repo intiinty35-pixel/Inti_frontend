@@ -159,7 +159,17 @@ export function Listbox({
   }
 
   return (
-    <div ref={rootRef} className={cn("relative z-[100] overflow-visible", className)}>
+    <div
+      ref={rootRef}
+      className={cn(
+        // Al abrir, la raíz sube a z-[120] para que su listado quede por encima de
+        // los listbox hermanos (cada raíz es z-[100]); sin esto, el popup de un
+        // campo queda tapado por el resto de los selects del formulario.
+        "relative overflow-visible",
+        open ? "z-[120]" : "z-[100]",
+        className,
+      )}
+    >
       <input type="hidden" name={name} value={value} />
 
       <button
@@ -197,9 +207,9 @@ export function Listbox({
           role="listbox"
           aria-labelledby={labelledBy ?? triggerId}
           className={cn(
-            // z-70: el panel del mapa vive dentro de un modal (z-60) y la lista de
+            // z-[70]: el panel del mapa vive dentro de un modal (z-60) y la lista de
             // opciones tiene que quedar por encima del mapa y de su propia cabecera.
-            "absolute top-full left-0 z-70 mt-2 max-h-64 w-full overflow-y-auto rounded-card border border-edge bg-surface p-1 shadow-[var(--shadow-pop)]",
+            "absolute top-full left-0 z-[70] mt-2 max-h-64 w-full overflow-y-auto rounded-card border border-edge bg-surface p-1 shadow-[var(--shadow-pop)]",
             listClassName ?? "min-w-56",
           )}
         >

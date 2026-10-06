@@ -116,7 +116,7 @@ export function CategoryShowcase() {
     <section className="overflow-hidden bg-[#F3F4F8] pt-[180px] pb-7 sm:pt-[190px] lg:pt-32">
       <div className="mx-auto w-full px-3 sm:px-4 lg:px-5 xl:px-6">
         <div className="flex items-center justify-between gap-4">
-          <h2 className="text-lg leading-none font-black tracking-tight text-[#071A5A] sm:text-xl">
+          <h2 className="text-[21.6px] leading-none font-black tracking-tight text-[#071A5A] sm:text-[24px]">
             ¿Qué quieres hacer hoy?
           </h2>
           <div className="flex items-center gap-2">

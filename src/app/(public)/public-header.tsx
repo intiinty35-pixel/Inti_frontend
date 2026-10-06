@@ -251,7 +251,15 @@ export function PublicHeader({
           </Link>
         ) : (
           <div className="hidden grid-cols-2 gap-2 lg:grid">
-            <Link href={ROUTES.login} className={cn(accountClass(false), "gap-2")}>
+            <Link
+              href={ROUTES.login}
+              className={cn(
+                "flex h-10 items-center justify-center gap-2 rounded-card border px-4 text-sm font-black whitespace-nowrap transition-colors",
+                solid
+                  ? "border-[#25d366] bg-[#25d366]/10 text-[#168a43] hover:border-[#1fb857] hover:bg-[#25d366]/20"
+                  : "border-[#25d366] bg-[#25d366] text-white shadow-[0_8px_20px_-8px_rgb(37_211_102_/_0.7)] hover:bg-[#1fb857]",
+              )}
+            >
               <span>Iniciar sesión</span>
               <LogIn className="size-4 shrink-0 translate-y-0.5" aria-hidden="true" />
             </Link>
@@ -424,7 +432,7 @@ export function PublicHeader({
                 <Link
                   href={ROUTES.login}
                   onClick={() => setMenuOpen(false)}
-                  className="flex h-11 items-center justify-center gap-2 rounded-card border border-brand bg-brand/10 px-4 text-sm font-bold text-brand"
+                  className="flex h-11 items-center justify-center gap-2 rounded-card border border-[#25d366] bg-[#25d366] px-4 text-sm font-bold text-white transition-colors hover:bg-[#1fb857]"
                 >
                   <span>Iniciar sesión</span>
                   <LogIn className="size-4 shrink-0 translate-y-0.5" aria-hidden="true" />

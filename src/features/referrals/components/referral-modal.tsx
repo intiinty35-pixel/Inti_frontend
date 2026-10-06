@@ -5,17 +5,12 @@ import { KeyRound, UserRoundPlus } from 'lucide-react';
 import { createPortal } from 'react-dom';
 import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
+import { Listbox } from '@/shared/ui/listbox';
 import { submitPublicReferral, validateReferrerCode } from '@/features/referrals/api/client';
-
-interface ProjectOption {
-  id: string;
-  name: string;
-}
 
 interface ReferralModalProps {
   open: boolean;
   onClose: () => void;
-  projects: ProjectOption[];
 }
 
 interface FormErrors {
@@ -26,12 +21,33 @@ interface FormErrors {
   name?: string;
   email?: string;
   phone?: string;
-  projectId?: string;
+  interest?: string;
+  availability?: string;
 }
 
 type ModalView = 'initial' | 'existing-code' | 'existing-form' | 'new-step1' | 'new-step2';
 
-export function ReferralModal({ open, onClose, projects }: ReferralModalProps) {
+const INTEREST_OPTIONS = [
+  { value: '', label: 'Selecciona una opción' },
+  { value: 'VENTA', label: 'Venta' },
+  { value: 'COMPRA', label: 'Compra' },
+  { value: 'ALQUILER', label: 'Alquilar' },
+  { value: 'COMPRA_LOTE', label: 'Comprar un lote' },
+  { value: 'INVERSION', label: 'Invertir en un proyecto' },
+  { value: 'CORRETAJE', label: 'Servicio de corretaje' },
+] as const;
+
+const AVAILABILITY_OPTIONS = [
+  { value: '', label: 'Selecciona una opción' },
+  { value: 'INMEDIATA', label: 'Inmediata' },
+  { value: 'AVERIGUAR', label: 'Averiguar' },
+  { value: 'POR_CONFIRMAR', label: 'Por confirmar' },
+] as const;
+
+const SELECT_TRIGGER =
+  'h-11 rounded-card border border-edge bg-surface px-3 text-sm text-ink font-medium hover:border-brand/50';
+
+export function ReferralModal({ open, onClose }: ReferralModalProps) {
   const [view, setView] = useState<ModalView>('initial');
   const [submitting, setSubmitting] = useState(false);
   const [validating, setValidating] = useState(false);
@@ -47,7 +63,8 @@ export function ReferralModal({ open, onClose, projects }: ReferralModalProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [projectId, setProjectId] = useState('');
+  const [interest, setInterest] = useState('');
+  const [availability, setAvailability] = useState('');
 
   useEffect(() => {
     if (open) {
@@ -109,7 +126,8 @@ export function ReferralModal({ open, onClose, projects }: ReferralModalProps) {
     if (!email.trim()) next.email = 'Ingresa el correo del referido.';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) next.email = 'Ingresa un correo válido.';
     if (!phone.trim()) next.phone = 'Ingresa el teléfono del referido.';
-    if (!projectId) next.projectId = 'Selecciona un proyecto.';
+    if (!interest) next.interest = 'Selecciona una opción.';
+    if (!availability) next.availability = 'Selecciona la disponibilidad.';
     return next;
   }
 
@@ -119,7 +137,8 @@ export function ReferralModal({ open, onClose, projects }: ReferralModalProps) {
     if (!email.trim()) next.email = 'Ingresa el correo del referido.';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) next.email = 'Ingresa un correo válido.';
     if (!phone.trim()) next.phone = 'Ingresa el teléfono del referido.';
-    if (!projectId) next.projectId = 'Selecciona un proyecto.';
+    if (!interest) next.interest = 'Selecciona una opción.';
+    if (!availability) next.availability = 'Selecciona la disponibilidad.';
     return next;
   }
 
@@ -160,7 +179,8 @@ export function ReferralModal({ open, onClose, projects }: ReferralModalProps) {
             name: name.trim(),
             email: email.trim(),
             phone: phone.trim(),
-            projectId,
+            interest,
+            availability,
           }
         : {
             referrerName: referrerName.trim(),
@@ -170,7 +190,8 @@ export function ReferralModal({ open, onClose, projects }: ReferralModalProps) {
             name: name.trim(),
             email: email.trim(),
             phone: phone.trim(),
-            projectId,
+            interest,
+            availability,
           };
 
       await submitPublicReferral(payload);
@@ -196,7 +217,8 @@ export function ReferralModal({ open, onClose, projects }: ReferralModalProps) {
     setName('');
     setEmail('');
     setPhone('');
-    setProjectId('');
+    setInterest('');
+    setAvailability('');
     onClose();
   }
 
@@ -378,25 +400,37 @@ export function ReferralModal({ open, onClose, projects }: ReferralModalProps) {
                   required
                 />
                 <div className="flex flex-col gap-1.5">
-                  <label htmlFor="project-select" className="text-[13px] font-semibold text-brand">
-                    Proyecto inmobiliario
-                  </label>
-                  <select
-                    id="project-select"
-                    value={projectId}
-                    onChange={(e) => setProjectId(e.target.value)}
-                    className="h-11 rounded-card border border-edge bg-surface px-3 text-sm text-ink focus:border-brand focus:outline-2 focus:outline-brand/25"
-                    required
-                  >
-                    <option value="">Selecciona un proyecto</option>
-                    {projects.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.name}
-                      </option>
-                    ))}
-                  </select>
-                  {errors.projectId && (
-                    <p className="text-xs font-medium text-error">{errors.projectId}</p>
+                  <span id="interest-label-existing" className="text-[13px] font-semibold text-brand">
+                    ¿Qué desea hacer?
+                  </span>
+                  <Listbox
+                    name="interest"
+                    value={interest}
+                    options={INTEREST_OPTIONS}
+                    onValueChange={setInterest}
+                    labelledBy="interest-label-existing"
+                    triggerClassName={SELECT_TRIGGER}
+                    listClassName="min-w-full"
+                  />
+                  {errors.interest && (
+                    <p className="text-xs font-medium text-error">{errors.interest}</p>
+                  )}
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <span id="availability-label-existing" className="text-[13px] font-semibold text-brand">
+                    Disponibilidad
+                  </span>
+                  <Listbox
+                    name="availability"
+                    value={availability}
+                    options={AVAILABILITY_OPTIONS}
+                    onValueChange={setAvailability}
+                    labelledBy="availability-label-existing"
+                    triggerClassName={SELECT_TRIGGER}
+                    listClassName="min-w-full"
+                  />
+                  {errors.availability && (
+                    <p className="text-xs font-medium text-error">{errors.availability}</p>
                   )}
                 </div>
 
@@ -493,25 +527,37 @@ export function ReferralModal({ open, onClose, projects }: ReferralModalProps) {
                   required
                 />
                 <div className="flex flex-col gap-1.5">
-                  <label htmlFor="project-select" className="text-[13px] font-semibold text-brand">
-                    Proyecto inmobiliario
-                  </label>
-                  <select
-                    id="project-select"
-                    value={projectId}
-                    onChange={(e) => setProjectId(e.target.value)}
-                    className="h-11 rounded-card border border-edge bg-surface px-3 text-sm text-ink focus:border-brand focus:outline-2 focus:outline-brand/25"
-                    required
-                  >
-                    <option value="">Selecciona un proyecto</option>
-                    {projects.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.name}
-                      </option>
-                    ))}
-                  </select>
-                  {errors.projectId && (
-                    <p className="text-xs font-medium text-error">{errors.projectId}</p>
+                  <span id="interest-label-new" className="text-[13px] font-semibold text-brand">
+                    ¿Qué desea hacer?
+                  </span>
+                  <Listbox
+                    name="interest"
+                    value={interest}
+                    options={INTEREST_OPTIONS}
+                    onValueChange={setInterest}
+                    labelledBy="interest-label-new"
+                    triggerClassName={SELECT_TRIGGER}
+                    listClassName="min-w-full"
+                  />
+                  {errors.interest && (
+                    <p className="text-xs font-medium text-error">{errors.interest}</p>
+                  )}
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <span id="availability-label-new" className="text-[13px] font-semibold text-brand">
+                    Disponibilidad
+                  </span>
+                  <Listbox
+                    name="availability"
+                    value={availability}
+                    options={AVAILABILITY_OPTIONS}
+                    onValueChange={setAvailability}
+                    labelledBy="availability-label-new"
+                    triggerClassName={SELECT_TRIGGER}
+                    listClassName="min-w-full"
+                  />
+                  {errors.availability && (
+                    <p className="text-xs font-medium text-error">{errors.availability}</p>
                   )}
                 </div>
 

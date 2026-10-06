@@ -8,7 +8,8 @@ export interface PublicReferralInput {
   name: string;
   email: string;
   phone: string;
-  projectId: string;
+  interest: string;
+  availability?: string;
 }
 
 export interface PublicReferralResponse {

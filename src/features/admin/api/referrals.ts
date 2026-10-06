@@ -17,10 +17,12 @@ export interface AdminReferral {
   phone: string;
   code: string;
   status: ReferralStatus;
+  interest: string;
+  availability: string;
   points: number;
   createdAt: string;
   updatedAt: string;
-  project: { id: string; name: string };
+  project: { id: string; name: string } | null;
   history: ReferralHistoryEntry[];
 }
 

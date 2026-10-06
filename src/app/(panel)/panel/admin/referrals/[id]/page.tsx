@@ -12,6 +12,15 @@ const STATUS_LABELS: Record<ReferralStatus, string> = {
   OPERATION_COMPLETED: 'Operación concretada',
 };
 
+const INTEREST_LABELS: Record<string, string> = {
+  VENTA: 'Venta',
+  COMPRA: 'Compra',
+  ALQUILER: 'Alquilar',
+  COMPRA_LOTE: 'Comprar un lote',
+  INVERSION: 'Invertir en un proyecto',
+  CORRETAJE: 'Servicio de corretaje',
+};
+
 async function updateReferralStatus(formData: FormData) {
   'use server';
   const id = String(formData.get('id') ?? '');
@@ -77,7 +86,10 @@ export default async function AdminReferrerDetailPage({ params }: { params: Prom
                     </div>
                     <p className="mt-1 text-sm text-muted">{referral.email} · {referral.phone}</p>
                     <p className="mt-2 text-sm font-semibold text-brand">
-                      Proyecto: {referral.project.name}
+                      Interés: {INTEREST_LABELS[referral.interest] ?? referral.interest}
+                    </p>
+                    <p className="mt-1 text-sm font-semibold text-brand">
+                      Disponibilidad: {referral.availability}
                     </p>
                     <p className="mt-1 text-xs text-muted">Código {referral.code}</p>
                     <details className="mt-3">

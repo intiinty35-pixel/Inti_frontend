@@ -16,7 +16,6 @@ import {
 } from "@/features/home";
 import { ROUTES } from "@/shared/config/routes";
 import { buildMetadata } from "@/shared/lib/seo";
-import { getPublicProjectsServer } from "@/features/projects/api/server";
 import { ReferralCta } from "@/features/referrals/components/referral-cta";
 
 export const metadata = buildMetadata({
@@ -49,9 +48,6 @@ function SearchFormFallback() {
 }
 
 export default async function PublicHomePage() {
-  const projectsPage = await getPublicProjectsServer(100).catch(() => null);
-  const projects = (projectsPage?.items ?? []).map((p) => ({ id: p.id, name: p.name }));
-
   return (
     <>
       <section className="relative isolate z-30 -mt-[var(--header-h)] min-h-[440px] overflow-visible pr-4 pt-[calc(var(--header-h)+3rem)] pb-[160px] pl-6 text-left text-white sm:min-h-[520px] sm:pr-6 sm:pl-7 sm:pt-[calc(var(--header-h)+4.5rem)] lg:min-h-[540px] lg:pb-32 lg:pr-6 lg:pl-8 lg:pt-[calc(var(--header-h)+6rem)] xl:pr-8 xl:pl-9">
@@ -104,7 +100,7 @@ export default async function PublicHomePage() {
             >
               Buscar propiedades
             </Link>
-            <ReferralCta projects={projects} />
+            <ReferralCta />
           </div>
         </div>
 

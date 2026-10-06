@@ -3,12 +3,7 @@
 import { useState } from 'react';
 import { ReferralModal } from '@/features/referrals/components/referral-modal';
 
-interface ProjectOption {
-  id: string;
-  name: string;
-}
-
-export function ReferralCta({ projects }: { projects: ProjectOption[] }) {
+export function ReferralCta() {
   const [open, setOpen] = useState(false);
 
   return (
@@ -20,7 +15,7 @@ export function ReferralCta({ projects }: { projects: ProjectOption[] }) {
       >
         Refiere con Ariz
       </button>
-      <ReferralModal open={open} onClose={() => setOpen(false)} projects={projects} />
+      <ReferralModal open={open} onClose={() => setOpen(false)} />
     </>
   );
 }
