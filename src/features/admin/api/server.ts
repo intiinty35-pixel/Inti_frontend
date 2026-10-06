@@ -54,12 +54,15 @@ export type AdminAgencyDetail = Omit<AdminAgencySummary, "properties" | "project
 
 export interface PendingSubscription {
   id: string;
-  status: "PENDING_PAYMENT";
+  status: "PENDING_PAYMENT" | "ACTIVE" | "REJECTED" | "EXPIRED";
   receiptUrl: string | null;
   createdAt: string;
+  startedAt?: string | null;
+  expiresAt?: string | null;
   plan: Plan;
   agentProfile: {
     id: string;
+    type: "INDEPENDENT_AGENT" | "REAL_ESTATE_AGENCY" | "DEVELOPER" | "INDIVIDUAL_OWNER";
     businessName: string | null;
     user: { firstName: string; lastName: string | null; email: string };
   };
@@ -67,7 +70,7 @@ export interface PendingSubscription {
 
 export interface ProfessionalRecord {
   id: string;
-  type: "INDEPENDENT_AGENT" | "REAL_ESTATE_AGENCY" | "DEVELOPER";
+  type: "INDEPENDENT_AGENT" | "REAL_ESTATE_AGENCY" | "DEVELOPER" | "INDIVIDUAL_OWNER";
   status: ApprovalStatus;
   dni: string | null;
   ruc: string | null;
@@ -133,6 +136,13 @@ export function listPendingSubscriptions(
   params.set("page", String(page ?? 1));
   if (pageSize) params.set("pageSize", String(pageSize));
   return getJson<PagedResult<PendingSubscription>>(`/admin/subscriptions/pending?${params.toString()}`);
+}
+
+export function listSubscriptions(page?: number, pageSize?: number): Promise<PagedResult<PendingSubscription>> {
+  const params = new URLSearchParams();
+  params.set("page", String(page ?? 1));
+  if (pageSize) params.set("pageSize", String(pageSize));
+  return getJson<PagedResult<PendingSubscription>>(`/admin/subscriptions?${params.toString()}`);
 }
 
 export async function listDevelopers(status: DeveloperReviewStatus = "PENDING_REVIEW", page = 1, pageSize = 10) {

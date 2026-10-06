@@ -16,6 +16,7 @@ export const ROUTES = {
   panel: {
     admin: {
       base: "/panel/admin",
+      accounts: "/panel/admin/accounts",
       plans: "/panel/admin/plans",
       subscriptions: "/panel/admin/subscriptions",
       projects: "/panel/admin/projects",

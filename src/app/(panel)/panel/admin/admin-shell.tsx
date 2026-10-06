@@ -19,7 +19,8 @@ export interface AdminShellProps {
 export function AdminShell({ name, roleLabel, children }: AdminShellProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const initial = name.trim().charAt(0).toUpperCase() || "A";
+  const displayName = name.trim() === roleLabel.trim() ? "Cuenta principal" : name;
+  const initial = roleLabel.trim().charAt(0).toUpperCase() || "A";
 
   return (
     <div className="min-h-screen bg-canvas">
@@ -42,7 +43,7 @@ export function AdminShell({ name, roleLabel, children }: AdminShellProps) {
           {!collapsed ? (
             <button
               type="button"
-              aria-label="Contraer sidebar"
+            aria-label="Contraer barra lateral"
               onClick={() => setCollapsed(true)}
               className="flex size-9 items-center justify-center rounded-lg border border-edge text-muted transition-colors hover:border-brand hover:text-brand"
             >
@@ -54,7 +55,7 @@ export function AdminShell({ name, roleLabel, children }: AdminShellProps) {
         {collapsed ? (
           <button
             type="button"
-            aria-label="Expandir sidebar"
+            aria-label="Expandir barra lateral"
             onClick={() => setCollapsed(false)}
             className="mt-4 flex size-10 items-center justify-center rounded-lg border border-edge text-muted transition-colors hover:border-brand hover:text-brand"
           >
@@ -73,7 +74,7 @@ export function AdminShell({ name, roleLabel, children }: AdminShellProps) {
         <div className="mt-4 flex flex-col gap-1 border-t border-edge pt-3">
           <Link
             href={ROUTES.home}
-            title={collapsed ? "Ver portal publico" : undefined}
+            title={collapsed ? "Ver portal público" : undefined}
             className={cn(
               "flex h-11 items-center rounded-lg text-sm font-medium text-muted transition-colors hover:bg-surface-muted hover:text-ink",
               collapsed ? "justify-center px-0" : "gap-3 px-3",
@@ -82,7 +83,7 @@ export function AdminShell({ name, roleLabel, children }: AdminShellProps) {
             <span className="flex size-7 shrink-0 items-center justify-center rounded-lg border border-edge text-[11px] font-black">
               AR
             </span>
-            {!collapsed ? <span className="truncate">Ver portal publico</span> : null}
+            {!collapsed ? <span className="truncate">Ver portal público</span> : null}
           </Link>
           {!collapsed ? <LogoutButton /> : null}
         </div>
@@ -92,7 +93,7 @@ export function AdminShell({ name, roleLabel, children }: AdminShellProps) {
         <div className="fixed inset-0 z-50 lg:hidden">
           <button
             type="button"
-            aria-label="Cerrar menu"
+              aria-label="Cerrar menú"
             className="absolute inset-0 bg-ink/30"
             onClick={() => setMobileOpen(false)}
           />
@@ -119,7 +120,7 @@ export function AdminShell({ name, roleLabel, children }: AdminShellProps) {
           <div className="flex min-w-0 items-center gap-3">
             <button
               type="button"
-              aria-label="Abrir menu"
+              aria-label="Abrir menú"
               onClick={() => setMobileOpen(true)}
               className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-edge text-brand lg:hidden"
             >
@@ -142,7 +143,7 @@ export function AdminShell({ name, roleLabel, children }: AdminShellProps) {
                 {initial}
               </span>
               <span className="hidden max-w-48 flex-col text-left leading-none sm:flex">
-                <span className="truncate text-sm font-semibold text-ink">{name}</span>
+                <span className="truncate text-sm font-semibold text-ink">{displayName}</span>
                 <span className="text-[11px] text-muted">{roleLabel}</span>
               </span>
             </span>
@@ -155,12 +156,26 @@ export function AdminShell({ name, roleLabel, children }: AdminShellProps) {
   );
 }
 
-export function AdminPageHeader({ eyebrow, title, description }: { eyebrow: string; title: string; description?: string }) {
+export function AdminPageHeader({
+  eyebrow,
+  title,
+  description,
+  align = "left",
+}: {
+  eyebrow?: string;
+  title: string;
+  description?: string;
+  align?: "left" | "center";
+}) {
   return (
-    <div className="mb-6">
-      <p className="text-[11px] font-bold tracking-[0.18em] text-accent uppercase">{eyebrow}</p>
-      <h1 className="mt-1 text-3xl font-light tracking-tight text-brand">{title}</h1>
-      {description ? <p className="mt-1 text-sm text-muted">{description}</p> : null}
+    <div className={cn("mb-6", align === "center" && "text-center")}>
+      {eyebrow ? <p className="text-[11px] font-black tracking-[0.18em] text-accent uppercase">{eyebrow}</p> : null}
+      <h1 className="mt-1 font-display text-3xl font-black tracking-tight text-brand sm:text-4xl">{title}</h1>
+      {description ? (
+        <p className={cn("mt-2 max-w-3xl text-sm font-medium leading-6 text-muted", align === "center" && "mx-auto")}>
+          {description}
+        </p>
+      ) : null}
     </div>
   );
 }

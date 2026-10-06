@@ -60,6 +60,12 @@ export function setOfficialDeveloper(id: string, isOfficialDeveloper: boolean): 
   });
 }
 
+export function notifyProfessional(id: string): Promise<{ ok: boolean; email: string }> {
+  return request<{ ok: boolean; email: string }>(`/admin/professionals/${id}/notify`, {
+    method: "POST",
+  });
+}
+
 export function reviewSubscription(
   id: string,
   status: "ACTIVE" | "REJECTED",

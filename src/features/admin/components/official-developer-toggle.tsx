@@ -31,8 +31,8 @@ export function OfficialDeveloperToggle({
 
   return (
     <>
-      <Button variant="secondary" size="sm" onClick={() => setOpen(true)}>
-        {isOfficialDeveloper ? "Quitar privilegio Ariz" : "Dar privilegio Ariz"}
+      <Button variant="secondary" size="xs" className="whitespace-nowrap px-2" onClick={() => setOpen(true)}>
+        {isOfficialDeveloper ? "Quitar Ariz" : "Dar Ariz"}
       </Button>
       <ConfirmDialog
         open={open}

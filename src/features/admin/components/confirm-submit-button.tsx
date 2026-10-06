@@ -35,7 +35,7 @@ export function ConfirmSubmitButton({
 
   return (
     <>
-      <Button type="button" variant={variant} onClick={handleClick} {...props} />
+      <Button type="submit" variant={variant} onClick={handleClick} {...props} />
       <ConfirmDialog
         open={open}
         title={confirmTitle}

@@ -7,7 +7,8 @@ import { cn } from "@/shared/lib/cn";
 import { ROUTES } from "@/shared/config/routes";
 
 const NAV_ITEMS = [
-  { key: "professionals", label: "Profesionales", href: ROUTES.panel.admin.base, Icon: UserIcon },
+  { key: "dashboard", label: "Dashboard", href: ROUTES.panel.admin.base, Icon: ChartIcon },
+  { key: "accounts", label: "Cuentas", href: ROUTES.panel.admin.accounts, Icon: UserIcon },
   { key: "agencies", label: "Revisión de inmobiliarias", href: ROUTES.panel.admin.agencies, Icon: BuildingIcon },
   { key: "plans", label: "Planes", href: ROUTES.panel.admin.plans, Icon: ChartIcon },
   { key: "subscriptions", label: "Solicitudes de pago", href: ROUTES.panel.admin.subscriptions, Icon: FileIcon },

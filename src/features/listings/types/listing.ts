@@ -121,6 +121,11 @@ export interface Listing {
   projectId?: string;
   publishedAt: string;
   contactWhatsapp?: string | null;
+  agent?: {
+    id: string;
+    type: string;
+    status: string;
+  };
   /** Codigos de servicios. El listado publico puede omitirlos; se usan para afinidad. */
   amenityCodes?: string[];
 }

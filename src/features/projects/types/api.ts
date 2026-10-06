@@ -68,6 +68,11 @@ export interface ProjectApiSummary {
   status: ApiProjectStatus;
   featured: boolean;
   publishedAt: string;
+  agent?: {
+    id: string | null;
+    type: string;
+    status: string;
+  };
 }
 
 export interface ProjectApiPaged {
