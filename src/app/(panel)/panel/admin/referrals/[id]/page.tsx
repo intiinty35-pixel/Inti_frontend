@@ -91,6 +91,11 @@ export default async function AdminReferrerDetailPage({ params }: { params: Prom
                     <p className="mt-1 text-sm font-semibold text-brand">
                       Disponibilidad: {referral.availability}
                     </p>
+                    {referral.project && (
+                      <p className="mt-2 text-sm font-semibold text-brand">
+                        Proyecto: {referral.project.name}
+                      </p>
+                    )}
                     <p className="mt-1 text-xs text-muted">Código {referral.code}</p>
                     <details className="mt-3">
                       <summary className="cursor-pointer text-xs font-bold text-brand">
