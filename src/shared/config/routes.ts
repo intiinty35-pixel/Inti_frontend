@@ -25,7 +25,9 @@ export const ROUTES = {
       developers: "/panel/admin/developers",
       developer: (id: string): string => `/panel/admin/developers/${id}`,
       agencies: "/panel/admin/agencies",
+      referrals: "/panel/admin/referrals",
       agency: (id: string): string => `/panel/admin/agencies/${id}`,
+      referrer: (id: string): string => `/panel/admin/referrals/${id}`,
     },
     client: {
       base: "/panel/client",

@@ -68,7 +68,7 @@ const categories: readonly Category[] = [
 ];
 
 const GRID =
-  "horizontal-scrollbar-hidden mt-8 flex gap-4 overflow-x-auto pb-1 sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0 lg:grid-cols-6";
+  "horizontal-scrollbar-hidden mt-8 flex gap-3 overflow-x-auto pb-1 sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0 sm:gap-4 lg:grid-cols-6";
 
 function CategoryCard({ category, index }: { category: Category; index: number }) {
   const { Icon } = category;
@@ -82,7 +82,7 @@ function CategoryCard({ category, index }: { category: Category; index: number }
         href={category.href}
         aria-label={`${category.label}. ${category.subtitle}`}
         className={cn(
-          "group flex h-[144px] w-[214px] shrink-0 flex-col rounded-[6px] border border-[#E9EDF5] bg-white px-5 pt-4 pb-3 shadow-[0_6px_16px_rgb(13_32_80_/_0.045)] transition-colors duration-200 sm:w-auto",
+          "group flex h-[144px] w-[175px] shrink-0 flex-col rounded-[6px] border border-[#E9EDF5] bg-white px-5 pt-4 pb-3 shadow-[0_6px_16px_rgb(13_32_80_/_0.045)] transition-colors duration-200 sm:w-auto sm:h-[144px] sm:px-5 sm:pt-4 sm:pb-3",
           "hover:border-[#F5B800]/60 hover:shadow-[0_8px_18px_rgb(13_32_80_/_0.07)]",
           "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#F5B800]",
         )}
@@ -113,15 +113,20 @@ function CategoryCard({ category, index }: { category: Category; index: number }
 
 export function CategoryShowcase() {
   return (
-    <section className="overflow-hidden bg-[#F3F4F8] pt-8 pb-7 lg:pt-32">
+    <section className="overflow-hidden bg-[#F3F4F8] pt-[180px] pb-7 sm:pt-[190px] lg:pt-32">
       <div className="mx-auto w-full px-3 sm:px-4 lg:px-5 xl:px-6">
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex items-center justify-between gap-4">
           <h2 className="text-lg leading-none font-black tracking-tight text-[#071A5A] sm:text-xl">
             ¿Qué quieres hacer hoy?
           </h2>
-          <p className="hidden pt-0.5 text-[11px] leading-none font-bold text-[#596273] sm:block">
-            Todo lo que necesitas en un solo lugar
-          </p>
+          <div className="flex items-center gap-2">
+            <span className="flex items-center gap-1 text-[11px] font-bold text-[#596273] sm:hidden">
+              Desliza <span className="inline-block animate-bounce text-[#F5B800]">→</span>
+            </span>
+            <p className="hidden pt-0.5 text-[11px] leading-none font-bold text-[#596273] sm:block">
+              Todo lo que necesitas en un solo lugar
+            </p>
+          </div>
         </div>
 
         <ul className={GRID}>

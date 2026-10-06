@@ -1,4 +1,4 @@
-import { Card, Pagination } from "@/shared/ui";
+import { Card, CheckIcon, Pagination } from "@/shared/ui";
 import { formatPrice } from "@/shared/lib/format";
 import { ROUTES } from "@/shared/config/routes";
 import { listAllPlans } from "@/features/admin/api/server";
@@ -25,46 +25,79 @@ export default async function AdminPlansPage({ searchParams }: AdminPlansPagePro
 
       <PlanForm />
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid min-w-0 gap-4 lg:grid-cols-2">
         {plans.map((plan) => (
-          <Card key={plan.id} className="p-5">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex min-w-0 flex-1 items-start gap-4">
-                <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-brand text-lg font-black text-on-brand">
+          <Card key={plan.id} className="flex min-w-0 flex-col gap-4 p-4 sm:p-5">
+            <div className="flex min-w-0 items-start gap-3 sm:gap-4">
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand text-base font-black text-on-brand sm:size-12 sm:text-lg">
                   {plan.name.charAt(0).toUpperCase()}
-                </span>
-                <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <p className="text-base font-bold text-ink">{plan.name}</p>
-                    {plan.isDefault ? (
-                      <span className="rounded-full bg-info/15 px-2.5 py-1 text-[11px] font-bold text-info">
-                        POR DEFECTO
-                      </span>
-                    ) : null}
-                    {plan.highlight ? (
-                      <span className="rounded-full bg-accent/15 px-2.5 py-1 text-[11px] font-bold text-accent">
-                        RECOMENDADO
-                      </span>
-                    ) : null}
-                    {!plan.isActive ? (
-                      <span className="rounded-full bg-muted/20 px-2.5 py-1 text-[11px] font-bold text-muted">
-                        INACTIVO
-                      </span>
-                    ) : null}
-                  </div>
-                  <p className="mt-1 text-lg font-bold text-brand">
-                    {plan.isFree ? "Sin costo" : formatPrice(Number(plan.price), plan.currency)}
+              </span>
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <p className="min-w-0 break-words text-base font-bold text-ink [overflow-wrap:anywhere]">
+                    {plan.name}
                   </p>
-                  <p className="text-sm text-muted">
-                    Agentes: {plan.propertyLimit} propiedades - {plan.durationDays} dias
-                    {plan.projectLimit > 0 ? (
-                      <span className="block">
-                        Inmobiliarias: {plan.propertyLimit} propiedades - {plan.projectLimit} proyectos
-                      </span>
-                    ) : null}
-                  </p>
+                  {plan.isDefault ? (
+                    <span className="rounded-full bg-info/15 px-2 py-1 text-[10px] leading-tight font-bold text-info">
+                      POR DEFECTO
+                    </span>
+                  ) : null}
+                  {plan.highlight ? (
+                    <span className="rounded-full bg-accent/15 px-2 py-1 text-[10px] leading-tight font-bold text-accent">
+                      RECOMENDADO
+                    </span>
+                  ) : null}
+                  {!plan.isActive ? (
+                    <span className="rounded-full bg-muted/20 px-2 py-1 text-[10px] leading-tight font-bold text-muted">
+                      INACTIVO
+                    </span>
+                  ) : null}
                 </div>
+                <p className="mt-1 text-lg font-bold text-brand">
+                  {plan.isFree ? "Sin costo" : formatPrice(Number(plan.price), plan.currency)}
+                  {!plan.isFree ? <span className="text-xs font-semibold text-muted"> / mes</span> : null}
+                </p>
               </div>
+            </div>
+
+            <dl className="grid grid-cols-2 gap-2">
+              <div className="min-w-0 rounded-lg bg-canvas px-3 py-2.5">
+                <dt className="text-[10px] font-bold tracking-wide text-muted uppercase">Propiedades</dt>
+                <dd className="mt-0.5 break-words text-sm font-bold text-ink">
+                  {plan.propertyLimit}
+                </dd>
+              </div>
+              <div className="min-w-0 rounded-lg bg-canvas px-3 py-2.5">
+                <dt className="text-[10px] font-bold tracking-wide text-muted uppercase">Vigencia</dt>
+                <dd className="mt-0.5 text-sm font-bold text-ink">{plan.durationDays} días</dd>
+              </div>
+              {plan.projectLimit > 0 ? (
+                <div className="col-span-2 min-w-0 rounded-lg bg-canvas px-3 py-2.5">
+                  <dt className="text-[10px] font-bold tracking-wide text-muted uppercase">
+                    Proyectos para inmobiliarias
+                  </dt>
+                  <dd className="mt-0.5 text-sm font-bold text-ink">{plan.projectLimit}</dd>
+                </div>
+              ) : null}
+            </dl>
+
+            <div className="min-w-0 border-t border-edge pt-3">
+              <p className="text-[10px] font-bold tracking-wide text-muted uppercase">Atributos del plan</p>
+              {plan.features.length > 0 ? (
+                <ul className="mt-2 grid min-w-0 gap-2 sm:grid-cols-2">
+                  {plan.features.map((feature) => (
+                    <li key={feature} className="flex min-w-0 items-start gap-2 text-xs leading-relaxed text-ink">
+                      <CheckIcon className="mt-0.5 size-3.5 shrink-0 text-success" />
+                      <span className="min-w-0 break-words [overflow-wrap:anywhere]">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="mt-2 text-xs text-muted">Sin atributos adicionales.</p>
+              )}
+            </div>
+
+            <div className="border-t border-edge pt-3">
               <PlanActiveToggle plan={plan} />
             </div>
           </Card>

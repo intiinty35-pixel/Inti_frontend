@@ -3,6 +3,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
+import { Check, Mail } from "lucide-react";
 import { createLead } from "@/features/leads/api";
 import type { LeadSource, LeadTarget } from "@/features/leads/types/lead";
 import { WhatsappIcon } from "@/shared/ui/icons";
@@ -17,24 +18,6 @@ export type LeadFormProps = {
 
 const field =
   "h-12 w-full rounded-xl border border-ink/60 bg-transparent px-4 text-sm text-ink outline-none transition-colors placeholder:text-muted focus:border-[#0f6148] focus:ring-2 focus:ring-[#0f6148]/20";
-
-function MailLineIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.8}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      aria-hidden
-    >
-      <rect x="3" y="5" width="18" height="14" rx="2.5" />
-      <path d="m4 7.5 8 6 8-6" />
-    </svg>
-  );
-}
 
 function SuccessModal({ onClose }: { onClose: () => void }) {
   useEffect(() => {
@@ -58,9 +41,7 @@ function SuccessModal({ onClose }: { onClose: () => void }) {
         className="w-full max-w-sm rounded-2xl bg-surface p-7 text-center shadow-2xl"
       >
         <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-[#0f6148]/10 text-[#0f6148]">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" className="size-7" aria-hidden>
-            <path d="m5 12.5 4.5 4.5L19 7.5" />
-          </svg>
+          <Check className="size-7" aria-hidden />
         </span>
         <h3 id="lead-success-title" className="mt-4 text-lg font-bold text-ink">
           ¡Mensaje enviado correctamente!
@@ -187,7 +168,7 @@ export function LeadForm({
         className="flex h-12 items-center justify-center gap-2 rounded-xl bg-[#0f6148] text-base font-bold text-white transition-colors hover:bg-[#0b4d3a] disabled:opacity-60"
       >
         {loading ? "Enviando..." : "Contactar"}
-        {loading ? null : <MailLineIcon className="size-5" />}
+        {loading ? null : <Mail className="size-5" aria-hidden />}
       </button>
 
       <a

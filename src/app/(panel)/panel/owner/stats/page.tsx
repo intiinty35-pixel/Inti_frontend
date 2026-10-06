@@ -1,6 +1,5 @@
 import { BarChart, CATEGORICAL, RankChart, TrendChart } from "@/shared/ui";
-import { OwnerPageHeader } from "@/app/(panel)/panel/owner/owner-shell";
-import { DashboardPanel, EmptyChart, StatCard } from "@/features/owner/components/dashboard-ui";
+import { DashboardPanel, EmptyChart, PageBanner, StatCard } from "@/features/owner/components/dashboard-ui";
 import { listMyLeads, listMyProperties } from "@/features/owner/api/server";
 import { leadsBySource, leadsPerDay } from "@/features/owner/lib/chart-data";
 
@@ -22,10 +21,11 @@ export default async function OwnerStatsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <OwnerPageHeader eyebrow="Rendimiento" title="Estadísticas" />
-      <p className="-mt-4 text-sm text-muted">
-        Información calculada desde la actividad disponible ({properties.length} publicaciones).
-      </p>
+      <PageBanner
+        eyebrow="Rendimiento"
+        title="Estadísticas"
+        description={`Información calculada desde la actividad disponible (${properties.length} publicaciones).`}
+      />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 min-[1500px]:grid-cols-4">
         <StatCard label="Visualizaciones" value="0" hint="Disponible próximamente" />

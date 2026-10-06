@@ -1,7 +1,40 @@
 import type { ReactNode } from "react";
 import { Card, CardContent } from "@/shared/ui";
 
-/** Piezas visuales compartidas por Dashboard y Estadisticas, para que ambas paginas se vean como un mismo sistema. */
+/** Piezas visuales compartidas por todo el panel profesional, para que todas las paginas se vean como un mismo sistema. */
+
+export function PageBanner({
+  eyebrow,
+  title,
+  description,
+  icon,
+  action,
+}: {
+  eyebrow: string;
+  title: string;
+  description?: ReactNode;
+  icon?: ReactNode;
+  action?: ReactNode;
+}) {
+  return (
+    <div className="relative overflow-hidden rounded-card border border-edge bg-surface p-6 shadow-[var(--shadow-card)] sm:p-8">
+      <div className="absolute inset-x-0 top-0 h-1.5 bg-brand" aria-hidden />
+      <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-5">
+          {icon}
+          <div>
+            <p className="text-[11px] font-black tracking-[0.2em] text-accent uppercase">{eyebrow}</p>
+            <h1 className="mt-1 font-display text-3xl font-black tracking-tight text-brand sm:text-4xl">
+              {title}
+            </h1>
+            {description ? <p className="mt-2 text-sm font-medium text-muted">{description}</p> : null}
+          </div>
+        </div>
+        {action ? <div className="flex shrink-0 flex-wrap items-center gap-3">{action}</div> : null}
+      </div>
+    </div>
+  );
+}
 
 export function StatCard({ label, value, hint }: { label: string; value: string; hint: string }) {
   return (

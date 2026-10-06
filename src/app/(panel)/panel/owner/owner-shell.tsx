@@ -162,12 +162,3 @@ export function OwnerShell({ name, roleLabel, canManageProjects = true, children
     </div>
   );
 }
-
-export function OwnerPageHeader({ eyebrow, title }: { eyebrow: string; title: string }) {
-  return (
-    <div className="mb-6">
-      <p className="text-[11px] font-bold tracking-[0.18em] text-accent uppercase">{eyebrow}</p>
-      <h1 className="mt-1 text-3xl font-light tracking-tight text-brand">{title}</h1>
-    </div>
-  );
-}

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, Heart, UserRound } from "lucide-react";
+import { ChevronDown, Heart, LogIn, UserRound } from "lucide-react";
 import { Container } from "@/shared/ui/container";
 import { MenuIcon, XIcon } from "@/shared/ui/icons";
 import { ROUTES, hasOverlayHeader } from "@/shared/config/routes";
@@ -133,12 +133,17 @@ export function PublicHeader({
   return (
     <header
       className={cn(
-        "sticky top-0 z-40 border-b transition-colors duration-300",
-        solid && "border-edge bg-surface/95 backdrop-blur",
-        !solid && !translucent && "border-transparent bg-transparent",
-        translucent && "border-transparent bg-ink/55 backdrop-blur-md",
-        menuOpen && "bg-surface",
+        "sticky top-0 border-b transition-colors duration-300",
+        menuOpen
+          ? "z-[110] border-edge bg-white"
+          : cn(
+              "z-50",
+              solid && "border-edge bg-surface/95 backdrop-blur",
+              !solid && !translucent && "border-transparent bg-transparent",
+              translucent && "border-transparent bg-ink/55 backdrop-blur-md",
+            ),
       )}
+      style={{ position: 'sticky' }}
     >
       <Container size="wide" className="flex h-[72px] items-center justify-between gap-x-6">
          <Logo light={!solid} />
@@ -246,8 +251,9 @@ export function PublicHeader({
           </Link>
         ) : (
           <div className="hidden grid-cols-2 gap-2 lg:grid">
-            <Link href={ROUTES.login} className={accountClass(false)}>
-              Iniciar sesión
+            <Link href={ROUTES.login} className={cn(accountClass(false), "gap-2")}>
+              <span>Iniciar sesión</span>
+              <LogIn className="size-4 shrink-0 translate-y-0.5" aria-hidden="true" />
             </Link>
             {/*
               Sobre el hero oscuro el azul de marca no se distingue del fondo,
@@ -345,9 +351,9 @@ export function PublicHeader({
             className={cn(
               "flex size-10 items-center justify-center rounded-card border transition-colors lg:hidden",
               menuOpen
-                ? "border-edge bg-surface text-brand"
+                ? "border-edge bg-surface text-brand hover:bg-surface-muted"
                 : solid
-                  ? "border-edge bg-surface text-brand"
+                  ? "border-edge bg-surface text-brand hover:bg-surface-muted"
                   : "border-white/35 bg-white/10 text-white hover:bg-white/15",
             )}
           >
@@ -357,13 +363,25 @@ export function PublicHeader({
       </Container>
 
       {/*
-        El panel cuelga de la cabecera y se desplaza con ella (`sticky`), asi que
-        el alto de scroll se le resta para que nunca tape el footer entero.
+        Overlay para oscurecer el contenido detrás cuando el menú está abierto
+      */}
+      {menuOpen ? (
+        <div
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
+          aria-hidden="true"
+          onClick={() => setMenuOpen(false)}
+          style={{ top: 'var(--header-h)' }}
+        />
+      ) : null}
+
+      {/*
+        El panel cuelga de la cabecera posicionado absolutamente para no empujar el Hero abajo.
+        Se posiciona justo debajo del header sticky con `top-full`.
       */}
       {menuOpen ? (
         <div
           id="public-mobile-menu"
-          className="max-h-[calc(100dvh-var(--header-h)) overflow-y-auto border-t border-edge bg-surface text-brand shadow-[var(--shadow-pop)] lg:hidden"
+          className="absolute inset-x-0 top-full z-50 max-h-[calc(100dvh-var(--header-h))] overflow-y-auto border-t border-edge bg-surface text-brand shadow-[var(--shadow-pop)] lg:hidden"
         >
           <PublicMobileNav onNavigate={() => setMenuOpen(false)} />
 
@@ -406,9 +424,10 @@ export function PublicHeader({
                 <Link
                   href={ROUTES.login}
                   onClick={() => setMenuOpen(false)}
-                  className="flex h-11 items-center justify-center rounded-card border border-edge px-4 text-sm font-bold text-brand"
+                  className="flex h-11 items-center justify-center gap-2 rounded-card border border-brand bg-brand/10 px-4 text-sm font-bold text-brand"
                 >
-                  Iniciar sesión
+                  <span>Iniciar sesión</span>
+                  <LogIn className="size-4 shrink-0 translate-y-0.5" aria-hidden="true" />
                 </Link>
                 <Link
                   href={ROUTES.registerProfessional}

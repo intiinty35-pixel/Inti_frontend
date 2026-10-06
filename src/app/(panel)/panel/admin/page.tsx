@@ -576,7 +576,6 @@ export default async function PanelAdminPage({ searchParams }: PanelAdminPagePro
           </Card>
         </aside>
       </section>
-
     </div>
   );
 }

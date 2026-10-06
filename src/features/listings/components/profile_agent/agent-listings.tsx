@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Check, ChevronDown } from "lucide-react";
 import type { Listing } from "@/features/listings/types/listing";
 import { AgentListingRow, getListingMeta } from "@/features/listings/components/profile_agent/agent-listing-row";
 
@@ -99,18 +100,10 @@ function Dropdown({ value, onChange, options, placeholder, ariaLabel, compact, a
         } ${isActive || open ? "border-brand text-brand" : "border-edge text-ink"}`}
       >
         <span className="truncate">{triggerLabel}</span>
-        <svg
+        <ChevronDown
           aria-hidden="true"
-          viewBox="0 0 20 20"
           className={`size-4 shrink-0 text-brand transition-transform ${open ? "rotate-180" : ""}`}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="m5 7.5 5 5 5-5" />
-        </svg>
+        />
       </button>
 
       {open ? (
@@ -137,18 +130,7 @@ function Dropdown({ value, onChange, options, placeholder, ariaLabel, compact, a
                 >
                   {option.label}
                   {isSelected ? (
-                    <svg
-                      aria-hidden="true"
-                      viewBox="0 0 20 20"
-                      className="size-4 shrink-0"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="m4.5 10.5 3.5 3.5 7.5-8" />
-                    </svg>
+                    <Check aria-hidden="true" className="size-4 shrink-0" />
                   ) : null}
                 </button>
               </li>

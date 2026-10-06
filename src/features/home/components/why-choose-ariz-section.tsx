@@ -10,12 +10,10 @@ interface Reason {
   title: string;
   description: string;
   Icon: LucideIcon;
-  /** Contenido de la cara trasera (que se ve al girar la card). */
   backTitle: string;
   backPoints: readonly string[];
 }
 
-/** Los cinco motivos por los que se compra o se publica con ARIZ. */
 const REASONS: readonly Reason[] = [
   {
     key: "verificados",
@@ -157,11 +155,11 @@ function FlipReasonCard({ reason }: { reason: Reason }) {
   );
 }
 
-/** Sección de confianza en tonos claros, con los colores del sitio. */
 export function WhyChooseArizSection() {
   return (
-    <section aria-labelledby="por-que-elegir-ariz" className="bg-white py-12 sm:py-16">
-      <Container size="wide-tight" className="px-5 sm:px-6 lg:px-6 xl:px-8">
+    <section aria-labelledby="por-que-elegir-ariz" className="w-full bg-white py-12 sm:py-16">
+      {/* Reemplazamos Container o removemos la restricción de max-width si quieres ancho completo */}
+      <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:gap-x-8">
           <div>
             <p className="text-[11px] font-bold tracking-[0.18em] text-accent uppercase">
@@ -180,15 +178,14 @@ export function WhyChooseArizSection() {
             que te acompaña hasta el final.
           </p>
         </div>
-
-        <ul className="horizontal-scrollbar-hidden mt-5 -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 sm:mx-0 sm:mt-7 sm:grid sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-5">
+        <ul className="mt-5 grid grid-cols-1 gap-3 sm:mt-7 sm:grid-cols-2 sm:gap-4 lg:grid-cols-5">
           {REASONS.map((reason) => (
-            <li key={reason.key} className="w-[calc((100vw_-_2.75rem)/2)] shrink-0 snap-start sm:w-auto">
+            <li key={reason.key} className="w-full">
               <FlipReasonCard reason={reason} />
             </li>
           ))}
         </ul>
-      </Container>
+      </div>
     </section>
   );
 }
