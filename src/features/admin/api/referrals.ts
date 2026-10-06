@@ -20,7 +20,7 @@ export interface AdminReferral {
   points: number;
   createdAt: string;
   updatedAt: string;
-  project: { id: string; name: string };
+  project: { id: string; name: string } | null;
   history: ReferralHistoryEntry[];
 }
 

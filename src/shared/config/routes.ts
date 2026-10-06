@@ -13,6 +13,8 @@ export const ROUTES = {
   project: (slug: string): string => `/project/${slug}`,
   services: "/servicios",
   investments: "/inversiones",
+  rewards: "/rewards",
+  rewardsMy: "/rewards/my",
   panel: {
     admin: {
       base: "/panel/admin",
@@ -27,6 +29,11 @@ export const ROUTES = {
       referrals: "/panel/admin/referrals",
       agency: (id: string): string => `/panel/admin/agencies/${id}`,
       referrer: (id: string): string => `/panel/admin/referrals/${id}`,
+      incentives: "/panel/admin/incentives",
+      incentive: (id: string): string => `/panel/admin/incentives/${id}`,
+      newIncentive: "/panel/admin/incentives/new",
+      redemptions: "/panel/admin/redemptions",
+      redemption: (id: string): string => `/panel/admin/redemptions/${id}`,
     },
     client: {
       base: "/panel/client",
