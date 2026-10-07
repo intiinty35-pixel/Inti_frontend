@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useFormStatus } from "react-dom";
-import { Card, CardContent, TrashIcon } from "@/shared/ui";
+import { ArrowUpRight, Coins, Gift, Package, Trash2 } from "lucide-react";
+import { Card, CardContent } from "@/shared/ui";
 import { ROUTES } from "@/shared/config/routes";
 import { deleteIncentive } from "@/features/rewards/api/actions";
 
@@ -21,7 +22,7 @@ interface IncentiveCardProps {
 function DeleteButton({ incentiveId }: { incentiveId: string }) {
   const { pending } = useFormStatus();
 
-  async function handleDelete(formData: FormData) {
+  async function handleDelete() {
     if (!confirm("¿Estás seguro de eliminar este incentivo? Esta acción no se puede deshacer.")) {
       return;
     }
@@ -29,88 +30,84 @@ function DeleteButton({ incentiveId }: { incentiveId: string }) {
   }
 
   return (
-    <form action={handleDelete} onClick={(e) => e.stopPropagation()}>
+    <form action={handleDelete} onClick={(event) => event.stopPropagation()}>
       <button
         type="submit"
         disabled={pending}
-        className="absolute right-3 top-3 cursor-pointer rounded-full bg-white p-2 text-[#fa1d0b] transition-all hover:bg-[#fa1d0b] hover:text-white hover:scale-110 disabled:opacity-50"
+        className="absolute right-3 top-3 z-10 flex size-9 items-center justify-center rounded-xl bg-white/95 text-error shadow-[var(--shadow-card)] transition-all hover:bg-error hover:text-white disabled:opacity-50"
         aria-label="Eliminar incentivo"
       >
-        {pending ? (
-          <span className="text-xs">...</span>
-        ) : (
-          <TrashIcon className="size-4" />
-        )}
+        {pending ? <span className="text-xs">...</span> : <Trash2 className="size-4" />}
       </button>
     </form>
   );
 }
 
 export function IncentiveCard({ incentive }: IncentiveCardProps) {
+  const active = incentive.status === "ACTIVE";
+  const outOfStock = incentive.stock === 0;
+
   return (
-    <Link href={`${ROUTES.panel.admin.incentives}/${incentive.id}`}>
-      <Card className="relative h-full transition-shadow hover:shadow-lg">
-        <CardContent className="flex flex-col gap-3 p-5">
-          <DeleteButton incentiveId={incentive.id} />
-          
-          {incentive.imageUrl && (
-            <div className="aspect-video overflow-hidden rounded-lg bg-surface-muted">
-              <img
-                src={incentive.imageUrl}
-                alt={incentive.name}
-                className="size-full object-cover"
-              />
-            </div>
-          )}
-          
-          <div>
-            <div className="flex items-start justify-between gap-2 pr-8">
-              <p className="text-lg font-bold text-ink">{incentive.name}</p>
-              <span
-                className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-bold ${
-                  incentive.status === "ACTIVE"
-                    ? "bg-success/10 text-success"
-                    : "bg-surface-muted text-muted"
-                }`}
-              >
-                {incentive.status === "ACTIVE" ? "Activo" : "Inactivo"}
-              </span>
-            </div>
-            <p className="mt-1 line-clamp-2 text-sm text-muted">
-              {incentive.description}
-            </p>
+    <Card className="relative flex h-full min-w-0 flex-col overflow-hidden transition duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-pop)]">
+      <DeleteButton incentiveId={incentive.id} />
+
+      <Link href={`${ROUTES.panel.admin.incentives}/${incentive.id}`} className="flex h-full min-w-0 flex-col">
+        {incentive.imageUrl ? (
+          <div className="relative aspect-[16/10] overflow-hidden bg-surface-muted">
+            {/* eslint-disable-next-line @next/next/no-img-element -- imagen externa de incentivo */}
+            <img src={incentive.imageUrl} alt={incentive.name} className="size-full object-cover" />
           </div>
-          
-          <div className="mt-auto flex items-center justify-between border-t border-edge pt-3">
+        ) : (
+          <div className="flex aspect-[16/10] items-center justify-center bg-brand-soft text-brand">
+            <Gift className="size-10" aria-hidden="true" />
+          </div>
+        )}
+
+        <CardContent className="flex flex-1 flex-col p-4 text-center">
+          <div className="flex justify-center">
+            <span
+              className={`rounded-full px-2.5 py-1 text-[11px] font-black ${
+                active ? "bg-success/10 text-success" : "bg-muted/15 text-muted"
+              }`}
+            >
+              {active ? "Activo" : "Inactivo"}
+            </span>
+          </div>
+
+          <h2 className="mt-3 line-clamp-2 break-words font-display text-lg font-black leading-tight text-brand">
+            {incentive.name}
+          </h2>
+          <p className="mt-2 line-clamp-2 text-xs leading-5 text-muted">
+            {incentive.description}
+          </p>
+
+          <div className="mt-5 grid grid-cols-2 gap-2 border-y border-edge py-3">
             <div>
-              <p className="text-xs font-bold uppercase tracking-wide text-muted">
+              <Coins className="mx-auto size-4 text-accent" aria-hidden="true" />
+              <p className="mt-1 text-[10px] font-black uppercase tracking-[0.12em] text-muted">
                 Puntos
               </p>
-              <p className="text-xl font-black text-brand">
+              <p className="mt-1 text-lg font-black text-brand">
                 {incentive.pointsRequired.toLocaleString("es-PE")}
               </p>
             </div>
-            <div className="text-right">
-              <p className="text-xs font-bold uppercase tracking-wide text-muted">
+            <div>
+              <Package className={`mx-auto size-4 ${outOfStock ? "text-error" : "text-accent"}`} aria-hidden="true" />
+              <p className="mt-1 text-[10px] font-black uppercase tracking-[0.12em] text-muted">
                 Stock
               </p>
-              <p
-                className={`text-xl font-black ${
-                  incentive.stock === 0 ? "text-error" : "text-ink"
-                }`}
-              >
-                {incentive.stock}
+              <p className={`mt-1 text-lg font-black ${outOfStock ? "text-error" : "text-brand"}`}>
+                {incentive.stock.toLocaleString("es-PE")}
               </p>
             </div>
           </div>
-          
-          <button className="w-full cursor-pointer rounded-xl bg-brand-soft py-2.5 text-center transition-colors hover:bg-brand hover:text-on-brand">
-            <p className="text-sm font-bold text-inherit">
-              Editar incentivo →
-            </p>
-          </button>
+
+          <span className="mt-auto inline-flex h-10 items-center justify-center gap-2 pt-4 text-xs font-black text-brand">
+            Editar incentivo
+            <ArrowUpRight className="size-4" aria-hidden="true" />
+          </span>
         </CardContent>
-      </Card>
-    </Link>
+      </Link>
+    </Card>
   );
 }

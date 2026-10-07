@@ -1,16 +1,19 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { KeyRound, UserRoundPlus } from 'lucide-react';
 import { createPortal } from 'react-dom';
 import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
-import { Listbox } from '@/shared/ui/listbox';
 import { submitPublicReferral, validateReferrerCode } from '@/features/referrals/api/client';
+import { ROUTES } from '@/shared/config/routes';
 
 interface ReferralModalProps {
   open: boolean;
   onClose: () => void;
+  /** Código de referente precargado (opcional). Si se proporciona, se autovalida y va directo al formulario. */
+  preloadedCode?: string;
 }
 
 interface FormErrors {
@@ -28,7 +31,6 @@ interface FormErrors {
 type ModalView = 'initial' | 'existing-code' | 'existing-form' | 'new-step1' | 'new-step2';
 
 const INTEREST_OPTIONS = [
-  { value: '', label: 'Selecciona una opción' },
   { value: 'VENTA', label: 'Venta' },
   { value: 'COMPRA', label: 'Compra' },
   { value: 'ALQUILER', label: 'Alquilar' },
@@ -38,16 +40,33 @@ const INTEREST_OPTIONS = [
 ] as const;
 
 const AVAILABILITY_OPTIONS = [
-  { value: '', label: 'Selecciona una opción' },
   { value: 'INMEDIATA', label: 'Inmediata' },
   { value: 'AVERIGUAR', label: 'Averiguar' },
   { value: 'POR_CONFIRMAR', label: 'Por confirmar' },
 ] as const;
 
-const SELECT_TRIGGER =
-  'h-11 rounded-card border border-edge bg-surface px-3 text-sm text-ink font-medium hover:border-brand/50';
+/** Correo real: usuario@dominio.tld (TLD alfabético de 2+ letras, sin puntos dobles). */
+const EMAIL_REGEX = /^[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z]{2,}$/;
 
-export function ReferralModal({ open, onClose }: ReferralModalProps) {
+function isValidEmail(value: string): boolean {
+  return EMAIL_REGEX.test(value.trim());
+}
+
+/**
+ * Celular de Perú. El usuario escribe SOLO los 9 dígitos que empiezan en 9
+ * (ej. 923 655 566); el prefijo de país 51 se agrega al enviar (buildPeruPhone).
+ */
+function isValidPeruPhone(value: string): boolean {
+  return /^9\d{8}$/.test(value.replace(/\D/g, ''));
+}
+
+/** Devuelve el celular en formato internacional 51 + 9 dígitos (ej. 51923655566). */
+function buildPeruPhone(value: string): string {
+  return `51${value.replace(/\D/g, '')}`;
+}
+
+export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalProps) {
+  const router = useRouter();
   const [view, setView] = useState<ModalView>('initial');
   const [submitting, setSubmitting] = useState(false);
   const [validating, setValidating] = useState(false);
@@ -77,6 +96,32 @@ export function ReferralModal({ open, onClose }: ReferralModalProps) {
     };
   }, [open]);
 
+  // Auto-validar código precargado cuando se abre el modal
+  useEffect(() => {
+    if (open && preloadedCode && !validatedReferrer) {
+      const autoValidate = async () => {
+        setValidating(true);
+        setError(null);
+        setErrors({});
+        try {
+          const result = await validateReferrerCode(preloadedCode.trim().toUpperCase());
+          if (result.valid && result.referrer) {
+            setReferrerCode(preloadedCode.trim().toUpperCase());
+            setValidatedReferrer(result.referrer);
+            setView('existing-form');
+          } else {
+            setErrors({ referrerCode: 'Código no válido.' });
+          }
+        } catch (cause) {
+          setError(cause instanceof Error ? cause.message : 'No se pudo validar el código.');
+        } finally {
+          setValidating(false);
+        }
+      };
+      autoValidate();
+    }
+  }, [open, preloadedCode, validatedReferrer]);
+
   if (!open || typeof document === 'undefined') return null;
 
   async function handleValidateCode() {
@@ -99,8 +144,10 @@ export function ReferralModal({ open, onClose }: ReferralModalProps) {
     try {
       const result = await validateReferrerCode(referrerCode.trim());
       if (result.valid && result.referrer) {
-        setValidatedReferrer(result.referrer);
-        setView('existing-form');
+        // El referente ya tiene código: lo llevamos a su espacio de recompensas
+        // (catálogo de canjes) pasando el código para que se valide automáticamente.
+        onClose();
+        router.push(`${ROUTES.rewards}?code=${encodeURIComponent(referrerCode.trim())}`);
       } else {
         setErrors({ referrerCode: 'Código no válido. Verifica e intenta de nuevo.' });
       }
@@ -115,8 +162,9 @@ export function ReferralModal({ open, onClose }: ReferralModalProps) {
     const next: FormErrors = {};
     if (!referrerName.trim()) next.referrerName = 'Ingresa tu nombre.';
     if (!referrerEmail.trim()) next.referrerEmail = 'Ingresa tu correo.';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(referrerEmail)) next.referrerEmail = 'Ingresa un correo válido.';
+    else if (!isValidEmail(referrerEmail)) next.referrerEmail = 'Ingresa un correo válido, por ejemplo nombre@correo.com.';
     if (!referrerPhone.trim()) next.referrerPhone = 'Ingresa tu teléfono.';
+    else if (!isValidPeruPhone(referrerPhone)) next.referrerPhone = 'Ingresa tu celular de 9 dígitos (ej. 923 655 566).';
     return next;
   }
 
@@ -124,10 +172,9 @@ export function ReferralModal({ open, onClose }: ReferralModalProps) {
     const next: FormErrors = {};
     if (!name.trim()) next.name = 'Ingresa el nombre del referido.';
     if (!email.trim()) next.email = 'Ingresa el correo del referido.';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) next.email = 'Ingresa un correo válido.';
+    else if (!isValidEmail(email)) next.email = 'Ingresa un correo válido, por ejemplo nombre@correo.com.';
     if (!phone.trim()) next.phone = 'Ingresa el teléfono del referido.';
-    if (!interest) next.interest = 'Selecciona una opción.';
-    if (!availability) next.availability = 'Selecciona la disponibilidad.';
+    else if (!isValidPeruPhone(phone)) next.phone = 'Ingresa un celular de 9 dígitos (ej. 923 655 566).';
     return next;
   }
 
@@ -135,10 +182,9 @@ export function ReferralModal({ open, onClose }: ReferralModalProps) {
     const next: FormErrors = {};
     if (!name.trim()) next.name = 'Ingresa el nombre del referido.';
     if (!email.trim()) next.email = 'Ingresa el correo del referido.';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) next.email = 'Ingresa un correo válido.';
+    else if (!isValidEmail(email)) next.email = 'Ingresa un correo válido, por ejemplo nombre@correo.com.';
     if (!phone.trim()) next.phone = 'Ingresa el teléfono del referido.';
-    if (!interest) next.interest = 'Selecciona una opción.';
-    if (!availability) next.availability = 'Selecciona la disponibilidad.';
+    else if (!isValidPeruPhone(phone)) next.phone = 'Ingresa un celular de 9 dígitos (ej. 923 655 566).';
     return next;
   }
 
@@ -174,22 +220,22 @@ export function ReferralModal({ open, onClose }: ReferralModalProps) {
         ? {
             referrerName: validatedReferrer.name,
             referrerEmail: validatedReferrer.email,
-            referrerPhone: validatedReferrer.phone,
+            referrerPhone: buildPeruPhone(validatedReferrer.phone),
             referrerCode: referrerCode.trim(),
             name: name.trim(),
             email: email.trim(),
-            phone: phone.trim(),
+            phone: buildPeruPhone(phone),
             interest,
             availability,
           }
         : {
             referrerName: referrerName.trim(),
             referrerEmail: referrerEmail.trim(),
-            referrerPhone: referrerPhone.trim(),
+            referrerPhone: buildPeruPhone(referrerPhone),
             referrerCode: referrerCode.trim() || undefined,
             name: name.trim(),
             email: email.trim(),
-            phone: phone.trim(),
+            phone: buildPeruPhone(phone),
             interest,
             availability,
           };
@@ -264,12 +310,12 @@ export function ReferralModal({ open, onClose }: ReferralModalProps) {
       onMouseDown={(event) => event.target === event.currentTarget && handleClose()}
     >
       <section
-        className="w-full max-w-md rounded-card border border-edge bg-surface shadow-[var(--shadow-pop)]"
+        className="flex max-h-[calc(100dvh-2rem)] w-full max-w-md flex-col overflow-hidden rounded-card border border-edge bg-surface shadow-[var(--shadow-pop)]"
         role="dialog"
         aria-modal="true"
         aria-labelledby="referral-modal-title"
       >
-        <div className="flex items-start justify-between gap-4 border-b border-edge p-6">
+        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-edge p-6">
           <div>
             <p className="text-[11px] font-black tracking-[0.18em] text-accent uppercase">
               Programa de referidos
@@ -288,7 +334,8 @@ export function ReferralModal({ open, onClose }: ReferralModalProps) {
           </button>
         </div>
 
-        {success ? (
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          {success ? (
           <div className="p-6">
             <div className="rounded-lg bg-success/10 p-4">
               <p className="font-bold text-success">¡Referido registrado con éxito!</p>
@@ -393,42 +440,74 @@ export function ReferralModal({ open, onClose }: ReferralModalProps) {
                 />
                 <Input
                   label="Teléfono del referido"
-                  placeholder="+51 999 999 999"
+                  type="tel"
+                  inputMode="numeric"
+                  autoComplete="tel"
+                  leading="+51"
+                  placeholder="923 655 566"
+                  maxLength={9}
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   error={errors.phone}
+                  hint="Solo 9 dígitos; el +51 se agrega automáticamente."
                   required
                 />
                 <div className="flex flex-col gap-1.5">
-                  <span id="interest-label-existing" className="text-[13px] font-semibold text-brand">
+                  <span className="text-[13px] font-semibold text-brand">
                     ¿Qué desea hacer?
                   </span>
-                  <Listbox
-                    name="interest"
-                    value={interest}
-                    options={INTEREST_OPTIONS}
-                    onValueChange={setInterest}
-                    labelledBy="interest-label-existing"
-                    triggerClassName={SELECT_TRIGGER}
-                    listClassName="min-w-full"
-                  />
+                  <div className="flex flex-col gap-2">
+                    {INTEREST_OPTIONS.map((option) => (
+                      <label
+                        key={option.value}
+                        className={`flex items-center gap-3 rounded-lg border p-3 cursor-pointer transition-colors ${
+                          interest === option.value
+                            ? 'border-brand bg-brand-soft'
+                            : 'border-edge hover:border-brand/50'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="interest"
+                          value={option.value}
+                          checked={interest === option.value}
+                          onChange={(e) => setInterest(e.target.value)}
+                          className="size-4 accent-brand"
+                        />
+                        <span className="text-sm text-ink">{option.label}</span>
+                      </label>
+                    ))}
+                  </div>
                   {errors.interest && (
                     <p className="text-xs font-medium text-error">{errors.interest}</p>
                   )}
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <span id="availability-label-existing" className="text-[13px] font-semibold text-brand">
+                  <span className="text-[13px] font-semibold text-brand">
                     Disponibilidad
                   </span>
-                  <Listbox
-                    name="availability"
-                    value={availability}
-                    options={AVAILABILITY_OPTIONS}
-                    onValueChange={setAvailability}
-                    labelledBy="availability-label-existing"
-                    triggerClassName={SELECT_TRIGGER}
-                    listClassName="min-w-full"
-                  />
+                  <div className="flex flex-col gap-2">
+                    {AVAILABILITY_OPTIONS.map((option) => (
+                      <label
+                        key={option.value}
+                        className={`flex items-center gap-3 rounded-lg border p-3 cursor-pointer transition-colors ${
+                          availability === option.value
+                            ? 'border-brand bg-brand-soft'
+                            : 'border-edge hover:border-brand/50'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="availability"
+                          value={option.value}
+                          checked={availability === option.value}
+                          onChange={(e) => setAvailability(e.target.value)}
+                          className="size-4 accent-brand"
+                        />
+                        <span className="text-sm text-ink">{option.label}</span>
+                      </label>
+                    ))}
+                  </div>
                   {errors.availability && (
                     <p className="text-xs font-medium text-error">{errors.availability}</p>
                   )}
@@ -476,10 +555,16 @@ export function ReferralModal({ open, onClose }: ReferralModalProps) {
                 />
                 <Input
                   label="Teléfono"
-                  placeholder="+51 999 999 999"
+                  type="tel"
+                  inputMode="numeric"
+                  autoComplete="tel"
+                  leading="+51"
+                  placeholder="923 655 566"
+                  maxLength={9}
                   value={referrerPhone}
                   onChange={(e) => setReferrerPhone(e.target.value)}
                   error={errors.referrerPhone}
+                  hint="Solo 9 dígitos; el +51 se agrega automáticamente."
                   required
                 />
                 <div className="mt-2 flex gap-3">
@@ -520,42 +605,74 @@ export function ReferralModal({ open, onClose }: ReferralModalProps) {
                 />
                 <Input
                   label="Teléfono del referido"
-                  placeholder="+51 999 999 999"
+                  type="tel"
+                  inputMode="numeric"
+                  autoComplete="tel"
+                  leading="+51"
+                  placeholder="923 655 566"
+                  maxLength={9}
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   error={errors.phone}
+                  hint="Solo 9 dígitos; el +51 se agrega automáticamente."
                   required
                 />
                 <div className="flex flex-col gap-1.5">
-                  <span id="interest-label-new" className="text-[13px] font-semibold text-brand">
+                  <span className="text-[13px] font-semibold text-brand">
                     ¿Qué desea hacer?
                   </span>
-                  <Listbox
-                    name="interest"
-                    value={interest}
-                    options={INTEREST_OPTIONS}
-                    onValueChange={setInterest}
-                    labelledBy="interest-label-new"
-                    triggerClassName={SELECT_TRIGGER}
-                    listClassName="min-w-full"
-                  />
+                  <div className="flex flex-col gap-2">
+                    {INTEREST_OPTIONS.map((option) => (
+                      <label
+                        key={option.value}
+                        className={`flex items-center gap-3 rounded-lg border p-3 cursor-pointer transition-colors ${
+                          interest === option.value
+                            ? 'border-brand bg-brand-soft'
+                            : 'border-edge hover:border-brand/50'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="interest"
+                          value={option.value}
+                          checked={interest === option.value}
+                          onChange={(e) => setInterest(e.target.value)}
+                          className="size-4 accent-brand"
+                        />
+                        <span className="text-sm text-ink">{option.label}</span>
+                      </label>
+                    ))}
+                  </div>
                   {errors.interest && (
                     <p className="text-xs font-medium text-error">{errors.interest}</p>
                   )}
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <span id="availability-label-new" className="text-[13px] font-semibold text-brand">
+                  <span className="text-[13px] font-semibold text-brand">
                     Disponibilidad
                   </span>
-                  <Listbox
-                    name="availability"
-                    value={availability}
-                    options={AVAILABILITY_OPTIONS}
-                    onValueChange={setAvailability}
-                    labelledBy="availability-label-new"
-                    triggerClassName={SELECT_TRIGGER}
-                    listClassName="min-w-full"
-                  />
+                  <div className="flex flex-col gap-2">
+                    {AVAILABILITY_OPTIONS.map((option) => (
+                      <label
+                        key={option.value}
+                        className={`flex items-center gap-3 rounded-lg border p-3 cursor-pointer transition-colors ${
+                          availability === option.value
+                            ? 'border-brand bg-brand-soft'
+                            : 'border-edge hover:border-brand/50'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="availability"
+                          value={option.value}
+                          checked={availability === option.value}
+                          onChange={(e) => setAvailability(e.target.value)}
+                          className="size-4 accent-brand"
+                        />
+                        <span className="text-sm text-ink">{option.label}</span>
+                      </label>
+                    ))}
+                  </div>
                   {errors.availability && (
                     <p className="text-xs font-medium text-error">{errors.availability}</p>
                   )}
@@ -577,6 +694,7 @@ export function ReferralModal({ open, onClose }: ReferralModalProps) {
             </form>
           </>
         ) : null}
+        </div>
       </section>
     </div>,
     document.body,

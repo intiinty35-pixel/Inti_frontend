@@ -1,17 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
-import { ArrowRight, KeyRound, Gift, Coins, ShieldCheck } from "lucide-react";
+import { ArrowRight, KeyRound, Gift, Coins, ShieldCheck, Share2 } from "lucide-react";
 import { Button, Input, Card, CardContent } from "@/shared/ui";
 import { validateReferrerAccess, getRewardsCatalog, requestRedemption } from "@/features/rewards/api/client";
 import type { Incentive, ReferrerAccess } from "@/features/rewards/types/rewards";
+import { ROUTES } from "@/shared/config/routes";
 import { RewardsHero } from "@/features/rewards/components/rewards-hero";
+import { ReferralModal } from "@/features/referrals/components/referral-modal";
+import { ReferralsStatus } from "@/features/rewards/components/referrals-status";
 import { HomeHeroBackground } from "@/features/home/components/home-hero-background";
+import { InvestmentGrowthBanner } from "@/features/home/components/investment-growth-banner";
+
+function readCodeFromUrl() {
+  if (typeof window === "undefined") return "";
+  return (
+    new URLSearchParams(window.location.search)
+      .get("code")
+      ?.trim()
+      .toUpperCase() ?? ""
+  );
+}
 
 export default function RewardsPage() {
+  const autoValidatedRef = useRef(false);
   const [step, setStep] = useState<"code" | "catalog">("code");
-  const [referralCode, setReferralCode] = useState("");
+  const [referralCode, setReferralCode] = useState(readCodeFromUrl);
   const [access, setAccess] = useState<ReferrerAccess | null>(null);
   const [catalog, setCatalog] = useState<Incentive[]>([]);
   const [loading, setLoading] = useState(false);
@@ -19,6 +34,50 @@ export default function RewardsPage() {
   const [selectedIncentive, setSelectedIncentive] = useState<Incentive | null>(null);
   const [redeeming, setRedeeming] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [referralModalOpen, setReferralModalOpen] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
+  const [showReferrals, setShowReferrals] = useState(false);
+  const [syncedTotalPoints, setSyncedTotalPoints] = useState<number | null>(null);
+
+  async function validateCode(code: string) {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const result = await validateReferrerAccess(code.trim());
+      if (result.valid && result.referrer) {
+        setAccess(result);
+        setSyncedTotalPoints(result.referrer.totalPoints);
+        const catalogData = await getRewardsCatalog();
+        setCatalog(catalogData);
+        setStep("catalog");
+        return true;
+      }
+      setError(result.message || "Código no válido");
+      return false;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al validar código");
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // Si llegamos con un codigo en la URL (ej. desde el modal "Refiere con Ariz"),
+  // lo precargamos via el estado inicial y lo validamos una sola vez para aterrizar
+  // directo en el catalogo. Se lee aqui (y no con `useSearchParams`) porque ese
+  // hook provoca un bailout de CSR que remonta el arbol y reinicia el estado.
+  useEffect(() => {
+    if (autoValidatedRef.current) return;
+    const codeFromUrl = readCodeFromUrl();
+    if (!codeFromUrl) return;
+    autoValidatedRef.current = true;
+    // En microtask para no gatillar un setState sincrono dentro del efecto
+    // (la validacion actualiza loading/error/access de forma asincrona).
+    queueMicrotask(() => {
+      void validateCode(codeFromUrl);
+    });
+  }, []);
 
   async function handleValidateCode() {
     if (!referralCode.trim()) {
@@ -26,40 +85,63 @@ export default function RewardsPage() {
       return;
     }
 
-    setLoading(true);
-    setError(null);
-
-    try {
-      const result = await validateReferrerAccess(referralCode.trim());
-      if (result.valid && result.referrer) {
-        setAccess(result);
-        const catalogData = await getRewardsCatalog();
-        setCatalog(catalogData);
-        setStep("catalog");
-      } else {
-        setError(result.message || "Código no válido");
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al validar código");
-    } finally {
-      setLoading(false);
-    }
+    await validateCode(referralCode);
   }
 
   async function handleRedeem() {
     if (!selectedIncentive || !access?.referrer) return;
 
+    const currentTotalPoints = syncedTotalPoints ?? access.referrer.totalPoints;
     setRedeeming(true);
     setError(null);
 
     try {
-      await requestRedemption(referralCode.trim(), selectedIncentive.id, 1);
+      // Usamos el codigo ya validado (no el input, que pudo cambiar) para que
+      // el canje siempre apunte al referente correcto.
+      await requestRedemption(access.referrer.code, selectedIncentive.id, 1);
+      setSyncedTotalPoints((current) =>
+        Math.max(0, (current ?? currentTotalPoints) - selectedIncentive.pointsRequired),
+      );
       setSuccess(true);
       setSelectedIncentive(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error al solicitar canje");
     } finally {
       setRedeeming(false);
+    }
+  }
+
+  const handleTotalPointsChange = useCallback((totalPoints: number) => {
+    setSyncedTotalPoints(totalPoints);
+  }, []);
+
+  async function handleShareCode() {
+    if (!access?.referrer) return;
+
+    const shareUrl = `${window.location.origin}${ROUTES.rewards}?code=${encodeURIComponent(access.referrer.code)}`;
+    const shareText = `Hola, ${access.referrer.name} te invita a descubrir nuevas oportunidades inmobiliarias con Ariz. Únete con mi código ${access.referrer.code} en Ariz. ${shareUrl}`;
+
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
+        await navigator.share({
+          title: "Refiere con Ariz",
+          text: `Hola, ${access.referrer.name} te invita a descubrir nuevas oportunidades inmobiliarias con Ariz.`,
+          url: shareUrl,
+        });
+        return;
+      } catch (error) {
+        if (error instanceof Error && error.name === "AbortError") return;
+      }
+    }
+
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(shareText);
+        setShareCopied(true);
+        setTimeout(() => setShareCopied(false), 2000);
+      } catch {
+        setError("No se pudo copiar el enlace");
+      }
     }
   }
 
@@ -175,23 +257,102 @@ export default function RewardsPage() {
 
   if (!access?.referrer) return null;
 
-  const { totalPoints } = access.referrer;
+  const totalPoints = syncedTotalPoints ?? access.referrer.totalPoints;
 
   return (
-    <div className="w-full flex-1 px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
-      <RewardsHero
-        referrerName={access.referrer.name}
-        totalPoints={totalPoints}
-        backgroundImageUrl="/home/2.jpg"
-      />
+    <>
+      <div className="w-full flex-1 px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+        <RewardsHero
+          referrerName={access.referrer.name}
+          totalPoints={totalPoints}
+          backgroundImageUrl="/home/2.jpg"
+          action={
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="secondary"
+                size="lg"
+                onClick={() => setShowReferrals(true)}
+                className="w-full border-white/60 bg-white text-brand hover:bg-white/90 sm:w-auto"
+              >
+                Ver mis referidos
+              </Button>
+              <Button
+                type="button"
+                onClick={handleShareCode}
+                variant="secondary"
+                size="lg"
+                className="w-full border-white/60 bg-white text-brand hover:bg-white/90 sm:w-auto"
+              >
+                <Share2 className="size-4 mr-2" />
+                {shareCopied ? "¡Copiado!" : "Compartir"}
+              </Button>
+              <Button
+                type="button"
+                onClick={() => setReferralModalOpen(true)}
+                variant="primary"
+                size="lg"
+                className="w-full sm:w-auto"
+              >
+                Referir nuevo
+              </Button>
+            </div>
+          }
+        />
 
-      {totalPoints === 0 && (
-        <div className="mb-6 flex items-center gap-3 rounded-xl border border-brand/20 bg-brand-soft/50 px-4 py-3">
+      <div className="mb-6 flex flex-col gap-4 rounded-xl border border-brand/20 bg-brand-soft/50 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3">
           <Coins className="size-6 shrink-0 text-accent" />
-          <p className="flex-1 text-sm text-ink">
-            <span className="font-semibold">¡Empieza a referir!</span>{" "}
-            <span className="text-muted">Comparte tu código para desbloquear recompensas.</span>
-          </p>
+          <div className="text-sm text-ink">
+            <p className="font-semibold">
+              {totalPoints === 0 ? "¡Empieza a referir!" : "¡Sigue refiriendo!"}
+            </p>
+            <p className="text-muted">
+              Registra referidos con tu código{" "}
+              <span className="font-mono font-bold text-brand">{access.referrer.code}</span> para
+              seguir sumando puntos y desbloquear más recompensas.
+            </p>
+          </div>
+        </div>
+        <Button
+          type="button"
+          onClick={() => setReferralModalOpen(true)}
+          className="w-full shrink-0 sm:w-auto"
+        >
+          Referir nuevo
+        </Button>
+      </div>
+
+      {showReferrals && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-brand/45 p-4 backdrop-blur-sm"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setShowReferrals(false);
+            }
+          }}
+        >
+          <Card className="w-full max-w-4xl max-h-[90vh] overflow-hidden">
+            <div className="flex items-center justify-between border-b border-edge p-6">
+              <h2 className="font-display text-2xl font-bold tracking-tight text-ink">
+                Tus referidos
+              </h2>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowReferrals(false)}
+              >
+                ×
+              </Button>
+            </div>
+            <div className="overflow-y-auto p-6">
+              <ReferralsStatus
+                code={access.referrer.code}
+                onTotalPointsChange={handleTotalPointsChange}
+              />
+            </div>
+          </Card>
         </div>
       )}
 
@@ -353,34 +514,45 @@ export default function RewardsPage() {
         </div>
       )}
 
-      {success && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-brand/45 p-4 backdrop-blur-sm"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              setSuccess(false);
-            }
-          }}
-        >
-          <Card className="w-full max-w-md">
-            <CardContent className="p-6 text-center">
-              <div className="flex size-16 items-center justify-center rounded-full bg-success/10">
-                <Gift className="size-8 text-success" />
-              </div>
-              <h2 className="mt-4 text-xl font-bold text-ink">¡Solicitud enviada!</h2>
-              <p className="mt-2 text-sm text-muted">
-                Tu solicitud de canje ha sido recibida. Te notificaremos cuando sea aprobada.
-              </p>
-              <Button
-                onClick={() => setSuccess(false)}
-                className="mt-6 w-full"
-              >
-                Continuar
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-    </div>
+        {success && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-brand/45 p-4 backdrop-blur-sm"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                setSuccess(false);
+              }
+            }}
+          >
+            <Card className="w-full max-w-md">
+              <CardContent className="p-6 text-center">
+                <div className="flex size-16 items-center justify-center rounded-full bg-success/10">
+                  <Gift className="size-8 text-success" />
+                </div>
+                <h2 className="mt-4 text-xl font-bold text-ink">¡Solicitud enviada!</h2>
+                <p className="mt-2 text-sm text-muted">
+                  Tu solicitud de canje ha sido recibida. Te notificaremos cuando sea aprobada.
+                </p>
+                <Button
+                  onClick={() => setSuccess(false)}
+                  className="mt-6 w-full"
+                >
+                  Continuar
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+      </div>
+
+      <div className="mt-12">
+        <InvestmentGrowthBanner />
+      </div>
+
+      <ReferralModal
+        open={referralModalOpen}
+        onClose={() => setReferralModalOpen(false)}
+        preloadedCode={access.referrer.code}
+      />
+    </>
   );
 }

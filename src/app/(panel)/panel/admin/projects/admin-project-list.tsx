@@ -1,10 +1,27 @@
 import Link from "next/link";
-import { PlusIcon } from "@/shared/ui";
+import { LayoutGrid, Plus, Sparkles } from "lucide-react";
 import { Pagination } from "@/shared/ui/pagination";
 import { ROUTES } from "@/shared/config/routes";
 import { OwnerProjectCard } from "@/features/projects/components/owner-project-card";
 import { getAdminProjectsPagedServer } from "@/features/projects/api/server";
-import { AdminPageHeader } from "@/app/(panel)/panel/admin/admin-shell";
+
+function ProjectMetric({
+  label,
+  value,
+  caption,
+}: {
+  label: string;
+  value: string | number;
+  caption: string;
+}) {
+  return (
+    <div className="rounded-card border border-edge bg-surface px-5 py-4 text-center shadow-[var(--shadow-card)]">
+      <p className="text-xs font-bold uppercase tracking-[0.18em] text-muted">{label}</p>
+      <p className="mt-2 font-display text-2xl font-black text-brand">{value}</p>
+      <p className="mt-1 text-xs font-semibold text-muted">{caption}</p>
+    </div>
+  );
+}
 
 export async function AdminProjectList({
   searchParams,
@@ -16,25 +33,48 @@ export async function AdminProjectList({
   const { items, total, pageSize } = await getAdminProjectsPagedServer(page);
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <AdminPageHeader
-          eyebrow="Publicaciones de ARIZ"
-          title="Proyectos ARIZ"
-          description={`${total} ${total === 1 ? "proyecto administrado" : "proyectos administrados"}. Los borradores y publicados se gestionan aquí; publicar no consume créditos.`}
-        />
+    <div className="flex min-w-0 max-w-full flex-col gap-6 overflow-x-hidden">
+      <section className="rounded-card border border-edge bg-surface px-5 py-4 shadow-[var(--shadow-card)]">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-muted">
+              Publicaciones de ARIZ
+            </p>
+            <h1 className="mt-1 font-display text-2xl font-black text-brand sm:text-3xl">
+              Proyectos ARIZ
+            </h1>
+            <p className="mt-1 max-w-2xl text-sm font-semibold leading-5 text-muted">
+              {total} {total === 1 ? "proyecto administrado" : "proyectos administrados"}. Gestiona
+              borradores y publicados sin consumir creditos.
+            </p>
+          </div>
         <Link
           href={ROUTES.panel.admin.newProject}
-          className="mb-6 inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-card bg-brand px-5 text-sm font-bold text-on-brand transition-colors hover:bg-brand-hover sm:mb-0"
+            className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-card bg-brand px-4 text-sm font-bold text-on-brand transition-colors hover:bg-brand-hover"
         >
-          <PlusIcon className="size-4" />
+          <Plus className="size-4" />
           Crear proyecto
         </Link>
-      </div>
+        </div>
+      </section>
+
+      <section className="grid gap-4 md:grid-cols-3">
+        <ProjectMetric
+          label="Total"
+          value={total}
+          caption={total === 1 ? "Proyecto registrado" : "Proyectos registrados"}
+        />
+        <ProjectMetric
+          label="Visibles"
+          value={items.length}
+          caption="Mostrados en esta pagina"
+        />
+        <ProjectMetric label="Pagina" value={page} caption={`Hasta ${pageSize} por pagina`} />
+      </section>
 
       {items.length > 0 ? (
         <>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid min-w-0 max-w-full gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {items.map((project) => (
               <OwnerProjectCard key={project.id} project={project} adminMode />
             ))}
@@ -47,18 +87,22 @@ export async function AdminProjectList({
           />
         </>
       ) : (
-        <div className="rounded-card border border-dashed border-edge bg-surface p-10 text-center shadow-[var(--shadow-card)]">
-          <p className="font-display text-xl font-black text-brand">
-            Aún no hay proyectos de ARIZ
+        <div className="rounded-card border border-dashed border-edge bg-surface p-8 text-center shadow-[var(--shadow-card)]">
+          <div className="mx-auto flex size-11 items-center justify-center rounded-card bg-brand/10 text-brand">
+            <Sparkles className="size-5" />
+          </div>
+          <p className="mt-4 font-display text-xl font-black text-brand">
+            Aun no hay proyectos de ARIZ
           </p>
           <p className="mx-auto mt-2 max-w-md text-sm text-muted">
-            Crea un proyecto desde el panel. Aparecerá aquí como borrador y podrás publicarlo sin consumir créditos.
+            Crea un proyecto desde el panel. Aparecera aqui como borrador y podras
+            publicarlo sin consumir creditos.
           </p>
           <Link
             href={ROUTES.panel.admin.newProject}
             className="mt-6 inline-flex h-11 items-center justify-center gap-2 rounded-card bg-brand px-5 text-sm font-bold text-on-brand transition-colors hover:bg-brand-hover"
           >
-            <PlusIcon className="size-4" />
+            <LayoutGrid className="size-4" />
             Crear proyecto ARIZ
           </Link>
         </div>

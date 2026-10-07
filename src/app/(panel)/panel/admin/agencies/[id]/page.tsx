@@ -1,11 +1,18 @@
 import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import {
-  BuildingIcon,
-  Card,
-  ChartIcon,
-  CheckCircleIcon,
-} from "@/shared/ui";
+  ArrowLeft,
+  Building2,
+  CheckCircle2,
+  ClipboardList,
+  FolderKanban,
+  Mail,
+  MapPin,
+  MessageCircle,
+  PanelsTopLeft,
+  XCircle,
+} from "lucide-react";
+import { Card, CardContent } from "@/shared/ui";
 import type {
   AdminAgencyProjectReview,
   AdminAgencyPropertyReview,
@@ -68,59 +75,76 @@ export default async function AdminAgencyDetailPage({
     agency.businessName ??
     `${agency.user.firstName} ${agency.user.lastName ?? ""}`
   ).trim();
+  const propertyCount = agency.properties.length;
+  const projectCount = agency.projects.length;
+  const totalCount = propertyCount + projectCount;
 
   return (
-    <div className="flex flex-col gap-6">
-      <header>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
-          <Link
-            href={ROUTES.panel.admin.agencies}
-            className="inline-flex min-h-10 max-w-full items-center justify-self-start gap-2 rounded-card border border-edge bg-surface px-3.5 py-2 text-xs font-bold text-brand transition-colors hover:border-accent hover:bg-accent/10 sm:text-sm"
-          >
-            ← Volver a inmobiliarias
-          </Link>
-          <h1 className="min-w-0 break-words text-2xl font-light tracking-tight text-brand sm:text-center sm:text-3xl">{name}</h1>
-          <span aria-hidden className="hidden sm:block" />
-        </div>
-        <p className="mt-1 text-center text-[11px] font-bold tracking-[0.18em] text-accent uppercase">
-          Cola de revisión · Inmobiliaria
-        </p>
-        <p className="mt-2 break-words text-center text-sm text-muted">
-          {agency.city} · {agency.user.email} · WhatsApp {agency.whatsapp ?? "—"}
-        </p>
-      </header>
-      <div className="flex w-fit max-w-full gap-2 overflow-x-auto rounded-md bg-surface-muted/70 p-1.5">
+    <div className="flex flex-col gap-7">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <Link
-          href={`${ROUTES.panel.admin.agency(id)}?tipo=propiedades`}
-          aria-current={selectedQueue === "property" ? "page" : undefined}
-          className={`flex items-center gap-2.5 whitespace-nowrap rounded-sm px-4 py-2.5 text-sm font-bold transition-colors ${
-            selectedQueue === "property"
-              ? "bg-surface text-brand shadow-sm ring-1 ring-edge"
-              : "text-muted hover:bg-surface/70 hover:text-brand"
-          }`}
+          href={ROUTES.panel.admin.agencies}
+          className="inline-flex min-h-10 w-fit items-center gap-2 rounded-card border border-edge bg-surface px-3.5 py-2 text-sm font-bold text-brand transition-colors hover:border-brand hover:bg-brand-soft"
         >
-          <BuildingIcon className="size-4 text-accent-hover" />
-          Propiedades
-          <span className="rounded-full bg-accent/15 px-2 py-0.5 text-xs text-brand">
-            {agency.properties.length}
-          </span>
+          <ArrowLeft className="size-4" aria-hidden="true" />
+          Volver a inmobiliarias
         </Link>
-        <Link
-          href={`${ROUTES.panel.admin.agency(id)}?tipo=proyectos`}
-          aria-current={selectedQueue === "project" ? "page" : undefined}
-          className={`flex items-center gap-2.5 whitespace-nowrap rounded-sm px-4 py-2.5 text-sm font-bold transition-colors ${
-            selectedQueue === "project"
-              ? "bg-surface text-brand shadow-sm ring-1 ring-edge"
-              : "text-muted hover:bg-surface/70 hover:text-brand"
-          }`}
-        >
-          <ChartIcon className="size-4 text-accent-hover" />
-          Proyectos
-          <span className="rounded-full bg-accent/15 px-2 py-0.5 text-xs text-brand">
-            {agency.projects.length}
-          </span>
-        </Link>
+        <span className="w-fit rounded-full bg-warning/15 px-3 py-1 text-xs font-black uppercase tracking-[0.12em] text-warning">
+          Cola de revisión
+        </span>
       </div>
+
+      <section className="relative overflow-hidden rounded-card border border-edge bg-surface p-5 shadow-[var(--shadow-card)] sm:p-6">
+        <div className="absolute inset-x-0 top-0 h-1.5 bg-brand" aria-hidden="true" />
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px] xl:items-center">
+          <div className="min-w-0">
+            <p className="text-[11px] font-black uppercase tracking-[0.18em] text-accent">
+              Inmobiliaria
+            </p>
+            <h1 className="mt-2 break-words font-display text-3xl font-black tracking-tight text-brand sm:text-4xl">
+              {name}
+            </h1>
+            <div className="mt-4 grid gap-2 text-sm text-muted sm:grid-cols-3">
+              <p className="flex min-w-0 items-center gap-2">
+                <MapPin className="size-4 shrink-0 text-accent" aria-hidden="true" />
+                <span className="truncate">{agency.city || "Ciudad no registrada"}</span>
+              </p>
+              <p className="flex min-w-0 items-center gap-2">
+                <Mail className="size-4 shrink-0 text-accent" aria-hidden="true" />
+                <span className="truncate">{agency.user.email}</span>
+              </p>
+              <p className="flex min-w-0 items-center gap-2">
+                <MessageCircle className="size-4 shrink-0 text-success" aria-hidden="true" />
+                <span className="truncate">{agency.whatsapp ?? "WhatsApp no registrado"}</span>
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3 rounded-card border border-brand/15 bg-brand-soft p-4">
+            <Metric label="Total" value={totalCount} Icon={ClipboardList} />
+            <Metric label="Props." value={propertyCount} Icon={PanelsTopLeft} />
+            <Metric label="Proy." value={projectCount} Icon={FolderKanban} />
+          </div>
+        </div>
+      </section>
+
+      <div className="flex w-fit max-w-full gap-2 overflow-x-auto rounded-card bg-surface-muted/70 p-1.5">
+        <QueueTab
+          href={`${ROUTES.panel.admin.agency(id)}?tipo=propiedades`}
+          active={selectedQueue === "property"}
+          label="Propiedades"
+          count={propertyCount}
+          Icon={PanelsTopLeft}
+        />
+        <QueueTab
+          href={`${ROUTES.panel.admin.agency(id)}?tipo=proyectos`}
+          active={selectedQueue === "project"}
+          label="Proyectos"
+          count={projectCount}
+          Icon={FolderKanban}
+        />
+      </div>
+
       {selectedQueue === "property" ? (
         <ReviewQueue
           agencyId={id}
@@ -140,53 +164,108 @@ export default async function AdminAgencyDetailPage({
   );
 }
 
+function Metric({
+  label,
+  value,
+  Icon,
+}: {
+  label: string;
+  value: number;
+  Icon: typeof ClipboardList;
+}) {
+  return (
+    <div className="flex flex-col items-center text-center">
+      <Icon className="size-4 text-brand" aria-hidden="true" />
+      <p className="mt-2 text-[10px] font-black uppercase tracking-[0.12em] text-muted">
+        {label}
+      </p>
+      <p className="mt-1 text-2xl font-black text-brand">{value}</p>
+    </div>
+  );
+}
+
+function QueueTab({
+  href,
+  active,
+  label,
+  count,
+  Icon,
+}: {
+  href: string;
+  active: boolean;
+  label: string;
+  count: number;
+  Icon: typeof PanelsTopLeft;
+}) {
+  return (
+    <Link
+      href={href}
+      aria-current={active ? "page" : undefined}
+      className={`flex items-center gap-2.5 whitespace-nowrap rounded-card px-4 py-2.5 text-sm font-bold transition-colors ${
+        active
+          ? "bg-surface text-brand shadow-sm ring-1 ring-edge"
+          : "text-muted hover:bg-surface/70 hover:text-brand"
+      }`}
+    >
+      <Icon className="size-4 text-accent" aria-hidden="true" />
+      {label}
+      <span className="rounded-full bg-accent/15 px-2 py-0.5 text-xs text-brand">
+        {count}
+      </span>
+    </Link>
+  );
+}
+
 function ReviewQueue({
   agencyId,
   emptyLabel,
   kind,
   items,
 }: ReviewQueueProps) {
-  const rows =
-    kind === "property"
-      ? items.map((item) => (
-          <ReviewItem
-            key={item.id}
-            agencyId={agencyId}
-            kind="property"
-            itemId={item.id}
-            name={item.title}
-            details={<AgencyPublicationDetails kind="property" item={item} />}
-          />
-        ))
-      : items.map((item) => (
-          <ReviewItem
-            key={item.id}
-            agencyId={agencyId}
-            kind="project"
-            itemId={item.id}
-            name={item.name}
-            details={<AgencyPublicationDetails kind="project" item={item} />}
-          />
-        ));
-
   return (
     <section className="min-w-0">
       {items.length === 0 ? (
-        <div className="flex min-h-64 flex-col items-center justify-center px-6 py-12 text-center">
-          <span className="mb-4 flex size-16 items-center justify-center rounded-2xl bg-accent/15 text-brand">
-            {kind === "property" ? (
-              <BuildingIcon className="size-8 text-accent-hover" />
-            ) : (
-              <ChartIcon className="size-8 text-accent-hover" />
-            )}
-          </span>
-          <p className="text-base font-bold text-brand">
-            {kind === "property" ? "Todo en orden por aquí" : "Aún no hay proyectos en cola"}
-          </p>
-          <p className="mt-1 max-w-sm text-sm leading-relaxed text-muted">{emptyLabel}</p>
-        </div>
+        <Card>
+          <CardContent className="flex min-h-64 flex-col items-center justify-center px-6 py-12 text-center">
+            <span className="mb-4 flex size-16 items-center justify-center rounded-2xl bg-brand-soft text-brand">
+              {kind === "property" ? (
+                <PanelsTopLeft className="size-8" aria-hidden="true" />
+              ) : (
+                <FolderKanban className="size-8" aria-hidden="true" />
+              )}
+            </span>
+            <p className="text-base font-bold text-brand">
+              {kind === "property" ? "Todo en orden por aquí" : "Aún no hay proyectos en cola"}
+            </p>
+            <p className="mt-1 max-w-sm text-sm leading-relaxed text-muted">{emptyLabel}</p>
+          </CardContent>
+        </Card>
       ) : (
-        <div className="grid max-h-[70vh] gap-3 overflow-y-auto pr-1">{rows}</div>
+        <div className="grid gap-3">
+          {kind === "property"
+            ? items.map((item) => (
+                <ReviewItem
+                  key={item.id}
+                  agencyId={agencyId}
+                  kind="property"
+                  itemId={item.id}
+                  name={item.title}
+                  status={item.status}
+                  details={<AgencyPublicationDetails kind="property" item={item} />}
+                />
+              ))
+            : items.map((item) => (
+                <ReviewItem
+                  key={item.id}
+                  agencyId={agencyId}
+                  kind="project"
+                  itemId={item.id}
+                  name={item.name}
+                  status={item.status}
+                  details={<AgencyPublicationDetails kind="project" item={item} />}
+                />
+              ))}
+        </div>
       )}
     </section>
   );
@@ -211,54 +290,68 @@ function ReviewItem({
   kind,
   itemId,
   name,
+  status,
   details,
 }: {
   agencyId: string;
   kind: "property" | "project";
   itemId: string;
   name: string;
+  status?: string;
   details: React.ReactNode;
 }) {
-  const ItemIcon = kind === "property" ? BuildingIcon : ChartIcon;
+  const ItemIcon = kind === "property" ? Building2 : FolderKanban;
+  const kindLabel = kind === "property" ? "Propiedad" : "Proyecto";
 
   return (
-    <Card className="flex min-w-0 flex-col gap-4 border-l-[3px] border-l-accent p-4 transition-shadow hover:shadow-[var(--shadow-pop)] sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex w-full min-w-0 items-center gap-3 sm:flex-1">
-        <span className="flex size-10 shrink-0 items-center justify-center rounded-md bg-accent/15 text-accent-hover">
-          <ItemIcon className="size-5" />
-        </span>
-        <div className="flex min-w-0 flex-1 items-center gap-3 sm:self-center">
-          <p className="min-w-0 truncate font-bold leading-snug text-ink">{name}</p>
-          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-sm bg-warning/15 px-2 py-1 text-[10px] font-bold tracking-wide text-warning uppercase">
-            <span className="size-1.5 rounded-full bg-warning" />
-            En revisión
+    <Card className="overflow-hidden transition-shadow hover:shadow-[var(--shadow-pop)]">
+      <CardContent className="flex min-w-0 flex-col gap-4 p-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex min-w-0 items-start gap-3">
+          <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-brand-soft text-brand">
+            <ItemIcon className="size-5" aria-hidden="true" />
           </span>
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="text-[10px] font-black uppercase tracking-[0.14em] text-accent">
+                {kindLabel}
+              </p>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-warning/15 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.1em] text-warning">
+                <span className="size-1.5 rounded-full bg-warning" />
+                {status === "PENDING_REVIEW" ? "En revisión" : status ?? "En revisión"}
+              </span>
+            </div>
+            <h2 className="mt-1 break-words text-base font-black leading-snug text-ink">
+              {name}
+            </h2>
+          </div>
         </div>
-      </div>
-      <form
-        action={reviewAgencyPublication}
-        className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row"
-      >
-        <input type="hidden" name="itemId" value={itemId} />
-        <input type="hidden" name="agencyId" value={agencyId} />
-        <input type="hidden" name="kind" value={kind} />
-        {details}
-        <button
-          name="action"
-          value="publish"
-          className="inline-flex min-h-10 items-center justify-center gap-2 rounded-card bg-success px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-success/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-success cursor-pointer"
+
+        <form
+          action={reviewAgencyPublication}
+          className="flex w-full flex-col gap-2 sm:flex-row lg:w-auto"
         >
-          <CheckCircleIcon className="size-4" />
-          Habilitar y publicar
-        </button>
-        <button
-          name="action"
-          value="reject"
-          className="inline-flex min-h-10 items-center justify-center gap-2 rounded-card border border-error/30 bg-error/5 px-4 py-2 text-xs font-bold text-error transition-colors hover:bg-error hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-error cursor-pointer"
-        >
-          Rechazar
-        </button>
-      </form>
+          <input type="hidden" name="itemId" value={itemId} />
+          <input type="hidden" name="agencyId" value={agencyId} />
+          <input type="hidden" name="kind" value={kind} />
+          {details}
+          <button
+            name="action"
+            value="publish"
+            className="inline-flex min-h-10 items-center justify-center gap-2 rounded-card bg-success px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-success/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-success"
+          >
+            <CheckCircle2 className="size-4" aria-hidden="true" />
+            Publicar
+          </button>
+          <button
+            name="action"
+            value="reject"
+            className="inline-flex min-h-10 items-center justify-center gap-2 rounded-card border border-error/30 bg-error/5 px-4 py-2 text-xs font-bold text-error transition-colors hover:bg-error hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-error"
+          >
+            <XCircle className="size-4" aria-hidden="true" />
+            Rechazar
+          </button>
+        </form>
+      </CardContent>
     </Card>
   );
 }

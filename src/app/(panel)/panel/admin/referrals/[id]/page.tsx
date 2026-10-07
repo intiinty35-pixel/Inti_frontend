@@ -1,4 +1,4 @@
-import Link from 'next/link';
+﻿import Link from 'next/link';
 import { revalidatePath } from 'next/cache';
 import { Card, CardContent } from '@/shared/ui';
 import { ROUTES } from '@/shared/config/routes';
@@ -39,19 +39,19 @@ export default async function AdminReferrerDetailPage({ params }: { params: Prom
   return (
     <div className="flex flex-col gap-6">
       <Link href={ROUTES.panel.admin.referrals} className="text-sm font-bold text-brand">
-        ← Volver a referentes
+        â† Volver a referentes
       </Link>
 
       <AdminPageHeader
         eyebrow="Referente"
         title={referrer.name}
-        description={`${referrer.email} · ${referrer.phone}`}
+        description={`${referrer.email} Â· ${referrer.phone}`}
       />
 
       <Card>
         <CardContent className="flex flex-wrap items-center justify-between gap-4 p-5">
           <div>
-            <p className="text-xs font-bold uppercase tracking-wide text-muted">Código de referente</p>
+            <p className="text-xs font-bold uppercase tracking-wide text-muted">CÃ³digo de referente</p>
             <p className="text-lg font-bold text-accent">{referrer.code}</p>
           </div>
           <div className="rounded-xl bg-brand px-5 py-3 text-right text-on-brand">
@@ -69,7 +69,7 @@ export default async function AdminReferrerDetailPage({ params }: { params: Prom
         {referrer.referrals.length === 0 ? (
           <Card>
             <CardContent className="py-10 text-center text-sm text-muted">
-              Este referente aún no tiene referidos.
+              Este referente aÃºn no tiene referidos.
             </CardContent>
           </Card>
         ) : (
@@ -84,9 +84,9 @@ export default async function AdminReferrerDetailPage({ params }: { params: Prom
                         {STATUS_LABELS[referral.status]}
                       </span>
                     </div>
-                    <p className="mt-1 text-sm text-muted">{referral.email} · {referral.phone}</p>
+                    <p className="mt-1 text-sm text-muted">{referral.email} Â· {referral.phone}</p>
                     <p className="mt-2 text-sm font-semibold text-brand">
-                      Interés: {INTEREST_LABELS[referral.interest] ?? referral.interest}
+                      InterÃ©s: {INTEREST_LABELS[referral.interest] ?? referral.interest}
                     </p>
                     <p className="mt-1 text-sm font-semibold text-brand">
                       Disponibilidad: {referral.availability}
@@ -96,7 +96,7 @@ export default async function AdminReferrerDetailPage({ params }: { params: Prom
                         Proyecto: {referral.project.name}
                       </p>
                     )}
-                    <p className="mt-1 text-xs text-muted">Código {referral.code}</p>
+                    <p className="mt-1 text-xs text-muted">CÃ³digo {referral.code}</p>
                     <details className="mt-3">
                       <summary className="cursor-pointer text-xs font-bold text-brand">
                         Consultar historial ({referral.history.length})
@@ -104,7 +104,7 @@ export default async function AdminReferrerDetailPage({ params }: { params: Prom
                       <div className="mt-2 flex flex-col gap-2 border-l-2 border-brand-soft pl-3">
                         {referral.history.map((entry) => (
                           <div key={entry.id} className="text-xs text-muted">
-                            <span className="font-semibold text-ink">{entry.toStatus}</span> · +{entry.pointsAwarded} puntos · {new Date(entry.createdAt).toLocaleDateString('es-PE')}
+                            <span className="font-semibold text-ink">{entry.toStatus}</span> Â· +{entry.pointsAwarded} puntos Â· {new Date(entry.createdAt).toLocaleDateString('es-PE')}
                           </div>
                         ))}
                       </div>

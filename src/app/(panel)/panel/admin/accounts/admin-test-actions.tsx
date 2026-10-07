@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Bell, PauseCircle, Trash2 } from "lucide-react";
+import { FormEvent, useState } from "react";
+import { Bell, PauseCircle, Trash2, X } from "lucide-react";
 import { Button } from "@/shared/ui";
 import { AdminRequestError, notifyProfessional } from "@/features/admin/api/client";
 
@@ -13,23 +13,36 @@ interface AdminTestActionsProps {
 export function AdminTestActions({ label, notifyId }: AdminTestActionsProps) {
   const [state, setState] = useState<"active" | "paused" | "deleted" | "notified" | "error">("active");
   const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [subject, setSubject] = useState("Notificacion administrativa de ARIZ");
+  const [message, setMessage] = useState(
+    "Estamos revisando tu cuenta y tus publicaciones para mantener la calidad de la plataforma. Por favor ingresa a tu panel de ARIZ y corrige la informacion indicada.",
+  );
+  const [error, setError] = useState("");
 
-  async function handleNotify() {
+  async function handleNotify(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError("");
+
     if (!notifyId) {
-      setState("notified");
+      setError("Esta fila no tiene un destinatario conectado al correo.");
       return;
     }
 
     setLoading(true);
     try {
-      await notifyProfessional(notifyId);
+      await notifyProfessional(notifyId, {
+        subject: subject.trim(),
+        message: message.trim(),
+      });
       setState("notified");
-    } catch (error) {
+      setOpen(false);
+    } catch (cause) {
       setState("error");
-      if (error instanceof AdminRequestError) {
-        console.error(error.messages.join(" "));
+      if (cause instanceof AdminRequestError) {
+        setError(cause.messages.join(" "));
       } else {
-        console.error(error);
+        setError("No se pudo enviar la notificacion.");
       }
     } finally {
       setLoading(false);
@@ -58,15 +71,83 @@ export function AdminTestActions({ label, notifyId }: AdminTestActionsProps) {
         className="px-3 whitespace-nowrap"
         title={`Notificar ${label}`}
         disabled={loading}
-        onClick={() => void handleNotify()}
+        onClick={() => setOpen(true)}
       >
         <Bell className="size-3.5" />
-        {loading ? "Enviando..." : state === "notified" ? "Notificacion enviada" : state === "error" ? "Error correo" : "Notificar"}
+        {loading
+          ? "Enviando..."
+          : state === "notified"
+            ? "Notificacion enviada"
+            : state === "error"
+              ? "Error correo"
+              : "Notificar"}
       </Button>
       <Button size="xs" variant="danger" className="px-3 whitespace-nowrap" title={`Eliminar ${label}`} onClick={() => setState("deleted")}>
         <Trash2 className="size-3.5" />
         Eliminar
       </Button>
+
+      {open ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/35 p-4">
+          <form
+            onSubmit={handleNotify}
+            className="w-full max-w-lg rounded-card border border-edge bg-surface p-5 text-left shadow-[var(--shadow-pop)]"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.16em] text-accent">
+                  Notificar usuario
+                </p>
+                <h2 className="mt-1 text-xl font-black text-brand">{label}</h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                className="flex size-9 items-center justify-center rounded-card border border-edge text-muted transition-colors hover:text-ink"
+                aria-label="Cerrar"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <label className="mt-4 block text-xs font-black uppercase tracking-[0.12em] text-muted">
+              Asunto
+              <input
+                value={subject}
+                onChange={(event) => setSubject(event.target.value)}
+                minLength={3}
+                maxLength={120}
+                required
+                className="mt-2 h-10 w-full rounded-card border border-edge bg-canvas px-3 text-sm font-semibold text-ink outline-none focus:border-brand"
+              />
+            </label>
+
+            <label className="mt-4 block text-xs font-black uppercase tracking-[0.12em] text-muted">
+              Mensaje
+              <textarea
+                value={message}
+                onChange={(event) => setMessage(event.target.value)}
+                minLength={10}
+                maxLength={2000}
+                required
+                rows={7}
+                className="mt-2 w-full resize-none rounded-card border border-edge bg-canvas px-3 py-2 text-sm font-semibold leading-6 text-ink outline-none focus:border-brand"
+              />
+            </label>
+
+            {error ? <p className="mt-3 text-sm font-bold text-error">{error}</p> : null}
+
+            <div className="mt-5 flex justify-end gap-2">
+              <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={loading}>
+                {loading ? "Enviando..." : "Enviar correo"}
+              </Button>
+            </div>
+          </form>
+        </div>
+      ) : null}
     </div>
   );
 }

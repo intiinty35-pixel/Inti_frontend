@@ -22,11 +22,11 @@ export function SubscriptionReviewActions({ id }: { id: string }) {
   }
 
   return (
-    <div className="flex gap-2">
-      <Button size="sm" onClick={() => setPending("ACTIVE")}>
+    <div className="flex w-full flex-col gap-2 sm:flex-row">
+      <Button size="sm" onClick={() => setPending("ACTIVE")} className="w-full">
         Aprobar
       </Button>
-      <Button size="sm" variant="secondary" onClick={() => setPending("REJECTED")}>
+      <Button size="sm" variant="secondary" onClick={() => setPending("REJECTED")} className="w-full">
         Rechazar
       </Button>
 

@@ -60,9 +60,18 @@ export function setOfficialDeveloper(id: string, isOfficialDeveloper: boolean): 
   });
 }
 
-export function notifyProfessional(id: string): Promise<{ ok: boolean; email: string }> {
+export interface NotifyProfessionalInput {
+  subject?: string;
+  message?: string;
+}
+
+export function notifyProfessional(
+  id: string,
+  input: NotifyProfessionalInput = {},
+): Promise<{ ok: boolean; email: string }> {
   return request<{ ok: boolean; email: string }>(`/admin/professionals/${id}/notify`, {
     method: "POST",
+    body: JSON.stringify(input),
   });
 }
 

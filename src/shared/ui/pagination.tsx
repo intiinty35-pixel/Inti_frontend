@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { cn } from "@/shared/lib/cn";
 
 export interface PaginationProps {
@@ -17,7 +17,7 @@ export function Pagination({ page, pageSize, total, buildHref }: PaginationProps
   });
 
   return (
-    <nav aria-label="Paginación" className="flex flex-wrap items-center justify-center gap-1.5">
+    <nav aria-label="Paginacion" className="flex max-w-full flex-wrap items-center justify-center gap-1.5 overflow-hidden">
       <Link
         href={buildHref(Math.max(1, page - 1))}
         aria-disabled={page === 1}
@@ -35,7 +35,7 @@ export function Pagination({ page, pageSize, total, buildHref }: PaginationProps
         const hasGap = previous !== undefined && item - previous > 1;
 
         return (
-          <span key={item} className="flex items-center gap-1.5">
+          <span key={item} className="contents">
             {hasGap ? (
               <span className="flex h-9 min-w-6 items-center justify-center text-sm font-bold text-muted">
                 ...
@@ -71,3 +71,4 @@ export function Pagination({ page, pageSize, total, buildHref }: PaginationProps
     </nav>
   );
 }
+

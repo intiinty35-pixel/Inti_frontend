@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import Image from "next/image";
 import { ArrowUpRight, Coins, Gift, Sparkles } from "lucide-react";
 
@@ -7,9 +8,11 @@ interface RewardsHeroProps {
   referrerName: string;
   totalPoints: number;
   backgroundImageUrl?: string;
+  /** Accion (ej. boton "Referir con Ariz") que se muestra bajo el nombre. */
+  action?: ReactNode;
 }
 
-export function RewardsHero({ referrerName, totalPoints, backgroundImageUrl }: RewardsHeroProps) {
+export function RewardsHero({ referrerName, totalPoints, backgroundImageUrl, action }: RewardsHeroProps) {
   return (
     <section className="relative mb-8 min-h-[500px] overflow-hidden rounded-3xl border border-brand/10 bg-brand shadow-[var(--shadow-pop)] sm:min-h-[520px] lg:min-h-[560px]">
       {backgroundImageUrl ? (
@@ -46,6 +49,7 @@ export function RewardsHero({ referrerName, totalPoints, backgroundImageUrl }: R
           <p className="mt-4 max-w-lg text-base leading-relaxed text-white/85 sm:text-lg">
             Cada recomendación suma. Descubre lo que puedes conseguir con tus puntos.
           </p>
+          {action ? <div className="mt-6">{action}</div> : null}
           <div className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-white/90">
             <Gift className="size-4" />
             Recompensas exclusivas para ti

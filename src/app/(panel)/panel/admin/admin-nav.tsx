@@ -2,26 +2,132 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FileIcon, UserIcon, ChartIcon, PlusIcon, BuildingIcon } from "@/shared/ui/icons";
+import type { LucideIcon } from "lucide-react";
+import {
+  BadgeDollarSign,
+  Boxes,
+  Building2,
+  ChartNoAxesCombined,
+  CirclePlus,
+  ClipboardCheck,
+  Coins,
+  Gift,
+  HandCoins,
+  Landmark,
+  LayoutDashboard,
+  UserCog,
+} from "lucide-react";
 import { cn } from "@/shared/lib/cn";
 import { ROUTES } from "@/shared/config/routes";
 
-const NAV_ITEMS = [
-  { key: "dashboard", label: "Dashboard", href: ROUTES.panel.admin.base, Icon: ChartIcon },
-  { key: "accounts", label: "Cuentas", href: ROUTES.panel.admin.accounts, Icon: UserIcon },
-  { key: "agencies", label: "Revisión de inmobiliarias", href: ROUTES.panel.admin.agencies, Icon: BuildingIcon },
-  { key: "plans", label: "Planes", href: ROUTES.panel.admin.plans, Icon: ChartIcon },
-  { key: "subscriptions", label: "Solicitudes de pago", href: ROUTES.panel.admin.subscriptions, Icon: FileIcon },
-  { key: "referrals", label: "Referidos y puntos", href: ROUTES.panel.admin.referrals, Icon: UserIcon },
-  { key: "incentives", label: "Incentivos", href: ROUTES.panel.admin.incentives, Icon: PlusIcon },
-  { key: "redemptions", label: "Canjes", href: ROUTES.panel.admin.redemptions, Icon: FileIcon },
-  { key: "projects", label: "Proyectos ARIZ", href: ROUTES.panel.admin.projects, Icon: ChartIcon },
-  { key: "investment-opportunities", label: "Proyectos de inversión", href: ROUTES.panel.admin.investmentOpportunities, Icon: ChartIcon },
-  { key: "new-project", label: "Crear proyecto", href: ROUTES.panel.admin.newProject, Icon: PlusIcon },
+type AdminNavGroup = "general" | "operacion" | "recompensas" | "portafolio";
+
+type AdminNavItem = {
+  key: string;
+  label: string;
+  href: string;
+  Icon: LucideIcon;
+  group: AdminNavGroup;
+};
+
+const GROUP_LABELS: Record<AdminNavGroup, string> = {
+  general: "General",
+  operacion: "Operación",
+  recompensas: "Recompensas",
+  portafolio: "Portafolio",
+};
+
+const NAV_ITEMS: readonly AdminNavItem[] = [
+  {
+    key: "dashboard",
+    label: "Dashboard",
+    href: ROUTES.panel.admin.base,
+    Icon: LayoutDashboard,
+    group: "general",
+  },
+  {
+    key: "accounts",
+    label: "Cuentas",
+    href: ROUTES.panel.admin.accounts,
+    Icon: UserCog,
+    group: "general",
+  },
+  {
+    key: "developers",
+    label: "Desarrolladores",
+    href: ROUTES.panel.admin.developers,
+    Icon: Landmark,
+    group: "operacion",
+  },
+  {
+    key: "agencies",
+    label: "Revisión de inmobiliarias",
+    href: ROUTES.panel.admin.agencies,
+    Icon: Building2,
+    group: "operacion",
+  },
+  {
+    key: "plans",
+    label: "Planes",
+    href: ROUTES.panel.admin.plans,
+    Icon: BadgeDollarSign,
+    group: "operacion",
+  },
+  {
+    key: "subscriptions",
+    label: "Solicitudes de pago",
+    href: ROUTES.panel.admin.subscriptions,
+    Icon: ClipboardCheck,
+    group: "operacion",
+  },
+  {
+    key: "referrals",
+    label: "Referidos y puntos",
+    href: ROUTES.panel.admin.referrals,
+    Icon: Coins,
+    group: "recompensas",
+  },
+  {
+    key: "incentives",
+    label: "Incentivos",
+    href: ROUTES.panel.admin.incentives,
+    Icon: Gift,
+    group: "recompensas",
+  },
+  {
+    key: "redemptions",
+    label: "Canjes",
+    href: ROUTES.panel.admin.redemptions,
+    Icon: HandCoins,
+    group: "recompensas",
+  },
+  {
+    key: "projects",
+    label: "Proyectos ARIZ",
+    href: ROUTES.panel.admin.projects,
+    Icon: Boxes,
+    group: "portafolio",
+  },
+  {
+    key: "investment-opportunities",
+    label: "Proyectos de inversión",
+    href: ROUTES.panel.admin.investmentOpportunities,
+    Icon: ChartNoAxesCombined,
+    group: "portafolio",
+  },
+  {
+    key: "new-project",
+    label: "Crear proyecto",
+    href: ROUTES.panel.admin.newProject,
+    Icon: CirclePlus,
+    group: "portafolio",
+  },
 ] as const;
 
 function isActiveAdminRoute(pathname: string, href: string) {
-  if (href === ROUTES.panel.admin.base || href === ROUTES.panel.admin.projects) return pathname === href;
+  if (href === ROUTES.panel.admin.base || href === ROUTES.panel.admin.projects) {
+    return pathname === href;
+  }
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
@@ -35,30 +141,39 @@ export function AdminNav({
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
+  let currentGroup: AdminNavGroup | null = null;
 
   return (
     <nav className={cn(mobile ? "flex flex-col gap-1" : "flex flex-col gap-1.5")}>
       {NAV_ITEMS.map((item) => {
         const active = isActiveAdminRoute(pathname, item.href);
         const Icon = item.Icon;
+        const showGroup = !collapsed && currentGroup !== item.group;
+        currentGroup = item.group;
 
         return (
-          <Link
-            key={item.key}
-            href={item.href}
-            title={collapsed ? item.label : undefined}
-            onClick={onNavigate}
-            className={cn(
-              "flex h-11 items-center rounded-xl text-sm font-semibold transition-colors",
-              collapsed ? "justify-center px-0" : "gap-3 px-3",
-              active
-                ? "bg-brand text-on-brand shadow-[var(--shadow-card)]"
-                : "text-muted hover:bg-surface-muted hover:text-ink",
-            )}
-          >
-            <Icon className="size-5 shrink-0" />
-            {!collapsed ? <span className="truncate">{item.label}</span> : null}
-          </Link>
+          <div key={item.key} className={cn(showGroup && "mt-2 first:mt-0")}>
+            {showGroup ? (
+              <p className="px-3 pb-1 pt-2 text-[10px] font-black uppercase tracking-[0.16em] text-muted">
+                {GROUP_LABELS[item.group]}
+              </p>
+            ) : null}
+            <Link
+              href={item.href}
+              title={collapsed ? item.label : undefined}
+              onClick={onNavigate}
+              className={cn(
+                "flex h-11 items-center rounded-xl text-sm font-semibold transition-colors",
+                collapsed ? "justify-center px-0" : "gap-3 px-3",
+                active
+                  ? "bg-brand text-on-brand shadow-[var(--shadow-card)]"
+                  : "text-muted hover:bg-surface-muted hover:text-ink",
+              )}
+            >
+              <Icon className="size-5 shrink-0" aria-hidden="true" strokeWidth={2.1} />
+              {!collapsed ? <span className="truncate">{item.label}</span> : null}
+            </Link>
+          </div>
         );
       })}
     </nav>

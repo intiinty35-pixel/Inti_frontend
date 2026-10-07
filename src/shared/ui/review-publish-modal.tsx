@@ -52,12 +52,12 @@ export function ReviewPublishModal({
       onMouseDown={(event) => event.target === event.currentTarget && onClose()}
     >
       <section
-        className="w-full max-w-md rounded-card border border-edge bg-surface p-6 shadow-[var(--shadow-pop)]"
+        className="flex max-h-[calc(100dvh-2rem)] w-full max-w-md flex-col overflow-hidden rounded-card border border-edge bg-surface p-6 shadow-[var(--shadow-pop)]"
         role="dialog"
         aria-modal="true"
         aria-labelledby="review-publish-title"
       >
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex shrink-0 items-start justify-between gap-4">
           <div>
             <p className="text-[11px] font-black tracking-[0.18em] text-accent uppercase">
               Solicitud para inmobiliarias
@@ -76,6 +76,7 @@ export function ReviewPublishModal({
           </button>
         </div>
 
+        <div className="min-h-0 flex-1 overflow-y-auto">
         <p className="mt-4 text-sm leading-relaxed text-muted">
           Envía tu solicitud al gerente por WhatsApp. Cuando hayan llegado a un acuerdo, vuelve
           aquí y manda esta ficha a la cola de revisión del administrador.
@@ -112,6 +113,7 @@ export function ReviewPublishModal({
         >
           {submitting ? "Enviando…" : "Ya coordiné, enviar a revisión"}
         </button>
+        </div>
       </section>
     </div>,
     document.body,

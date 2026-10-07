@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { Building2, Crown, Home, LineChart, Users } from "lucide-react";
 import { CATEGORICAL, Card, STATUS } from "@/shared/ui";
 import { ROUTES } from "@/shared/config/routes";
@@ -18,7 +18,14 @@ const PROFILE_FILTERS = [
   { key: "users", label: "Usuarios", href: `${ROUTES.panel.admin.base}?perfil=users` },
 ] as const;
 
+const RANGE_FILTERS = [
+  { key: "1m", label: "1 mes", months: 1 },
+  { key: "6m", label: "6 meses", months: 6 },
+  { key: "12m", label: "1 año", months: 12 },
+] as const;
+
 type ProfileFilter = (typeof PROFILE_FILTERS)[number]["key"];
+type RangeFilter = (typeof RANGE_FILTERS)[number]["key"];
 
 function profileMatches(type: string | undefined, profile: ProfileFilter) {
   if (profile === "all") return true;
@@ -29,7 +36,7 @@ function profileMatches(type: string | undefined, profile: ProfileFilter) {
 }
 
 interface PanelAdminPageProps {
-  searchParams: Promise<{ perfil?: string }>;
+  searchParams: Promise<{ perfil?: string; rango?: string }>;
 }
 
 function formatDelta(current: number, previous: number) {
@@ -58,10 +65,10 @@ function getDateValue(item: unknown) {
   return Number.isFinite(date.getTime()) ? date : null;
 }
 
-function buildMonthlyTrend(items: unknown[], fallbackTotal: number) {
+function buildMonthlyTrend(items: unknown[], fallbackTotal: number, monthsCount: number) {
   const today = new Date();
-  const months = Array.from({ length: 6 }, (_, index) => {
-    const date = new Date(today.getFullYear(), today.getMonth() - (5 - index), 1);
+  const months = Array.from({ length: monthsCount }, (_, index) => {
+    const date = new Date(today.getFullYear(), today.getMonth() - (monthsCount - 1 - index), 1);
     return { key: monthKey(date), label: monthLabel(date), value: 0 };
   });
 
@@ -85,6 +92,23 @@ function numericField(item: unknown, field: string) {
   return typeof value === "number" && Number.isFinite(value) ? value : 0;
 }
 
+function TrendLegend({
+  items,
+}: {
+  items: Array<{ label: string; color: string }>;
+}) {
+  return (
+    <div className="flex flex-wrap gap-x-4 gap-y-2">
+      {items.map((item) => (
+        <span key={item.label} className="inline-flex items-center gap-2 text-xs font-bold text-muted">
+          <span className="size-2.5 rounded-full" style={{ backgroundColor: item.color }} />
+          {item.label}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 function ExcelColumnChart({
   categories,
   series,
@@ -92,96 +116,55 @@ function ExcelColumnChart({
   categories: string[];
   series: Array<{ label: string; color: string; values: number[] }>;
 }) {
-  const width = 760;
-  const height = 320;
-  const left = 54;
-  const right = 22;
-  const top = 26;
-  const bottom = 74;
-  const plotWidth = width - left - right;
-  const plotHeight = height - top - bottom;
   const max = Math.max(1, ...series.flatMap((item) => item.values));
-  const ticks = Array.from({ length: 5 }, (_, index) => Math.ceil((max / 4) * index));
-  const groupWidth = plotWidth / categories.length;
-  const barWidth = Math.max(6, Math.min(16, (groupWidth - 14) / series.length));
 
   return (
-    <div className="overflow-x-auto">
-      <svg viewBox={`0 0 ${width} ${height}`} className="min-w-[680px]">
-        <rect x="0" y="0" width={width} height={height} fill="#ffffff" />
-        {ticks.map((tick, index) => {
-          const y = top + plotHeight - (tick / max) * plotHeight;
-          return (
-            <g key={`column-tick-${index}-${tick}`}>
-              <line x1={left} y1={y} x2={width - right} y2={y} stroke="#d9d9d9" strokeWidth="1" />
-              <text x={left - 10} y={y + 4} textAnchor="end" fontSize="11" fill="#52514e">
-                {tick}
-              </text>
-            </g>
-          );
-        })}
-        {categories.map((category, categoryIndex) => {
-          const x = left + categoryIndex * groupWidth + groupWidth / 2;
-          return (
-            <g key={`category-${categoryIndex}-${category}`}>
-              {series.map((item, seriesIndex) => {
-                const value = item.values[categoryIndex] ?? 0;
-                const barHeight = (value / max) * plotHeight;
-                const barX = x - (series.length * barWidth) / 2 + seriesIndex * barWidth;
-                const barY = top + plotHeight - barHeight;
-                return (
-                  <g key={`bar-${categoryIndex}-${seriesIndex}-${item.label}`} className="group cursor-default">
-                    <title>{`${item.label} · ${category}: ${value}`}</title>
-                    <rect
-                      x={barX}
-                      y={barY}
-                      width={barWidth - 2}
-                      height={barHeight}
-                      fill={item.color}
-                      className="origin-bottom transition-all duration-150 group-hover:opacity-80"
-                    />
-                    <text
-                      x={barX + (barWidth - 2) / 2}
-                      y={Math.max(top + 12, barY - 6)}
-                      textAnchor="middle"
-                      fontSize="10"
-                      fill="#0b0b0b"
-                      className="opacity-0 transition-opacity duration-150 group-hover:opacity-100"
-                    >
-                      {value}
-                    </text>
-                  </g>
-                );
-              })}
-              <text x={x} y={height - 44} textAnchor="end" fontSize="11" fill="#52514e" transform={`rotate(-45 ${x} ${height - 44})`}>
-                {category}
-              </text>
-            </g>
-          );
-        })}
-        <line x1={left} y1={top + plotHeight} x2={width - right} y2={top + plotHeight} stroke="#bfbfbf" />
-        <g transform={`translate(${left + 60} ${height - 18})`}>
-          {series.map((item, index) => (
-            <g key={`legend-${index}-${item.label}`} transform={`translate(${index * 150} 0)`}>
-              <rect width="10" height="10" fill={item.color} />
-              <text x="16" y="9" fontSize="11" fill="#52514e">
-                {item.label}
-              </text>
-            </g>
+    <div className="min-w-0">
+      <TrendLegend items={series} />
+      <div className="mt-5 grid min-h-72 grid-cols-[auto_minmax(0,1fr)] gap-3">
+        <div className="flex flex-col justify-between pb-7 text-right text-[11px] font-bold text-muted">
+          {[max, Math.ceil(max * 0.66), Math.ceil(max * 0.33), 0].map((tick) => (
+            <span key={tick}>{tick}</span>
           ))}
-        </g>
-      </svg>
+        </div>
+        <div className="relative grid min-w-0 grid-flow-col gap-2 overflow-x-auto pb-1">
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-edge" />
+          <div className="pointer-events-none absolute inset-x-0 top-1/3 h-px bg-edge/70" />
+          <div className="pointer-events-none absolute inset-x-0 top-2/3 h-px bg-edge/70" />
+          {categories.map((category, categoryIndex) => (
+            <div key={category} className="flex min-w-14 flex-col justify-end gap-2">
+              <div className="relative flex h-60 items-end justify-center gap-1 rounded-card px-1 transition-colors hover:bg-surface-muted">
+                {series.map((item) => {
+                  const value = item.values[categoryIndex] ?? 0;
+                  const height = Math.max(value > 0 ? 8 : 2, (value / max) * 220);
+                  return (
+                    <div
+                      key={`${category}-${item.label}`}
+                      title={`${item.label} - ${category}: ${value}`}
+                      className="w-2.5 rounded-t-full transition-all duration-200 hover:-translate-y-1 hover:opacity-80 sm:w-3"
+                      style={{ height, backgroundColor: item.color }}
+                    />
+                  );
+                })}
+              </div>
+              <span className="truncate text-center text-[11px] font-bold capitalize text-muted" title={category}>
+                {category}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
 
 function ExcelLineChart({ data, color }: { data: Array<{ label: string; value: number }>; color: string }) {
-  const width = 760;
-  const height = 320;
+  const width = 900;
+  const height = 340;
   const left = 54;
-  const right = 22;
-  const top = 28;
-  const bottom = 68;
+  const right = 28;
+  const top = 34;
+  const bottom = 64;
   const plotWidth = width - left - right;
   const plotHeight = height - top - bottom;
   const max = Math.max(1, ...data.map((item) => item.value));
@@ -191,12 +174,21 @@ function ExcelLineChart({ data, color }: { data: Array<{ label: string; value: n
     x: left + index * step,
     y: top + plotHeight - (item.value / max) * plotHeight,
   }));
-  const path = points.map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`).join(" ");
+  const path = points
+    .map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`)
+    .join(" ");
+  const area = `${path} L ${left + (points.length - 1) * step} ${top + plotHeight} L ${left} ${top + plotHeight} Z`;
 
   return (
-    <div className="overflow-x-auto">
-      <svg viewBox={`0 0 ${width} ${height}`} className="min-w-[680px]">
-        <rect x="0" y="0" width={width} height={height} fill="#ffffff" />
+    <div className="min-w-0 overflow-x-auto">
+      <svg viewBox={`0 0 ${width} ${height}`} className="min-w-[620px]">
+        <defs>
+          <linearGradient id="publicationTrendFill" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stopColor={color} stopOpacity="0.22" />
+            <stop offset="100%" stopColor={color} stopOpacity="0.02" />
+          </linearGradient>
+        </defs>
+        <rect x="0" y="0" width={width} height={height} rx="16" fill="#ffffff" />
         {Array.from({ length: 6 }, (_, index) => {
           const value = Math.ceil((max / 5) * index);
           const y = top + plotHeight - (value / max) * plotHeight;
@@ -209,20 +201,17 @@ function ExcelLineChart({ data, color }: { data: Array<{ label: string; value: n
             </g>
           );
         })}
-        {points.map((point, index) => (
-          <line key={`line-grid-${index}-${point.label}`} x1={point.x} y1={top} x2={point.x} y2={top + plotHeight} stroke="#e6e6e6" />
-        ))}
+        <path d={area} fill="url(#publicationTrendFill)" />
         <path d={path} fill="none" stroke={color} strokeWidth="4" strokeLinejoin="round" strokeLinecap="round" className="transition-opacity duration-150 hover:opacity-80" />
         {points.map((point, index) => (
           <g key={`line-point-${index}-${point.label}`} className="group cursor-default">
             <title>{`${point.label}: ${point.value}`}</title>
-            <rect
-              x={point.x - 5}
-              y={point.y - 5}
-              width="10"
-              height="10"
+            <line x1={point.x} y1={top} x2={point.x} y2={top + plotHeight} stroke="#e6e6e6" />
+            <circle
+              cx={point.x}
+              cy={point.y}
+              r="5"
               fill={color}
-              transform={`rotate(45 ${point.x} ${point.y})`}
               className="transition-all duration-150 group-hover:opacity-80"
             />
             <circle
@@ -243,7 +232,7 @@ function ExcelLineChart({ data, color }: { data: Array<{ label: string; value: n
             >
               {point.value}
             </text>
-            <text x={point.x} y={height - 42} textAnchor="end" fontSize="11" fill="#52514e" transform={`rotate(-45 ${point.x} ${height - 42})`}>
+            <text x={point.x} y={height - 34} textAnchor="middle" fontSize="11" fill="#52514e">
               {point.label}
             </text>
           </g>
@@ -269,7 +258,7 @@ function ExcelPieChart({ data }: { data: Array<{ label: string; value: number; c
   });
 
   return (
-    <div className="grid items-center gap-5 md:grid-cols-[1fr_180px]">
+    <div className="grid items-center gap-5 md:grid-cols-[minmax(0,1fr)_220px]">
       <svg viewBox="0 0 300 240" className="mx-auto w-full max-w-[360px]">
         <rect x="0" y="0" width="300" height="240" fill="#ffffff" />
         {slices.map((item, index) => {
@@ -288,12 +277,19 @@ function ExcelPieChart({ data }: { data: Array<{ label: string; value: number; c
               fill={item.color}
               stroke="#ffffff"
               strokeWidth="2"
-              className="cursor-default transition-opacity duration-150 hover:opacity-80"
+              className="cursor-default transition-opacity duration-200 hover:opacity-80"
             >
               <title>{`${item.label}: ${item.value}`}</title>
             </path>
           );
         })}
+        <circle cx="150" cy="120" r="48" fill="#ffffff" />
+        <text x="150" y="116" textAnchor="middle" fontSize="24" fontWeight="800" fill="#0b0b0b">
+          {total}
+        </text>
+        <text x="150" y="136" textAnchor="middle" fontSize="10" fontWeight="700" fill="#52514e">
+          perfiles
+        </text>
       </svg>
       <ul className="grid gap-2 text-xs">
         {data.map((item, index) => (
@@ -314,7 +310,7 @@ function TopProjectList({ data }: { data: Array<{ label: string; value: number; 
   if (data.length === 0) {
     return (
       <div className="flex min-h-44 items-center justify-center rounded-card bg-surface-muted px-5 text-center text-sm text-muted">
-        Cuando existan proyectos en revisión, los 10 con mayor demanda aparecerán aquí.
+        Cuando existan proyectos en revisiÃ³n, los 10 con mayor demanda aparecerÃ¡n aquÃ­.
       </div>
     );
   }
@@ -378,8 +374,10 @@ function MetricCard({
 }
 
 export default async function PanelAdminPage({ searchParams }: PanelAdminPageProps) {
-  const { perfil } = await searchParams;
+  const { perfil, rango } = await searchParams;
   const profile = PROFILE_FILTERS.some((item) => item.key === perfil) ? (perfil as ProfileFilter) : "all";
+  const range = RANGE_FILTERS.some((item) => item.key === rango) ? (rango as RangeFilter) : "6m";
+  const rangeConfig = RANGE_FILTERS.find((item) => item.key === range) ?? RANGE_FILTERS[1];
   const [professionalPool, propertiesPage, projectsPage, subscriptions] =
     await Promise.all([
       listProfessionals(1, 200),
@@ -406,10 +404,14 @@ export default async function PanelAdminPage({ searchParams }: PanelAdminPagePro
   });
   const filteredSubscriptions = subscriptions.items.filter((item) => profileMatches(item.agentProfile.type, profile));
   const visibleMembershipTotal = profile === "all" ? subscriptions.total : filteredSubscriptions.length;
-  const accountTrend = buildMonthlyTrend(filteredProfessionals, filteredProfessionals.length);
-  const propertyTrend = buildMonthlyTrend(publishedProperties, publishedProperties.length);
-  const projectTrend = buildMonthlyTrend(publishedProjects, publishedProjects.length);
-  const membershipTrend = buildMonthlyTrend(filteredSubscriptions, visibleMembershipTotal || filteredSubscriptions.length);
+  const accountTrend = buildMonthlyTrend(filteredProfessionals, filteredProfessionals.length, rangeConfig.months);
+  const propertyTrend = buildMonthlyTrend(publishedProperties, publishedProperties.length, rangeConfig.months);
+  const projectTrend = buildMonthlyTrend(publishedProjects, publishedProjects.length, rangeConfig.months);
+  const membershipTrend = buildMonthlyTrend(
+    filteredSubscriptions,
+    visibleMembershipTotal || filteredSubscriptions.length,
+    rangeConfig.months,
+  );
   const monthlyCategories = propertyTrend.map((item) => item.label);
   const combinedPublicationTrend = propertyTrend.map((item, index) => ({
     label: item.label,
@@ -440,7 +442,7 @@ export default async function PanelAdminPage({ searchParams }: PanelAdminPagePro
     <div className="flex flex-col gap-7">
       <AdminPageHeader
         title="Centro de control"
-        description="Indicadores principales para cuentas, publicaciones, proyectos y membresías."
+        description="Indicadores principales para cuentas, publicaciones, proyectos y membresias."
         align="center"
       />
 
@@ -448,7 +450,7 @@ export default async function PanelAdminPage({ searchParams }: PanelAdminPagePro
         <div className="absolute inset-x-0 top-0 h-1.5 bg-brand" aria-hidden />
         <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <p className="text-[11px] font-black tracking-[0.18em] text-accent uppercase">Visión general</p>
+            <p className="text-[11px] font-black tracking-[0.18em] text-accent uppercase">VisiÃ³n general</p>
             <h2 className="mt-1 font-display text-3xl font-black tracking-tight text-brand">
               Rendimiento del sistema
             </h2>
@@ -459,7 +461,7 @@ export default async function PanelAdminPage({ searchParams }: PanelAdminPagePro
               return (
                 <Link
                   key={item.key}
-                  href={item.href}
+                  href={`${item.href}${item.href.includes("?") ? "&" : "?"}rango=${range}`}
                   className={`inline-flex h-9 items-center rounded-card border px-3 text-xs font-black transition-colors ${
                     active
                       ? "border-brand bg-brand text-on-brand"
@@ -471,6 +473,28 @@ export default async function PanelAdminPage({ searchParams }: PanelAdminPagePro
               );
             })}
           </div>
+        </div>
+
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-2 lg:justify-end">
+          {RANGE_FILTERS.map((item) => {
+            const active = item.key === range;
+            const params = new URLSearchParams();
+            if (profile !== "all") params.set("perfil", profile);
+            params.set("rango", item.key);
+            return (
+              <Link
+                key={item.key}
+                href={`${ROUTES.panel.admin.base}?${params.toString()}`}
+                className={`inline-flex h-9 items-center rounded-card border px-3 text-xs font-black transition-colors ${
+                  active
+                    ? "border-brand bg-brand text-on-brand"
+                    : "border-edge bg-surface text-muted hover:border-brand hover:text-brand"
+                }`}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
         </div>
 
         <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -489,7 +513,7 @@ export default async function PanelAdminPage({ searchParams }: PanelAdminPagePro
             Icon={Home}
           />
           <MetricCard
-            label="Membresías"
+            label="Membresias"
             value={String(visibleMembershipTotal)}
             hint={`${formatDelta(membershipCurrent, membershipPrevious)} solicitudes del periodo`}
             tone="bg-warning/15 text-warning"
@@ -505,13 +529,13 @@ export default async function PanelAdminPage({ searchParams }: PanelAdminPagePro
         </div>
       </section>
 
-      <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px] 2xl:grid-cols-[minmax(0,1fr)_390px]">
-        <div className="grid min-w-0 gap-5 xl:grid-cols-2">
-          <Card className="min-h-80 p-5">
+      <section className="grid min-w-0 gap-5 xl:grid-cols-[minmax(0,1fr)_360px] 2xl:grid-cols-[minmax(0,1fr)_390px]">
+        <div className="grid min-w-0 gap-5">
+        <Card className="min-h-80 p-5">
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-[11px] font-black tracking-[0.16em] text-accent uppercase">Actividad mensual</p>
-              <h3 className="mt-1 text-lg font-bold text-ink">Cuentas, publicaciones y membresías</h3>
+              <h3 className="mt-1 text-lg font-bold text-ink">Cuentas, publicaciones y membresias</h3>
             </div>
             <span className="rounded-full bg-success/10 px-3 py-1 text-xs font-black text-success">
               {formatDelta(propertyCurrent, propertyPrevious)}
@@ -524,17 +548,17 @@ export default async function PanelAdminPage({ searchParams }: PanelAdminPagePro
                 { label: "Profesionales", color: "#4472c4", values: accountTrend.map((item) => item.value) },
                 { label: "Propiedades", color: "#ed7d31", values: propertyTrend.map((item) => item.value) },
                 { label: "Proyectos", color: "#a5a5a5", values: projectTrend.map((item) => item.value) },
-                { label: "Membresías", color: "#ffc000", values: membershipTrend.map((item) => item.value) },
+                { label: "Membresias", color: "#ffc000", values: membershipTrend.map((item) => item.value) },
               ]}
             />
           </div>
         </Card>
 
-          <Card className="min-h-80 p-5">
+        <Card className="min-h-80 p-5">
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-[11px] font-black tracking-[0.16em] text-accent uppercase">Publicaciones</p>
-              <h3 className="mt-1 text-lg font-bold text-ink">Evolución de propiedades y proyectos</h3>
+              <h3 className="mt-1 text-lg font-bold text-ink">Evolucion de propiedades y proyectos</h3>
             </div>
             <span className="rounded-full bg-accent/15 px-3 py-1 text-xs font-black text-accent">
               {formatDelta(projectCurrent, projectPrevious)}
@@ -544,12 +568,11 @@ export default async function PanelAdminPage({ searchParams }: PanelAdminPagePro
             <ExcelLineChart data={combinedPublicationTrend} color="#4472c4" />
           </div>
         </Card>
-
-          <Card className="min-h-80 p-5 xl:col-span-2">
+        <Card className="min-h-80 p-5">
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-[11px] font-black tracking-[0.16em] text-accent uppercase">Perfiles</p>
-              <h3 className="mt-1 text-lg font-bold text-ink">Distribución del sistema</h3>
+              <h3 className="mt-1 text-lg font-bold text-ink">Distribucion del sistema</h3>
             </div>
             <LineChart className="size-5 text-brand" aria-hidden="true" />
           </div>
@@ -557,10 +580,12 @@ export default async function PanelAdminPage({ searchParams }: PanelAdminPagePro
             <ExcelPieChart data={profileBars} />
           </div>
         </Card>
+
         </div>
 
         <aside className="xl:sticky xl:top-28 xl:self-start">
-          <Card className="min-h-80 p-5">
+
+        <Card className="min-h-80 p-5">
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-[11px] font-black tracking-[0.16em] text-accent uppercase">Inventario visible</p>
@@ -573,9 +598,10 @@ export default async function PanelAdminPage({ searchParams }: PanelAdminPagePro
           <div className="mt-5">
             <TopProjectList data={topProjects} />
           </div>
-          </Card>
+        </Card>
         </aside>
       </section>
     </div>
   );
 }
+

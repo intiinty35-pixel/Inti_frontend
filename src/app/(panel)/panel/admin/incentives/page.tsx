@@ -1,8 +1,7 @@
 import Link from "next/link";
-import { Gift } from "lucide-react";
+import { Gift, Package, Plus, Sparkles, Trophy } from "lucide-react";
 import { Card, CardContent, Pagination } from "@/shared/ui";
 import { ROUTES } from "@/shared/config/routes";
-import { AdminPageHeader } from "@/app/(panel)/panel/admin/admin-shell";
 import { listAdminIncentivesServer } from "@/features/rewards/api/server";
 import { IncentiveCard } from "@/features/rewards/components/incentive-card";
 
@@ -11,6 +10,12 @@ const STATUS_LABELS: Record<string, string> = {
   INACTIVE: "inactivos",
 };
 
+const FILTERS = [
+  { label: "Todos", href: ROUTES.panel.admin.incentives, status: undefined },
+  { label: "Activos", href: `${ROUTES.panel.admin.incentives}?status=ACTIVE`, status: "ACTIVE" },
+  { label: "Inactivos", href: `${ROUTES.panel.admin.incentives}?status=INACTIVE`, status: "INACTIVE" },
+] as const;
+
 export default async function AdminIncentivesPage({
   searchParams,
 }: {
@@ -18,74 +23,102 @@ export default async function AdminIncentivesPage({
 }) {
   const { page: pageParam, status } = await searchParams;
   const page = Math.max(1, Number(pageParam) || 1);
-  const data = await listAdminIncentivesServer(page, 20, status);
-
+  const data = await listAdminIncentivesServer(page, 12, status);
+  const activeCount = data.items.filter((item) => item.status === "ACTIVE").length;
+  const stockVisible = data.items.reduce((sum, item) => sum + item.stock, 0);
   const statusLabel = status ? STATUS_LABELS[status] || "" : "";
-  const description = status
-    ? `${data.total} incentivo${data.total !== 1 ? "s" : ""} ${statusLabel}`
-    : `${data.total} incentivo${data.total !== 1 ? "s" : ""} registrado${data.total !== 1 ? "s" : ""} · Gestiona las recompensas disponibles para los referentes`;
 
   return (
-    <div className="flex flex-col gap-6">
-      <AdminPageHeader
-        eyebrow="Programa de referidos"
-        title="Incentivos"
-        description={description}
-      />
+    <div className="flex min-w-0 max-w-full flex-col gap-7 overflow-x-hidden">
+      <section className="relative overflow-hidden rounded-card border border-edge bg-surface p-5 text-center shadow-[var(--shadow-card)] sm:p-6">
+        <div className="absolute inset-x-0 top-0 h-1.5 bg-brand" aria-hidden="true" />
+        <p className="text-sm font-black uppercase tracking-[0.22em] text-accent">
+          Programa de referidos
+        </p>
+        <h1 className="mt-2 font-display text-4xl font-black tracking-tight text-brand sm:text-5xl">
+          Incentivos
+        </h1>
+        <p className="mx-auto mt-3 max-w-2xl text-sm font-semibold leading-6 text-muted sm:text-base">
+          Gestiona las recompensas que los referentes pueden canjear con sus puntos.
+        </p>
+      </section>
 
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex flex-wrap gap-2">
-          <Link
-            href={ROUTES.panel.admin.incentives}
-            className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors ${
-              !status ? "bg-brand text-on-brand" : "bg-surface-muted text-muted hover:text-ink"
-            }`}
-          >
-            Todos
-          </Link>
-          <Link
-            href={`${ROUTES.panel.admin.incentives}?status=ACTIVE`}
-            className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors ${
-              status === "ACTIVE" ? "bg-brand text-on-brand" : "bg-surface-muted text-muted hover:text-ink"
-            }`}
-          >
-            Activos
-          </Link>
-          <Link
-            href={`${ROUTES.panel.admin.incentives}?status=INACTIVE`}
-            className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors ${
-              status === "INACTIVE" ? "bg-brand text-on-brand" : "bg-surface-muted text-muted hover:text-ink"
-            }`}
-          >
-            Inactivos
-          </Link>
+      <section className="grid gap-4 md:grid-cols-3">
+        <MetricCard
+          label="Incentivos"
+          value={data.total}
+          hint={status ? `Total de incentivos ${statusLabel}.` : "Total registrado en el sistema."}
+          tone="bg-brand-soft text-brand"
+          Icon={Gift}
+        />
+        <MetricCard
+          label="Activos visibles"
+          value={activeCount}
+          hint="Activos dentro de esta página."
+          tone="bg-success/10 text-success"
+          Icon={Sparkles}
+        />
+        <MetricCard
+          label="Stock visible"
+          value={stockVisible}
+          hint="Unidades disponibles en esta página."
+          tone="bg-accent/15 text-accent"
+          Icon={Package}
+        />
+      </section>
+
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex w-fit max-w-full gap-2 overflow-x-auto rounded-card bg-surface-muted/70 p-1.5">
+          {FILTERS.map((filter) => {
+            const active = filter.status === status || (!filter.status && !status);
+            return (
+              <Link
+                key={filter.label}
+                href={filter.href}
+                aria-current={active ? "page" : undefined}
+                className={`whitespace-nowrap rounded-card px-4 py-2.5 text-sm font-bold transition-colors ${
+                  active
+                    ? "bg-surface text-brand shadow-sm ring-1 ring-edge"
+                    : "text-muted hover:bg-surface/70 hover:text-brand"
+                }`}
+              >
+                {filter.label}
+              </Link>
+            );
+          })}
         </div>
+
         <Link
           href={ROUTES.panel.admin.newIncentive}
-          className="shrink-0 rounded-lg bg-brand px-4 py-2 text-sm font-bold text-on-brand transition-colors hover:bg-brand-hover"
+          className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-card bg-brand px-4 text-sm font-black text-on-brand transition-colors hover:bg-brand-hover sm:w-auto"
         >
-          + Nuevo incentivo
+          <Plus className="size-4" aria-hidden="true" />
+          Nuevo incentivo
         </Link>
       </div>
 
       {data.items.length === 0 ? (
-        <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
-          <div className="flex size-16 items-center justify-center rounded-full bg-surface-muted">
-            <Gift className="size-8 text-muted" />
-          </div>
-          <p className="text-sm text-muted">
-            {status
-              ? `No hay incentivos ${statusLabel}.`
-              : "No hay incentivos registrados aún."}
-          </p>
-        </div>
+        <Card>
+          <CardContent className="flex min-h-72 flex-col items-center justify-center px-6 py-12 text-center">
+            <span className="flex size-14 items-center justify-center rounded-2xl bg-brand-soft text-brand">
+              <Trophy className="size-7" aria-hidden="true" />
+            </span>
+            <h2 className="mt-5 font-display text-2xl font-black text-brand">
+              No hay incentivos {status ? statusLabel : "registrados"}
+            </h2>
+            <p className="mt-2 max-w-md text-sm leading-6 text-muted">
+              Crea un incentivo para que los referentes puedan canjear sus puntos.
+            </p>
+          </CardContent>
+        </Card>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <section className="grid min-w-0 max-w-full gap-4 overflow-x-hidden md:grid-cols-2 xl:grid-cols-4">
           {data.items.map((incentive) => (
             <IncentiveCard key={incentive.id} incentive={incentive} />
           ))}
-        </div>
+        </section>
       )}
+
       <Pagination
         page={page}
         pageSize={data.pageSize}
@@ -93,5 +126,36 @@ export default async function AdminIncentivesPage({
         buildHref={(p) => `${ROUTES.panel.admin.incentives}?page=${p}${status ? `&status=${status}` : ""}`}
       />
     </div>
+  );
+}
+
+function MetricCard({
+  label,
+  value,
+  hint,
+  tone,
+  Icon,
+}: {
+  label: string;
+  value: number;
+  hint: string;
+  tone: string;
+  Icon: typeof Gift;
+}) {
+  return (
+    <Card className="p-4 text-center">
+      <div className="flex items-center justify-center gap-3">
+        <span className={`flex size-9 shrink-0 items-center justify-center rounded-xl ${tone}`}>
+          <Icon className="size-4" aria-hidden="true" />
+        </span>
+        <div>
+          <p className="text-[11px] font-black uppercase tracking-[0.16em] text-muted">{label}</p>
+          <p className="mt-1 font-display text-3xl font-black tracking-tight text-brand">
+            {value.toLocaleString("es-PE")}
+          </p>
+        </div>
+      </div>
+      <p className="mx-auto mt-2 max-w-56 text-xs font-semibold leading-5 text-muted">{hint}</p>
+    </Card>
   );
 }

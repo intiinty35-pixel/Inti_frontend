@@ -1,11 +1,11 @@
-"use client";
+﻿"use client";
 
 import type { ReactNode } from "react";
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { LogoutButton } from "@/features/auth/components/logout-button";
-import { Button, ChevronDownIcon } from "@/shared/ui";
+import { ChevronDownIcon } from "@/shared/ui";
 import { MenuIcon } from "@/shared/ui/icons";
 import { cn } from "@/shared/lib/cn";
 import { ROUTES } from "@/shared/config/routes";
@@ -20,8 +20,6 @@ export interface AdminShellProps {
 export function AdminShell({ name, roleLabel, children }: AdminShellProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const displayName = name.trim() === roleLabel.trim() ? "Cuenta principal" : name;
-  const initial = roleLabel.trim().charAt(0).toUpperCase() || "A";
 
   return (
     <div className="min-h-screen bg-canvas">
@@ -75,7 +73,7 @@ export function AdminShell({ name, roleLabel, children }: AdminShellProps) {
         <div className="mt-4 flex flex-col gap-1 border-t border-edge pt-3">
           <Link
             href={ROUTES.home}
-            title={collapsed ? "Ver portal público" : undefined}
+            title={collapsed ? "Ver portal publico" : undefined}
             className={cn(
               "flex h-11 items-center rounded-lg text-sm font-medium text-muted transition-colors hover:bg-surface-muted hover:text-ink",
               collapsed ? "justify-center px-0" : "gap-3 px-3",
@@ -84,7 +82,7 @@ export function AdminShell({ name, roleLabel, children }: AdminShellProps) {
             <span className="flex size-7 shrink-0 items-center justify-center rounded-lg border border-edge text-[11px] font-black">
               AR
             </span>
-            {!collapsed ? <span className="truncate">Ver portal público</span> : null}
+            {!collapsed ? <span className="truncate">Ver portal publico</span> : null}
           </Link>
           {!collapsed ? <LogoutButton /> : null}
         </div>
@@ -94,7 +92,7 @@ export function AdminShell({ name, roleLabel, children }: AdminShellProps) {
         <div className="fixed inset-0 z-50 lg:hidden">
           <button
             type="button"
-              aria-label="Cerrar menú"
+              aria-label="Cerrar menu"
             className="absolute inset-0 bg-ink/30"
             onClick={() => setMobileOpen(false)}
           />
@@ -116,41 +114,15 @@ export function AdminShell({ name, roleLabel, children }: AdminShellProps) {
           "min-w-0 transition-[padding-left] duration-300",
           collapsed ? "lg:pl-[72px]" : "lg:pl-[260px]",
         )}
-      >
-        <header className="sticky top-0 z-40 flex min-h-20 items-center justify-between gap-4 border-b border-edge bg-surface/95 px-4 backdrop-blur sm:px-6 lg:px-8">
-          <div className="flex min-w-0 items-center gap-3">
-            <button
-              type="button"
-              aria-label="Abrir menú lateral"
-              title="Abrir menú lateral"
-              onClick={() => setMobileOpen(true)}
-              className="flex size-10 shrink-0 items-center justify-center text-brand lg:hidden"
-            >
-              <MenuIcon className="size-5" />
-            </button>
-            <div className="min-w-0">
-              <p className="text-[11px] font-bold tracking-[0.18em] text-accent uppercase">Panel administrador</p>
-              <p className="truncate text-sm font-semibold text-ink">Gestiona la plataforma Ariz</p>
-            </div>
-          </div>
-
-          <div className="flex shrink-0 items-center gap-3">
-            <Link href={ROUTES.home}>
-              <Button variant="secondary" size="sm" className="hidden sm:inline-flex">
-                Ver portal
-              </Button>
-            </Link>
-            <span className="flex items-center gap-2.5 rounded-xl border border-edge bg-surface px-2 py-2 sm:px-3">
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-brand font-bold text-on-brand">
-                {initial}
-              </span>
-              <span className="hidden max-w-48 flex-col text-left leading-none sm:flex">
-                <span className="truncate text-sm font-semibold text-ink">{displayName}</span>
-                <span className="text-[11px] text-muted">{roleLabel}</span>
-              </span>
-            </span>
-          </div>
-        </header>
+      >        <button
+          type="button"
+          aria-label="Abrir menu lateral"
+          title="Abrir menu lateral"
+          onClick={() => setMobileOpen(true)}
+          className="fixed left-4 top-4 z-40 flex size-10 items-center justify-center rounded-xl border border-edge bg-surface text-brand shadow-[var(--shadow-card)] lg:hidden"
+        >
+          <MenuIcon className="size-5" />
+        </button>
 
         <main className="min-w-0 px-4 py-6 sm:px-6 lg:px-8">{children}</main>
       </div>
@@ -181,3 +153,4 @@ export function AdminPageHeader({
     </div>
   );
 }
+
