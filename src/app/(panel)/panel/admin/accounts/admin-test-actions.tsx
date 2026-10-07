@@ -1,19 +1,60 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Bell, PauseCircle, Trash2, X } from "lucide-react";
-import { Button } from "@/shared/ui";
-import { AdminRequestError, notifyProfessional } from "@/features/admin/api/client";
+import { Button, ConfirmDialog } from "@/shared/ui";
+import {
+  AdminRequestError,
+  deleteProfessionalAccount,
+  deleteProject,
+  deleteProperty,
+  notifyProfessional,
+} from "@/features/admin/api/client";
+
+export type DeleteTargetKind = "account" | "property" | "project";
+
+export interface DeleteTarget {
+  kind: DeleteTargetKind;
+  id: string;
+}
 
 interface AdminTestActionsProps {
   label: string;
   notifyId?: string;
+  deleteTarget?: DeleteTarget;
 }
 
-export function AdminTestActions({ label, notifyId }: AdminTestActionsProps) {
+const DELETE_CONFIRM_COPY: Record<DeleteTargetKind, { title: (label: string) => string; description: string }> = {
+  account: {
+    title: (label) => `¿Eliminar la cuenta de ${label}?`,
+    description:
+      "Se desactiva el acceso a la cuenta y se eliminan (de forma lógica) todas sus propiedades y proyectos publicados. No se borra ningún dato de la base.",
+  },
+  property: {
+    title: (label) => `¿Eliminar la propiedad "${label}"?`,
+    description: "Deja de aparecer en el portal y en el panel del dueño. No se borra de la base.",
+  },
+  project: {
+    title: (label) => `¿Eliminar el proyecto "${label}"?`,
+    description: "Deja de aparecer en el portal y en el panel del dueño. No se borra de la base.",
+  },
+};
+
+async function callDelete(target: DeleteTarget): Promise<void> {
+  if (target.kind === "account") return deleteProfessionalAccount(target.id);
+  if (target.kind === "property") return deleteProperty(target.id);
+  return deleteProject(target.id);
+}
+
+export function AdminTestActions({ label, notifyId, deleteTarget }: AdminTestActionsProps) {
+  const router = useRouter();
   const [state, setState] = useState<"active" | "paused" | "deleted" | "notified" | "error">("active");
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
   const [subject, setSubject] = useState("Notificacion administrativa de ARIZ");
   const [message, setMessage] = useState(
     "Estamos revisando tu cuenta y tus publicaciones para mantener la calidad de la plataforma. Por favor ingresa a tu panel de ARIZ y corrige la informacion indicada.",
@@ -49,9 +90,27 @@ export function AdminTestActions({ label, notifyId }: AdminTestActionsProps) {
     }
   }
 
-  if (state === "deleted") {
-    return <span className="text-xs font-black text-error">Eliminado en prueba</span>;
+  async function handleConfirmDelete() {
+    if (!deleteTarget) return;
+    setDeleteError("");
+    setDeleting(true);
+    try {
+      await callDelete(deleteTarget);
+      setState("deleted");
+      setConfirmDeleteOpen(false);
+      router.refresh();
+    } catch (cause) {
+      setDeleteError(cause instanceof AdminRequestError ? cause.messages.join(" ") : "No se pudo eliminar.");
+    } finally {
+      setDeleting(false);
+    }
   }
+
+  if (state === "deleted") {
+    return <span className="text-xs font-black text-error">Eliminado</span>;
+  }
+
+  const deleteCopy = deleteTarget ? DELETE_CONFIRM_COPY[deleteTarget.kind] : null;
 
   return (
     <div className="flex min-w-max items-center gap-3 whitespace-nowrap">
@@ -82,10 +141,30 @@ export function AdminTestActions({ label, notifyId }: AdminTestActionsProps) {
               ? "Error correo"
               : "Notificar"}
       </Button>
-      <Button size="xs" variant="danger" className="px-3 whitespace-nowrap" title={`Eliminar ${label}`} onClick={() => setState("deleted")}>
+      <Button
+        size="xs"
+        variant="danger"
+        className="px-3 whitespace-nowrap"
+        title={`Eliminar ${label}`}
+        disabled={!deleteTarget}
+        onClick={() => setConfirmDeleteOpen(true)}
+      >
         <Trash2 className="size-3.5" />
         Eliminar
       </Button>
+
+      {deleteCopy ? (
+        <ConfirmDialog
+          open={confirmDeleteOpen}
+          title={deleteCopy.title(label)}
+          description={deleteError || deleteCopy.description}
+          confirmLabel={deleting ? "Eliminando..." : "Eliminar"}
+          variant="danger"
+          loading={deleting}
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setConfirmDeleteOpen(false)}
+        />
+      ) : null}
 
       {open ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/35 p-4">
