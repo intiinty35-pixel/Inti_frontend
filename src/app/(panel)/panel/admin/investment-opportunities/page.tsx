@@ -16,20 +16,30 @@ export default async function AdminInvestmentOpportunitiesPage() {
               Contenido publico
             </p>
             <h1 className="mt-1 font-display text-2xl font-black text-brand sm:text-3xl">
-              Proyectos de inversion
+              Oportunidades de inversión
             </h1>
             <p className="mt-1 max-w-2xl text-sm font-semibold leading-5 text-muted">
-              {opportunities.length} oportunidades registradas, {published} publicadas en la pagina
+              {opportunities.length} oportunidades registradas, {published} publicadas en la página
               de inversiones.
             </p>
           </div>
-          <Link
-            href="/panel/admin/investment-opportunities/new"
-            className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-card bg-brand px-4 text-sm font-bold text-on-brand transition-colors hover:bg-brand-hover"
-          >
-            <Plus className="size-4" />
-            Crear proyecto
-          </Link>
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="inline-flex rounded-card border border-edge bg-surface-muted p-1">
+              <Link href="/panel/admin/investment-opportunities" className="rounded-card bg-brand px-3 py-2 text-sm font-bold text-on-brand">
+                Oportunidades
+              </Link>
+              <Link href="/panel/admin/investment-opportunities/types" className="rounded-card px-3 py-2 text-sm font-bold text-muted hover:text-brand">
+                Tipos
+              </Link>
+            </div>
+            <Link
+              href="/panel/admin/investment-opportunities/new"
+              className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-card bg-brand px-4 text-sm font-bold text-on-brand transition-colors hover:bg-brand-hover"
+            >
+              <Plus className="size-4" />
+              Crear oportunidad
+            </Link>
+          </div>
         </div>
       </section>
 

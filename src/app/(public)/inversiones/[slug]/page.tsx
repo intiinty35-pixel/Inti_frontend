@@ -3,7 +3,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { buildServiceWhatsappUrl } from "@/features/services/config";
 import { getPublicInvestmentOpportunity } from "@/features/investment-opportunities/api/server";
-import { INVESTMENT_GOAL_LABELS } from "@/features/investment-opportunities/types";
+import {
+  INVESTMENT_GOAL_LABELS,
+  INVESTMENT_RISK_LABELS,
+  INVESTMENT_STATUS_LABELS,
+} from "@/features/investment-opportunities/types";
 import { ListingsMap, type MapPoint } from "@/features/listings/components/listings-map";
 import { ArrowRightIcon, ChartIcon, PinIcon, RulerIcon, WhatsappIcon } from "@/shared/ui";
 
@@ -62,6 +66,19 @@ export default async function InvestmentOpportunityPage({
           <div className="mt-7">
             <p className="text-xs font-black tracking-[0.16em] text-accent uppercase">Oportunidad de inversión · {INVESTMENT_GOAL_LABELS[opportunity.investmentGoal]}</p>
             <h1 className="mt-2 font-display text-3xl font-black tracking-tight text-brand sm:text-4xl">{opportunity.name}</h1>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <span className="rounded-full bg-brand/10 px-3 py-1 text-xs font-black text-brand">
+                {opportunity.investmentType?.name ?? opportunity.investmentKind}
+              </span>
+              <span className="rounded-full bg-accent px-3 py-1 text-xs font-black text-on-accent">
+                {INVESTMENT_STATUS_LABELS[opportunity.status]}
+              </span>
+              {opportunity.riskLevel ? (
+                <span className="rounded-full bg-surface-muted px-3 py-1 text-xs font-bold text-muted">
+                  Riesgo {INVESTMENT_RISK_LABELS[opportunity.riskLevel]}
+                </span>
+              ) : null}
+            </div>
             <p className="mt-3 flex items-center gap-2 text-sm font-bold text-muted">
               <PinIcon className="size-4 text-accent" />
               {opportunity.location}
@@ -116,7 +133,7 @@ export default async function InvestmentOpportunityPage({
               className="mt-4 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#25d366] px-4 text-sm font-black text-white transition hover:bg-[#1fb857]"
             >
               <WhatsappIcon className="size-5" />
-              Consultar por WhatsApp
+              {opportunity.ctaLabel || "Consultar por WhatsApp"}
             </a>
             <p className="mt-3 text-xs leading-5 text-white/70">El ROI publicado es referencial. Solicita a un asesor los detalles y condiciones vigentes.</p>
           </div>

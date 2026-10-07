@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { AdminPageHeader } from "@/app/(panel)/panel/admin/admin-shell";
-import { getAdminInvestmentOpportunity } from "@/features/investment-opportunities/api/server";
+import { getAdminInvestmentOpportunity, getAdminInvestmentTypes } from "@/features/investment-opportunities/api/server";
 import { InvestmentOpportunityForm } from "@/features/investment-opportunities/components/investment-opportunity-form";
 
 export default async function EditAdminInvestmentOpportunityPage({
@@ -10,8 +10,12 @@ export default async function EditAdminInvestmentOpportunityPage({
 }) {
   const { id } = await params;
   let opportunity;
+  let investmentTypes;
   try {
-    opportunity = await getAdminInvestmentOpportunity(id);
+    [opportunity, investmentTypes] = await Promise.all([
+      getAdminInvestmentOpportunity(id),
+      getAdminInvestmentTypes(),
+    ]);
   } catch (error) {
     if (error instanceof Error && error.message.includes("(404)")) notFound();
     throw error;
@@ -24,7 +28,7 @@ export default async function EditAdminInvestmentOpportunityPage({
         title={`Editar: ${opportunity.name}`}
         description="Actualiza la ficha pública del proyecto de inversión."
       />
-      <InvestmentOpportunityForm opportunity={opportunity} />
+      <InvestmentOpportunityForm opportunity={opportunity} investmentTypes={investmentTypes} />
     </div>
   );
 }

@@ -26,7 +26,7 @@ export function buildServiceWhatsappUrl(serviceName: string): string {
 
 export const SERVICES_CONTACT_HREF = "#contacto";
 
-export const SERVICES_HERO_IMAGE = "/servicios/servicios.png?v=2";
+export const SERVICES_HERO_IMAGE = "/servicios/servicios.png";
 
 export const SERVICE_IMAGE_FALLBACK =
   "linear-gradient(135deg, #0B1B5C 0%, #00124f 100%)";

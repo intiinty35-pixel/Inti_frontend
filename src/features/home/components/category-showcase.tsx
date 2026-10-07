@@ -82,27 +82,27 @@ function CategoryCard({ category, index }: { category: Category; index: number }
         href={category.href}
         aria-label={`${category.label}. ${category.subtitle}`}
         className={cn(
-          "group flex h-[144px] w-[175px] shrink-0 flex-col rounded-[6px] border border-[#E9EDF5] bg-white px-5 pt-4 pb-3 shadow-[0_6px_16px_rgb(13_32_80_/_0.045)] transition-colors duration-200 sm:w-auto sm:h-[144px] sm:px-5 sm:pt-4 sm:pb-3",
-          "hover:border-[#F5B800]/60 hover:shadow-[0_8px_18px_rgb(13_32_80_/_0.07)]",
-          "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#F5B800]",
+          "group flex h-[144px] w-[175px] shrink-0 flex-col rounded-[6px] border border-brand bg-brand px-5 pt-4 pb-3 shadow-[0_10px_24px_rgb(11_27_92_/_0.18)] transition duration-200 sm:h-[144px] sm:w-auto sm:px-5 sm:pt-4 sm:pb-3",
+          "hover:-translate-y-0.5 hover:bg-brand-hover hover:shadow-[0_14px_28px_rgb(11_27_92_/_0.22)]",
+          "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent",
         )}
       >
-        <span aria-hidden className="mb-2 grid size-7 place-items-center text-[#F5B800]">
-          <Icon className="size-6" strokeWidth={2.6} fill="currentColor" fillOpacity={0.18} />
+        <span aria-hidden className="mb-2 grid size-7 place-items-center text-white">
+          <Icon className="size-6" strokeWidth={2.6} />
         </span>
 
         <span className="min-w-0 text-center">
-          <span className="mx-auto block max-w-[8.6rem] text-[14.5px] leading-5 font-black text-[#071A5A]">
+          <span className="mx-auto block max-w-[8.6rem] text-[14.5px] font-black leading-5 text-accent">
             {category.label}
           </span>
-          <span className="mx-auto mt-1 block max-w-[8.8rem] text-[11px] leading-4 font-semibold text-[#596273]">
+          <span className="mx-auto mt-1 block max-w-[8.8rem] text-[11px] font-semibold leading-4 text-white/85">
             {category.subtitle}
           </span>
         </span>
 
         <span
           aria-hidden
-          className="mt-auto grid size-5 place-items-center rounded-full bg-[#F4F6FA] text-[#071A5A] transition-colors duration-200 group-hover:bg-[#F5B800]"
+          className="mt-auto grid size-5 place-items-center rounded-full bg-white text-brand transition-colors duration-200 group-hover:bg-accent group-hover:text-on-accent"
         >
           <ArrowRight className="size-3" strokeWidth={2.4} />
         </span>
@@ -116,14 +116,14 @@ export function CategoryShowcase() {
     <section className="overflow-hidden bg-[#F3F4F8] pt-[180px] pb-7 sm:pt-[190px] lg:pt-32">
       <div className="mx-auto w-full px-3 sm:px-4 lg:px-5 xl:px-6">
         <div className="flex items-center justify-between gap-4">
-          <h2 className="text-[21.6px] leading-none font-black tracking-tight text-[#071A5A] sm:text-[24px]">
+          <h2 className="text-[21.6px] font-black leading-none tracking-tight text-brand sm:text-[24px]">
             ¿Qué quieres hacer hoy?
           </h2>
           <div className="flex items-center gap-2">
-            <span className="flex items-center gap-1 text-[11px] font-bold text-[#596273] sm:hidden">
-              Desliza <span className="inline-block animate-bounce text-[#F5B800]">→</span>
+            <span className="flex items-center gap-1 text-[11px] font-bold text-muted sm:hidden">
+              Desliza <span className="inline-block animate-bounce text-accent">→</span>
             </span>
-            <p className="hidden pt-0.5 text-[11px] leading-none font-bold text-[#596273] sm:block">
+            <p className="hidden pt-0.5 text-[11px] font-bold leading-none text-muted sm:block">
               Todo lo que necesitas en un solo lugar
             </p>
           </div>

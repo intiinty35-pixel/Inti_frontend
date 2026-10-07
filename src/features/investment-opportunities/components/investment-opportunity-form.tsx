@@ -11,9 +11,14 @@ import {
 } from "@/features/investment-opportunities/api/client";
 import {
   INVESTMENT_GOAL_LABELS,
+  INVESTMENT_RISK_LABELS,
+  INVESTMENT_STATUS_LABELS,
   type InvestmentGoal,
   type InvestmentOpportunity,
   type InvestmentOpportunityInput,
+  type InvestmentRiskLevel,
+  type InvestmentStatus,
+  type InvestmentType,
 } from "@/features/investment-opportunities/types";
 import { ImageIcon, UploadIcon } from "@/shared/ui";
 
@@ -39,9 +44,19 @@ function createEmptyInput(): InvestmentOpportunityInput {
     summary: "",
     description: "",
     areaLabel: "",
+    investmentTypeId: null,
+    investmentKind: "Inversión inmobiliaria",
+    assetType: "Proyecto",
     initialInvestment: 0,
     roiPercent: 0,
+    estimatedReturnLabel: null,
+    estimatedTermMonths: null,
     investmentGoal: "plusvalia",
+    status: "AVAILABLE",
+    riskLevel: null,
+    featured: false,
+    sortOrder: 0,
+    ctaLabel: "Solicitar información",
     location: "",
     department: "",
     province: "",
@@ -92,8 +107,10 @@ function parseCoordinatePair(value: string): MapPoint | undefined {
 
 export function InvestmentOpportunityForm({
   opportunity,
+  investmentTypes = [],
 }: {
   opportunity?: InvestmentOpportunity;
+  investmentTypes?: InvestmentType[];
 }) {
   const router = useRouter();
   const [form, setForm] = useState<InvestmentOpportunityInput>(() =>
@@ -101,6 +118,16 @@ export function InvestmentOpportunityForm({
       ? {
           ...opportunity,
           ...getInitialPoint(opportunity),
+          investmentTypeId: opportunity.investmentTypeId ?? null,
+          investmentKind: opportunity.investmentKind || "Inversión inmobiliaria",
+          assetType: opportunity.assetType || "Proyecto",
+          estimatedReturnLabel: opportunity.estimatedReturnLabel ?? null,
+          estimatedTermMonths: opportunity.estimatedTermMonths ?? null,
+          status: opportunity.status ?? "AVAILABLE",
+          riskLevel: opportunity.riskLevel ?? null,
+          featured: opportunity.featured ?? false,
+          sortOrder: opportunity.sortOrder ?? 0,
+          ctaLabel: opportunity.ctaLabel || "Solicitar información",
           coverImagePublicId: opportunity.coverImagePublicId,
           galleryImages: [...opportunity.galleryImages],
           highlights: [...opportunity.highlights],
@@ -239,6 +266,29 @@ export function InvestmentOpportunityForm({
           <input className={inputClass} value={form.summary} maxLength={180} required onChange={(e) => setField("summary", e.target.value)} />
         </label>
         <label className={labelClass}>
+          Tipo de inversión
+          <select
+            className={inputClass}
+            value={form.investmentTypeId ?? ""}
+            onChange={(e) => setField("investmentTypeId", e.target.value || null)}
+          >
+            <option value="">Sin tipo asignado</option>
+            {investmentTypes.map((type) => (
+              <option key={type.id} value={type.id}>
+                {type.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className={labelClass}>
+          Tipo visible
+          <input className={inputClass} value={form.investmentKind} maxLength={80} required onChange={(e) => setField("investmentKind", e.target.value)} />
+        </label>
+        <label className={labelClass}>
+          Tipo de activo
+          <input className={inputClass} value={form.assetType} maxLength={80} placeholder="Terreno / Departamento / Proyecto / Local" required onChange={(e) => setField("assetType", e.target.value)} />
+        </label>
+        <label className={labelClass}>
           Área / metraje
           <input className={inputClass} value={form.areaLabel} maxLength={80} placeholder="Desde 120 m²" required onChange={(e) => setField("areaLabel", e.target.value)} />
         </label>
@@ -257,6 +307,39 @@ export function InvestmentOpportunityForm({
         <label className={labelClass}>
           ROI estimado (%)
           <input className={inputClass} type="number" min="0" max="100" step="0.01" required value={form.roiPercent} onChange={(e) => setField("roiPercent", Number(e.target.value))} />
+        </label>
+        <label className={labelClass}>
+          Rentabilidad estimada
+          <input className={inputClass} value={form.estimatedReturnLabel ?? ""} maxLength={80} placeholder="12% anual" onChange={(e) => setField("estimatedReturnLabel", e.target.value || null)} />
+        </label>
+        <label className={labelClass}>
+          Plazo estimado (meses)
+          <input className={inputClass} type="number" min="0" step="1" value={form.estimatedTermMonths ?? ""} onChange={(e) => setField("estimatedTermMonths", e.target.value ? Number(e.target.value) : null)} />
+        </label>
+        <label className={labelClass}>
+          Estado comercial
+          <select className={inputClass} value={form.status} onChange={(e) => setField("status", e.target.value as InvestmentStatus)}>
+            {Object.entries(INVESTMENT_STATUS_LABELS).map(([value, label]) => (
+              <option key={value} value={value}>{label}</option>
+            ))}
+          </select>
+        </label>
+        <label className={labelClass}>
+          Nivel de riesgo
+          <select className={inputClass} value={form.riskLevel ?? ""} onChange={(e) => setField("riskLevel", (e.target.value || null) as InvestmentRiskLevel | null)}>
+            <option value="">No mostrar</option>
+            {Object.entries(INVESTMENT_RISK_LABELS).map(([value, label]) => (
+              <option key={value} value={value}>{label}</option>
+            ))}
+          </select>
+        </label>
+        <label className={labelClass}>
+          Orden
+          <input className={inputClass} type="number" step="1" value={form.sortOrder} onChange={(e) => setField("sortOrder", Number(e.target.value))} />
+        </label>
+        <label className={labelClass}>
+          Texto del CTA
+          <input className={inputClass} value={form.ctaLabel} maxLength={80} required onChange={(e) => setField("ctaLabel", e.target.value)} />
         </label>
         <label className={labelClass}>
           Región / departamento
@@ -498,6 +581,11 @@ export function InvestmentOpportunityForm({
           Mostrar este proyecto en la página pública de inversiones
         </label>
       </section>
+
+      <label className="flex items-center gap-3 rounded-2xl border border-edge bg-surface p-4 text-sm font-bold text-ink shadow-[var(--shadow-card)]">
+        <input type="checkbox" checked={form.featured} onChange={(e) => setField("featured", e.target.checked)} />
+        Marcar como oportunidad destacada
+      </label>
 
       {error ? <p role="alert" className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800">{error}</p> : null}
       <div className="flex flex-wrap justify-end gap-3">

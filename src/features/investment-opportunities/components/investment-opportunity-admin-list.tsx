@@ -8,6 +8,8 @@ import { useState } from "react";
 import { deleteInvestmentOpportunity } from "@/features/investment-opportunities/api/client";
 import {
   INVESTMENT_GOAL_LABELS,
+  INVESTMENT_RISK_LABELS,
+  INVESTMENT_STATUS_LABELS,
   type InvestmentOpportunity,
 } from "@/features/investment-opportunities/types";
 
@@ -77,7 +79,7 @@ export function InvestmentOpportunityAdminList({
               <div className="flex flex-1 flex-col gap-3 p-3.5">
                 <div className="min-w-0">
                   <p className="text-xs font-bold uppercase tracking-[0.16em] text-muted">
-                    {INVESTMENT_GOAL_LABELS[opportunity.investmentGoal]}
+                    {opportunity.investmentType?.name ?? opportunity.investmentKind}
                   </p>
                   <h2 className="mt-1 line-clamp-2 text-base font-black leading-tight text-ink">
                     {opportunity.name}
@@ -89,6 +91,19 @@ export function InvestmentOpportunityAdminList({
                   <p className="mt-2 line-clamp-2 text-xs leading-5 text-muted">
                     {opportunity.summary}
                   </p>
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    <span className="rounded-full bg-brand/10 px-2 py-1 text-[11px] font-black text-brand">
+                      {INVESTMENT_STATUS_LABELS[opportunity.status]}
+                    </span>
+                    <span className="rounded-full bg-surface-muted px-2 py-1 text-[11px] font-bold text-muted">
+                      {opportunity.assetType}
+                    </span>
+                    {opportunity.featured ? (
+                      <span className="rounded-full bg-amber-100 px-2 py-1 text-[11px] font-black text-amber-800">
+                        Destacado
+                      </span>
+                    ) : null}
+                  </div>
                 </div>
 
                 <div className="mt-auto grid grid-cols-2 gap-2 rounded-card bg-surface-muted px-3 py-2 text-center">
@@ -102,12 +117,17 @@ export function InvestmentOpportunityAdminList({
                   </div>
                   <div>
                     <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted">
-                      ROI
+                      Retorno
                     </p>
                     <p className="mt-1 text-sm font-black text-brand">
-                      {opportunity.roiPercent}%
+                      {opportunity.estimatedReturnLabel ?? `${opportunity.roiPercent}%`}
                     </p>
                   </div>
+                </div>
+                <div className="grid grid-cols-3 gap-2 text-center text-[11px] font-bold text-muted">
+                  <span>{INVESTMENT_GOAL_LABELS[opportunity.investmentGoal]}</span>
+                  <span>{opportunity.estimatedTermMonths ? `${opportunity.estimatedTermMonths} meses` : "Sin plazo"}</span>
+                  <span>{opportunity.riskLevel ? `Riesgo ${INVESTMENT_RISK_LABELS[opportunity.riskLevel]}` : "Sin riesgo"}</span>
                 </div>
 
                 <div className="grid grid-cols-[1fr_auto_auto] gap-2">
