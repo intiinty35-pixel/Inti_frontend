@@ -75,6 +75,18 @@ export function notifyProfessional(
   });
 }
 
+export function deleteProfessionalAccount(id: string): Promise<void> {
+  return request<void>(`/admin/professionals/${id}`, { method: "DELETE" });
+}
+
+export function deleteProperty(id: string): Promise<void> {
+  return request<void>(`/properties/${id}`, { method: "DELETE" });
+}
+
+export function deleteProject(id: string): Promise<void> {
+  return request<void>(`/projects/${id}`, { method: "DELETE" });
+}
+
 export function reviewSubscription(
   id: string,
   status: "ACTIVE" | "REJECTED",
