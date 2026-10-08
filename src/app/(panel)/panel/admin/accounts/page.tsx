@@ -250,7 +250,11 @@ export default async function AdminAccountsPage({ searchParams }: AdminAccountsP
                           </div>
                         </td>
                         <td className="border-b border-edge px-4 py-3">
-                          <AdminTestActions label={name} notifyId={item.id} />
+                          <AdminTestActions
+                            label={name}
+                            notifyId={item.id}
+                            deleteTarget={{ kind: "account", id: item.id }}
+                          />
                         </td>
                       </tr>
                     );
@@ -318,7 +322,10 @@ export default async function AdminAccountsPage({ searchParams }: AdminAccountsP
                     <td className="border-b border-edge px-4 py-3 text-muted">{item.status}</td>
                     <td className="border-b border-edge px-4 py-3 text-muted">{formatDate(item.date)}</td>
                     <td className="border-b border-edge px-4 py-3">
-                      <AdminTestActions label={item.name} />
+                      <AdminTestActions
+                        label={item.name}
+                        deleteTarget={{ kind: item.kind === "Propiedad" ? "property" : "project", id: item.id }}
+                      />
                     </td>
                   </tr>
                 ))}
@@ -375,7 +382,11 @@ export default async function AdminAccountsPage({ searchParams }: AdminAccountsP
                       <td className="border-b border-edge px-4 py-3 text-muted">{item.user.phone ?? item.whatsapp ?? "-"}</td>
                       <td className="border-b border-edge px-4 py-3 text-muted">{item.city}</td>
                       <td className="border-b border-edge px-4 py-3">
-                        <AdminTestActions label={name} notifyId={item.id} />
+                        <AdminTestActions
+                          label={name}
+                          notifyId={item.id}
+                          deleteTarget={{ kind: "account", id: item.id }}
+                        />
                       </td>
                     </tr>
                   );

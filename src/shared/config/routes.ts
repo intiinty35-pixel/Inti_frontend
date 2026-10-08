@@ -16,6 +16,7 @@ export const ROUTES = {
   terms: "/terminos",
   rewards: "/rewards",
   rewardsMy: "/rewards/my",
+  claims: "/libro-reclamaciones",
   panel: {
     admin: {
       base: "/panel/admin",
@@ -37,6 +38,8 @@ export const ROUTES = {
       newIncentive: "/panel/admin/incentives/new",
       redemptions: "/panel/admin/redemptions",
       redemption: (id: string): string => `/panel/admin/redemptions/${id}`,
+      claims: "/panel/admin/claims",
+      claim: (id: string): string => `/panel/admin/claims/${id}`,
     },
     client: {
       base: "/panel/client",

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import type { LucideIcon } from "lucide-react";
 import {
   BadgeDollarSign,
+  BookOpen,
   Boxes,
   Building2,
   ChartNoAxesCombined,
@@ -86,6 +87,13 @@ const NAV_ITEMS: readonly AdminNavItem[] = [
     label: "Reportes",
     href: ROUTES.panel.admin.reports,
     Icon: MessageSquareText,
+    group: "operacion",
+  },
+  {
+    key: "claims",
+    label: "Recibo de Reclamos",
+    href: ROUTES.panel.admin.claims,
+    Icon: BookOpen,
     group: "operacion",
   },
   {

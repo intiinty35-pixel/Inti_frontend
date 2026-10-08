@@ -46,6 +46,7 @@ const GROUPS: readonly FooterGroup[] = [
       { label: "Nosotros", href: "/nosotros" },
       { label: "Centro de ayuda", href: "/centro-de-ayuda" },
       { label: "Contacto", href: "/contacto" },
+      { label: "Libro de Reclamaciones", href: ROUTES.claims },
     ],
   },
 ];
