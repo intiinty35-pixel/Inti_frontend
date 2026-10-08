@@ -42,7 +42,12 @@ const GROUPS: readonly FooterGroup[] = [
   },
   {
     title: "Ariz",
-    links: [{ label: "Nosotros" }, { label: "Centro de ayuda" }, { label: "Contacto" }],
+    links: [
+      { label: "Nosotros" },
+      { label: "Centro de ayuda" },
+      { label: "Contacto" },
+      { label: "Libro de Reclamaciones", href: ROUTES.claims },
+    ],
   },
 ];
 

@@ -114,15 +114,21 @@ export function AdminShell({ name, roleLabel, children }: AdminShellProps) {
           "min-w-0 transition-[padding-left] duration-300",
           collapsed ? "lg:pl-[72px]" : "lg:pl-[260px]",
         )}
-      >        <button
-          type="button"
-          aria-label="Abrir menu lateral"
-          title="Abrir menu lateral"
-          onClick={() => setMobileOpen(true)}
-          className="fixed left-4 top-4 z-40 flex size-10 items-center justify-center rounded-xl border border-edge bg-surface text-brand shadow-[var(--shadow-card)] lg:hidden"
-        >
-          <MenuIcon className="size-5" />
-        </button>
+      >
+        <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-edge bg-surface px-4 lg:hidden">
+          <button
+            type="button"
+            aria-label="Abrir menu lateral"
+            title="Abrir menu lateral"
+            onClick={() => setMobileOpen(true)}
+            className="flex size-10 items-center justify-center rounded-xl border border-edge bg-surface text-brand shadow-[var(--shadow-card)] transition-colors hover:border-brand hover:text-brand"
+          >
+            <MenuIcon className="size-5" />
+          </button>
+          <Link href={ROUTES.home} aria-label="Ariz Proyectos">
+            <Image src="/logo/logo.png" alt="Ariz Proyectos" width={120} height={32} className="h-8 w-auto" style={{ width: "auto" }} />
+          </Link>
+        </header>
 
         <main className="min-w-0 px-4 py-6 sm:px-6 lg:px-8">{children}</main>
       </div>
