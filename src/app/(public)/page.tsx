@@ -115,8 +115,8 @@ export default async function PublicHomePage() {
 
       <CategoryShowcase />
       <ArizProjectsSection />
-      <PublishedProjectsSection />
       <FeaturedListingsSection />
+      <PublishedProjectsSection />
       <WhyChooseArizSection />
       <InvestmentEntrySection />
       <TestimonialsSection />

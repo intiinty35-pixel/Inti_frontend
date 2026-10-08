@@ -88,56 +88,58 @@ export function AdminTestActions({ label, notifyId }: AdminTestActionsProps) {
       </Button>
 
       {open ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/35 p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-ink/35 p-3 sm:p-4">
           <form
             onSubmit={handleNotify}
-            className="w-full max-w-lg rounded-card border border-edge bg-surface p-5 text-left shadow-[var(--shadow-pop)]"
+            className="flex max-h-[calc(100dvh-1.5rem)] w-full max-w-lg flex-col overflow-hidden rounded-card border border-edge bg-surface text-left shadow-[var(--shadow-pop)] sm:max-h-[calc(100dvh-2rem)]"
           >
-            <div className="flex items-start justify-between gap-3">
-              <div>
+            <div className="flex shrink-0 items-start justify-between gap-3 border-b border-edge p-4 sm:p-5">
+              <div className="min-w-0">
                 <p className="text-xs font-black uppercase tracking-[0.16em] text-accent">
                   Notificar usuario
                 </p>
-                <h2 className="mt-1 text-xl font-black text-brand">{label}</h2>
+                <h2 className="mt-1 truncate text-lg font-black text-brand sm:text-xl">{label}</h2>
               </div>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="flex size-9 items-center justify-center rounded-card border border-edge text-muted transition-colors hover:text-ink"
+                className="flex size-9 shrink-0 items-center justify-center rounded-card border border-edge text-muted transition-colors hover:text-ink"
                 aria-label="Cerrar"
               >
                 <X className="size-4" />
               </button>
             </div>
 
-            <label className="mt-4 block text-xs font-black uppercase tracking-[0.12em] text-muted">
-              Asunto
-              <input
-                value={subject}
-                onChange={(event) => setSubject(event.target.value)}
-                minLength={3}
-                maxLength={120}
-                required
-                className="mt-2 h-10 w-full rounded-card border border-edge bg-canvas px-3 text-sm font-semibold text-ink outline-none focus:border-brand"
-              />
-            </label>
+            <div className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-5">
+              <label className="block text-xs font-black uppercase tracking-[0.12em] text-muted">
+                Asunto
+                <input
+                  value={subject}
+                  onChange={(event) => setSubject(event.target.value)}
+                  minLength={3}
+                  maxLength={120}
+                  required
+                  className="mt-2 h-10 w-full rounded-card border border-edge bg-canvas px-3 text-sm font-semibold text-ink outline-none focus:border-brand"
+                />
+              </label>
 
-            <label className="mt-4 block text-xs font-black uppercase tracking-[0.12em] text-muted">
-              Mensaje
-              <textarea
-                value={message}
-                onChange={(event) => setMessage(event.target.value)}
-                minLength={10}
-                maxLength={2000}
-                required
-                rows={7}
-                className="mt-2 w-full resize-none rounded-card border border-edge bg-canvas px-3 py-2 text-sm font-semibold leading-6 text-ink outline-none focus:border-brand"
-              />
-            </label>
+              <label className="mt-4 block text-xs font-black uppercase tracking-[0.12em] text-muted">
+                Mensaje
+                <textarea
+                  value={message}
+                  onChange={(event) => setMessage(event.target.value)}
+                  minLength={10}
+                  maxLength={2000}
+                  required
+                  rows={6}
+                  className="mt-2 max-h-[42dvh] min-h-36 w-full resize-y rounded-card border border-edge bg-canvas px-3 py-2 text-sm font-semibold leading-6 text-ink outline-none focus:border-brand"
+                />
+              </label>
 
-            {error ? <p className="mt-3 text-sm font-bold text-error">{error}</p> : null}
+              {error ? <p className="mt-3 text-sm font-bold text-error">{error}</p> : null}
+            </div>
 
-            <div className="mt-5 flex justify-end gap-2">
+            <div className="flex shrink-0 flex-wrap justify-end gap-2 border-t border-edge p-4 sm:p-5">
               <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
                 Cancelar
               </Button>

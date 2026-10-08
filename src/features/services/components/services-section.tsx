@@ -90,13 +90,13 @@ const DEVELOPMENT_STEPS = [
 ] as const;
 
 const DEVELOPMENT_IMAGES = [
-  "/servcios/teerrenos.jpg",
-  "/home/1.jpg",
-  "/servcios/servicios.png",
-  "/servcios/legal.jpg",
-  "/home/2.jpg",
-  "/servicios/servicios.png",
-  "/home/3.jpg",
+  "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?auto=format&fit=crop&w=900&q=80",
 ] as const;
 
 const FINAL_ACTIONS = [
@@ -153,17 +153,19 @@ function SectionHeading({
   text,
   center = false,
   light = false,
+  eyebrowClassName,
 }: {
   eyebrow?: string;
   title: string;
   text?: string;
   center?: boolean;
   light?: boolean;
+  eyebrowClassName?: string;
 }) {
   return (
     <div className={cn("max-w-3xl", center && "mx-auto text-center")}>
       {eyebrow ? (
-        <p className={cn("text-[11px] font-bold uppercase tracking-[0.18em]", light ? "text-accent" : "text-accent")}>
+        <p className={cn("text-[11px] font-bold uppercase tracking-[0.18em]", light ? "text-accent" : "text-accent", eyebrowClassName)}>
           {eyebrow}
         </p>
       ) : null}
@@ -289,6 +291,7 @@ export function ServicesSection() {
               <div>
                 <SectionHeading
                   eyebrow="Asesoria legal inmobiliaria"
+                  eyebrowClassName="text-base sm:text-lg"
                   title="Compra, vende o desarrolla con respaldo legal"
                   text="Revisamos la situacion legal del inmueble y la documentacion necesaria para reducir riesgos antes de tomar una decision."
                 />
@@ -339,38 +342,52 @@ export function ServicesSection() {
 
       <Container id="evaluacion" size="wide-tight" className="py-16 sm:py-20">
         <RevealOnScroll>
-          <div className="rounded-2xl border border-edge bg-brand p-6 text-white shadow-[var(--shadow-card)] sm:p-8 xl:p-10">
-            <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
-              <div>
-                <SectionHeading
-                  eyebrow="Evaluacion de terrenos"
-                  title="Tienes un terreno y no sabes cuanto vale o que puedes desarrollar?"
-                  text="Analizamos tu propiedad desde una perspectiva comercial, tecnica y legal para ayudarte a tomar una mejor decision."
-                  light
-                />
-                <div className="mt-8">
-                  <WhatsappCta service="evaluacion de terreno" variant="accent">
-                    Evaluar mi terreno
-                  </WhatsappCta>
-                </div>
+          <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-stretch">
+            <div className="relative">
+              <ServiceImage
+                src="/servicios/image.png"
+                alt="Evaluacion de terrenos para desarrollo inmobiliario"
+                className="h-80 rounded-2xl border border-edge shadow-[var(--shadow-card)] lg:h-[460px]"
+                imgClassName="object-cover object-center transition-transform duration-500 hover:scale-105"
+              />
+              <div className="absolute inset-x-5 bottom-5 rounded-card bg-white/92 p-5 shadow-[var(--shadow-card)] backdrop-blur">
+                <p className="text-[11px] font-black uppercase tracking-[0.16em] text-accent">
+                  Analisis integral
+                </p>
+                <p className="mt-2 text-xl font-black leading-tight text-brand">
+                  Valor comercial, potencial constructivo y viabilidad antes de invertir.
+                </p>
               </div>
-              <div className="grid gap-3 sm:grid-cols-2">
-                {EVALUATION_AREAS.map((area, index) => (
-                  <article
-                    key={area.title}
-                    className={cn(
-                      "group relative overflow-hidden rounded-card border border-white/14 bg-white/8 p-5 backdrop-blur transition duration-200 hover:-translate-y-0.5 hover:bg-white/12",
-                      index === EVALUATION_AREAS.length - 1 && "sm:col-span-2",
-                    )}
-                  >
-                    <span className="absolute inset-x-0 top-0 h-1 bg-accent/80" aria-hidden />
-                    <span className="mb-4 flex size-8 items-center justify-center rounded-full bg-accent/15 text-accent">
-                      <span className="size-2.5 rounded-full bg-accent" />
+            </div>
+            <div className="flex min-h-[460px] flex-col justify-center">
+              <p className="font-display text-2xl font-black tracking-tight text-accent sm:text-3xl">
+                Evaluacion de terrenos
+              </p>
+              <h2 className="mt-3 text-3xl font-black tracking-tight text-brand sm:text-4xl">
+                Tienes un terreno y no sabes cuanto vale o que puedes desarrollar?
+              </h2>
+              <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted sm:text-base">
+                Analizamos tu propiedad desde una perspectiva comercial, tecnica y legal para ayudarte
+                a tomar una mejor decision.
+              </p>
+              <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                {EVALUATION_AREAS.map((area) => (
+                  <div key={area.title} className="rounded-card border border-edge bg-surface p-3 shadow-[var(--shadow-card)]">
+                    <span className="flex items-center gap-2 text-sm font-black text-brand">
+                      <CheckIcon className="size-4 shrink-0 text-accent" strokeWidth={2.6} />
+                      {area.title}
                     </span>
-                    <h3 className="text-sm font-black uppercase tracking-[0.12em] text-white">{area.title}</h3>
-                    <p className="mt-2 text-sm leading-6 text-white/75">{area.text}</p>
-                  </article>
+                    <p className="mt-2 text-xs font-semibold leading-5 text-muted">{area.text}</p>
+                  </div>
                 ))}
+              </div>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                <WhatsappCta service="evaluacion de terreno">
+                  Evaluar mi terreno
+                </WhatsappCta>
+                <WhatsappCta service="potencial inmobiliario de terreno" variant="secondary">
+                  Consultar potencial
+                </WhatsappCta>
               </div>
             </div>
           </div>

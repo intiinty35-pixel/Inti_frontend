@@ -13,6 +13,7 @@ export const ROUTES = {
   project: (slug: string): string => `/project/${slug}`,
   services: "/servicios",
   investments: "/inversiones",
+  terms: "/terminos",
   rewards: "/rewards",
   rewardsMy: "/rewards/my",
   panel: {
@@ -28,6 +29,7 @@ export const ROUTES = {
       developer: (id: string): string => `/panel/admin/developers/${id}`,
       agencies: "/panel/admin/agencies",
       referrals: "/panel/admin/referrals",
+      reports: "/panel/admin/reports",
       agency: (id: string): string => `/panel/admin/agencies/${id}`,
       referrer: (id: string): string => `/panel/admin/referrals/${id}`,
       incentives: "/panel/admin/incentives",

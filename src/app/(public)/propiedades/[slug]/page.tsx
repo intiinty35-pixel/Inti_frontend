@@ -244,6 +244,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             <ExpandableText
               text={property.description}
               lines={4}
+              maxWords={100}
               className="mt-3 max-w-5xl text-sm leading-7 whitespace-pre-line text-muted lg:text-[15px] lg:leading-8"
             />
           </section>

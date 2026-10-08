@@ -15,6 +15,7 @@ import {
   HandCoins,
   Landmark,
   LayoutDashboard,
+  MessageSquareText,
   UserCog,
 } from "lucide-react";
 import { cn } from "@/shared/lib/cn";
@@ -78,6 +79,13 @@ const NAV_ITEMS: readonly AdminNavItem[] = [
     label: "Solicitudes de pago",
     href: ROUTES.panel.admin.subscriptions,
     Icon: ClipboardCheck,
+    group: "operacion",
+  },
+  {
+    key: "reports",
+    label: "Reportes",
+    href: ROUTES.panel.admin.reports,
+    Icon: MessageSquareText,
     group: "operacion",
   },
   {

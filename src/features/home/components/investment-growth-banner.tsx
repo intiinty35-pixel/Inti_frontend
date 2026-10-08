@@ -37,7 +37,7 @@ export function InvestmentGrowthBanner() {
               Haz crecer tu inversion con <span className="text-accent">Ariz Proyectos</span>
             </h2>
             <p className="mt-2 max-w-xl text-sm font-semibold text-white/86">
-              Terrenos, casas y departamentos en las mejores zonas de Tumbes.
+              Terrenos, casas y departamentos en las mejores zonas del Perú y Tumbes.
             </p>
 
             <div className="mt-5 flex flex-wrap gap-3">

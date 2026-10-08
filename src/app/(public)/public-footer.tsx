@@ -181,12 +181,9 @@ export function PublicFooter() {
 
         <div className="mt-12 flex flex-col gap-3 border-t border-white/20 pt-6 text-xs text-white/70 sm:flex-row sm:items-center sm:justify-between">
           <span>© {new Date().getFullYear()} Ariz Proyectos</span>
-          <span
-            title="Disponible próximamente"
-            className="cursor-default font-semibold text-accent"
-          >
-            Términos y privacidad
-          </span>
+          <Link href={ROUTES.terms} className="font-semibold text-accent transition-colors hover:text-white">
+            Términos y condiciones
+          </Link>
         </div>
       </Container>
     </footer>

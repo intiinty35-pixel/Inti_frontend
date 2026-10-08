@@ -88,6 +88,18 @@ export interface ProfessionalRecord {
   };
 }
 
+export interface ContactReport {
+  id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  topic: string;
+  message: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export async function listProfessionals(page?: number, pageSize?: number): Promise<PagedResult<ProfessionalRecord>> {
   const params = new URLSearchParams();
   params.set("page", String(page ?? 1));
@@ -143,6 +155,13 @@ export function listSubscriptions(page?: number, pageSize?: number): Promise<Pag
   params.set("page", String(page ?? 1));
   if (pageSize) params.set("pageSize", String(pageSize));
   return getJson<PagedResult<PendingSubscription>>(`/admin/subscriptions?${params.toString()}`);
+}
+
+export function listContactReports(page?: number, pageSize?: number): Promise<PagedResult<ContactReport>> {
+  const params = new URLSearchParams();
+  params.set("page", String(page ?? 1));
+  if (pageSize) params.set("pageSize", String(pageSize));
+  return getJson<PagedResult<ContactReport>>(`/admin/contact-reports?${params.toString()}`);
 }
 
 export async function listDevelopers(status: DeveloperReviewStatus = "PENDING_REVIEW", page = 1, pageSize = 10) {

@@ -28,7 +28,7 @@ interface FormErrors {
   availability?: string;
 }
 
-type ModalView = 'initial' | 'existing-code' | 'existing-form' | 'new-step1' | 'new-step2';
+type ModalView = 'initial' | 'existing-code' | 'existing-form' | 'new-step1' | 'new-step2' | 'new-step3';
 
 const INTEREST_OPTIONS = [
   { value: 'VENTA', label: 'Venta' },
@@ -44,6 +44,15 @@ const AVAILABILITY_OPTIONS = [
   { value: 'AVERIGUAR', label: 'Averiguar' },
   { value: 'POR_CONFIRMAR', label: 'Por confirmar' },
 ] as const;
+
+const INTEREST_DETAIL_OPTIONS: Partial<Record<(typeof INTEREST_OPTIONS)[number]['value'], readonly string[]>> = {
+  COMPRA: ['Comprar propiedades', 'Comprar proyectos', 'Comprar terrenos', 'Comprar lotes'],
+  VENTA: ['Vender propiedad', 'Vender terreno', 'Vender lote', 'Vender proyecto'],
+  ALQUILER: ['Alquilar propiedad', 'Publicar alquiler'],
+  COMPRA_LOTE: ['Lote urbano', 'Lote campestre', 'Lote de playa', 'Lote para inversión'],
+  INVERSION: ['Proyecto inmobiliario', 'Terrenos', 'Lotes', 'Oportunidad de inversión'],
+  CORRETAJE: ['Comprar con corretaje', 'Vender con corretaje', 'Alquilar con corretaje'],
+};
 
 /** Correo real: usuario@dominio.tld (TLD alfabético de 2+ letras, sin puntos dobles). */
 const EMAIL_REGEX = /^[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z]{2,}$/;
@@ -84,6 +93,7 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
   const [phone, setPhone] = useState('');
   const [interest, setInterest] = useState('');
   const [availability, setAvailability] = useState('');
+  const [interestDetail, setInterestDetail] = useState('');
 
   useEffect(() => {
     if (open) {
@@ -185,6 +195,15 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
     else if (!isValidEmail(email)) next.email = 'Ingresa un correo válido, por ejemplo nombre@correo.com.';
     if (!phone.trim()) next.phone = 'Ingresa el teléfono del referido.';
     else if (!isValidPeruPhone(phone)) next.phone = 'Ingresa un celular de 9 dígitos (ej. 923 655 566).';
+    if (!interest) next.interest = 'Selecciona qué desea hacer.';
+    if (!availability) next.availability = 'Selecciona la disponibilidad.';
+    return next;
+  }
+
+  function validatePreferences(): FormErrors {
+    const next: FormErrors = {};
+    if (!interest) next.interest = 'Selecciona qué desea hacer.';
+    if (!availability) next.availability = 'Selecciona la disponibilidad.';
     return next;
   }
 
@@ -196,6 +215,14 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
     }
   }
 
+  function handleNewStep2Next() {
+    const step2Errors = validateNewStep2();
+    setErrors(step2Errors);
+    if (Object.keys(step2Errors).length === 0) {
+      setView('new-step3');
+    }
+  }
+
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     
@@ -203,8 +230,8 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
     
     if (view === 'existing-form') {
       validationErrors = validateExistingForm();
-    } else if (view === 'new-step2') {
-      validationErrors = validateNewStep2();
+    } else if (view === 'new-step3') {
+      validationErrors = validatePreferences();
     } else {
       return;
     }
@@ -265,6 +292,7 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
     setPhone('');
     setInterest('');
     setAvailability('');
+    setInterestDetail('');
     onClose();
   }
 
@@ -272,6 +300,8 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
     if (view === 'existing-form') {
       setView('existing-code');
       setValidatedReferrer(null);
+    } else if (view === 'new-step3') {
+      setView('new-step2');
     } else if (view === 'new-step2') {
       setView('new-step1');
     } else {
@@ -304,6 +334,103 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
     );
   }
 
+  function renderPreferenceFields() {
+    const details = INTEREST_DETAIL_OPTIONS[interest as keyof typeof INTEREST_DETAIL_OPTIONS] ?? [];
+
+    return (
+      <>
+        <div className="flex flex-col gap-1.5">
+          <span className="text-[13px] font-semibold text-brand">
+            ¿Qué desea hacer?
+          </span>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {INTEREST_OPTIONS.map((option) => (
+              <label
+                key={option.value}
+                className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors ${
+                  interest === option.value
+                    ? 'border-brand bg-brand-soft'
+                    : 'border-edge hover:border-brand/50'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="interest"
+                  value={option.value}
+                  checked={interest === option.value}
+                  onChange={(e) => {
+                    setInterest(e.target.value);
+                    setInterestDetail('');
+                  }}
+                  className="size-4 accent-brand"
+                />
+                <span className="text-sm text-ink">{option.label}</span>
+              </label>
+            ))}
+          </div>
+          {errors.interest && (
+            <p className="text-xs font-medium text-error">{errors.interest}</p>
+          )}
+        </div>
+
+        {details.length > 0 ? (
+          <div className="flex flex-col gap-1.5">
+            <span className="text-[13px] font-semibold text-brand">
+              Elige una opción
+            </span>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              {details.map((detail) => (
+                <button
+                  key={detail}
+                  type="button"
+                  onClick={() => setInterestDetail(detail)}
+                  className={`rounded-lg border p-3 text-left text-sm font-semibold transition-colors ${
+                    interestDetail === detail
+                      ? 'border-brand bg-brand text-on-brand'
+                      : 'border-edge text-ink hover:border-brand/50 hover:bg-brand-soft'
+                  }`}
+                >
+                  {detail}
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        <div className="flex flex-col gap-1.5">
+          <span className="text-[13px] font-semibold text-brand">
+            Disponibilidad
+          </span>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+            {AVAILABILITY_OPTIONS.map((option) => (
+              <label
+                key={option.value}
+                className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors ${
+                  availability === option.value
+                    ? 'border-brand bg-brand-soft'
+                    : 'border-edge hover:border-brand/50'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="availability"
+                  value={option.value}
+                  checked={availability === option.value}
+                  onChange={(e) => setAvailability(e.target.value)}
+                  className="size-4 accent-brand"
+                />
+                <span className="text-sm text-ink">{option.label}</span>
+              </label>
+            ))}
+          </div>
+          {errors.availability && (
+            <p className="text-xs font-medium text-error">{errors.availability}</p>
+          )}
+        </div>
+      </>
+    );
+  }
+
   return createPortal(
     <div
       className="fixed inset-0 z-[9999] flex items-center justify-center bg-brand/45 p-4 backdrop-blur-sm"
@@ -318,10 +445,10 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
         <div className="flex shrink-0 items-start justify-between gap-4 border-b border-edge p-6">
           <div>
             <p className="text-[11px] font-black tracking-[0.18em] text-accent uppercase">
-              Programa de referidos
+              Refiere con Ariz
             </p>
             <h2 id="referral-modal-title" className="mt-1 font-display text-2xl font-black text-brand">
-              Refiere con Ariz
+              Bienvenidos al club de proyectos refiere, gana, acumula y disfruta
             </h2>
           </div>
           <button
@@ -362,8 +489,7 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
                   <KeyRound className="size-6" aria-hidden />
                 </div>
                 <div>
-                  <p className="font-bold text-ink">Tengo código</p>
-                  <p className="mt-1 text-xs text-muted">Ya soy referente</p>
+                  <p className="font-bold text-ink">Soy miembro Arizgroup</p>
                 </div>
               </button>
               <button
@@ -375,8 +501,7 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
                   <UserRoundPlus className="size-6" aria-hidden />
                 </div>
                 <div>
-                  <p className="font-bold text-ink">Soy nuevo</p>
-                  <p className="mt-1 text-xs text-muted">Primera vez</p>
+                  <p className="font-bold text-ink">Quiero inscribirme para ser miembro de Arizgroup</p>
                 </div>
               </button>
             </div>
@@ -452,67 +577,7 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
                   hint="Solo 9 dígitos; el +51 se agrega automáticamente."
                   required
                 />
-                <div className="flex flex-col gap-1.5">
-                  <span className="text-[13px] font-semibold text-brand">
-                    ¿Qué desea hacer?
-                  </span>
-                  <div className="flex flex-col gap-2">
-                    {INTEREST_OPTIONS.map((option) => (
-                      <label
-                        key={option.value}
-                        className={`flex items-center gap-3 rounded-lg border p-3 cursor-pointer transition-colors ${
-                          interest === option.value
-                            ? 'border-brand bg-brand-soft'
-                            : 'border-edge hover:border-brand/50'
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name="interest"
-                          value={option.value}
-                          checked={interest === option.value}
-                          onChange={(e) => setInterest(e.target.value)}
-                          className="size-4 accent-brand"
-                        />
-                        <span className="text-sm text-ink">{option.label}</span>
-                      </label>
-                    ))}
-                  </div>
-                  {errors.interest && (
-                    <p className="text-xs font-medium text-error">{errors.interest}</p>
-                  )}
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <span className="text-[13px] font-semibold text-brand">
-                    Disponibilidad
-                  </span>
-                  <div className="flex flex-col gap-2">
-                    {AVAILABILITY_OPTIONS.map((option) => (
-                      <label
-                        key={option.value}
-                        className={`flex items-center gap-3 rounded-lg border p-3 cursor-pointer transition-colors ${
-                          availability === option.value
-                            ? 'border-brand bg-brand-soft'
-                            : 'border-edge hover:border-brand/50'
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name="availability"
-                          value={option.value}
-                          checked={availability === option.value}
-                          onChange={(e) => setAvailability(e.target.value)}
-                          className="size-4 accent-brand"
-                        />
-                        <span className="text-sm text-ink">{option.label}</span>
-                      </label>
-                    ))}
-                  </div>
-                  {errors.availability && (
-                    <p className="text-xs font-medium text-error">{errors.availability}</p>
-                  )}
-                </div>
-
+                {renderPreferenceFields()}
                 {error && (
                   <p className="rounded-lg bg-error/10 p-3 text-sm font-semibold text-error">{error}</p>
                 )}
@@ -530,7 +595,7 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
           </>
         ) : view === 'new-step1' ? (
           <>
-            {renderStepper(1, 2)}
+            {renderStepper(1, 3)}
             <div className="p-6">
               <p className="mb-4 text-sm font-semibold text-ink">
                 Tus datos (referente)
@@ -580,7 +645,7 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
           </>
         ) : view === 'new-step2' ? (
           <>
-            {renderStepper(2, 2)}
+            {renderStepper(2, 3)}
             <form onSubmit={handleSubmit} className="p-6">
               <p className="mb-4 text-sm font-semibold text-ink">
                 Datos del referido
@@ -617,67 +682,30 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
                   hint="Solo 9 dígitos; el +51 se agrega automáticamente."
                   required
                 />
-                <div className="flex flex-col gap-1.5">
-                  <span className="text-[13px] font-semibold text-brand">
-                    ¿Qué desea hacer?
-                  </span>
-                  <div className="flex flex-col gap-2">
-                    {INTEREST_OPTIONS.map((option) => (
-                      <label
-                        key={option.value}
-                        className={`flex items-center gap-3 rounded-lg border p-3 cursor-pointer transition-colors ${
-                          interest === option.value
-                            ? 'border-brand bg-brand-soft'
-                            : 'border-edge hover:border-brand/50'
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name="interest"
-                          value={option.value}
-                          checked={interest === option.value}
-                          onChange={(e) => setInterest(e.target.value)}
-                          className="size-4 accent-brand"
-                        />
-                        <span className="text-sm text-ink">{option.label}</span>
-                      </label>
-                    ))}
-                  </div>
-                  {errors.interest && (
-                    <p className="text-xs font-medium text-error">{errors.interest}</p>
-                  )}
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <span className="text-[13px] font-semibold text-brand">
-                    Disponibilidad
-                  </span>
-                  <div className="flex flex-col gap-2">
-                    {AVAILABILITY_OPTIONS.map((option) => (
-                      <label
-                        key={option.value}
-                        className={`flex items-center gap-3 rounded-lg border p-3 cursor-pointer transition-colors ${
-                          availability === option.value
-                            ? 'border-brand bg-brand-soft'
-                            : 'border-edge hover:border-brand/50'
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name="availability"
-                          value={option.value}
-                          checked={availability === option.value}
-                          onChange={(e) => setAvailability(e.target.value)}
-                          className="size-4 accent-brand"
-                        />
-                        <span className="text-sm text-ink">{option.label}</span>
-                      </label>
-                    ))}
-                  </div>
-                  {errors.availability && (
-                    <p className="text-xs font-medium text-error">{errors.availability}</p>
-                  )}
-                </div>
+                {error && (
+                  <p className="rounded-lg bg-error/10 p-3 text-sm font-semibold text-error">{error}</p>
+                )}
 
+                <div className="mt-2 flex gap-3">
+                  <Button type="button" variant="secondary" onClick={handleBack} className="flex-1">
+                    Atrás
+                  </Button>
+                  <Button type="button" onClick={handleNewStep2Next} className="flex-1">
+                    Continuar
+                  </Button>
+                </div>
+              </div>
+            </form>
+          </>
+        ) : view === 'new-step3' ? (
+          <>
+            {renderStepper(3, 3)}
+            <form onSubmit={handleSubmit} className="p-6">
+              <p className="mb-4 text-sm font-semibold text-ink">
+                Preferencias del referido
+              </p>
+              <div className="flex flex-col gap-4">
+                {renderPreferenceFields()}
                 {error && (
                   <p className="rounded-lg bg-error/10 p-3 text-sm font-semibold text-error">{error}</p>
                 )}

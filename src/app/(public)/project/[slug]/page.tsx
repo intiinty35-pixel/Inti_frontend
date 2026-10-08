@@ -25,6 +25,7 @@ import { QuickQuestions } from "@/features/listings/components/Quickquestions";
 import { SharePropertyButton } from "@/features/listings/components/share-property-button";
 import { getProjectBySlugServer } from "@/features/projects/api/server";
 import type { ProjectApiDetail } from "@/features/projects/types/api";
+import { ProjectLotsBrowser } from "@/features/projects/components/project-lots-browser";
 import { LeadForm } from "@/features/leads";
 
 interface ProjectPageProps {
@@ -399,6 +400,18 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           ) : null}
 
           {project.lots.length > 0 ? (
+            <ProjectLotsBrowser
+              lots={project.lots}
+              lotMode={project.lotMode}
+              currency={CURRENCY_FALLBACK[project.currency] ?? "PEN"}
+              projectName={project.name}
+              locationLine={locationLine}
+              developer={project.developer}
+              businessName={project.businessName}
+            />
+          ) : null}
+
+          {false && project.lots.length > 0 ? (
             <section className="mt-9">
               <h2 className="font-display text-xl font-black tracking-tight text-brand lg:text-2xl">
                 Lotes disponibles
@@ -570,7 +583,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
         <aside className="flex flex-col gap-4 lg:sticky lg:top-20">
           <div className="rounded-2xl border border-edge bg-surface p-5 xl:p-6">
-            <h2 className="text-base font-bold text-ink xl:text-lg">Contacta al desarrollador</h2>
+            <h2 className="text-base font-bold text-ink xl:text-lg">Contacta con el asesor</h2>
             <LeadForm
               projectId={project.id}
               source="PROJECT_FORM"

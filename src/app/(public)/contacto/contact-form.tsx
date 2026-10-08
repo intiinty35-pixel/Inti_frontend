@@ -2,8 +2,8 @@
 
 import { useState, type FormEvent } from "react";
 import { ChevronDown, Mail, Send } from "lucide-react";
+import { apiClient } from "@/shared/lib/api/client";
 
-const SUPPORT_EMAIL = "arizcenter@gmail.com";
 const TOPICS = [
   "Quiero información",
   "Comprar una propiedad",
@@ -22,21 +22,37 @@ export function ContactForm() {
     message: "",
   });
   const [topicOpen, setTopicOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  function submit(event: FormEvent<HTMLFormElement>) {
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const subject = `Contacto ARIZ - ${form.topic}`;
-    const body = [
-      `Nombre: ${form.name}`,
-      `Correo: ${form.email}`,
-      `Telefono: ${form.phone || "No indicado"}`,
-      `Tema: ${form.topic}`,
-      "",
-      "Mensaje:",
-      form.message,
-    ].join("\n");
+    setSubmitting(true);
+    setSuccess(false);
+    setError(null);
 
-    window.location.href = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    try {
+      await apiClient.post("/contact-reports", {
+        name: form.name.trim(),
+        email: form.email.trim(),
+        phone: form.phone.trim() || undefined,
+        topic: form.topic,
+        message: form.message.trim(),
+      });
+      setSuccess(true);
+      setForm({
+        name: "",
+        email: "",
+        phone: "",
+        topic: TOPICS[0],
+        message: "",
+      });
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "No se pudo enviar la consulta.");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -143,9 +159,23 @@ export function ContactForm() {
         </label>
       </div>
 
-      <button className="mt-5 inline-flex h-11 items-center justify-center gap-2 rounded-card bg-brand px-5 text-sm font-black text-on-brand hover:bg-brand-hover">
+      {success ? (
+        <p className="mt-5 rounded-card bg-success/10 p-3 text-sm font-bold text-success">
+          Consulta enviada. Te contactaremos pronto.
+        </p>
+      ) : null}
+      {error ? (
+        <p className="mt-5 rounded-card bg-error/10 p-3 text-sm font-bold text-error">
+          {error}
+        </p>
+      ) : null}
+
+      <button
+        disabled={submitting}
+        className="mt-5 inline-flex h-11 items-center justify-center gap-2 rounded-card bg-brand px-5 text-sm font-black text-on-brand hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-70"
+      >
         <Send className="size-4" />
-        Enviar consulta
+        {submitting ? "Enviando..." : "Enviar consulta"}
       </button>
     </form>
   );

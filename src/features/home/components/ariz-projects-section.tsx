@@ -15,7 +15,7 @@ export async function ArizProjectsSection() {
       <div className="mx-auto w-full">
         <div className="flex items-center justify-between gap-4">
           <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
-            <h2 className="text-xl leading-none font-black tracking-tight text-[#071A5A] sm:text-2xl">
+            <h2 className="text-[22px] leading-none font-black tracking-tight text-[#071A5A] sm:text-[26px]">
               Proyectos Ariz
             </h2>
             <span aria-hidden className="hidden h-0.5 w-7 rounded-full bg-accent sm:block" />
