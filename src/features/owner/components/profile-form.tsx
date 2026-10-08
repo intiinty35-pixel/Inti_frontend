@@ -2,8 +2,9 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { Camera, Loader2 } from "lucide-react";
 import { Button, Input, Select } from "@/shared/ui";
-import { OwnerRequestError, updateMyProfile } from "@/features/owner/api/client";
+import { OwnerRequestError, updateMyProfile, uploadProfilePhoto } from "@/features/owner/api/client";
 import { mapMessagesToFields } from "@/shared/lib/field-errors";
 import type { ProfessionalProfile } from "@/features/owner/types/property";
 
@@ -43,6 +44,8 @@ export function ProfileForm({ profile }: { profile: ProfessionalProfile }) {
   const [formError, setFormError] = useState("");
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState(profile.user.avatarUrl ?? "");
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -57,6 +60,7 @@ export function ProfileForm({ profile }: { profile: ProfessionalProfile }) {
         firstName: String(form.get("displayName") ?? "").trim(),
         businessName: isCompany ? String(form.get("displayName") ?? "").trim() : undefined,
         phone: String(form.get("phone") ?? "").trim(),
+        avatarUrl: avatarUrl || undefined,
         whatsapp: String(form.get("whatsapp") ?? "").trim(),
         city: String(form.get("city") ?? "").trim(),
         districts: String(form.get("districts") ?? "").trim() || undefined,
@@ -80,10 +84,77 @@ export function ProfileForm({ profile }: { profile: ProfessionalProfile }) {
     }
   }
 
+  async function handleAvatarChange(file: File | undefined) {
+    if (!file) return;
+    setFormError("");
+    setSaved(false);
+
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      setFormError("Sube una foto JPG, PNG o WEBP.");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setFormError("La foto debe pesar como maximo 5 MB.");
+      return;
+    }
+
+    setUploadingAvatar(true);
+    try {
+      const uploaded = await uploadProfilePhoto(file);
+      setAvatarUrl(uploaded.url);
+    } catch (error) {
+      setFormError(error instanceof OwnerRequestError ? error.messages[0] : "No se pudo subir la foto.");
+    } finally {
+      setUploadingAvatar(false);
+    }
+  }
+
   const displayName = profile.businessName ?? `${profile.user.firstName} ${profile.user.lastName ?? ""}`.trim();
+  const initial = displayName.charAt(0).toUpperCase() || "A";
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+      <div className="grid gap-5 rounded-card border border-edge bg-canvas p-4 sm:grid-cols-[auto_minmax(0,1fr)] sm:items-center">
+        <div className="relative mx-auto size-28 overflow-hidden rounded-2xl border border-edge bg-brand text-on-brand shadow-[var(--shadow-card)] sm:mx-0">
+          {avatarUrl ? (
+            <img src={avatarUrl} alt={displayName} className="size-full object-cover" />
+          ) : (
+            <span className="flex size-full items-center justify-center font-display text-4xl font-black">
+              {initial}
+            </span>
+          )}
+        </div>
+        <div className="min-w-0 text-center sm:text-left">
+          <p className="text-[11px] font-black uppercase tracking-[0.16em] text-accent">Foto de perfil</p>
+          <h2 className="mt-1 text-xl font-black text-brand">{displayName}</h2>
+          <p className="mt-1 text-sm leading-6 text-muted">
+            Esta imagen se usara en tu perfil profesional y ayudara a que tus publicaciones se vean mas confiables.
+          </p>
+          <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+            <label className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-card bg-brand px-4 text-sm font-bold text-on-brand transition-colors hover:bg-brand-hover">
+              {uploadingAvatar ? <Loader2 className="size-4 animate-spin" /> : <Camera className="size-4" />}
+              {uploadingAvatar ? "Subiendo..." : "Cargar foto"}
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                className="sr-only"
+                onChange={(event) => void handleAvatarChange(event.target.files?.[0])}
+              />
+            </label>
+            {avatarUrl ? (
+              <button
+                type="button"
+                onClick={() => setAvatarUrl("")}
+                className="inline-flex h-10 items-center justify-center rounded-card border border-edge bg-surface px-4 text-sm font-bold text-ink transition-colors hover:border-brand"
+              >
+                Quitar foto
+              </button>
+            ) : null}
+          </div>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Input
           name="displayName"

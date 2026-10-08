@@ -13,11 +13,12 @@ import { OwnerNav } from "@/app/(panel)/panel/owner/owner-nav";
 export interface OwnerShellProps {
   name: string;
   roleLabel: string;
+  avatarUrl?: string | null;
   canManageProjects?: boolean;
   children: ReactNode;
 }
 
-export function OwnerShell({ name, roleLabel, canManageProjects = true, children }: OwnerShellProps) {
+export function OwnerShell({ name, roleLabel, avatarUrl, canManageProjects = true, children }: OwnerShellProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const initial = name.trim().charAt(0).toUpperCase() || "A";
@@ -146,9 +147,17 @@ export function OwnerShell({ name, roleLabel, canManageProjects = true, children
               href={ROUTES.panel.owner.profile}
               className="flex items-center gap-2.5 rounded-xl border border-edge bg-surface px-2 py-2 transition-colors hover:border-brand sm:px-3"
             >
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-brand font-bold text-on-brand">
-                {initial}
-              </span>
+              {avatarUrl ? (
+                <img
+                  src={avatarUrl}
+                  alt={name}
+                  className="size-9 shrink-0 rounded-lg object-cover"
+                />
+              ) : (
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-brand font-bold text-on-brand">
+                  {initial}
+                </span>
+              )}
               <span className="hidden max-w-48 flex-col text-left leading-none sm:flex">
                 <span className="truncate text-sm font-semibold text-ink">{name}</span>
                 <span className="text-[11px] text-muted">{roleLabel}</span>

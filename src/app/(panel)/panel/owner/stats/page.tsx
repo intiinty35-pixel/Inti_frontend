@@ -1,4 +1,4 @@
-import { BarChart, CATEGORICAL, RankChart, TrendChart } from "@/shared/ui";
+import { CATEGORICAL, DonutChart, RankChart, TrendChart } from "@/shared/ui";
 import { DashboardPanel, EmptyChart, PageBanner, StatCard } from "@/features/owner/components/dashboard-ui";
 import { listMyLeads, listMyProperties } from "@/features/owner/api/server";
 import { leadsBySource, leadsPerDay } from "@/features/owner/lib/chart-data";
@@ -27,7 +27,7 @@ export default async function OwnerStatsPage() {
         description={`Información calculada desde la actividad disponible (${properties.length} publicaciones).`}
       />
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 min-[1500px]:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard label="Visualizaciones" value="0" hint="Disponible próximamente" />
         <StatCard label="Contactos" value={String(leads.length)} hint="Últimos 30 días" />
         <StatCard label="WhatsApp" value={String(whatsappLeads)} hint="Últimos 30 días" />
@@ -55,7 +55,7 @@ export default async function OwnerStatsPage() {
         <DashboardPanel title="Consultas por canal">
           {bySource.length > 0 ? (
             <div className="mt-4 w-full">
-              <BarChart data={bySource} />
+              <DonutChart data={bySource} centerLabel="consultas" />
             </div>
           ) : (
             <EmptyChart message="Aún no recibes consultas" />

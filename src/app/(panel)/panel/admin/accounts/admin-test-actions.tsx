@@ -167,12 +167,12 @@ export function AdminTestActions({ label, notifyId, deleteTarget }: AdminTestAct
       ) : null}
 
       {open ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-ink/35 p-3 sm:p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-ink/35 p-4 sm:p-6">
           <form
             onSubmit={handleNotify}
-            className="flex max-h-[calc(100dvh-1.5rem)] w-full max-w-lg flex-col overflow-hidden rounded-card border border-edge bg-surface text-left shadow-[var(--shadow-pop)] sm:max-h-[calc(100dvh-2rem)]"
+            className="my-auto w-full max-w-[min(94vw,680px)] overflow-hidden rounded-card border border-edge bg-surface text-left shadow-[var(--shadow-pop)]"
           >
-            <div className="flex shrink-0 items-start justify-between gap-3 border-b border-edge p-4 sm:p-5">
+            <div className="flex items-start justify-between gap-3 border-b border-edge p-4 sm:p-5">
               <div className="min-w-0">
                 <p className="text-xs font-black uppercase tracking-[0.16em] text-accent">
                   Notificar usuario
@@ -189,42 +189,42 @@ export function AdminTestActions({ label, notifyId, deleteTarget }: AdminTestAct
               </button>
             </div>
 
-            <div className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-5">
-              <label className="block text-xs font-black uppercase tracking-[0.12em] text-muted">
-                Asunto
+            <div className="space-y-4 p-4 sm:p-5">
+              <label className="grid gap-2 text-xs font-black uppercase tracking-[0.12em] text-muted">
+                <span>Asunto / razon</span>
                 <input
                   value={subject}
                   onChange={(event) => setSubject(event.target.value)}
                   minLength={3}
                   maxLength={120}
                   required
-                  className="mt-2 h-10 w-full rounded-card border border-edge bg-canvas px-3 text-sm font-semibold text-ink outline-none focus:border-brand"
+                  className="h-11 w-full rounded-card border border-edge bg-canvas px-3 text-sm font-semibold normal-case tracking-normal text-ink outline-none focus:border-brand"
                 />
               </label>
 
-              <label className="mt-4 block text-xs font-black uppercase tracking-[0.12em] text-muted">
-                Mensaje
+              <label className="grid gap-2 text-xs font-black uppercase tracking-[0.12em] text-muted">
+                <span>Mensaje</span>
                 <textarea
                   value={message}
                   onChange={(event) => setMessage(event.target.value)}
                   minLength={10}
                   maxLength={2000}
                   required
-                  rows={6}
-                  className="mt-2 max-h-[42dvh] min-h-36 w-full resize-y rounded-card border border-edge bg-canvas px-3 py-2 text-sm font-semibold leading-6 text-ink outline-none focus:border-brand"
+                  rows={5}
+                  className="h-40 w-full resize-none rounded-card border border-edge bg-canvas px-3 py-3 text-sm font-semibold leading-6 normal-case tracking-normal text-ink outline-none focus:border-brand sm:h-44"
                 />
               </label>
 
               {error ? <p className="mt-3 text-sm font-bold text-error">{error}</p> : null}
-            </div>
 
-            <div className="flex shrink-0 flex-wrap justify-end gap-2 border-t border-edge p-4 sm:p-5">
-              <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
-                Cancelar
-              </Button>
-              <Button type="submit" disabled={loading}>
-                {loading ? "Enviando..." : "Enviar correo"}
-              </Button>
+              <div className="grid grid-cols-2 gap-2 pt-1">
+                <Button type="button" variant="secondary" onClick={() => setOpen(false)} className="w-full">
+                  Cancelar
+                </Button>
+                <Button type="submit" disabled={loading} className="w-full">
+                  {loading ? "Enviando..." : "Enviar correo"}
+                </Button>
+              </div>
             </div>
           </form>
         </div>

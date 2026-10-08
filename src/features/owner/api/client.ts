@@ -1,5 +1,6 @@
 import type { CreatePropertyPayload, OwnerProperty, ProfessionalProfile } from "@/features/owner/types/property";
 import type { Subscription } from "@/features/owner/types/plan";
+import type { OwnerNotificationSettings } from "@/features/owner/types/settings";
 
 export class OwnerRequestError extends Error {
   readonly messages: string[];
@@ -47,6 +48,7 @@ export function updateMyProfile(
     firstName: string;
     businessName: string;
     phone: string;
+    avatarUrl: string;
     whatsapp: string;
     city: string;
     districts: string;
@@ -59,6 +61,30 @@ export function updateMyProfile(
   return request<ProfessionalProfile>("/professionals/me", {
     method: "PATCH",
     body: JSON.stringify(draft),
+  });
+}
+
+export function changeOwnerPassword(input: {
+  currentPassword: string;
+  newPassword: string;
+}): Promise<{ message: string }> {
+  return request<{ message: string }>("/professionals/me/password", {
+    method: "PATCH",
+    body: JSON.stringify(input),
+  });
+}
+
+export function updateOwnerNotificationSettings(
+  input: Partial<
+    Pick<
+      OwnerNotificationSettings,
+      "emailLeads" | "whatsappLeads" | "membershipReminders" | "weeklyStats"
+    >
+  >,
+): Promise<OwnerNotificationSettings> {
+  return request<OwnerNotificationSettings>("/professionals/me/settings", {
+    method: "PATCH",
+    body: JSON.stringify(input),
   });
 }
 
@@ -105,6 +131,10 @@ export function uploadPropertyPhoto(file: File): Promise<{ url: string; publicId
 
 export function uploadPaymentReceipt(file: File): Promise<{ url: string; publicId: string }> {
   return uploadToCloudinary(file, "ariz/receipts");
+}
+
+export function uploadProfilePhoto(file: File): Promise<{ url: string; publicId: string }> {
+  return uploadToCloudinary(file, "ariz/profiles");
 }
 
 export function requestPlan(planId: string, receiptUrl?: string): Promise<Subscription> {

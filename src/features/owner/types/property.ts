@@ -134,5 +134,5 @@ export interface ProfessionalProfile {
   website: string | null;
   socialLinks: string | null;
   slug: string | null;
-  user: { firstName: string; lastName: string | null; email: string; phone: string | null };
+  user: { firstName: string; lastName: string | null; email: string; phone: string | null; avatarUrl: string | null };
 }

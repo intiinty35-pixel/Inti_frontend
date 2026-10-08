@@ -332,6 +332,51 @@ export function PropertyPublishWizard({
     setStep((current) => Math.min(4, current + 1) as Step);
   }
 
+  function goToStep(target: Step) {
+    if (target === step) return;
+    if (target < step) {
+      setFieldErrors({});
+      issuesRef.current = [];
+      setErrors([]);
+      saveDraft();
+      setStep(target);
+      return;
+    }
+
+    const validators: Record<Step, () => boolean> = {
+      1: validateStepOne,
+      2: validateStepTwo,
+      3: validateStepThree,
+      4: validateStepFour,
+    };
+    const labels: Record<Step, string> = {
+      1: "Informacion basica",
+      2: "Ubicacion",
+      3: "Caracteristicas",
+      4: "Fotos y publicacion",
+    };
+
+    setFieldErrors({});
+    for (let current = 1; current < target; current += 1) {
+      const currentStep = current as Step;
+      if (!validators[currentStep]()) {
+        const details = issuesRef.current;
+        setErrors([
+          details.length > 0
+            ? `Completa el paso ${currentStep} (${labels[currentStep]}) antes de continuar: ${details.join(" · ")}`
+            : `Completa el paso ${currentStep} (${labels[currentStep]}) antes de continuar.`,
+        ]);
+        setStep(currentStep);
+        return;
+      }
+    }
+
+    issuesRef.current = [];
+    saveDraft();
+    setErrors([]);
+    setStep(target);
+  }
+
   function previous() {
     setFieldErrors({});
     issuesRef.current = [];
@@ -577,38 +622,35 @@ export function PropertyPublishWizard({
       onInput={saveDraft}
       onChange={saveDraft}
       onSubmit={submit}
-      className={`grid min-w-0 gap-6 ${publishedSlug ? "" : "xl:grid-cols-[300px_minmax(0,1fr)]"}`}
+      className="grid min-w-0 gap-6"
     >
-      <aside
+      <div
         hidden={publishedSlug !== null}
-        className="h-max overflow-hidden rounded-card border border-edge bg-surface shadow-[var(--shadow-card)] xl:sticky xl:top-28"
+        className="overflow-hidden rounded-card border border-edge bg-surface shadow-[var(--shadow-card)]"
       >
         <div className="h-1.5 bg-brand" aria-hidden />
-        <div className="p-5">
-          <p className="text-[11px] font-black tracking-[0.18em] text-accent uppercase">Publicar propiedad</p>
-          <p className="mt-2 text-sm font-semibold text-ink">Completa cada etapa para enviar tu aviso.</p>
-          <ol className="mt-5 grid gap-2">
+        <div className="p-4 sm:p-5">
+          <ol className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
             {STEPS.map((item) => {
-              const reachable = item.step <= maxStepReached;
+              const reached = item.step <= maxStepReached;
               return (
                 <li key={item.step}>
                   <button
                     type="button"
-                    onClick={() => reachable && setStep(item.step)}
-                    disabled={!reachable}
+                    onClick={() => goToStep(item.step)}
                     aria-current={step === item.step ? "step" : undefined}
-                    className={`flex w-full items-start gap-3 rounded-card px-3 py-3 text-left transition-colors ${
+                    className={`flex h-full w-full items-start gap-3 rounded-card px-3 py-3 text-left transition-colors ${
                       step === item.step
                         ? "bg-brand text-on-brand shadow-[var(--shadow-card)]"
-                        : reachable
+                        : reached
                           ? "bg-surface-muted text-ink hover:bg-brand-soft"
-                          : "cursor-not-allowed bg-surface-muted text-muted opacity-60"
+                          : "bg-surface-muted text-ink hover:bg-brand-soft"
                     }`}
                   >
                     <span className={`flex size-8 shrink-0 items-center justify-center rounded-lg text-xs font-black ${
                       step === item.step
                         ? "bg-white/15 text-white"
-                        : reachable
+                        : reached
                           ? "border border-edge bg-surface text-brand"
                           : "border border-edge bg-surface text-muted"
                     }`}>
@@ -624,7 +666,7 @@ export function PropertyPublishWizard({
             })}
           </ol>
         </div>
-      </aside>
+      </div>
 
       <main className="min-w-0 overflow-hidden rounded-card border border-edge bg-surface shadow-[var(--shadow-card)]">
         <div className="h-1.5 bg-brand" aria-hidden />

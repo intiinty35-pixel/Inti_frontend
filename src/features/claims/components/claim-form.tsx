@@ -1,13 +1,12 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Button, Input, Select, Textarea } from '@/shared/ui';
-import { submitPublicClaim, type ClaimInput, type ClaimResponse, type ClaimType } from '@/features/claims/api/client';
+import { useState } from "react";
+import { submitPublicClaim, type ClaimInput, type ClaimResponse, type ClaimType } from "@/features/claims/api/client";
 
 const COMPANY_INFO = {
-  businessName: 'ARIZ GROUP SOCIEDAD ANONIMA CERRADA',
-  ruc: '20609623552',
-  address: 'Jr. Huascar Nro. 310 Int. 01 Otr. Centro Tumbes',
+  businessName: "ARIZ GROUP SOCIEDAD ANONIMA CERRADA",
+  ruc: "20609623552",
+  address: "Jr. Huascar Nro. 310 Int. 01 Otr. Centro Tumbes, Tumbes, Peru",
 };
 
 interface FormErrors {
@@ -27,51 +26,90 @@ interface ClaimFormProps {
   onSuccess: (response: ClaimResponse) => void;
 }
 
+function SectionTitle({ children }: { children: string }) {
+  return (
+    <div className="border-b border-[#c9d1dc] bg-[#f2f3f5] px-3 py-2 text-[11px] font-black uppercase tracking-wide text-[#001b3f]">
+      {children}
+    </div>
+  );
+}
+
+function Row({
+  label,
+  required,
+  children,
+  hint,
+}: {
+  label: string;
+  required?: boolean;
+  children: React.ReactNode;
+  hint?: string;
+}) {
+  return (
+    <div className="grid border-b border-[#d9dee7] md:grid-cols-[205px_minmax(0,1fr)]">
+      <div className="border-[#d9dee7] bg-[#fafbfc] px-3 py-2.5 text-[11px] font-bold text-[#001b3f] md:border-r">
+        {label}
+        {required ? <span className="text-[#e3262e]"> *</span> : null}
+        {hint ? <span className="mt-1 block text-[10px] font-semibold text-[#667085]">{hint}</span> : null}
+      </div>
+      <div className="px-3 py-2">{children}</div>
+    </div>
+  );
+}
+
+const inputClass =
+  "h-8 w-full rounded-[2px] border border-[#bfc8d6] bg-white px-2.5 text-[11px] text-[#001b3f] outline-none transition placeholder:text-[#98a2b3] focus:border-[#0b5ed7] focus:ring-1 focus:ring-[#0b5ed7]/20";
+const textareaClass =
+  "min-h-16 w-full rounded-[2px] border border-[#bfc8d6] bg-white p-2.5 text-[11px] leading-5 text-[#001b3f] outline-none transition placeholder:text-[#98a2b3] focus:border-[#0b5ed7] focus:ring-1 focus:ring-[#0b5ed7]/20";
+
+function FieldError({ message }: { message?: string }) {
+  return message ? <p className="mt-1 text-[11px] font-semibold text-[#e3262e]">{message}</p> : null;
+}
+
 export function ClaimForm({ onSuccess }: ClaimFormProps) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [errors, setErrors] = useState<FormErrors>({});
 
-  const [fullName, setFullName] = useState('');
-  const [address, setAddress] = useState('');
-  const [dniOrCe, setDniOrCe] = useState('');
-  const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
-  const [parentGuardian, setParentGuardian] = useState('');
-  const [assetType, setAssetType] = useState('');
-  const [claimedAmount, setClaimedAmount] = useState('');
-  const [assetDescription, setAssetDescription] = useState('');
-  const [type, setType] = useState<ClaimType | ''>('');
-  const [claimDetails, setClaimDetails] = useState('');
-  const [consumerRequest, setConsumerRequest] = useState('');
+  const [fullName, setFullName] = useState("");
+  const [address, setAddress] = useState("");
+  const [dniOrCe, setDniOrCe] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [parentGuardian, setParentGuardian] = useState("");
+  const [assetType, setAssetType] = useState("Servicio");
+  const [claimedAmount, setClaimedAmount] = useState("");
+  const [assetDescription, setAssetDescription] = useState("");
+  const [type, setType] = useState<ClaimType>("Claim");
+  const [claimDetails, setClaimDetails] = useState("");
+  const [consumerRequest, setConsumerRequest] = useState("");
 
   function validate(): FormErrors {
     const next: FormErrors = {};
-    if (!fullName.trim()) next.fullName = 'El nombre completo es obligatorio';
-    else if (fullName.trim().length < 3) next.fullName = 'El nombre completo debe tener al menos 3 caracteres';
-    if (!address.trim()) next.address = 'La dirección es obligatoria';
-    else if (address.trim().length < 5) next.address = 'La dirección debe tener al menos 5 caracteres';
-    if (!dniOrCe.trim()) next.dniOrCe = 'El DNI/CE es obligatorio';
-    else if (dniOrCe.trim().length < 8 || dniOrCe.trim().length > 12) next.dniOrCe = 'El DNI/CE debe tener entre 8 y 12 caracteres';
-    if (!email.trim()) next.email = 'El correo electrónico es obligatorio';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) next.email = 'Ingresa un correo electrónico válido';
-    if (!assetType.trim()) next.assetType = 'El tipo de bien es obligatorio';
+    if (!fullName.trim()) next.fullName = "Campo obligatorio";
+    else if (fullName.trim().length < 3) next.fullName = "Minimo 3 caracteres";
+    if (!address.trim()) next.address = "Campo obligatorio";
+    else if (address.trim().length < 5) next.address = "Minimo 5 caracteres";
+    if (!dniOrCe.trim()) next.dniOrCe = "Campo obligatorio";
+    else if (dniOrCe.trim().length < 8 || dniOrCe.trim().length > 12) next.dniOrCe = "Debe tener entre 8 y 12 caracteres";
+    if (!email.trim()) next.email = "Campo obligatorio";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) next.email = "Correo invalido";
+    if (!assetType.trim()) next.assetType = "Campo obligatorio";
     const amount = parseFloat(claimedAmount);
-    if (!claimedAmount) next.claimedAmount = 'El monto reclamado es obligatorio';
-    else if (isNaN(amount) || amount < 0) next.claimedAmount = 'El monto debe ser un número positivo';
-    if (!assetDescription.trim()) next.assetDescription = 'La descripción del bien es obligatoria';
-    else if (assetDescription.trim().length < 10) next.assetDescription = 'La descripción debe tener al menos 10 caracteres';
-    if (!type) next.type = 'El tipo de reclamación es obligatorio';
-    if (!claimDetails.trim()) next.claimDetails = 'Los detalles del reclamo son obligatorios';
-    else if (claimDetails.trim().length < 20) next.claimDetails = 'Los detalles deben tener al menos 20 caracteres';
-    if (!consumerRequest.trim()) next.consumerRequest = 'El pedido del consumidor es obligatorio';
-    else if (consumerRequest.trim().length < 20) next.consumerRequest = 'El pedido debe tener al menos 20 caracteres';
+    if (!claimedAmount) next.claimedAmount = "Campo obligatorio";
+    else if (Number.isNaN(amount) || amount < 0) next.claimedAmount = "Monto invalido";
+    if (!assetDescription.trim()) next.assetDescription = "Campo obligatorio";
+    else if (assetDescription.trim().length < 10) next.assetDescription = "Minimo 10 caracteres";
+    if (!type) next.type = "Campo obligatorio";
+    if (!claimDetails.trim()) next.claimDetails = "Campo obligatorio";
+    else if (claimDetails.trim().length < 20) next.claimDetails = "Minimo 20 caracteres";
+    if (!consumerRequest.trim()) next.consumerRequest = "Campo obligatorio";
+    else if (consumerRequest.trim().length < 20) next.consumerRequest = "Minimo 20 caracteres";
     return next;
   }
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-
     const validationErrors = validate();
     setErrors(validationErrors);
     if (Object.keys(validationErrors).length > 0) return;
@@ -87,10 +125,10 @@ export function ClaimForm({ onSuccess }: ClaimFormProps) {
         phone: phone.trim() || undefined,
         email: email.trim(),
         parentGuardian: parentGuardian.trim() || undefined,
-        assetType: assetType.trim(),
+        assetType,
         claimedAmount: parseFloat(claimedAmount),
         assetDescription: assetDescription.trim(),
-        type: type as ClaimType,
+        type,
         claimDetails: claimDetails.trim(),
         consumerRequest: consumerRequest.trim(),
       };
@@ -98,201 +136,113 @@ export function ClaimForm({ onSuccess }: ClaimFormProps) {
       const response = await submitPublicClaim(input);
       onSuccess(response);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'No se pudo enviar el reclamo. Por favor, inténtalo de nuevo.');
+      setError(cause instanceof Error ? cause.message : "No se pudo enviar el reclamo. Por favor, intentalo de nuevo.");
     } finally {
       setSubmitting(false);
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-8">
-      {/* Section 01 - Company Information */}
-      <section className="rounded-card border border-edge bg-surface p-6">
-        <div className="mb-4 flex items-center gap-3">
-          <div className="flex size-8 items-center justify-center rounded-full bg-brand text-sm font-black text-on-brand">
-            1
-          </div>
-          <h2 className="font-display text-lg font-bold text-brand">Información de la Empresa</h2>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-3">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wide text-muted">Razón Social</p>
-            <p className="mt-1 text-sm font-semibold text-ink">{COMPANY_INFO.businessName}</p>
-          </div>
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wide text-muted">RUC</p>
-            <p className="mt-1 text-sm font-semibold text-ink">{COMPANY_INFO.ruc}</p>
-          </div>
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wide text-muted">Dirección</p>
-            <p className="mt-1 text-sm font-semibold text-ink">{COMPANY_INFO.address}</p>
-          </div>
-        </div>
-      </section>
+    <form onSubmit={handleSubmit} className="overflow-hidden rounded-[5px] border border-[#bfc8d6] bg-white shadow-sm">
+      <header className="relative border-b border-[#c9d1dc] px-5 py-6 text-center">
+        <img src="/logo/logo.png" alt="ARIZ" className="absolute right-5 top-5 h-6 w-auto" />
+        <h1 className="text-[20px] font-black uppercase tracking-wide text-[#001b3f]">Libro de Reclamaciones</h1>
+        <p className="mt-1 text-[11px] font-medium text-[#35445c]">(Ley N° 29571, Codigo de Proteccion y Defensa del Consumidor)</p>
+      </header>
 
-      {/* Section 02 - Consumer Identification */}
-      <section className="rounded-card border border-edge bg-surface p-6">
-        <div className="mb-4 flex items-center gap-3">
-          <div className="flex size-8 items-center justify-center rounded-full bg-brand text-sm font-black text-on-brand">
-            2
-          </div>
-          <h2 className="font-display text-lg font-bold text-brand">Identificación del Consumidor</h2>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Input
-            label="Nombre Completo *"
-            placeholder="Ej. Juan Pérez García"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            error={errors.fullName}
-            required
-          />
-          <Input
-            label="Dirección *"
-            placeholder="Calle, número, distrito, ciudad"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            error={errors.address}
-            required
-          />
-          <Input
-            label="DNI / CE *"
-            placeholder="8-12 dígitos"
-            value={dniOrCe}
-            onChange={(e) => setDniOrCe(e.target.value)}
-            error={errors.dniOrCe}
-            required
-            maxLength={12}
-          />
-          <Input
-            label="Teléfono"
-            placeholder="+51 999 999 999"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-          />
-          <Input
-            label="Correo Electrónico *"
-            type="email"
-            placeholder="email@ejemplo.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            error={errors.email}
-            required
-          />
-          <Input
-            label="Padre o Madre (si es menor)"
-            placeholder="Nombre completo"
-            value={parentGuardian}
-            onChange={(e) => setParentGuardian(e.target.value)}
-          />
-        </div>
-      </section>
+      <SectionTitle>I. Datos de la empresa</SectionTitle>
+      <Row label="Razon Social">
+        <p className="text-[11px] font-semibold text-[#001b3f]">{COMPANY_INFO.businessName}</p>
+      </Row>
+      <Row label="RUC">
+        <p className="text-[11px] font-semibold text-[#001b3f]">{COMPANY_INFO.ruc}</p>
+      </Row>
+      <Row label="Direccion">
+        <p className="text-[11px] font-semibold text-[#001b3f]">{COMPANY_INFO.address}</p>
+      </Row>
 
-      {/* Section 03 - Contracted Asset Identification */}
-      <section className="rounded-card border border-edge bg-surface p-6">
-        <div className="mb-4 flex items-center gap-3">
-          <div className="flex size-8 items-center justify-center rounded-full bg-brand text-sm font-black text-on-brand">
-            3
-          </div>
-          <h2 className="font-display text-lg font-bold text-brand">Identificación del Bien Contratado</h2>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Input
-            label="Tipo de Bien *"
-            placeholder="Ej. Servicio, Producto, Inmueble"
-            value={assetType}
-            onChange={(e) => setAssetType(e.target.value)}
-            error={errors.assetType}
-            required
-          />
-          <Input
-            label="Monto Reclamado (S/)"
-            type="number"
-            placeholder="0.00"
-            value={claimedAmount}
-            onChange={(e) => setClaimedAmount(e.target.value)}
-            error={errors.claimedAmount}
-            min="0"
-            step="0.01"
-          />
-          <div className="sm:col-span-2">
-            <Textarea
-              label="Descripción del Bien *"
-              placeholder="Describe detalladamente el bien contratado..."
-              value={assetDescription}
-              onChange={(e) => setAssetDescription(e.target.value)}
-              error={errors.assetDescription}
-              required
-              rows={3}
-            />
-          </div>
-        </div>
-      </section>
+      <SectionTitle>II. Identificacion del consumidor</SectionTitle>
+      <Row label="Nombres y Apellidos" required>
+        <input className={inputClass} placeholder="Ingrese sus nombres y apellidos" value={fullName} onChange={(e) => setFullName(e.target.value)} />
+        <FieldError message={errors.fullName} />
+      </Row>
+      <Row label="Domicilio" required>
+        <input className={inputClass} placeholder="Ingrese su domicilio" value={address} onChange={(e) => setAddress(e.target.value)} />
+        <FieldError message={errors.address} />
+      </Row>
+      <Row label="DNI / CE" required>
+        <input className={inputClass} placeholder="N° de DNI o Carne de Extranjeria" value={dniOrCe} maxLength={12} onChange={(e) => setDniOrCe(e.target.value)} />
+        <FieldError message={errors.dniOrCe} />
+      </Row>
+      <Row label="Telefono">
+        <input className={inputClass} placeholder="Telefono de contacto" value={phone} onChange={(e) => setPhone(e.target.value)} />
+      </Row>
+      <Row label="Correo Electronico" required>
+        <input className={inputClass} type="email" placeholder="correo@ejemplo.com" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <FieldError message={errors.email} />
+      </Row>
+      <Row label="Padre o Madre" hint="Si es menor de edad">
+        <input className={inputClass} placeholder="Nombre del padre o madre" value={parentGuardian} onChange={(e) => setParentGuardian(e.target.value)} />
+      </Row>
 
-      {/* Section 04 - Claim or Complaint */}
-      <section className="rounded-card border border-edge bg-surface p-6">
-        <div className="mb-4 flex items-center gap-3">
-          <div className="flex size-8 items-center justify-center rounded-full bg-brand text-sm font-black text-on-brand">
-            4
-          </div>
-          <h2 className="font-display text-lg font-bold text-brand">Reclamo o Queja</h2>
+      <SectionTitle>III. Identificacion del bien contratado</SectionTitle>
+      <Row label="Tipo de Bien" required>
+        <div className="flex flex-wrap gap-5 text-[11px] font-semibold text-[#001b3f]">
+          {["Producto", "Servicio"].map((option) => (
+            <label key={option} className="inline-flex items-center gap-2">
+              <input type="radio" name="assetType" checked={assetType === option} onChange={() => setAssetType(option)} />
+              {option}
+            </label>
+          ))}
         </div>
-        <div className="grid gap-4">
-          <Select
-            label="Tipo *"
-            value={type}
-            onChange={(e) => setType(e.target.value as ClaimType)}
-            error={errors.type}
-            required
-          >
-            <option value="">Selecciona el tipo</option>
-            <option value="Claim">Reclamo</option>
-            <option value="Complaint">Queja</option>
-          </Select>
-        </div>
-      </section>
+        <FieldError message={errors.assetType} />
+      </Row>
+      <Row label="Monto Reclamado (S/)" required>
+        <input className={`${inputClass} max-w-sm`} type="number" placeholder="0.00" value={claimedAmount} min="0" step="0.01" onChange={(e) => setClaimedAmount(e.target.value)} />
+        <FieldError message={errors.claimedAmount} />
+      </Row>
+      <Row label="Descripcion del Bien" required>
+        <textarea className={textareaClass} placeholder="Describa el producto o servicio contratado" value={assetDescription} onChange={(e) => setAssetDescription(e.target.value)} />
+        <FieldError message={errors.assetDescription} />
+      </Row>
 
-      {/* Section 05 - Details */}
-      <section className="rounded-card border border-edge bg-surface p-6">
-        <div className="mb-4 flex items-center gap-3">
-          <div className="flex size-8 items-center justify-center rounded-full bg-brand text-sm font-black text-on-brand">
-            5
-          </div>
-          <h2 className="font-display text-lg font-bold text-brand">Detalles</h2>
+      <SectionTitle>IV. Reclamo o Queja</SectionTitle>
+      <Row label="Tipo" required>
+        <div className="flex flex-wrap gap-5 text-[11px] font-semibold text-[#001b3f]">
+          <label className="inline-flex items-center gap-2">
+            <input type="radio" name="type" checked={type === "Claim"} onChange={() => setType("Claim")} />
+            Reclamo
+          </label>
+          <label className="inline-flex items-center gap-2">
+            <input type="radio" name="type" checked={type === "Complaint"} onChange={() => setType("Complaint")} />
+            Queja
+          </label>
         </div>
-        <div className="flex flex-col gap-4">
-          <Textarea
-            label="Detalles del Reclamo *"
-            placeholder="Describe detalladamente los hechos, fechas y circunstancias relacionadas con tu reclamo..."
-            value={claimDetails}
-            onChange={(e) => setClaimDetails(e.target.value)}
-            error={errors.claimDetails}
-            required
-            rows={5}
-          />
-          <Textarea
-            label="Pedido del Consumidor *"
-            placeholder="Indica qué es lo que solicitas (devolución, cambio, solución, etc.)..."
-            value={consumerRequest}
-            onChange={(e) => setConsumerRequest(e.target.value)}
-            error={errors.consumerRequest}
-            required
-            rows={4}
-          />
-        </div>
-      </section>
+        <FieldError message={errors.type} />
+      </Row>
 
-      {error && (
-        <p className="rounded-lg bg-error/10 p-3 text-sm font-semibold text-error">{error}</p>
-      )}
-      <div className="flex justify-center">
-        <Button
+      <SectionTitle>V. Detalle</SectionTitle>
+      <Row label="Detalle de la Reclamacion" required>
+        <textarea className={`${textareaClass} min-h-28`} placeholder="Describa detalladamente los hechos que motivan su reclamo o queja..." value={claimDetails} onChange={(e) => setClaimDetails(e.target.value)} />
+        <FieldError message={errors.claimDetails} />
+      </Row>
+      <Row label="Pedido del Consumidor" required>
+        <textarea className={`${textareaClass} min-h-24`} placeholder="Que es lo que solicita como solucion?" value={consumerRequest} onChange={(e) => setConsumerRequest(e.target.value)} />
+        <FieldError message={errors.consumerRequest} />
+      </Row>
+
+      <div className="p-4">
+        {error ? <p className="mb-3 rounded-[4px] bg-red-50 px-3 py-2 text-[12px] font-bold text-[#e3262e]">{error}</p> : null}
+        <button
           type="submit"
           disabled={submitting}
-          className="w-fit px-8 cursor-pointer"
+          className="h-10 w-full rounded-[4px] bg-[#e3262e] text-[12px] font-black uppercase tracking-wide text-white transition hover:bg-[#c91f26] disabled:cursor-not-allowed disabled:opacity-70"
         >
-          {submitting ? 'Enviando...' : 'Enviar Reclamo'}
-        </Button>
+          {submitting ? "Enviando..." : "Enviar Reclamo"}
+        </button>
+        <p className="mt-3 text-center text-[11px] font-medium text-[#667085]">
+          Al enviar, acepta los terminos del Libro de Reclamaciones de ARIZ.
+        </p>
       </div>
     </form>
   );

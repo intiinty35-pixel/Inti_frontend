@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BookOpenText } from "lucide-react";
 import { Container } from "@/shared/ui";
 import { ROUTES } from "@/shared/config/routes";
 
@@ -127,8 +128,9 @@ export function PublicFooter() {
                     {link.href ? (
                       <Link
                         href={link.href}
-                        className="text-sm text-white/75 transition-colors hover:text-white"
+                        className="inline-flex items-center gap-2 text-sm text-white/75 transition-colors hover:text-white"
                       >
+                        {link.href === ROUTES.claims ? <BookOpenText className="size-4 text-accent" /> : null}
                         {link.label}
                       </Link>
                     ) : (

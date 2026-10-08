@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import {
   BellIcon,
   ChartIcon,
-  ChatIcon,
   HomeIcon,
   MapIcon,
   PlusIcon,
@@ -21,7 +20,6 @@ const NAV_ITEMS = [
   { key: "projects", label: "Mis proyectos", href: ROUTES.panel.owner.projects, Icon: ChartIcon },
   { key: "new-property", label: "Publicar propiedad", href: ROUTES.panel.owner.newListing, Icon: PlusIcon },
   { key: "new-project", label: "Publicar proyecto", href: ROUTES.panel.owner.newProject, Icon: PlusIcon },
-  { key: "leads", label: "Leads / Consultas", href: ROUTES.panel.owner.leads, Icon: ChatIcon },
   { key: "stats", label: "Estadisticas", href: ROUTES.panel.owner.stats, Icon: ChartIcon },
   { key: "subscription", label: "Suscripcion", href: ROUTES.panel.owner.subscription, Icon: BellIcon },
   { key: "profile", label: "Mi perfil", href: ROUTES.panel.owner.profile, Icon: UserIcon },

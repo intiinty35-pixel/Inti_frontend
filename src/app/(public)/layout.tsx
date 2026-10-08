@@ -32,6 +32,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
     try {
       const profile = await getMyProfile();
       accountName = profile.businessName?.trim() || session.name;
+      accountAvatarUrl = profile.user.avatarUrl ?? undefined;
     } catch {
       accountName = session.name;
     }

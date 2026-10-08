@@ -20,17 +20,6 @@ export default async function NewOwnerListingPage() {
 
   return (
     <div className="grid gap-6">
-      <div className="relative overflow-hidden rounded-card border border-edge bg-surface p-6 shadow-[var(--shadow-card)] sm:p-8">
-        <div className="absolute inset-x-0 top-0 h-1.5 bg-brand" aria-hidden />
-        <p className="text-[11px] font-black tracking-[0.2em] text-accent uppercase">Publicacion</p>
-        <h1 className="mt-2 font-display text-4xl font-black tracking-tight text-brand sm:text-5xl">
-          Nueva propiedad
-        </h1>
-        <p className="mt-3 max-w-2xl text-sm font-medium leading-6 text-muted">
-          Crea una publicacion clara, verificable y lista para aparecer en ARIZ.
-        </p>
-      </div>
-
       {!approved ? (
         <div className="rounded-card bg-warning/10 px-4 py-3 text-sm font-semibold text-warning">
           Tu perfil anunciante debe estar aprobado para publicar propiedades.

@@ -6,6 +6,7 @@ import type {
   ProfessionalProfile,
 } from "@/features/owner/types/property";
 import type { Plan, Subscription } from "@/features/owner/types/plan";
+import type { OwnerNotificationSettings } from "@/features/owner/types/settings";
 
 async function getJson<T>(path: string): Promise<T> {
   const response = await backendFetch(path);
@@ -51,4 +52,8 @@ export function listPlans(): Promise<Plan[]> {
 
 export function getMySubscription(): Promise<Subscription | null> {
   return getJsonOrNull<Subscription>("/plans/me/subscription");
+}
+
+export function getMyNotificationSettings(): Promise<OwnerNotificationSettings> {
+  return getJson<OwnerNotificationSettings>("/professionals/me/settings");
 }

@@ -51,8 +51,8 @@ export function DashboardPanel({ title, badge, children }: { title: string; badg
   return (
     <Card className="min-h-72 min-w-0 overflow-hidden border-edge bg-[linear-gradient(180deg,#ffffff_0%,#f9fafc_100%)]">
       <div className="h-1 bg-brand" aria-hidden />
-      <CardContent className="flex min-h-72 flex-col items-center pt-6 text-center">
-        <div className="flex items-center justify-center gap-2">
+      <CardContent className="flex min-h-72 flex-col pt-6">
+        <div className="flex items-center justify-between gap-2">
           <p className="font-semibold text-ink">{title}</p>
           {badge}
         </div>

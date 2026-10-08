@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { CHART_INK } from "@/shared/ui/charts/chart-colors";
 
 export interface BarDatum {
   label: string;
@@ -14,47 +13,70 @@ export interface BarChartProps {
 }
 
 export function BarChart({ data }: BarChartProps) {
-  const [hovered, setHovered] = useState<string | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
   const max = Math.max(1, ...data.map((d) => d.value));
+  const total = data.reduce((sum, datum) => sum + datum.value, 0);
+  const active = data[Math.min(activeIndex, data.length - 1)];
 
-  if (data.length === 0) {
-    return null;
-  }
+  if (data.length === 0) return null;
 
   return (
-    <ul className="flex flex-col gap-3">
-      {data.map((datum) => {
-        const widthPct = Math.max(2, (datum.value / max) * 100);
-        const isHovered = hovered === datum.label;
+    <div className="w-full rounded-card border border-edge bg-[#071b2f] p-4 text-white shadow-[var(--shadow-card)]">
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div>
+          <p className="text-[11px] font-black uppercase tracking-[0.16em] text-white/50">Distribucion</p>
+          <p className="mt-1 text-sm font-bold text-white">Canales de contacto</p>
+        </div>
+        <div className="rounded-card border border-white/10 bg-white/8 px-3 py-2 text-right">
+          <p className="text-[10px] font-bold uppercase tracking-wide text-white/45">Total</p>
+          <p className="text-xl font-black">{total}</p>
+        </div>
+      </div>
 
-        return (
-          <li key={datum.label} className="flex items-center gap-3">
-            <span className="w-28 shrink-0 truncate text-xs font-medium text-secondary" title={datum.label}>
-              {datum.label}
-            </span>
-            <div
-              className="h-6 flex-1 rounded-full"
-              style={{ backgroundColor: CHART_INK.grid }}
-              onMouseEnter={() => setHovered(datum.label)}
-              onMouseLeave={() => setHovered(null)}
-              onFocus={() => setHovered(datum.label)}
-              tabIndex={0}
-              role="img"
-              aria-label={`${datum.label}: ${datum.value}`}
+      <div className="grid gap-2">
+        {data.map((datum, index) => {
+          const percent = Math.round((datum.value / max) * 100);
+          const share = total > 0 ? Math.round((datum.value / total) * 100) : 0;
+          const activeRow = activeIndex === index;
+
+          return (
+            <button
+              key={datum.label}
+              type="button"
+              onClick={() => setActiveIndex(index)}
+              onMouseEnter={() => setActiveIndex(index)}
+              className={`grid gap-2 rounded-card border px-3 py-3 text-left transition ${
+                activeRow ? "border-white/20 bg-white/10" : "border-white/8 bg-white/[0.03] hover:bg-white/7"
+              }`}
             >
-              <div
-                className="h-6 rounded-full transition-[width]"
-                style={{
-                  width: `${widthPct}%`,
-                  backgroundColor: datum.color,
-                  opacity: isHovered ? 0.85 : 1,
-                }}
-              />
-            </div>
-            <span className="w-8 shrink-0 text-right text-xs font-semibold text-ink">{datum.value}</span>
-          </li>
-        );
-      })}
-    </ul>
+              <span className="flex items-center justify-between gap-3">
+                <span className="min-w-0 truncate text-xs font-black uppercase tracking-wide text-white/75">
+                  {datum.label}
+                </span>
+                <span className="text-xs font-bold text-white/55">{share}%</span>
+              </span>
+              <span className="flex items-center gap-3">
+                <span className="h-2.5 flex-1 overflow-hidden rounded-full bg-white/10">
+                  <span
+                    className="block h-full rounded-full transition-[width]"
+                    style={{ width: `${Math.max(3, percent)}%`, backgroundColor: datum.color }}
+                  />
+                </span>
+                <span className="w-10 text-right text-lg font-black text-white">{datum.value}</span>
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      {active ? (
+        <div className="mt-4 rounded-card border border-white/10 bg-white/[0.04] px-3 py-2">
+          <p className="text-[10px] font-black uppercase tracking-wide text-white/45">Canal activo</p>
+          <p className="mt-0.5 text-sm font-bold text-white">
+            {active.label}: {active.value} consultas
+          </p>
+        </div>
+      ) : null}
+    </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { ReceiptText, RefreshCw } from "lucide-react";
 import { Button, Card, CardContent, CheckIcon } from "@/shared/ui";
 import { cn } from "@/shared/lib/cn";
 import { formatPrice } from "@/shared/lib/format";
@@ -38,10 +39,13 @@ export function PlansView({
 
   const hasActive = subscription?.status === "ACTIVE";
   const isPending = subscription?.status === "PENDING_PAYMENT";
+  const hasMembershipRequest = hasActive || isPending;
   const remaining = hasActive ? daysRemaining(subscription!.expiresAt) : null;
   const visiblePlans = [...plans].sort(
     (a, b) => a.propertyLimit - b.propertyLimit || Number(a.price) - Number(b.price),
   );
+  const firstPaidPlan = visiblePlans.find((plan) => !plan.isFree) ?? visiblePlans[0] ?? null;
+  const renewalPlan = subscription?.plan ?? firstPaidPlan;
 
   async function activateFreePlan(plan: Plan) {
     setError("");
@@ -108,6 +112,50 @@ export function PlansView({
       </div>
 
       {error ? <p className="text-sm text-error">{error}</p> : null}
+
+      <Card className="overflow-hidden border-brand/25">
+        <CardContent className="grid gap-4 p-5 sm:p-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+          <div>
+            <p className="text-[11px] font-black uppercase tracking-[0.16em] text-accent">
+              Membresia Ariz
+            </p>
+            <h2 className="mt-1 font-display text-2xl font-black tracking-tight text-brand">
+              {hasMembershipRequest ? "Renueva tu membresia subiendo tu voucher" : "Activa tu membresia por primera vez"}
+            </h2>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
+              {hasMembershipRequest
+                ? "Elige renovar, adjunta tu comprobante de pago y el administrador validara la renovacion de tu membresia."
+                : "Selecciona un paquete, sube tu comprobante de pago y el administrador activara tu membresia."}
+            </p>
+          </div>
+          <div className="flex flex-col gap-2 sm:flex-row lg:justify-end">
+            <button
+              type="button"
+              disabled={!renewalPlan || isPending}
+              onClick={() => renewalPlan && setModalPlan(renewalPlan)}
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-card bg-brand px-4 text-sm font-bold text-on-brand shadow-[var(--shadow-card)] transition-colors hover:bg-brand-hover disabled:pointer-events-none disabled:opacity-50"
+            >
+              <ReceiptText className="size-4" />
+              {isPending
+                ? "Voucher en revision"
+                : hasMembershipRequest
+                  ? "Subir voucher para renovar"
+                  : "Subir voucher por primera vez"}
+            </button>
+            {hasMembershipRequest ? (
+              <button
+                type="button"
+                disabled={!renewalPlan || isPending}
+                onClick={() => renewalPlan && setModalPlan(renewalPlan)}
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-card border border-edge bg-surface px-4 text-sm font-bold text-ink transition-colors hover:border-brand disabled:pointer-events-none disabled:opacity-50"
+              >
+                <RefreshCw className="size-4" />
+                Renovar membresia
+              </button>
+            ) : null}
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
         {visiblePlans.map((plan) => {

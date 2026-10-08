@@ -56,7 +56,6 @@ export const ROUTES = {
       newListing: "/panel/owner/listings/new",
       projects: "/panel/owner/projects",
       newProject: "/panel/owner/projects/new",
-      leads: "/panel/owner/leads",
       stats: "/panel/owner/stats",
       subscription: "/panel/owner/subscription",
       profile: "/panel/owner/profile",
