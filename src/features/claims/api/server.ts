@@ -55,3 +55,8 @@ export async function deleteClaim(id: string): Promise<void> {
   });
   if (!response.ok) throw new Error(`Failed to delete claim (${response.status})`);
 }
+
+export function getAdminClaimsPdfUrl(): string {
+  const baseUrl = process.env.BACKEND_URL ?? 'http://localhost:4000';
+  return `${baseUrl}/admin/claims/export/pdf`;
+}

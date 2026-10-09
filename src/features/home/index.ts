@@ -12,3 +12,4 @@ export { PublishedProjectsSection } from "@/features/home/components/published-p
 export { WhyChooseArizSection } from "@/features/home/components/why-choose-ariz-section";
 export { TestimonialsSection } from "@/features/home/components/testimonials-section";
 export { MapExplorerSection } from "@/features/home/components/map-explorer-section";
+export { WelcomeModal } from "@/features/home/components/welcome-modal";

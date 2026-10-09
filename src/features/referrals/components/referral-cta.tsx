@@ -11,7 +11,7 @@ export function ReferralCta() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex h-11 items-center justify-center rounded-[6px] border border-[#25D366] bg-white/12 px-5 text-sm font-black text-white backdrop-blur-sm transition-colors hover:bg-white/18"
+        className="inline-flex h-11 items-center justify-center rounded-[6px] border border-yellow-400 bg-yellow-400 px-5 text-sm font-black text-ink shadow-[0_10px_26px_rgb(0_0_0_/_0.18)] transition-colors hover:bg-yellow-500"
       >
         Refiere con Ariz
       </button>

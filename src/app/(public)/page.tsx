@@ -12,6 +12,7 @@ import {
   InvestmentGrowthBanner,
   PublishedProjectsSection,
   TestimonialsSection,
+  WelcomeModal,
   WhyChooseArizSection,
 } from "@/features/home";
 import { ROUTES } from "@/shared/config/routes";
@@ -50,6 +51,7 @@ function SearchFormFallback() {
 export default async function PublicHomePage() {
   return (
     <>
+      <WelcomeModal />
       <section className="relative isolate z-30 -mt-[var(--header-h)] min-h-[440px] overflow-visible pr-4 pt-[calc(var(--header-h)+3rem)] pb-[160px] pl-6 text-left text-white sm:min-h-[520px] sm:pr-6 sm:pl-7 sm:pt-[calc(var(--header-h)+4.5rem)] lg:min-h-[540px] lg:pb-32 lg:pr-6 lg:pl-8 lg:pt-[calc(var(--header-h)+6rem)] xl:pr-8 xl:pl-9">
         <HomeHeroBackground />
         <span
@@ -88,19 +90,13 @@ export default async function PublicHomePage() {
             Compra, vende, alquila e invierte con el respaldo de una empresa solida y confiable.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            <Link
-              href={ROUTES.projects}
-              className="inline-flex h-11 items-center justify-center rounded-[6px] border border-[#25D366] bg-accent px-5 text-sm font-black text-on-accent shadow-[0_10px_26px_rgb(0_0_0_/_0.18)] transition-colors hover:bg-accent-hover"
-            >
-              Ver proyectos
-            </Link>
+            <ReferralCta />
             <Link
               href={ROUTES.properties}
               className="inline-flex h-11 items-center justify-center rounded-[6px] border border-[#25D366] bg-brand px-5 text-sm font-black text-on-brand shadow-[0_10px_26px_rgb(0_0_0_/_0.18)] transition-colors hover:bg-brand-hover"
             >
               Buscar propiedades
             </Link>
-            <ReferralCta />
           </div>
         </div>
 

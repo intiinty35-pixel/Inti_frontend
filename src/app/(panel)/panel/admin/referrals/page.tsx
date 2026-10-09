@@ -13,6 +13,7 @@ import { Card, CardContent, Pagination } from "@/shared/ui";
 import { ROUTES } from "@/shared/config/routes";
 import { listAdminReferrals } from "@/features/admin/api/referrals";
 import { ReferralPointsForm } from "@/features/admin/components/referral-points-form";
+import { ReferralsExportButtons } from "./referrals-export-buttons";
 
 export default async function AdminReferralsPage({
   searchParams,
@@ -27,18 +28,23 @@ export default async function AdminReferralsPage({
 
   return (
     <div className="flex min-w-0 max-w-full flex-col gap-7 overflow-x-hidden">
-      <section className="relative overflow-hidden rounded-card border border-edge bg-surface p-5 text-center shadow-[var(--shadow-card)] sm:p-6">
+      <section className="relative overflow-hidden rounded-card border border-edge bg-surface p-5 shadow-[var(--shadow-card)] sm:p-6">
         <div className="absolute inset-x-0 top-0 h-1.5 bg-brand" aria-hidden="true" />
-        <p className="text-sm font-black uppercase tracking-[0.22em] text-accent">
-          Programa de referidos
-        </p>
-        <h1 className="mt-2 font-display text-4xl font-black tracking-tight text-brand sm:text-5xl">
-          Referentes
-        </h1>
-        <p className="mx-auto mt-3 max-w-2xl text-sm font-semibold leading-6 text-muted sm:text-base">
-          Los puntos se calculan con reglas configurables por estado. Puedes cambiar los valores
-          desde esta vista.
-        </p>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="text-center sm:text-left">
+            <p className="text-sm font-black uppercase tracking-[0.22em] text-accent">
+              Programa de referidos
+            </p>
+            <h1 className="mt-2 font-display text-4xl font-black tracking-tight text-brand sm:text-5xl">
+              Referentes
+            </h1>
+            <p className="mx-auto mt-3 max-w-2xl text-sm font-semibold leading-6 text-muted sm:text-base sm:mx-0">
+              Los puntos se calculan con reglas configurables por estado. Puedes cambiar los valores
+              desde esta vista.
+            </p>
+          </div>
+          {data.items.length > 0 && <ReferralsExportButtons />}
+        </div>
       </section>
 
       <section className="grid gap-4 md:grid-cols-3">

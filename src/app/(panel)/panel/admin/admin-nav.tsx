@@ -9,7 +9,6 @@ import {
   Boxes,
   Building2,
   ChartNoAxesCombined,
-  CirclePlus,
   ClipboardCheck,
   Coins,
   Gift,
@@ -129,13 +128,6 @@ const NAV_ITEMS: readonly AdminNavItem[] = [
     label: "Proyectos de inversión",
     href: ROUTES.panel.admin.investmentOpportunities,
     Icon: ChartNoAxesCombined,
-    group: "portafolio",
-  },
-  {
-    key: "new-project",
-    label: "Crear proyecto",
-    href: ROUTES.panel.admin.newProject,
-    Icon: CirclePlus,
     group: "portafolio",
   },
 ] as const;

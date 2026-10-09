@@ -5,6 +5,7 @@ import { AlertIcon } from '@/shared/ui/icons';
 import { ROUTES } from '@/shared/config/routes';
 import { AdminPageHeader } from '@/app/(panel)/panel/admin/admin-shell';
 import { listAdminClaims } from '@/features/claims/api/server';
+import { ClaimsExportButton } from './claims-export-button';
 
 const TYPE_LABELS: Record<string, string> = {
   Claim: 'Reclamo',
@@ -26,11 +27,14 @@ export default async function AdminClaimsPage({ searchParams }: { searchParams: 
 
   return (
     <div className="flex flex-col gap-6">
-      <AdminPageHeader
-        eyebrow="Gestión de reclamos"
-        title="Libro de Reclamaciones"
-        description={data ? `${data.total} reclamos registrados · Gestiona y revisa los reclamos.` : 'Gestiona y revisa los reclamos.'}
-      />
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <AdminPageHeader
+          eyebrow="Gestión de reclamos"
+          title="Libro de Reclamaciones"
+          description={data ? `${data.total} reclamos registrados · Gestiona y revisa los reclamos.` : 'Gestiona y revisa los reclamos.'}
+        />
+        {data && data.items.length > 0 && <ClaimsExportButton />}
+      </div>
 
       {loadError ? (
         <Card>
