@@ -18,6 +18,7 @@ import type {
 import type { ProjectApiSummary } from "@/features/projects/types/api";
 import type {
   LotDraft,
+  KeptMedia,
   LotMode,
   LotStatus,
   MilestoneDraft,
@@ -411,6 +412,34 @@ export async function uploadProjectFiles(
 
 export async function createProject(input: CreateProjectInput): Promise<ProjectApiSummary> {
   return apiClient.post<ProjectApiSummary>("/projects", input);
+}
+
+export async function updateProject(id: string, input: CreateProjectInput): Promise<ProjectApiSummary> {
+  return apiClient.patch<ProjectApiSummary>(`/projects/${encodeURIComponent(id)}`, input);
+}
+
+/**
+ * Junta la multimedia conservada y la recien subida en el orden final
+ * (imagenes, planos, renders); la primera imagen es la portada.
+ */
+export function mergeProjectMedia(
+  kept: readonly KeptMedia[],
+  uploaded: readonly ProjectMediaInput[],
+): ProjectMediaInput[] {
+  const keptInputs: ProjectMediaInput[] = kept.map((media) => ({
+    type: media.type,
+    url: media.url,
+    publicId: media.publicId ?? undefined,
+  }));
+  const all = [...keptInputs, ...uploaded];
+  const ordered = (["IMAGE", "FLOOR_PLAN", "RENDER"] as const).flatMap((type) =>
+    all.filter((media) => media.type === type),
+  );
+  return ordered.map((media, index) => ({
+    ...media,
+    position: index,
+    isCover: media.type === "IMAGE" && index === 0,
+  }));
 }
 
 export async function createAdminProject(input: CreateProjectInput): Promise<ProjectApiSummary> {

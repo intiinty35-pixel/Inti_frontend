@@ -62,6 +62,18 @@ export async function getOwnerProjectsPagedServer(
   return (await response.json()) as ProjectApiPaged;
 }
 
+/** Detalle completo de un proyecto del agente, para editarlo. `null` si no es suyo o no existe. */
+export async function getOwnerProjectDetailServer(id: string): Promise<ProjectApiDetail | null> {
+  const response = await backendFetch("/projects/owner/me");
+
+  if (!response.ok) {
+    throw new Error(`No se pudieron cargar tus proyectos (${response.status})`);
+  }
+
+  const projects = (await response.json()) as ProjectApiDetail[];
+  return projects.find((project) => project.id === id) ?? null;
+}
+
 /** Proyectos creados desde el panel ARIZ; status permite consultar borradores únicamente. */
 export async function getAdminProjectsPagedServer(
   page: number,

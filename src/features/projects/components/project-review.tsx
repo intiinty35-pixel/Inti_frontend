@@ -35,6 +35,8 @@ export interface ProjectReviewProps {
   lots: readonly LotDraft[];
   previewProjects: readonly ProjectPreview[];
   adminMode?: boolean;
+  /** Modo edicion: el proyecto ya existe y se guardan cambios, no un borrador nuevo. */
+  editing?: boolean;
   onSave: (payload: CreateProjectPayload) => void | Promise<void>;
   onDone: () => void;
   saving?: boolean;
@@ -79,6 +81,7 @@ export function ProjectReview({
   lots,
   previewProjects,
   adminMode = false,
+  editing = false,
   onSave,
   onDone,
   saving = false,
@@ -94,11 +97,17 @@ export function ProjectReview({
       <div className="flex items-start gap-3 rounded-card bg-success/10 p-4">
         <CheckCircleIcon className="mt-0.5 size-5 shrink-0 text-success" />
         <div>
-          <p className="text-sm font-semibold text-ink">Borrador validado correctamente</p>
+          <p className="text-sm font-semibold text-ink">
+            {editing ? "Cambios validados correctamente" : "Borrador validado correctamente"}
+          </p>
           <p className="mt-1 text-xs text-muted">
-            Al confirmarlo se suben las imágenes y el proyecto se guarda como borrador. {adminMode
-              ? "Desde Proyectos ARIZ podrás publicarlo directamente, sin consumir créditos."
-              : "Podrás publicarlo después desde Mis proyectos si tienes crédito disponible en tu suscripción."}
+            {editing
+              ? "Al confirmar se suben las imágenes nuevas y se guardan los cambios. Si el proyecto ya está publicado, seguirá visible con la información actualizada."
+              : `Al confirmarlo se suben las imágenes y el proyecto se guarda como borrador. ${
+                  adminMode
+                    ? "Desde Proyectos ARIZ podrás publicarlo directamente, sin consumir créditos."
+                    : "Podrás publicarlo después desde Mis proyectos si tienes crédito disponible en tu suscripción."
+                }`}
           </p>
         </div>
       </div>
@@ -111,7 +120,7 @@ export function ProjectReview({
           </p>
         </div>
         <span className="rounded-full bg-brand-soft px-2.5 py-1 text-[10px] font-bold tracking-[0.12em] text-brand uppercase">
-          Borrador
+          {editing ? "Edición" : "Borrador"}
         </span>
       </div>
 
@@ -239,7 +248,15 @@ export function ProjectReview({
         </Button>
         <Button type="button" onClick={() => void onSave(payload)} disabled={saving}>
           <CheckCircleIcon className="h-4 w-4" />
-          {saving ? "Guardando borrador…" : adminMode ? "Guardar borrador ARIZ" : "Guardar borrador"}
+          {saving
+            ? editing
+              ? "Guardando cambios…"
+              : "Guardando borrador…"
+            : editing
+              ? "Guardar cambios"
+              : adminMode
+                ? "Guardar borrador ARIZ"
+                : "Guardar borrador"}
         </Button>
       </div>
     </div>
