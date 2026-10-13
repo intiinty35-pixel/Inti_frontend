@@ -9,6 +9,7 @@ import { formatPrice } from "@/shared/lib/format";
 import { OwnerRequestError, requestPlan } from "@/features/owner/api/client";
 import { PlanRequestModal } from "@/features/owner/components/plan-request-modal";
 import type { Plan, Subscription } from "@/features/owner/types/plan";
+import { UnlimitedPlanCard } from "@/features/shared/components/unlimited-plan-card";
 
 function daysRemaining(expiresAt: string | null): number | null {
   if (!expiresAt) return null;
@@ -19,21 +20,51 @@ function isProjectFeature(feature: string) {
   return feature.toLowerCase().includes("proyecto");
 }
 
+interface GroupedPlan {
+  propertyLimit: number;
+  label: string;
+  plans: { 15: Plan | null; 30: Plan | null };
+}
+
+function groupPlans(plans: Plan[]): GroupedPlan[] {
+  const activePlans = plans.filter((p) => p.isActive);
+  const groups = new Map<number, GroupedPlan>();
+
+  for (const plan of activePlans) {
+    const limit = plan.propertyLimit;
+    if (!groups.has(limit)) {
+      groups.set(limit, {
+        propertyLimit: limit,
+        label: limit >= 5 ? "+5 propiedades" : `${limit} propiedad${limit > 1 ? "es" : ""}`,
+        plans: { 15: null, 30: null },
+      });
+    }
+    const group = groups.get(limit)!;
+    group.plans[plan.durationDays as 15 | 30] = plan;
+  }
+
+  return Array.from(groups.values()).sort((a, b) => a.propertyLimit - b.propertyLimit);
+}
+
 export function PlansView({
   plans,
   subscription,
   propertiesCount,
   projectsCount,
   canManageProjects = false,
+  customerName,
 }: {
   plans: Plan[];
   subscription: Subscription | null;
   propertiesCount: number;
   projectsCount: number;
   canManageProjects?: boolean;
+  customerName: string;
 }) {
   const router = useRouter();
   const [modalPlan, setModalPlan] = useState<Plan | null>(null);
+  const [selectedGroup, setSelectedGroup] = useState(0);
+  const [durations, setDurations] = useState<Record<number, 15 | 30>>({});
   const [activatingId, setActivatingId] = useState<string | null>(null);
   const [error, setError] = useState("");
 
@@ -41,11 +72,25 @@ export function PlansView({
   const isPending = subscription?.status === "PENDING_PAYMENT";
   const hasMembershipRequest = hasActive || isPending;
   const remaining = hasActive ? daysRemaining(subscription!.expiresAt) : null;
-  const visiblePlans = [...plans].sort(
-    (a, b) => a.propertyLimit - b.propertyLimit || Number(a.price) - Number(b.price),
-  );
-  const firstPaidPlan = visiblePlans.find((plan) => !plan.isFree) ?? visiblePlans[0] ?? null;
+
+  const groupedPlans = groupPlans(plans);
+  const firstPaidPlan = groupedPlans[0]?.plans[30] ?? groupedPlans[0]?.plans[15] ?? null;
   const renewalPlan = subscription?.plan ?? firstPaidPlan;
+
+  function getDuration(groupIndex: number): 15 | 30 {
+    return durations[groupIndex] ?? 30;
+  }
+
+  function toggleDuration(groupIndex: number, value: 15 | 30) {
+    setDurations((prev) => ({ ...prev, [groupIndex]: value }));
+  }
+
+  function getCurrentPlan(groupIndex: number): Plan | null {
+    const group = groupedPlans[groupIndex];
+    if (!group) return null;
+    const dur = getDuration(groupIndex);
+    return group.plans[dur] ?? group.plans[30] ?? group.plans[15];
+  }
 
   async function activateFreePlan(plan: Plan) {
     setError("");
@@ -85,7 +130,7 @@ export function PlansView({
               <>
                 <p className="text-lg font-semibold">No tienes un plan activo</p>
                 <p className="text-sm text-white/70">
-                  Solicita la activación de un paquete al administrador para publicar.
+                  Solicita la activacion de un paquete al administrador para publicar.
                 </p>
               </>
             )}
@@ -158,70 +203,90 @@ export function PlansView({
       </Card>
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
-        {visiblePlans.map((plan) => {
-          const isCurrent = subscription?.plan.id === plan.id && hasActive;
-          const isRequestedPending = subscription?.plan.id === plan.id && isPending;
-          const features = canManageProjects
-            ? plan.features
-            : plan.features.filter((feature) => !isProjectFeature(feature));
+        {groupedPlans.map((group, index) => {
+          const selected = selectedGroup === index;
+          const duration = getDuration(index);
+          const currentPlan = getCurrentPlan(index);
+          const isCurrent = currentPlan && subscription?.plan.id === currentPlan.id && hasActive;
+          const isRequestedPending = currentPlan && subscription?.plan.id === currentPlan.id && isPending;
+          const features = currentPlan
+            ? canManageProjects
+              ? currentPlan.features
+              : currentPlan.features.filter((feature) => !isProjectFeature(feature))
+            : [];
 
           return (
-            <Card
-              key={plan.id}
+            <button
+              key={index}
+              type="button"
+              aria-pressed={selected}
+              onClick={() => setSelectedGroup(index)}
               className={cn(
-                "relative overflow-hidden",
-                plan.highlight && "border-brand",
+                "relative flex min-h-96 flex-col overflow-hidden rounded-card border bg-surface text-left shadow-[var(--shadow-card)] transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-pop)]",
+                selected ? "border-brand ring-2 ring-brand/20" : "border-edge",
                 isCurrent && "border-success bg-success/5",
                 isRequestedPending && "border-warning bg-warning/5",
               )}
             >
-              <div
-                className={cn(
-                  "h-1",
-                  isCurrent ? "bg-success" : isRequestedPending ? "bg-warning" : plan.highlight ? "bg-brand" : "bg-accent",
-                )}
-                aria-hidden
-              />
-              {plan.highlight && !isCurrent && !isRequestedPending ? (
-                <span className="absolute right-4 top-4 rounded-full bg-accent px-2.5 py-0.5 text-[10px] font-bold text-on-accent">
-                  MAS BENEFICIOS
+              <span className={cn("h-1.5 w-full", selected ? "bg-brand" : "bg-accent")} aria-hidden />
+              {selected ? (
+                <span className="absolute right-4 top-4 rounded-full bg-success px-2.5 py-1 text-[10px] font-black tracking-wide text-white">
+                  SELECCIONADO
                 </span>
               ) : null}
               {isCurrent ? (
-                <span className="absolute right-4 top-4 rounded-full bg-success px-2.5 py-0.5 text-[10px] font-bold text-white">
+                <span className="absolute left-4 top-4 rounded-full bg-success px-2.5 py-0.5 text-[10px] font-bold text-white">
                   ACTIVO
-                </span>
-              ) : isRequestedPending ? (
-                <span className="absolute right-4 top-4 rounded-full bg-warning px-2.5 py-0.5 text-[10px] font-bold text-white">
-                  EN REVISION
                 </span>
               ) : null}
 
-              <CardContent className="flex h-full min-h-96 flex-col gap-4 pt-6 text-center">
-                <div>
-                  <p className="text-[11px] font-black tracking-wide text-muted uppercase">{plan.name}</p>
-                  <p className="mt-3 font-display text-5xl font-black tracking-tight text-brand">
-                    {plan.propertyLimit}
-                  </p>
-                  <p className="mt-1 text-sm font-semibold text-ink">
-                    {plan.propertyLimit === 1 ? "propiedad activa" : "propiedades activas"}
-                  </p>
-                  {canManageProjects && plan.projectLimit > 0 ? (
-                    <p className="mt-2 text-xs font-bold text-brand">
-                      + {plan.projectLimit} {plan.projectLimit === 1 ? "proyecto" : "proyectos"} para inmobiliarias
-                    </p>
-                  ) : null}
-                </div>
+              <span className="flex flex-1 flex-col items-center gap-4 p-5 pt-7 text-center">
+                <span className="text-[11px] font-black tracking-wide text-muted uppercase">
+                  {group.label}
+                </span>
+                <span className="font-display text-5xl font-black tracking-tight text-brand">
+                  {group.propertyLimit >= 5 ? "+5" : group.propertyLimit}
+                </span>
+                <span className="text-sm font-semibold text-ink">
+                  {group.propertyLimit === 1 ? "propiedad activa" : "propiedades activas"}
+                </span>
 
-                <div className="rounded-card border border-edge bg-canvas px-4 py-3">
-                  <p className="text-[11px] font-bold tracking-wide text-muted uppercase">Inversion mensual</p>
-                  <p className="mt-1 text-2xl font-black text-brand">
-                    {plan.isFree ? "Sin costo" : formatPrice(Number(plan.price), plan.currency)}
-                  </p>
-                  <p className="text-xs font-semibold text-muted">{plan.durationDays} dias de vigencia</p>
-                </div>
+                <span className="w-full rounded-card border border-edge bg-canvas px-4 py-3">
+                  <span className="block text-[11px] font-bold tracking-wide text-muted uppercase">
+                    Elige vigencia
+                  </span>
+                  <div className="mt-2 flex gap-1">
+                    <span
+                      role="button"
+                      tabIndex={0}
+                      onClick={(e) => { e.stopPropagation(); toggleDuration(index, 15); }}
+                      onKeyDown={(e) => { if (e.key === "Enter") { e.stopPropagation(); toggleDuration(index, 15); } }}
+                      className={cn(
+                        "flex-1 cursor-pointer rounded-md px-2 py-1.5 text-xs font-bold transition-colors",
+                        duration === 15 ? "bg-brand text-on-brand" : "bg-surface-muted text-muted hover:text-ink",
+                      )}
+                    >
+                      15 días
+                    </span>
+                    <span
+                      role="button"
+                      tabIndex={0}
+                      onClick={(e) => { e.stopPropagation(); toggleDuration(index, 30); }}
+                      onKeyDown={(e) => { if (e.key === "Enter") { e.stopPropagation(); toggleDuration(index, 30); } }}
+                      className={cn(
+                        "flex-1 cursor-pointer rounded-md px-2 py-1.5 text-xs font-bold transition-colors",
+                        duration === 30 ? "bg-brand text-on-brand" : "bg-surface-muted text-muted hover:text-ink",
+                      )}
+                    >
+                      30 días
+                    </span>
+                  </div>
+                  <span className="mt-2 block text-2xl font-black text-brand">
+                    {currentPlan ? formatPrice(Number(currentPlan.price), currentPlan.currency) : "S/ 0"}
+                  </span>
+                </span>
 
-                <ul className="flex flex-1 flex-col gap-2 text-left text-xs text-ink">
+                <ul className="mt-2 flex w-full flex-col gap-1.5 text-left text-xs text-ink">
                   {features.map((feature) => (
                     <li key={feature} className="flex items-start gap-2">
                       <CheckIcon className="mt-0.5 size-3.5 shrink-0 text-success" />
@@ -238,25 +303,38 @@ export function PlansView({
                   <Button variant="secondary" disabled className="mt-2">
                     Pendiente de revision
                   </Button>
-                ) : plan.isFree ? (
-                  <Button
-                    variant="secondary"
-                    className="mt-2"
-                    disabled={activatingId === plan.id}
-                    onClick={() => activateFreePlan(plan)}
-                  >
-                    {activatingId === plan.id ? "Activando..." : "Activar plan"}
-                  </Button>
                 ) : (
-                  <Button className="mt-2" onClick={() => setModalPlan(plan)}>
+                  <Button className="mt-2" onClick={(e) => { e.stopPropagation(); setSelectedGroup(index); setModalPlan(getCurrentPlan(index)); }}>
                     Elegir paquete
                   </Button>
                 )}
-              </CardContent>
-            </Card>
+              </span>
+            </button>
           );
         })}
+        <UnlimitedPlanCard customerName={customerName} userType="REAL_ESTATE" />
       </div>
+
+      {selectedGroup !== null && getCurrentPlan(selectedGroup) ? (
+        <Card className="overflow-hidden">
+          <div className="h-1.5 bg-brand" aria-hidden />
+          <CardContent className="p-5 sm:p-6">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <p className="text-[11px] font-black uppercase tracking-[0.16em] text-accent">
+                  Paquete seleccionado
+                </p>
+                <p className="mt-1 text-lg font-bold text-brand">
+                  {groupedPlans[selectedGroup]?.label} · {getDuration(selectedGroup)} días · {getCurrentPlan(selectedGroup) ? formatPrice(Number(getCurrentPlan(selectedGroup)!.price), getCurrentPlan(selectedGroup)!.currency) : ""}
+                </p>
+              </div>
+              <Button onClick={() => setModalPlan(getCurrentPlan(selectedGroup))}>
+                Subir comprobante de pago
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      ) : null}
 
       {modalPlan ? <PlanRequestModal plan={modalPlan} onClose={() => setModalPlan(null)} /> : null}
     </div>

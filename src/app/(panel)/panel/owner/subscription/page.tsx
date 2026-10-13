@@ -59,6 +59,11 @@ export default async function OwnerSubscriptionPage() {
     listMyProperties(),
   ]);
 
+  const customerName =
+    profile?.businessName?.trim() ||
+    [profile?.user.firstName, profile?.user.lastName].filter(Boolean).join(" ").trim() ||
+    "Cliente";
+
   return (
     <div className="flex flex-col gap-6">
       <PageBanner
@@ -73,6 +78,7 @@ export default async function OwnerSubscriptionPage() {
         propertiesCount={properties.length}
         projectsCount={0}
         canManageProjects={canManageProjects(profile)}
+        customerName={customerName}
       />
     </div>
   );

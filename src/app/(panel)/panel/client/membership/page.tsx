@@ -1,8 +1,13 @@
 import { CustomerMembershipManager } from "@/features/customer-account/components/customer-membership-manager";
-import { getCustomerMembership } from "@/features/customer-account/api/server";
+import { getCustomerMembership, getCustomerProfile } from "@/features/customer-account/api/server";
 
 export default async function PanelClientMembershipPage() {
-  const membership = await getCustomerMembership();
+  const [membership, profile] = await Promise.all([
+    getCustomerMembership(),
+    getCustomerProfile(),
+  ]);
+
+  const customerName = [profile.firstName, profile.lastName].filter(Boolean).join(" ");
 
   return (
     <div className="flex flex-col gap-6">
@@ -14,11 +19,11 @@ export default async function PanelClientMembershipPage() {
           Elige el paquete para tus publicaciones
         </h1>
         <p className="mx-auto mt-2 max-w-2xl text-sm text-muted">
-          La primera propiedad es gratis por 30 días. Después, selecciona uno de los cuatro paquetes
+          La primera propiedad es gratis por 30 días. Después, selecciona uno de los tres paquetes
           y envía el comprobante; el administrador activará los beneficios al aprobarlo.
         </p>
       </header>
-      <CustomerMembershipManager membership={membership} />
+      <CustomerMembershipManager membership={membership} customerName={customerName} />
     </div>
   );
 }
