@@ -185,3 +185,49 @@ export interface PagedResult<T> {
   pageSize: number;
   hasMore: boolean;
 }
+
+/** Propiedad propia con todos los datos que necesita el formulario de edicion. */
+export interface PropertyEditData {
+  id: string;
+  slug: string;
+  status: string;
+  operationType: ApiOperationType;
+  propertyType: ApiPropertyType;
+  title: string;
+  description: string;
+  price: number;
+  currency: ApiCurrency;
+  negotiable: boolean;
+  maintenanceFee: number | null;
+  contactName: string | null;
+  contactEmail: string | null;
+  contactPhone: string | null;
+  contactWhatsapp: string | null;
+  location: {
+    department: string;
+    province: string;
+    district: string;
+    address: string;
+    number: string | null;
+    sector: string | null;
+    reference: string | null;
+    latitude: number | null;
+    longitude: number | null;
+    approximateLocation: boolean;
+  } | null;
+  details: {
+    totalArea: number | null;
+    constructedArea: number | null;
+    bedrooms: number | null;
+    bathrooms: number | null;
+    halfBathrooms: number | null;
+    parkingSpaces: number | null;
+    floor: number | null;
+    floors: number | null;
+    constructionYear: number | null;
+    conservationStatus: ApiConservationStatus | null;
+    specificDetails: Record<string, unknown> | null;
+  } | null;
+  amenityCodes: string[];
+  media: Array<{ url: string; publicId: string | null; position: number; isCover: boolean }>;
+}

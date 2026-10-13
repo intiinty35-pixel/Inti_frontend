@@ -20,10 +20,11 @@ import {
 } from "@/shared/ui";
 import { ROUTES } from "@/shared/config/routes";
 import { buildAddressQuery, searchMapPlace } from "@/shared/lib/geo";
-import type { ApiOperationType, ApiPropertyType, PropertyCreateInput } from "@/features/listings/types/listing";
-import { createProperty, publishProperty } from "@/features/listings/api";
+import type { ApiOperationType, ApiPropertyType, PropertyCreateInput, PropertyEditData } from "@/features/listings/types/listing";
+import { createProperty, publishProperty, updateProperty } from "@/features/listings/api";
 import { PROPERTY_FORM_CONFIG, PROPERTY_TYPE_OPTIONS, amenityCode } from "@/features/listings/config/property-form";
 import { uploadPropertyImage } from "@/features/listings/api/media";
+import { GoogleMapsLinkField } from "@/shared/ui/google-maps-link-field";
 import { LocationPicker, preloadLocationPicker } from "@/features/listings/components/publish/location-picker";
 
 type Step = 1 | 2 | 3 | 4;
@@ -91,11 +92,68 @@ const TYPE_ICONS: Record<ApiPropertyType, typeof HomeIcon> = {
   PARKING: ParkingIcon,
 };
 
+/** Convierte una propiedad guardada en los valores por nombre que entiende el formulario. */
+function propertyToFormValues(property: PropertyEditData): Record<string, string> {
+  const values: Record<string, string> = {
+    title: property.title,
+    description: property.description,
+    price: String(property.price),
+    maintenanceFee: property.maintenanceFee === null ? "" : String(property.maintenanceFee),
+    contactName: property.contactName ?? "",
+    contactEmail: property.contactEmail ?? "",
+    contactPhone: property.contactPhone ?? "",
+    contactWhatsapp: property.contactWhatsapp ?? "",
+    acceptTerms: "on",
+  };
+  if (property.negotiable) values.negotiable = "on";
+
+  const location = property.location;
+  if (location) {
+    values.department = location.department;
+    values.province = location.province;
+    values.district = location.district;
+    values.address = location.address;
+    values.number = location.number ?? "";
+    values.sector = location.sector ?? "";
+    values.reference = location.reference ?? "";
+    if (location.approximateLocation) values.approximateLocation = "on";
+  }
+
+  const details = property.details;
+  if (details) {
+    for (const key of [
+      "totalArea",
+      "constructedArea",
+      "bedrooms",
+      "bathrooms",
+      "halfBathrooms",
+      "parkingSpaces",
+      "floor",
+      "floors",
+      "constructionYear",
+    ] as const) {
+      const value = details[key];
+      values[key] = value === null ? "" : String(value);
+    }
+    for (const [key, value] of Object.entries(details.specificDetails ?? {})) {
+      if (value === true) values[`specific_${key}`] = "on";
+      else if (value !== false && value !== null && value !== undefined) values[`specific_${key}`] = String(value);
+    }
+  }
+
+  for (const code of property.amenityCodes) values[`amenity_${code}`] = "on";
+  return values;
+}
+
 export function PropertyPublishWizard({
   audience = "owner",
+  initialProperty,
 }: {
   audience?: "owner" | "customer";
+  /** Propiedad existente que se edita; sin esto el asistente publica una nueva. */
+  initialProperty?: PropertyEditData;
 }) {
+  const editing = initialProperty !== undefined;
   const router = useRouter();
   const listingsPath =
     audience === "customer"
@@ -106,17 +164,29 @@ export function PropertyPublishWizard({
   const issuesRef = useRef<string[]>([]);
   const [step, setStep] = useState<Step>(1);
   const [maxStepReached, setMaxStepReached] = useState<Step>(1);
-  const [operationType, setOperationType] = useState<ApiOperationType>("SALE");
-  const [propertyType, setPropertyType] = useState<ApiPropertyType>("APARTMENT");
-  const [currency, setCurrency] = useState<"PEN" | "USD">("PEN");
-  const [conservationStatus, setConservationStatus] = useState("GOOD");
-  const [specificSelections, setSpecificSelections] = useState<Record<string, string>>({});
+  const [operationType, setOperationType] = useState<ApiOperationType>(initialProperty?.operationType ?? "SALE");
+  const [propertyType, setPropertyType] = useState<ApiPropertyType>(initialProperty?.propertyType ?? "APARTMENT");
+  const [currency, setCurrency] = useState<"PEN" | "USD">(initialProperty?.currency ?? "PEN");
+  const [conservationStatus, setConservationStatus] = useState<string>(initialProperty?.details?.conservationStatus ?? "GOOD");
+  const [specificSelections, setSpecificSelections] = useState<Record<string, string>>(
+    Object.fromEntries(
+      Object.entries(initialProperty?.details?.specificDetails ?? {})
+        .filter(([, value]) => typeof value === "string")
+        .map(([key, value]) => [key, value as string]),
+    ),
+  );
   const [errors, setErrors] = useState<string[]>([]);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [uploadedImages, setUploadedImages] = useState<Array<{ url: string; publicId: string }>>([]);
   const [uploading, setUploading] = useState(false);
-  const [location, setLocation] = useState({ latitude: -12.046374, longitude: -77.042793 });
+  const [location, setLocationState] = useState({ latitude: -12.046374, longitude: -77.042793 });
+  // El mapa arranca centrado en Lima; solo se envian coordenadas si el usuario fijo un punto.
+  const [locationSet, setLocationSet] = useState(false);
+  const setLocation = (point: { latitude: number; longitude: number }) => {
+    setLocationState(point);
+    setLocationSet(true);
+  };
   const [locationLabel, setLocationLabel] = useState("Lima, Peru");
   const [locating, setLocating] = useState(false);
   const [publishedSlug, setPublishedSlug] = useState<string | null>(null);
@@ -129,8 +199,9 @@ export function PropertyPublishWizard({
   useEffect(() => {
     void preloadLocationPicker();
 
-    const raw = localStorage.getItem("ariz.propertyDraft");
     const form = formRef.current;
+    // Al editar se parte de la propiedad guardada; el borrador local solo aplica a publicaciones nuevas.
+    const raw = initialProperty ? JSON.stringify(propertyToFormValues(initialProperty)) : localStorage.getItem("ariz.propertyDraft");
     if (!raw || !form) return;
     const draft = JSON.parse(raw) as Record<string, string>;
     Object.entries(draft).forEach(([key, value]) => {
@@ -143,7 +214,18 @@ export function PropertyPublishWizard({
         }
       }
     });
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- restaura el borrador guardado al montar el formulario.
+    if (initialProperty) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- carga la propiedad que se edita al montar el formulario.
+      setUploadedImages(
+        initialProperty.media.map((media) => ({ url: media.url, publicId: media.publicId ?? media.url })),
+      );
+      const place = initialProperty.location;
+      if (place?.latitude !== null && place?.latitude !== undefined && place.longitude !== null) {
+        setLocation({ latitude: place.latitude, longitude: place.longitude });
+        setLocationLabel("Ubicación guardada de tu publicación");
+      }
+      return;
+    }
     if (draft.propertyType) setPropertyType(draft.propertyType as ApiPropertyType);
     if (draft.operationType) setOperationType(draft.operationType as ApiOperationType);
     if (draft.currency) setCurrency(draft.currency as "PEN" | "USD");
@@ -155,6 +237,7 @@ export function PropertyPublishWizard({
           .map(([key, value]) => [key.replace(/^specific_/, ""), value]),
       ),
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- solo debe correr al montar el formulario.
   }, []);
 
   useEffect(() => {
@@ -174,7 +257,7 @@ export function PropertyPublishWizard({
 
   function saveDraft() {
     const form = formRef.current;
-    if (!form) return;
+    if (!form || editing) return;
     const data = new FormData(form);
     const draft: Record<string, string> = {};
     data.forEach((value, key) => {
@@ -438,8 +521,8 @@ export function PropertyPublishWizard({
         number: text(form, "number") || undefined,
         sector: text(form, "sector") || undefined,
         reference: text(form, "reference") || undefined,
-        latitude: location.latitude,
-        longitude: location.longitude,
+        latitude: locationSet ? location.latitude : undefined,
+        longitude: locationSet ? location.longitude : undefined,
         approximateLocation: form.get("approximateLocation") === "on",
       },
       details: {
@@ -525,6 +608,13 @@ export function PropertyPublishWizard({
     setErrors([]);
     setLoading(true);
     try {
+      if (initialProperty) {
+        await updateProperty(initialProperty.id, input);
+        setPublishedSlug(initialProperty.slug);
+        setLoading(false);
+        router.refresh();
+        return;
+      }
       const created = await createProperty(input);
       const published = await publishProperty(created.id);
       localStorage.removeItem("ariz.propertyDraft");
@@ -677,13 +767,13 @@ export function PropertyPublishWizard({
                 <CheckIcon className="size-8" />
               </span>
               <p className="text-[11px] font-black tracking-[0.2em] text-accent uppercase">
-                Publicacion exitosa
+                {editing ? "Cambios guardados" : "Publicacion exitosa"}
               </p>
               <h2 className="font-display text-3xl font-black tracking-tight text-brand">
-                Tu propiedad ya esta publicada
+                {editing ? "Tu propiedad se actualizó" : "Tu propiedad ya esta publicada"}
               </h2>
               <p className="max-w-md text-sm text-muted">
-                Ya es visible para los compradores. Te estamos llevando a{" "}
+                {editing ? "Los cambios ya se ven en tu publicación." : "Ya es visible para los compradores."} Te estamos llevando a{" "}
                 <span className="font-semibold text-ink">Mis propiedades</span> para que la
                 administres desde tu panel.
               </p>
@@ -838,6 +928,14 @@ export function PropertyPublishWizard({
                   >
                     {locating ? "Ubicando..." : "Ubicar direccion"}
                   </button>
+                </div>
+                <div className="mb-3">
+                  <GoogleMapsLinkField
+                    onPoint={(point) => {
+                      setLocation(point);
+                      setLocationLabel("Ubicación tomada de Google Maps");
+                    }}
+                  />
                 </div>
                 {step === 2 ? (
                   <LocationPicker latitude={location.latitude} longitude={location.longitude} onChange={setLocation} />
@@ -1006,7 +1104,7 @@ export function PropertyPublishWizard({
             {step < 4 ? (
               <Button onClick={next}>Continuar</Button>
             ) : (
-              <Button type="submit" disabled={loading}>{loading ? "Publicando..." : "Publicar propiedad"}</Button>
+              <Button type="submit" disabled={loading}>{loading ? (editing ? "Guardando..." : "Publicando...") : editing ? "Guardar cambios" : "Publicar propiedad"}</Button>
             )}
           </div>
             </>

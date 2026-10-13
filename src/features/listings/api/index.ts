@@ -56,6 +56,10 @@ export async function createProperty(input: PropertyCreateInput): Promise<Listin
   return apiClient.post<Listing>("/properties", input);
 }
 
+export async function updateProperty(id: string, input: PropertyCreateInput): Promise<Listing> {
+  return apiClient.patch<Listing>(`/properties/${encodeURIComponent(id)}`, input);
+}
+
 export async function publishProperty(id: string): Promise<Listing> {
   return apiClient.patch<Listing>(`/properties/${encodeURIComponent(id)}/publish`);
 }
