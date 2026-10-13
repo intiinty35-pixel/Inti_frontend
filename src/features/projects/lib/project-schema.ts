@@ -279,15 +279,35 @@ export const projectDraftSchema = z
     milestones: milestonesSchema,
     certifications: z.array(z.string()),
 
-    images: z
-      .array(fileSchema)
-      .min(1, "Agrega al menos una imagen del proyecto")
-      .max(MAX_PROJECT_IMAGES, `Máximo ${MAX_PROJECT_IMAGES} imágenes`),
+    keptMedia: z.array(
+      z.object({
+        type: z.enum(["IMAGE", "FLOOR_PLAN", "RENDER"]),
+        url: z.string(),
+        publicId: z.string().nullable().optional(),
+      }),
+    ),
+    images: z.array(fileSchema).max(MAX_PROJECT_IMAGES, `Máximo ${MAX_PROJECT_IMAGES} imágenes`),
     plans: z.array(fileSchema).max(MAX_PLAN_FILES, `Máximo ${MAX_PLAN_FILES} planos`),
     tourUrl: optionalUrl("recorrido virtual"),
     renderImages: z.array(fileSchema).max(MAX_RENDER_IMAGES, `Máximo ${MAX_RENDER_IMAGES} renders`),
   })
   .superRefine((draft, context) => {
+    const keptImages = draft.keptMedia.filter((media) => media.type === "IMAGE").length;
+    if (draft.images.length + keptImages === 0) {
+      context.addIssue({
+        code: "custom",
+        path: ["images"],
+        message: "Agrega al menos una imagen del proyecto",
+      });
+    }
+    if (draft.images.length + keptImages > MAX_PROJECT_IMAGES) {
+      context.addIssue({
+        code: "custom",
+        path: ["images"],
+        message: `Máximo ${MAX_PROJECT_IMAGES} imágenes`,
+      });
+    }
+
     for (const field of ["priceFrom", "priceTo"] as const) {
       if (draft[field] === undefined) {
         context.addIssue({

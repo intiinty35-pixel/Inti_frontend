@@ -1,5 +1,5 @@
 import { backendFetch } from "@/shared/lib/api/server";
-import type { Listing } from "@/features/listings/types/listing";
+import type { Listing, PropertyEditData } from "@/features/listings/types/listing";
 
 export async function getOwnerListingsServer(): Promise<Listing[]> {
   const response = await backendFetch("/properties/owner/me");
@@ -9,6 +9,18 @@ export async function getOwnerListingsServer(): Promise<Listing[]> {
   }
 
   return (await response.json()) as Listing[];
+}
+
+/** Propiedad propia con todos sus datos, para editarla. `null` si no existe o no es suya. */
+export async function getOwnerPropertyForEditServer(id: string): Promise<PropertyEditData | null> {
+  const response = await backendFetch(`/properties/owner/${encodeURIComponent(id)}`);
+
+  if (response.status === 404 || response.status === 403) return null;
+  if (!response.ok) {
+    throw new Error(`No se pudo cargar la propiedad (${response.status})`);
+  }
+
+  return (await response.json()) as PropertyEditData;
 }
 
 export interface PagedListings {

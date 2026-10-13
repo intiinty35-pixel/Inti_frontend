@@ -12,12 +12,16 @@ import {
   buildProjectPayload,
   createAdminProject,
   createProject,
+  mergeProjectMedia,
   toProjectInput,
+  updateProject,
   uploadProjectFiles,
   type CreateProjectPayload,
 } from "@/features/projects/api";
 import { countStepErrors, PROJECT_DRAFT_DEFAULTS } from "@/features/projects/lib/project-draft";
 import { LAST_STEP_INDEX, WIZARD_STEPS, projectDraftSchema } from "@/features/projects/lib/project-schema";
+import { projectDetailToDraft } from "@/features/projects/lib/project-from-api";
+import type { ProjectApiDetail } from "@/features/projects/types/api";
 import type { LotDraft, ProjectDraft } from "@/features/projects/types/draft";
 import type { ProjectPreview } from "@/features/projects/types/preview";
 import { ProjectReview } from "@/features/projects/components/project-review";
@@ -58,6 +62,8 @@ function StepHeader({ current, title, detail }: { current: number; title: string
 export interface ProjectPublishWizardProps {
   previewProjects: readonly ProjectPreview[];
   adminMode?: boolean;
+  /** Proyecto existente que se edita; sin esto el asistente crea uno nuevo. */
+  initialProject?: ProjectApiDetail;
   /**
    * Se invoca al confirmar el resumen. Opcional mientras no exista
    * `POST /projects`: el borrador se confirma igual en pantalla.
@@ -65,10 +71,20 @@ export interface ProjectPublishWizardProps {
   onSave?: (payload: CreateProjectPayload) => void;
 }
 
-export function ProjectPublishWizard({ previewProjects, adminMode = false, onSave }: ProjectPublishWizardProps) {
+export function ProjectPublishWizard({
+  previewProjects,
+  adminMode = false,
+  initialProject,
+  onSave,
+}: ProjectPublishWizardProps) {
+  const editing = initialProject !== undefined;
+  const initialDraft = useMemo(
+    () => (initialProject ? projectDetailToDraft(initialProject) : PROJECT_DRAFT_DEFAULTS),
+    [initialProject],
+  );
   const form = useForm<ProjectDraft>({
     resolver: zodResolver(projectDraftSchema),
-    defaultValues: PROJECT_DRAFT_DEFAULTS,
+    defaultValues: initialDraft,
     mode: "onTouched",
   });
 
@@ -147,13 +163,13 @@ export function ProjectPublishWizard({ previewProjects, adminMode = false, onSav
   }, [step]);
 
   const startOver = useCallback(() => {
-    reset(PROJECT_DRAFT_DEFAULTS);
+    reset(initialDraft);
     setStep(0);
     setPayload(null);
     setReviewedLots([]);
     setSaved(false);
     setError(null);
-  }, [reset]);
+  }, [reset, initialDraft]);
 
   // Se congela el inventario al revisar: el resumen no debe depender de un
   // `watch` en vivo, que el compilador de React no puede memoizar.
@@ -178,8 +194,13 @@ export function ProjectPublishWizard({ previewProjects, adminMode = false, onSav
           images.length + plans.length,
         );
 
-        const input = toProjectInput(next, [...images, ...plans, ...renders]);
-        await (adminMode ? createAdminProject(input) : createProject(input));
+        const media = mergeProjectMedia(getValues("keptMedia"), [...images, ...plans, ...renders]);
+        const input = toProjectInput(next, media);
+        if (initialProject) {
+          await updateProject(initialProject.id, input);
+        } else {
+          await (adminMode ? createAdminProject(input) : createProject(input));
+        }
 
         onSave?.(next);
         setSaved(true);
@@ -189,7 +210,7 @@ export function ProjectPublishWizard({ previewProjects, adminMode = false, onSav
         setSaving(false);
       }
     },
-    [adminMode, getValues, onSave],
+    [adminMode, getValues, initialProject, onSave],
   );
 
   if (saved) {
@@ -199,20 +220,26 @@ export function ProjectPublishWizard({ previewProjects, adminMode = false, onSav
           <CheckCircleIcon className="size-8" />
         </span>
         <p className="text-[11px] font-black tracking-[0.2em] text-accent uppercase">
-          Borrador guardado
+          {editing ? "Cambios guardados" : "Borrador guardado"}
         </p>
         <h2 className="font-display text-3xl font-black tracking-tight text-brand">
           {payload?.name}
         </h2>
         <p className="max-w-md text-sm text-muted">
-          El proyecto quedó guardado con {payload?.lots.length ?? 0} lotes. {adminMode
-            ? "Puedes publicarlo desde Proyectos ARIZ sin consumir créditos."
-            : "Puedes publicarlo desde Mis proyectos cuando tengas crédito disponible en tu suscripción."}
+          {editing
+            ? `El proyecto se actualizó con ${payload?.lots.length ?? 0} lotes.`
+            : `El proyecto quedó guardado con ${payload?.lots.length ?? 0} lotes. ${
+                adminMode
+                  ? "Puedes publicarlo desde Proyectos ARIZ sin consumir créditos."
+                  : "Puedes publicarlo desde Mis proyectos cuando tengas crédito disponible en tu suscripción."
+              }`}
         </p>
         <div className="mt-2 flex flex-col-reverse gap-3 sm:flex-row">
-          <Button type="button" variant="secondary" onClick={startOver}>
-            Crear otro proyecto
-          </Button>
+          {editing ? null : (
+            <Button type="button" variant="secondary" onClick={startOver}>
+              Crear otro proyecto
+            </Button>
+          )}
           <Link href={adminMode ? ROUTES.panel.admin.projects : ROUTES.panel.owner.projects}>
             <Button type="button">
               {adminMode ? "Ver proyectos ARIZ" : "Ver mis proyectos"}
@@ -234,6 +261,7 @@ export function ProjectPublishWizard({ previewProjects, adminMode = false, onSav
             lots={reviewedLots}
             previewProjects={previewProjects}
             adminMode={adminMode}
+            editing={editing}
             saving={saving}
             error={error}
             onSave={confirm}
@@ -259,7 +287,7 @@ export function ProjectPublishWizard({ previewProjects, adminMode = false, onSav
           <div className="h-1.5 bg-brand" aria-hidden />
           <div className="p-5">
             <h1 className="font-display text-2xl font-black tracking-tight text-brand">
-              Nuevo proyecto
+              {editing ? "Editar proyecto" : "Nuevo proyecto"}
             </h1>
             <WizardStepper
               steps={stepMeta}

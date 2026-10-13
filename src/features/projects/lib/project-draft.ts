@@ -69,6 +69,7 @@ export const PROJECT_DRAFT_DEFAULTS: ProjectDraft = {
   milestones: [],
   certifications: [],
 
+  keptMedia: [],
   images: [],
   plans: [],
   tourUrl: "",

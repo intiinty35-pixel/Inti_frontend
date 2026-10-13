@@ -196,6 +196,14 @@ export function OwnerProjectCard({
           >
             Ubicación
           </button>
+          {adminMode ? null : (
+            <Link
+              href={ROUTES.panel.owner.editProject(project.id)}
+              className="flex h-9 items-center justify-center rounded-card border border-brand px-2.5 text-xs font-bold text-brand transition-colors hover:bg-brand hover:text-on-brand"
+            >
+              Editar
+            </Link>
+          )}
           <Link
             href={adminMode ? ROUTES.panel.admin.projects : ROUTES.panel.owner.base}
             className="flex h-9 items-center justify-center rounded-card border border-edge px-2.5 text-xs font-bold text-brand transition-colors hover:border-brand"

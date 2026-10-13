@@ -48,6 +48,13 @@ export interface MilestoneDraft {
   note?: string;
 }
 
+/** Archivo multimedia que el proyecto ya tiene guardado (modo edicion). */
+export interface KeptMedia {
+  type: "IMAGE" | "FLOOR_PLAN" | "RENDER";
+  url: string;
+  publicId?: string | null;
+}
+
 export interface ProjectDraft {
   category: ProjectCategory;
   stage: ProjectStage;
@@ -92,6 +99,8 @@ export interface ProjectDraft {
   /** Claves de `PROJECT_CERTIFICATIONS`; el textarea libre se eliminó. */
   certifications: string[];
 
+  /** Multimedia ya guardada que se conserva al editar; vacia al crear. */
+  keptMedia: KeptMedia[];
   images: File[];
   plans: File[];
   tourUrl?: string;
