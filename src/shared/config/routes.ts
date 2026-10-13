@@ -12,6 +12,7 @@ export const ROUTES = {
   projects: "/proyectos",
   project: (slug: string): string => `/project/${slug}`,
   services: "/servicios",
+  construye: "/construye",
   investments: "/inversiones",
   terms: "/terminos",
   rewards: "/rewards",
