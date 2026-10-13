@@ -88,3 +88,20 @@ export interface ReferrerAccess {
     totalPoints: number;
   };
 }
+
+export interface CampaignPoints {
+  CONTACTED: number;
+  VISIT: number;
+  OPERATION_COMPLETED: number;
+}
+
+export interface ActiveCampaign {
+  id: string;
+  code: string;
+  name: string;
+  description?: string | null;
+  startDate: string;
+  endDate: string;
+  points: CampaignPoints;
+  projects: Array<{ id: string; name: string }>;
+}

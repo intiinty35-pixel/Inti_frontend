@@ -13,6 +13,7 @@ export interface PublicReferralInput {
   phone: string;
   interest: string;
   availability?: string;
+  campaignCode?: string;
 }
 
 export interface PublicReferralResponse {
@@ -71,4 +72,16 @@ export async function checkReferrerExists(email: string): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+export interface ValidateCampaignCodeResponse {
+  valid: boolean;
+  message?: string;
+  campaign?: { id: string; name: string };
+}
+
+export function validateCampaignCode(code: string) {
+  return apiClient.get<ValidateCampaignCodeResponse>(
+    `/campaigns/validate-code?code=${encodeURIComponent(code)}`
+  );
 }

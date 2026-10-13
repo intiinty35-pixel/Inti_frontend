@@ -78,7 +78,7 @@ export default function MyRedemptionsPage() {
                 placeholder="APCOD-XXXXXXXX"
                 value={referralCode}
                 onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
-                maxLength={12}
+                maxLength={16}
                 className="h-14 text-center text-lg font-mono tracking-wider border-2 border-brand"
               />
               {error && (

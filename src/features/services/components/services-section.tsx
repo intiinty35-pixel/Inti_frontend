@@ -7,6 +7,18 @@ import { ArrowRightIcon, CheckIcon, Container } from "@/shared/ui";
 import { Input } from "@/shared/ui/input";
 import { cn } from "@/shared/lib/cn";
 import { apiClient } from "@/shared/lib/api/client";
+import {
+  Building2,
+  Briefcase,
+  ClipboardList,
+  Hammer,
+  KeyRound,
+  Landmark,
+  Megaphone,
+  Scale,
+  Wallet,
+  type LucideIcon,
+} from "lucide-react";
 import { buildServiceWhatsappUrl } from "@/features/services/config";
 import { FinanceCarousel } from "@/features/services/components/finance-carousel";
 import { RevealOnScroll } from "@/features/services/components/reveal-on-scroll";
@@ -79,42 +91,55 @@ const DEVELOPMENT_IMAGES = [
   "https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?auto=format&fit=crop&w=900&q=80",
 ] as const;
 
-const SERVICE_CARDS = [
+const SERVICE_CARDS: readonly {
+  title: string;
+  href: string;
+  icon: LucideIcon;
+}[] = [
   {
     title: "Corretaje inmobiliario",
     href: "#corretaje-inmobiliario",
+    icon: KeyRound,
   },
   {
     title: "Asesoria inmobiliaria",
     href: "#corretaje-inmobiliario",
+    icon: Briefcase,
   },
   {
     title: "Asesoria legal",
     href: "#asesoria-legal",
+    icon: Scale,
   },
   {
     title: "Promotoria y gestion de proyectos urbanos",
     href: "#promotoria-gestion",
+    icon: ClipboardList,
   },
   {
     title: "Desarrollo de proyectos urbanos",
     href: "#desarrollo-proyectos-urbanos",
+    icon: Hammer,
   },
   {
     title: "Marketing inmobiliario",
     href: "#marketing-inmobiliario",
+    icon: Megaphone,
   },
   {
     title: "Administramos condominios, edificios y alquileres",
     href: "#administracion-condominios",
+    icon: Building2,
   },
   {
     title: "Servicio de cobranza inmobiliaria",
     href: "#cobranza-inmobiliaria",
+    icon: Wallet,
   },
   {
     title: "Asesoria financiera, creditos hipotecarios y creditos directos",
     href: "#asesoria-financiera",
+    icon: Landmark,
   },
 ] as const;
 
@@ -366,12 +391,15 @@ export function ServicesSection() {
             <RevealOnScroll key={service.title}>
               <article
                 data-service-card
-                className="flex h-full min-h-40 flex-col justify-between rounded-card border border-[#25D366] bg-surface p-4 shadow-[var(--shadow-card)] transition duration-200 hover:-translate-y-0.5 hover:border-[#128C7E] sm:min-h-44 sm:p-5"
+                className="flex h-full min-h-40 flex-col items-center justify-center rounded-card border border-[#25D366] bg-surface p-4 text-center shadow-[var(--shadow-card)] transition duration-200 hover:-translate-y-0.5 hover:border-[#128C7E] sm:min-h-44 sm:p-5"
               >
                 <h3 className="text-sm font-black uppercase leading-5 text-brand sm:text-base sm:leading-6">
                   {service.title}
                 </h3>
-                <div className="mt-5 grid gap-2">
+                <span className="mt-3 flex size-11 items-center justify-center rounded-card bg-brand text-on-brand shadow-[0_8px_18px_rgb(7_26_90_/_0.14)]">
+                  <service.icon className="size-5" strokeWidth={2.2} aria-hidden="true" />
+                </span>
+                <div className="mt-5 grid w-full gap-2">
                   <a
                     href={buildServiceWhatsappUrl(service.title)}
                     target="_blank"

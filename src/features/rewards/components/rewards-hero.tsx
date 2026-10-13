@@ -2,17 +2,24 @@
 
 import type { ReactNode } from "react";
 import Image from "next/image";
-import { ArrowUpRight, Coins, Gift, Sparkles } from "lucide-react";
+import { ArrowUpRight, Coins, Gift, Sparkles, Trophy } from "lucide-react";
 
 interface RewardsHeroProps {
   referrerName: string;
   totalPoints: number;
+  campaignPoints?: number;
   backgroundImageUrl?: string;
   /** Accion (ej. boton "Referir con Ariz") que se muestra bajo el nombre. */
   action?: ReactNode;
 }
 
-export function RewardsHero({ referrerName, totalPoints, backgroundImageUrl, action }: RewardsHeroProps) {
+export function RewardsHero({
+  referrerName,
+  totalPoints,
+  campaignPoints = 0,
+  backgroundImageUrl,
+  action,
+}: RewardsHeroProps) {
   return (
     <section className="relative mb-8 min-h-[500px] overflow-hidden rounded-3xl border border-brand/10 bg-brand shadow-[var(--shadow-pop)] sm:min-h-[520px] lg:min-h-[560px]">
       {backgroundImageUrl ? (
@@ -57,24 +64,50 @@ export function RewardsHero({ referrerName, totalPoints, backgroundImageUrl, act
           </div>
         </div>
 
-        <div className="w-full max-w-sm rounded-2xl border border-white/70 bg-white p-6 text-brand shadow-[var(--shadow-pop)] sm:w-72 sm:shrink-0 sm:p-7">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-[0.16em] text-muted">
-              Saldo disponible
-            </span>
-            <span className="flex size-9 items-center justify-center rounded-xl bg-accent/10">
-              <Coins className="size-5 text-accent" />
-            </span>
+        <div className="flex w-full max-w-md flex-col gap-4 sm:w-72 sm:shrink-0">
+          {/* Saldo de puntos normales */}
+          <div className="rounded-2xl border border-white/70 bg-white p-6 text-brand shadow-[var(--shadow-pop)] sm:p-7">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-[0.16em] text-muted">
+                Saldo disponible
+              </span>
+              <span className="flex size-9 items-center justify-center rounded-xl bg-accent/10">
+                <Coins className="size-5 text-accent" />
+              </span>
+            </div>
+            <p className="mt-5 font-display text-5xl font-bold leading-none tracking-tight text-brand sm:text-6xl">
+              {totalPoints.toLocaleString("es-PE")}
+            </p>
+            <div className="mt-4 flex items-center justify-between border-t border-edge pt-3">
+              <span className="text-sm font-semibold text-brand">Puntos Ariz</span>
+              <span className="rounded-full bg-brand-soft px-2.5 py-1 text-[11px] font-bold text-brand">
+                DISPONIBLES
+              </span>
+            </div>
           </div>
-          <p className="mt-5 font-display text-5xl font-bold leading-none tracking-tight text-brand sm:text-6xl">
-            {totalPoints.toLocaleString("es-PE")}
-          </p>
-          <div className="mt-4 flex items-center justify-between border-t border-edge pt-3">
-            <span className="text-sm font-semibold text-brand">Puntos Ariz</span>
-            <span className="rounded-full bg-brand-soft px-2.5 py-1 text-[11px] font-bold text-brand">
-              DISPONIBLES
-            </span>
-          </div>
+
+          {/* Saldo de puntos de campaña */}
+          {campaignPoints > 0 && (
+            <div className="rounded-2xl border border-accent/30 bg-white/95 p-6 text-brand shadow-[var(--shadow-pop)] backdrop-blur-sm sm:p-7">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold uppercase tracking-[0.16em] text-accent">
+                  Puntos de campaña
+                </span>
+                <span className="flex size-9 items-center justify-center rounded-xl bg-accent/10">
+                  <Trophy className="size-5 text-accent" />
+                </span>
+              </div>
+              <p className="mt-5 font-display text-5xl font-bold leading-none tracking-tight text-accent sm:text-6xl">
+                {campaignPoints.toLocaleString("es-PE")}
+              </p>
+              <div className="mt-4 flex items-center justify-between border-t border-edge pt-3">
+                <span className="text-sm font-semibold text-accent">Campañas</span>
+                <span className="rounded-full bg-accent/10 px-2.5 py-1 text-[11px] font-bold text-accent">
+                  SEPARADOS
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </section>

@@ -5,6 +5,7 @@ import type {
   ReferrerAccess,
   Redemption,
   RedemptionListResponse,
+  ActiveCampaign,
 } from "../types/rewards";
 
 export function validateReferrerAccess(referralCode: string) {
@@ -13,6 +14,12 @@ export function validateReferrerAccess(referralCode: string) {
 
 export function getRewardsCatalog() {
   return apiClient.get<Incentive[]>("/redemptions/catalog");
+}
+
+export function getActiveCampaigns(referrerCode: string) {
+  return apiClient.get<ActiveCampaign[]>(
+    `/campaigns/active?referrerCode=${encodeURIComponent(referrerCode)}`
+  );
 }
 
 export function requestRedemption(referralCode: string, incentiveId: string, quantity: number = 1) {
@@ -108,4 +115,21 @@ export function rejectAdminRedemption(id: string, reason?: string) {
 
 export function deliverAdminRedemption(id: string) {
   return apiClient.patch<any>(`/admin/redemptions/${id}/deliver`, {});
+}
+
+export function getMyCampaignPoints(code: string) {
+  return apiClient.get<{
+    valid: boolean;
+    referrerId?: string;
+    campaigns?: Array<{
+      campaign: { id: string; name: string };
+      totalPoints: number;
+      referrals: Array<{
+        referralId: string;
+        referralName: string;
+        status: string;
+        points: number;
+      }>;
+    }>;
+  }>(`/referrals/my-campaign-points?code=${encodeURIComponent(code)}`);
 }

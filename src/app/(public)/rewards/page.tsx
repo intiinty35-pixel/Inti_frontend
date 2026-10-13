@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
-import { ArrowRight, KeyRound, Gift, Coins, ShieldCheck, Share2 } from "lucide-react";
+import { ArrowRight, KeyRound, Gift, Coins, ShieldCheck, Share2, CalendarClock, Trophy } from "lucide-react";
 import { Button, Input, Card, CardContent } from "@/shared/ui";
-import { validateReferrerAccess, getRewardsCatalog, requestRedemption } from "@/features/rewards/api/client";
-import type { Incentive, ReferrerAccess } from "@/features/rewards/types/rewards";
+import { validateReferrerAccess, getRewardsCatalog, requestRedemption, getActiveCampaigns, getMyCampaignPoints } from "@/features/rewards/api/client";
+import type { Incentive, ReferrerAccess, ActiveCampaign } from "@/features/rewards/types/rewards";
 import { ROUTES } from "@/shared/config/routes";
 import { RewardsHero } from "@/features/rewards/components/rewards-hero";
 import { ReferralModal } from "@/features/referrals/components/referral-modal";
@@ -23,6 +23,17 @@ function readCodeFromUrl() {
   );
 }
 
+interface CampaignPointsData {
+  campaign: { id: string; name: string };
+  totalPoints: number;
+  referrals: Array<{
+    referralId: string;
+    referralName: string;
+    status: string;
+    points: number;
+  }>;
+}
+
 export default function RewardsPage() {
   const autoValidatedRef = useRef(false);
   const [step, setStep] = useState<"code" | "catalog">("code");
@@ -38,6 +49,8 @@ export default function RewardsPage() {
   const [shareCopied, setShareCopied] = useState(false);
   const [showReferrals, setShowReferrals] = useState(false);
   const [syncedTotalPoints, setSyncedTotalPoints] = useState<number | null>(null);
+  const [activeCampaigns, setActiveCampaigns] = useState<ActiveCampaign[]>([]);
+  const [myCampaignPoints, setMyCampaignPoints] = useState<CampaignPointsData[]>([]);
 
   async function validateCode(code: string) {
     setLoading(true);
@@ -50,6 +63,22 @@ export default function RewardsPage() {
         setSyncedTotalPoints(result.referrer.totalPoints);
         const catalogData = await getRewardsCatalog();
         setCatalog(catalogData);
+        try {
+          const campaignsData = await getActiveCampaigns(code.trim());
+          setActiveCampaigns(campaignsData);
+        } catch {
+          setActiveCampaigns([]);
+        }
+        try {
+          const campaignPointsResult = await getMyCampaignPoints(code.trim());
+          if (campaignPointsResult.valid && campaignPointsResult.campaigns) {
+            setMyCampaignPoints(campaignPointsResult.campaigns);
+          } else {
+            setMyCampaignPoints([]);
+          }
+        } catch {
+          setMyCampaignPoints([]);
+        }
         setStep("catalog");
         return true;
       }
@@ -220,7 +249,7 @@ export default function RewardsPage() {
                   placeholder="APCOD-XXXXXXXX"
                   value={referralCode}
                   onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
-                  maxLength={12}
+                  maxLength={16}
                   autoComplete="off"
                   className="h-12 font-mono tracking-wider"
                 />
@@ -258,6 +287,7 @@ export default function RewardsPage() {
   if (!access?.referrer) return null;
 
   const totalPoints = syncedTotalPoints ?? access.referrer.totalPoints;
+  const campaignPointsTotal = myCampaignPoints.reduce((sum, c) => sum + c.totalPoints, 0);
 
   return (
     <>
@@ -265,6 +295,7 @@ export default function RewardsPage() {
         <RewardsHero
           referrerName={access.referrer.name}
           totalPoints={totalPoints}
+          campaignPoints={campaignPointsTotal}
           backgroundImageUrl="/home/2.jpg"
           action={
             <div className="flex gap-2">
@@ -354,6 +385,104 @@ export default function RewardsPage() {
             </div>
           </Card>
         </div>
+      )}
+
+      {/* Sección de puntos de campaña - siempre visible */}
+      <section className="mb-6">
+        <div className="mb-4 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <Trophy className="size-5 text-accent" />
+            <h2 className="font-display text-2xl font-bold tracking-tight text-ink sm:text-3xl">
+              Mis puntos de campaña
+            </h2>
+          </div>
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            onClick={async () => {
+              if (!access?.referrer) return;
+              try {
+                const result = await getMyCampaignPoints(access.referrer.code);
+                if (result.valid && result.campaigns) {
+                  setMyCampaignPoints(result.campaigns);
+                }
+              } catch (err) {
+                console.error(err);
+              }
+            }}
+            className="text-xs"
+          >
+            Actualizar
+          </Button>
+        </div>
+        {myCampaignPoints.length > 0 ? (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {myCampaignPoints.map((campaignData) => (
+              <Card key={campaignData.campaign.id} className="overflow-hidden">
+                <CardContent className="p-6">
+                  <h3 className="font-bold text-ink mb-2">
+                    {campaignData.campaign.name}
+                  </h3>
+                  <div className="flex items-baseline gap-2 mb-3">
+                    <span className="text-3xl font-black text-accent">
+                      {campaignData.totalPoints}
+                    </span>
+                    <span className="text-sm text-muted font-medium">
+                      puntos
+                    </span>
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-xs font-semibold text-muted uppercase tracking-wide">
+                      Referidos que aportan:
+                    </p>
+                    {campaignData.referrals.map((ref) => (
+                      <div
+                        key={ref.referralId}
+                        className="flex items-center justify-between text-sm border-l-2 border-accent pl-3"
+                      >
+                        <span className="font-medium text-ink">
+                          {ref.referralName}
+                        </span>
+                        <span className="text-accent font-bold">
+                          +{ref.points}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <Card>
+            <CardContent className="p-8 text-center">
+              <Trophy className="mx-auto size-12 text-muted/40" />
+              <p className="mt-4 text-sm font-semibold text-muted">
+                Aún no tienes puntos de campaña
+              </p>
+              <p className="mt-2 text-xs text-muted">
+                Registra referidos con un código de campaña para sumar puntos aquí
+              </p>
+            </CardContent>
+          </Card>
+        )}
+      </section>
+
+      {activeCampaigns.length > 0 && (
+        <section className="mb-6">
+          <div className="mb-4 flex items-center gap-2">
+            <CalendarClock className="size-5 text-accent" />
+            <h2 className="font-display text-2xl font-bold tracking-tight text-ink sm:text-3xl">
+              Campañas activas
+            </h2>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {activeCampaigns.map((campaign) => (
+              <CampaignCard key={campaign.id} campaign={campaign} />
+            ))}
+          </div>
+        </section>
       )}
 
       <div className="mb-6">
@@ -554,5 +683,82 @@ export default function RewardsPage() {
         preloadedCode={access.referrer.code}
       />
     </>
+  );
+}
+
+function CampaignCard({ campaign }: { campaign: ActiveCampaign }) {
+  const endDate = new Date(campaign.endDate);
+  const daysLeft = Math.ceil(
+    (endDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+  );
+
+  const [copied, setCopied] = useState(false);
+
+  const copyCode = async () => {
+    await navigator.clipboard.writeText(campaign.code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <Card className="overflow-hidden transition-[transform,border-color,box-shadow] duration-200 hover:-translate-y-1 hover:border-brand/30 hover:shadow-[var(--shadow-pop)]">
+      <div className="bg-accent/10 px-4 py-3">
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex-1">
+            <p className="text-xs font-black uppercase tracking-wide text-accent">
+              {daysLeft > 0 ? `${daysLeft} días restantes` : "Expira hoy"}
+            </p>
+            <h3 className="mt-1 font-bold text-ink">{campaign.name}</h3>
+          </div>
+          <button
+            onClick={copyCode}
+            className="shrink-0 rounded-md bg-brand px-2 py-1 text-[10px] font-bold text-on-brand transition hover:bg-brand/90"
+            title="Copiar código"
+          >
+            {copied ? "¡Copiado!" : campaign.code}
+          </button>
+        </div>
+      </div>
+      <CardContent className="p-4">
+        {campaign.description && (
+          <p className="mb-3 text-xs text-muted">{campaign.description}</p>
+        )}
+        <div className="grid grid-cols-3 gap-2 text-center">
+          <div>
+            <p className="text-[9px] uppercase text-muted">Contactado</p>
+            <p className="text-sm font-black text-brand">
+              +{campaign.points.CONTACTED}
+            </p>
+          </div>
+          <div>
+            <p className="text-[9px] uppercase text-muted">Visita</p>
+            <p className="text-sm font-black text-brand">
+              +{campaign.points.VISIT}
+            </p>
+          </div>
+          <div>
+            <p className="text-[9px] uppercase text-muted">Operación</p>
+            <p className="text-sm font-black text-brand">
+              +{campaign.points.OPERATION_COMPLETED}
+            </p>
+          </div>
+        </div>
+        <div className="mt-3 flex flex-wrap gap-1">
+          {campaign.projects.slice(0, 2).map((p) => (
+            <span
+              key={p.id}
+              className="rounded-full bg-brand-soft px-2 py-0.5 text-[10px] font-bold text-brand"
+            >
+              {p.name.length > 15 ? `${p.name.slice(0, 15)}...` : p.name}
+            </span>
+          ))}
+          {campaign.projects.length > 2 && (
+            <span className="text-[10px] text-muted">
+              +{campaign.projects.length - 2} más
+            </span>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 }

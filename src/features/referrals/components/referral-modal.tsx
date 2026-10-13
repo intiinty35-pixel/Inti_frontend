@@ -6,7 +6,7 @@ import { KeyRound, UserRoundPlus } from 'lucide-react';
 import { createPortal } from 'react-dom';
 import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
-import { submitPublicReferral, validateReferrerCode } from '@/features/referrals/api/client';
+import { submitPublicReferral, validateReferrerCode, validateCampaignCode } from '@/features/referrals/api/client';
 import { ROUTES } from '@/shared/config/routes';
 
 interface ReferralModalProps {
@@ -27,6 +27,7 @@ interface FormErrors {
   phone?: string;
   interest?: string;
   availability?: string;
+  campaignCode?: string;
 }
 
 type ModalView = 'initial' | 'existing-code' | 'existing-form' | 'new-step1' | 'new-step2' | 'new-step3';
@@ -103,6 +104,9 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
   const [interest, setInterest] = useState('');
   const [availability, setAvailability] = useState('');
   const [interestDetail, setInterestDetail] = useState('');
+  const [campaignCode, setCampaignCode] = useState('');
+  const [validatedCampaign, setValidatedCampaign] = useState<{ id: string; name: string } | null>(null);
+  const [validatingCampaign, setValidatingCampaign] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -242,6 +246,32 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
     }
   }
 
+  async function handleValidateCampaignCode() {
+    if (!campaignCode.trim()) {
+      setValidatedCampaign(null);
+      setErrors((prev) => ({ ...prev, campaignCode: undefined }));
+      return;
+    }
+
+    setValidatingCampaign(true);
+    setErrors((prev) => ({ ...prev, campaignCode: undefined }));
+
+    try {
+      const result = await validateCampaignCode(campaignCode.trim());
+      if (result.valid && result.campaign) {
+        setValidatedCampaign(result.campaign);
+      } else {
+        setValidatedCampaign(null);
+        setErrors((prev) => ({ ...prev, campaignCode: result.message || 'Código no válido' }));
+      }
+    } catch (cause) {
+      setValidatedCampaign(null);
+      setErrors((prev) => ({ ...prev, campaignCode: 'No se pudo validar el código de campaña' }));
+    } finally {
+      setValidatingCampaign(false);
+    }
+  }
+
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     
@@ -273,6 +303,7 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
             phone: buildPeruPhone(phone),
             interest,
             availability,
+            campaignCode: validatedCampaign ? campaignCode.trim() : undefined,
           }
         : {
             referrerName: referrerName.trim(),
@@ -288,6 +319,7 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
             phone: buildPeruPhone(phone),
             interest,
             availability,
+            campaignCode: validatedCampaign ? campaignCode.trim() : undefined,
           };
 
       await submitPublicReferral(payload);
@@ -602,6 +634,27 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
                   hint="Solo 9 dígitos; el +51 se agrega automáticamente."
                   required
                 />
+                <div className="border-t border-edge pt-4">
+                  <Input
+                    label="Código de campaña (opcional)"
+                    placeholder="CAMP-XXXXXXXX"
+                    value={campaignCode}
+                    onChange={(e) => {
+                      setCampaignCode(e.target.value.toUpperCase());
+                      if (validatedCampaign) setValidatedCampaign(null);
+                    }}
+                    onBlur={handleValidateCampaignCode}
+                    error={errors.campaignCode}
+                    hint="Si tienes un código de campaña, ingrésalo para sumar puntos a esa campaña."
+                    maxLength={14}
+                    disabled={validatingCampaign}
+                  />
+                  {validatedCampaign && (
+                    <p className="mt-2 text-xs font-semibold text-success">
+                      ✓ Campaña válida: {validatedCampaign.name}
+                    </p>
+                  )}
+                </div>
                 {renderPreferenceFields()}
                 {error && (
                   <p className="rounded-lg bg-error/10 p-3 text-sm font-semibold text-error">{error}</p>

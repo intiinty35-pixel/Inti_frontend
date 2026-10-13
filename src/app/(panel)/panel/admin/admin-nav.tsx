@@ -8,6 +8,7 @@ import {
   BookOpen,
   Boxes,
   Building2,
+  CalendarClock,
   ChartNoAxesCombined,
   ClipboardCheck,
   Coins,
@@ -100,6 +101,13 @@ const NAV_ITEMS: readonly AdminNavItem[] = [
     label: "Referidos y puntos",
     href: ROUTES.panel.admin.referrals,
     Icon: Coins,
+    group: "recompensas",
+  },
+  {
+    key: "campaigns",
+    label: "Campañas",
+    href: ROUTES.panel.admin.campaigns,
+    Icon: CalendarClock,
     group: "recompensas",
   },
   {
