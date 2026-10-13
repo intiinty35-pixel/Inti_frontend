@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { ArrowLeft, CalendarDays, Gem, Mail, Phone, Ticket, TrendingUp, UserRoundCheck, UsersRound } from "lucide-react";
 import { Card, CardContent } from "@/shared/ui";
 import { ROUTES } from "@/shared/config/routes";
 import { AdminPageHeader } from "@/app/(panel)/panel/admin/admin-shell";
-import { getAdminReferrer, setReferralStatus, type AdminReferral, type ReferralStatus } from "@/features/admin/api/referrals";
+import { deleteAdminReferrer, getAdminReferrer, setReferralStatus, type AdminReferral, type ReferralStatus } from "@/features/admin/api/referrals";
+import { DeleteReferrerButton } from "@/features/admin/components/delete-referrer-button";
 import { ReferralStatusForm } from "@/features/admin/components/referral-status-form";
 
 const STATUS_LABELS: Record<ReferralStatus, string> = {
@@ -37,6 +39,13 @@ async function updateReferralStatus(formData: FormData) {
   await setReferralStatus(id, status);
   revalidatePath(ROUTES.panel.admin.referrals);
   if (referrerId) revalidatePath(ROUTES.panel.admin.referrer(referrerId));
+}
+
+async function deleteReferrer(id: string) {
+  "use server";
+  await deleteAdminReferrer(id);
+  revalidatePath(ROUTES.panel.admin.referrals);
+  redirect(ROUTES.panel.admin.referrals);
 }
 
 function formatDate(value: string) {
@@ -117,6 +126,7 @@ export default async function AdminReferrerDetailPage({ params }: { params: Prom
                 <CalendarDays className="size-4 shrink-0 text-brand" />
                 <span>{latestReferral ? `Ultimo referido: ${formatDate(latestReferral.createdAt)}` : "Sin referidos registrados"}</span>
               </div>
+              <DeleteReferrerButton action={deleteReferrer.bind(null, referrer.id)} />
             </div>
           </CardContent>
         </Card>

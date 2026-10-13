@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useFormContext, type FieldPath } from "react-hook-form";
+import { useFormContext, useWatch, type FieldPath } from "react-hook-form";
 import { FieldSet, useFieldError } from "@/shared/ui/field-shell";
 import { Checkbox } from "@/shared/ui/checkbox";
 import { ChipGroup, RadioGroup } from "@/shared/ui/radio-group";
-import { NumericField, TextAreaField, TextField } from "@/shared/ui/rhf-fields";
+import { NumericField, SelectField, TextAreaField, TextField } from "@/shared/ui/rhf-fields";
 import {
   FINANCING_CONDITIONS,
   PROJECT_AMENITIES,
@@ -13,7 +13,7 @@ import {
   PROJECT_SERVICES,
   PROJECT_STAGES,
 } from "@/features/projects/data/project-catalogs";
-import { MIN_DESCRIPTION_LENGTH, type ProjectDraft } from "@/features/projects/types/draft";
+import { MIN_DESCRIPTION_LENGTH, type ProjectCurrency, type ProjectDraft } from "@/features/projects/types/draft";
 
 const SOCIAL_FIELDS: readonly {
   name: FieldPath<ProjectDraft>;
@@ -26,10 +26,22 @@ const SOCIAL_FIELDS: readonly {
   { name: "social.website", label: "Sitio web", placeholder: "miproyecto.com" },
 ];
 
+const CURRENCY_OPTIONS = [
+  { value: "PEN", label: "Soles (S/)" },
+  { value: "USD", label: "Dolares ($)" },
+] as const;
+
+const CURRENCY_PREFIX = {
+  PEN: "S/",
+  USD: "$",
+} as const;
+
 export function StepProjectInfo() {
   const amenitiesError = useFieldError<ProjectDraft>("amenities");
   const descriptionError = useFieldError<ProjectDraft>("description");
   const { getValues, setValue } = useFormContext<ProjectDraft>();
+  const currency = (useWatch({ name: "currency" }) ?? "PEN") as ProjectCurrency;
+  const currencyPrefix = CURRENCY_PREFIX[currency];
   const [withSocial, setWithSocial] = useState(false);
   const [withMoreFinancing, setWithMoreFinancing] = useState(false);
 
@@ -85,18 +97,24 @@ export function StepProjectInfo() {
         description="Se muestran como rango en la ficha pública."
         required
       >
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-3">
+          <SelectField<ProjectDraft>
+            name="currency"
+            label="Moneda"
+            options={CURRENCY_OPTIONS}
+            required
+          />
           <NumericField<ProjectDraft>
             name="priceFrom"
             label="Precio desde"
-            prefix="S/"
+            prefix={currencyPrefix}
             placeholder="85000"
             required
           />
           <NumericField<ProjectDraft>
             name="priceTo"
             label="Precio hasta"
-            prefix="S/"
+            prefix={currencyPrefix}
             placeholder="145000"
             required
           />
@@ -124,13 +142,13 @@ export function StepProjectInfo() {
           <NumericField<ProjectDraft>
             name="downPayment"
             label="Cuota inicial"
-            prefix="S/"
+            prefix={currencyPrefix}
             placeholder="8500"
           />
           <NumericField<ProjectDraft>
             name="monthlyPayment"
             label="Cuota mensual"
-            prefix="S/"
+            prefix={currencyPrefix}
             placeholder="1250"
           />
           <NumericField<ProjectDraft>

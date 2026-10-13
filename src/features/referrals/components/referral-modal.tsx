@@ -36,9 +36,9 @@ type PaymentMethod = '' | 'bank' | 'yape' | 'plin';
 const INTEREST_OPTIONS = [
   { value: 'VENTA', label: 'Venta' },
   { value: 'COMPRA', label: 'Compra' },
+  { value: 'INVERSION', label: 'Comprar en proyecto' },
   { value: 'ALQUILER', label: 'Alquilar' },
   { value: 'COMPRA_LOTE', label: 'Comprar un lote' },
-  { value: 'INVERSION', label: 'Invertir en un proyecto' },
   { value: 'CORRETAJE', label: 'Servicio de corretaje' },
 ] as const;
 

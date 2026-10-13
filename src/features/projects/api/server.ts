@@ -90,3 +90,15 @@ export async function getAdminProjectsPagedServer(
 
   return (await response.json()) as ProjectApiPaged;
 }
+
+/** Detalle completo de un proyecto creado desde el panel ARIZ, para editarlo. */
+export async function getAdminProjectDetailServer(id: string): Promise<ProjectApiDetail | null> {
+  const response = await backendFetch(`/admin/projects/${encodeURIComponent(id)}`);
+
+  if (response.status === 404) return null;
+  if (!response.ok) {
+    throw new Error(`No se pudo cargar el proyecto de ARIZ (${response.status})`);
+  }
+
+  return (await response.json()) as ProjectApiDetail;
+}

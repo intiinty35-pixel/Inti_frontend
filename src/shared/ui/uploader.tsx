@@ -52,7 +52,7 @@ function FileThumb({ file, alt }: { file: File; alt: string }) {
   useEffect(() => {
     return () => {
       if (url) {
-        URL.revokeObjectURL(url);
+        window.setTimeout(() => URL.revokeObjectURL(url), 1000);
       }
     };
   }, [url]);
@@ -195,7 +195,7 @@ export function Uploader({
           <ul className="mt-2.5 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
             {files.map((file, index) => (
               <li
-                key={`${file.name}-${index}`}
+                key={`${file.name}-${file.size}-${file.lastModified}`}
                 className="group relative overflow-hidden rounded-card border border-edge bg-surface"
               >
                 <div className="aspect-4/3 w-full">

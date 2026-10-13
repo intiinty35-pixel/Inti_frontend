@@ -161,7 +161,7 @@ export function ConstructionServices() {
                     className="inline-flex h-11 items-center justify-center gap-2 rounded-card bg-brand px-3 text-sm font-black text-on-brand transition hover:bg-brand-hover"
                   >
                     <Mail className="size-4" aria-hidden="true" />
-                    Correo
+                    Preguntame
                   </button>
                 </div>
               </div>

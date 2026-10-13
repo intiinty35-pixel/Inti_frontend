@@ -18,6 +18,7 @@ import {
   type LotDraft,
   type LotMode,
   type LotStatus,
+  type ProjectCurrency,
   type ProjectDraft,
 } from "@/features/projects/types/draft";
 import { formatArea, formatNumber, formatPrice } from "@/shared/lib/format";
@@ -27,11 +28,17 @@ const BATCH_SIZE = 5;
 interface LotRowProps {
   index: number;
   mode: LotMode;
+  currency: ProjectDraft["currency"];
   canRemove: boolean;
   onRemove: (index: number) => void;
 }
 
-function LotRow({ index, mode, canRemove, onRemove }: LotRowProps) {
+const CURRENCY_PREFIX = {
+  PEN: "S/",
+  USD: "$",
+} as const;
+
+function LotRow({ index, mode, currency, canRemove, onRemove }: LotRowProps) {
   const lot = useWatch({ name: `lots.${index}` }) as LotDraft | undefined;
   const status: LotStatus = lot?.status ?? "disponible";
   const isGroup = mode === "grupo";
@@ -111,7 +118,7 @@ function LotRow({ index, mode, canRemove, onRemove }: LotRowProps) {
         <NumericField<ProjectDraft>
           name={`lots.${index}.price`}
           label={isGroup ? "Precio por lote" : "Precio"}
-          prefix="S/"
+          prefix={CURRENCY_PREFIX[currency]}
           placeholder="95000"
           inputMode="decimal"
           required
@@ -139,6 +146,7 @@ export function StepLots() {
   const { append, remove, fields } = useFieldArray({ name: "lots" });
   const lots = useWatch({ name: "lots" });
   const lotMode = useWatch({ name: "lotMode" }) ?? "individual";
+  const currency = (useWatch({ name: "currency" }) ?? "PEN") as ProjectCurrency;
   const lotModeError = useFieldError<ProjectDraft>("lotMode");
   const lotsError = useFieldError<ProjectDraft>("lots");
   const totals = summarizeLots(lots ?? [], lotMode);
@@ -176,6 +184,7 @@ export function StepLots() {
                 key={field.id}
                 index={index}
                 mode={lotMode}
+                currency={currency}
                 canRemove={fields.length > 1}
                 onRemove={remove}
               />
@@ -218,7 +227,7 @@ export function StepLots() {
           <div className="rounded-card border border-edge p-3">
             <p className="text-xs font-semibold text-muted">Valor del inventario</p>
             <p className="mt-1 text-lg font-semibold text-ink">
-              {totals.filledLots > 0 ? formatPrice(totals.totalPrice) : "—"}
+              {totals.filledLots > 0 ? formatPrice(totals.totalPrice, currency) : "—"}
             </p>
           </div>
 
@@ -228,7 +237,7 @@ export function StepLots() {
               <RulerIcon className="h-4 w-4 text-brand" />
               {totals.cheapestPrice === undefined
                 ? "—"
-                : `${formatPrice(totals.cheapestPrice)} – ${formatPrice(totals.dearestPrice ?? 0)}`}
+                : `${formatPrice(totals.cheapestPrice, currency)} – ${formatPrice(totals.dearestPrice ?? 0, currency)}`}
             </p>
           </div>
 

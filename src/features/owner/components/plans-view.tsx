@@ -216,12 +216,20 @@ export function PlansView({
             : [];
 
           return (
-            <button
+            <article
               key={index}
-              type="button"
+              role="button"
+              tabIndex={0}
               aria-pressed={selected}
               onClick={() => setSelectedGroup(index)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  setSelectedGroup(index);
+                }
+              }}
               className={cn(
+                "cursor-pointer",
                 "relative flex min-h-96 flex-col overflow-hidden rounded-card border bg-surface text-left shadow-[var(--shadow-card)] transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-pop)]",
                 selected ? "border-brand ring-2 ring-brand/20" : "border-edge",
                 isCurrent && "border-success bg-success/5",
@@ -309,7 +317,7 @@ export function PlansView({
                   </Button>
                 )}
               </span>
-            </button>
+            </article>
           );
         })}
         <UnlimitedPlanCard customerName={customerName} userType="REAL_ESTATE" />

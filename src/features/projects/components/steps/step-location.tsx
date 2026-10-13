@@ -183,7 +183,7 @@ export function StepLocation() {
         </div>
       </FieldSet>
 
-      <FieldSet legend="Dirección exacta" required>
+      <FieldSet legend="Dirección exacta">
         <div className="grid gap-4 sm:grid-cols-2">
           <TextField<ProjectDraft>
             name="zone"
@@ -195,20 +195,19 @@ export function StepLocation() {
             name="street"
             label="Calle, avenida o manzana"
             placeholder="Av. Los Álamos"
-            required
           />
           <TextField<ProjectDraft>
             name="streetNumber"
             label="Número o lote"
             placeholder="Mz. A Lt. 14"
-            required
           />
         </div>
       </FieldSet>
 
       <FieldSet
         legend="Punto en el mapa"
-        description="Opcional. Arrastra el marcador o haz click en el mapa para fijar la ubicación del proyecto."
+        description="Obligatorio. Arrastra el marcador, haz click en el mapa o ingresa las coordenadas para fijar la ubicación del proyecto."
+        required
       >
         <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">

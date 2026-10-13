@@ -125,7 +125,7 @@ export function ProjectReview({
       </div>
 
       <dl className="grid gap-4 rounded-card border border-edge p-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Row label="Rango de precios" value={`${formatPrice(payload.priceFrom)} – ${formatPrice(payload.priceTo)}`} />
+        <Row label="Rango de precios" value={`${formatPrice(payload.priceFrom, payload.currency)} – ${formatPrice(payload.priceTo, payload.currency)}`} />
         <Row label="Ubicación" value={location} />
         <Row
           label={isGroup ? "Grupos completos" : "Lotes completos"}
@@ -136,7 +136,7 @@ export function ProjectReview({
           }
         />
         <Row label="Área total" value={formatArea(totals.totalAreaM2) || "—"} />
-        <Row label="Inventario" value={formatPrice(totals.totalPrice)} />
+        <Row label="Inventario" value={formatPrice(totals.totalPrice, payload.currency)} />
         <Row
           label="Manzanas"
           value={totals.blocks.length > 0 ? totals.blocks.join(", ") : "—"}

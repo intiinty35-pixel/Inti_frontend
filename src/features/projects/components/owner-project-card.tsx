@@ -15,12 +15,13 @@ import {
   type ApiProjectStatus,
   type ProjectApiSummary,
 } from "@/features/projects/types/api";
-import { publishAdminProject, publishProject } from "@/features/projects/api";
+import { deleteAdminProject, publishAdminProject, publishProject } from "@/features/projects/api";
 import { PROJECT_STAGE_LABELS } from "@/features/projects/data/project-catalogs";
 import type { ProjectStage } from "@/features/projects/types/draft";
 import { DataCell, DataGrid } from "@/features/listings/components/data-grid";
 import { ListingImage } from "@/features/listings/components/listing-image";
 import { ProjectTourVideo } from "@/features/listings/components/project-tour-video";
+import { ProjectLocationModal } from "@/features/projects/components/project-location-modal";
 import { ReviewPublishModal } from "@/shared/ui/review-publish-modal";
 
 const STATUS_STYLE: Record<ApiProjectStatus, string> = {
@@ -56,6 +57,11 @@ export function OwnerProjectCard({
   const [publishing, setPublishing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [reviewOpen, setReviewOpen] = useState(false);
+  const [locationOpen, setLocationOpen] = useState(false);
+  const [locationSaving, setLocationSaving] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const portalTarget = typeof document === "undefined" ? null : document.body;
   const published = formatPublishedDate(project.publishedAt);
 
@@ -77,6 +83,23 @@ export function OwnerProjectCard({
     const published = await publishProject(project.id);
     setStatus(published.status);
     router.refresh();
+  }
+
+  async function handleDelete() {
+    if (!adminMode) return;
+    if (!window.confirm(`¿Eliminar el proyecto "${project.name}"? Se ocultara del sitio y quedara registrado para auditoria.`)) {
+      return;
+    }
+
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      await deleteAdminProject(project.id);
+      router.refresh();
+    } catch (cause) {
+      setDeleteError(cause instanceof Error ? cause.message : "No se pudo eliminar el proyecto.");
+      setDeleting(false);
+    }
   }
 
   const needsSubscription =
@@ -153,16 +176,16 @@ export function OwnerProjectCard({
           <DataCell label="Entrega" value={new Date(project.estimatedDelivery).getFullYear()} />
         </DataGrid>
 
-        <div className="mt-auto flex gap-2 pt-3.5">
+        <div className="mt-auto flex flex-wrap gap-2 pt-3.5">
           {status === "PUBLISHED" ? (
             <Link
               href={ROUTES.project(project.slug)}
-              className="flex h-9 flex-1 items-center justify-center rounded-card bg-brand px-2.5 text-xs font-bold text-on-brand transition-colors hover:bg-brand-hover"
+              className="flex h-9 min-w-0 flex-[1_1_140px] items-center justify-center rounded-card bg-brand px-2.5 text-center text-xs font-bold text-on-brand transition-colors hover:bg-brand-hover"
             >
               Ver publicación
             </Link>
           ) : status === "DRAFT" && isAgency && !adminMode ? (
-            <button type="button" onClick={() => setReviewOpen(true)} className="flex h-9 flex-1 items-center justify-center rounded-card bg-brand px-2.5 text-xs font-bold text-on-brand transition-colors hover:bg-brand-hover">
+            <button type="button" onClick={() => setReviewOpen(true)} className="flex h-9 min-w-0 flex-[1_1_140px] items-center justify-center rounded-card bg-brand px-2.5 text-center text-xs font-bold text-on-brand transition-colors hover:bg-brand-hover">
               Publicar
             </button>
           ) : status === "DRAFT" ? (
@@ -170,33 +193,56 @@ export function OwnerProjectCard({
               type="button"
               onClick={() => void handlePublish()}
               disabled={publishing}
-              className="flex h-9 flex-1 items-center justify-center rounded-card bg-brand px-2.5 text-xs font-bold text-on-brand transition-colors hover:bg-brand-hover disabled:cursor-wait disabled:opacity-60"
+              className="flex h-9 min-w-0 flex-[1_1_140px] items-center justify-center rounded-card bg-brand px-2.5 text-center text-xs font-bold text-on-brand transition-colors hover:bg-brand-hover disabled:cursor-wait disabled:opacity-60"
             >
               {publishing ? "Publicando…" : "Publicar"}
             </button>
           ) : (
-            <span className="flex h-9 flex-1 items-center justify-center rounded-card bg-surface-muted px-2.5 text-xs font-bold text-muted">
+            <span className="flex h-9 min-w-0 flex-[1_1_140px] items-center justify-center rounded-card bg-surface-muted px-2.5 text-center text-xs font-bold text-muted">
               En revisión
             </span>
           )}
           {project.tourUrl ? (
             <ProjectTourVideo projectName={project.name} url={project.tourUrl} className="size-9 shrink-0" />
           ) : null}
-          {adminMode ? null : (
-            <Link
-              href={ROUTES.panel.owner.editProject(project.id)}
-              className="flex h-9 items-center justify-center rounded-card border border-brand px-2.5 text-xs font-bold text-brand transition-colors hover:bg-brand hover:text-on-brand"
+          <button
+            type="button"
+            onClick={() => {
+              setLocationError(null);
+              setLocationOpen(true);
+            }}
+            className="flex h-9 min-w-[92px] flex-1 items-center justify-center rounded-card border border-edge px-2.5 text-center text-xs font-bold text-brand transition-colors hover:border-brand"
+          >
+            Ubicación
+          </button>
+          <Link
+            href={adminMode ? ROUTES.panel.admin.editProject(project.id) : ROUTES.panel.owner.editProject(project.id)}
+            className="flex h-9 min-w-[78px] flex-1 items-center justify-center rounded-card border border-brand px-2.5 text-center text-xs font-bold text-brand transition-colors hover:bg-brand hover:text-on-brand"
+          >
+            Editar
+          </Link>
+          {adminMode ? (
+            <button
+              type="button"
+              onClick={() => void handleDelete()}
+              disabled={deleting}
+              className="flex h-9 min-w-[82px] flex-1 items-center justify-center rounded-card border border-error/30 px-2.5 text-center text-xs font-bold text-error transition-colors hover:border-error hover:bg-error/10 disabled:cursor-wait disabled:opacity-60"
             >
-              Editar
-            </Link>
-          )}
+              {deleting ? "Eliminando..." : "Eliminar"}
+            </button>
+          ) : null}
           <Link
             href={adminMode ? ROUTES.panel.admin.projects : ROUTES.panel.owner.base}
-            className="flex h-9 items-center justify-center rounded-card border border-edge px-2.5 text-xs font-bold text-brand transition-colors hover:border-brand"
+            className="flex h-9 min-w-[72px] flex-1 items-center justify-center rounded-card border border-edge px-2.5 text-center text-xs font-bold text-brand transition-colors hover:border-brand"
           >
             Panel
           </Link>
         </div>
+        {deleteError ? (
+          <p className="mt-2 rounded-card bg-error/10 px-3 py-2 text-xs font-semibold text-error">
+            {deleteError}
+          </p>
+        ) : null}
       </div>
 
       {error && portalTarget
@@ -255,6 +301,24 @@ export function OwnerProjectCard({
           onSubmit={handleReviewSubmit}
         />
       ) : null}
+      {locationOpen && portalTarget
+        ? createPortal(
+            <ProjectLocationModal
+              project={project}
+              adminMode={adminMode}
+              saving={locationSaving}
+              error={locationError}
+              onClose={() => setLocationOpen(false)}
+              onSavingChange={setLocationSaving}
+              onError={setLocationError}
+              onSaved={() => {
+                setLocationOpen(false);
+                router.refresh();
+              }}
+            />,
+            portalTarget,
+          )
+        : null}
     </article>
   );
 }
