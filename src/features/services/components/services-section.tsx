@@ -5,24 +5,6 @@ import { FinanceCarousel } from "@/features/services/components/finance-carousel
 import { RevealOnScroll } from "@/features/services/components/reveal-on-scroll";
 import { ServiceImage } from "@/features/services/components/service-image";
 
-const SERVICE_NAV = [
-  {
-    title: "Quiero desarrollar un proyecto",
-    text: "Evaluacion, estructura legal, numeros y fuerza comercial.",
-    href: "#desarrollo-inmobiliario",
-  },
-  {
-    title: "Quiero vender o comprar",
-    text: "Corretaje, negociacion y revision documental con respaldo.",
-    href: "#comercializacion",
-  },
-  {
-    title: "Quiero evaluar mi propiedad",
-    text: "Valor comercial, potencial inmobiliario y situacion registral.",
-    href: "#evaluacion",
-  },
-] as const;
-
 const COMMERCIAL_SERVICES = [
   "Equipo de asesores comerciales",
   "Venta de proyectos inmobiliarios",
@@ -199,34 +181,6 @@ function CheckList({ items, columns = false }: { items: readonly string[]; colum
 export function ServicesSection() {
   return (
     <section id="servicios" className="ariz-services bg-canvas">
-      <div className="bg-brand py-14 text-white sm:py-16 xl:py-18">
-      <Container size="wide-tight">
-        <RevealOnScroll>
-          <div>
-            <p className="font-display text-4xl font-black uppercase tracking-tight text-accent sm:text-5xl">
-              ARIZ
-            </p>
-            <div className="mt-7 grid gap-3 md:grid-cols-3">
-              {SERVICE_NAV.map((item) => (
-                <a
-                  key={item.href}
-                  href={item.href}
-                  className="group min-h-40 rounded-card border border-white/14 bg-white/8 p-5 shadow-[var(--shadow-card)] transition duration-200 hover:-translate-y-1 hover:bg-white/12"
-                >
-                  <h3 className="text-lg font-black leading-tight text-accent">{item.title}</h3>
-                  <p className="mt-3 text-sm leading-6 text-white/78">{item.text}</p>
-                  <span className="mt-5 inline-flex items-center gap-2 text-xs font-black text-white">
-                    Ir a la seccion
-                    <ArrowRightIcon className="size-4 transition-transform group-hover:translate-x-1" />
-                  </span>
-                </a>
-              ))}
-            </div>
-          </div>
-        </RevealOnScroll>
-      </Container>
-      </div>
-
       <Container id="comercializacion" size="wide-tight" className="py-12 sm:py-16">
         <RevealOnScroll>
           <div className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
