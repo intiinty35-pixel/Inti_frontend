@@ -1,4 +1,5 @@
 import { ConstructionServices } from "@/features/services/components/construction-services";
+import { InvestmentGrowthBanner } from "@/features/home";
 import { buildMetadata } from "@/shared/lib/seo";
 import { ROUTES } from "@/shared/config/routes";
 
@@ -26,6 +27,7 @@ export default function ConstruyePage() {
       <section className="mx-auto w-full max-w-[105rem] px-4 py-10 sm:px-6 lg:px-8 xl:px-10">
         <ConstructionServices />
       </section>
+      <InvestmentGrowthBanner />
     </main>
   );
 }

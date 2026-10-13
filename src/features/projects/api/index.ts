@@ -22,6 +22,7 @@ import type {
   LotStatus,
   MilestoneDraft,
   ProjectCategory,
+  ProjectCurrency,
   ProjectDraft,
   ProjectSocialLinks,
   ProjectStage,
@@ -66,7 +67,7 @@ export interface CreateProjectPayload {
   stageLabel: string;
   name: string;
   description: string;
-  currency: "PEN";
+  currency: ProjectCurrency;
   priceFrom: number;
   priceTo: number;
 
@@ -154,7 +155,7 @@ export function buildProjectPayload(draft: ProjectDraft): CreateProjectPayload {
     stageLabel: PROJECT_STAGE_LABELS[draft.stage],
     name: draft.name.trim(),
     description: draft.description.trim(),
-    currency: "PEN",
+    currency: draft.currency,
     priceFrom: draft.priceFrom as number,
     priceTo: draft.priceTo as number,
 
@@ -266,7 +267,7 @@ export interface CreateProjectInput {
   stage: ApiProjectStage;
   name: string;
   description: string;
-  currency: "PEN";
+  currency: ProjectCurrency;
   priceFrom: number;
   priceTo: number;
 
@@ -305,6 +306,8 @@ export interface CreateProjectInput {
   media: ProjectMediaInput[];
   tourUrl?: string;
 }
+
+export type ProjectLocationInput = CreateProjectInput["location"];
 
 /** Traduce el borrador validado + los adjuntos ya subidos al cuerpo real del POST. */
 export function toProjectInput(
@@ -423,6 +426,20 @@ export async function publishProject(id: string): Promise<ProjectApiSummary> {
 
 export async function publishAdminProject(id: string): Promise<ProjectApiSummary> {
   return apiClient.patch<ProjectApiSummary>(`/admin/projects/${encodeURIComponent(id)}/publish`);
+}
+
+export async function updateProjectLocation(
+  id: string,
+  location: ProjectLocationInput,
+): Promise<ProjectApiSummary> {
+  return apiClient.patch<ProjectApiSummary>(`/projects/${encodeURIComponent(id)}/location`, location);
+}
+
+export async function updateAdminProjectLocation(
+  id: string,
+  location: ProjectLocationInput,
+): Promise<ProjectApiSummary> {
+  return apiClient.patch<ProjectApiSummary>(`/admin/projects/${encodeURIComponent(id)}/location`, location);
 }
 
 export async function getOwnerProjects(): Promise<ProjectApiSummary[]> {

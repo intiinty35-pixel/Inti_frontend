@@ -207,7 +207,8 @@ export function StepLocation() {
 
       <FieldSet
         legend="Punto en el mapa"
-        description="Opcional. Arrastra el marcador o haz click en el mapa para fijar la ubicación del proyecto."
+        description="Obligatorio. Arrastra el marcador, haz click en el mapa o ingresa las coordenadas para fijar la ubicación del proyecto."
+        required
       >
         <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">

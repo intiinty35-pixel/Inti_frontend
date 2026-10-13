@@ -21,6 +21,7 @@ import type { ProjectStage } from "@/features/projects/types/draft";
 import { DataCell, DataGrid } from "@/features/listings/components/data-grid";
 import { ListingImage } from "@/features/listings/components/listing-image";
 import { ProjectTourVideo } from "@/features/listings/components/project-tour-video";
+import { ProjectLocationModal } from "@/features/projects/components/project-location-modal";
 import { ReviewPublishModal } from "@/shared/ui/review-publish-modal";
 
 const STATUS_STYLE: Record<ApiProjectStatus, string> = {
@@ -56,6 +57,9 @@ export function OwnerProjectCard({
   const [publishing, setPublishing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [reviewOpen, setReviewOpen] = useState(false);
+  const [locationOpen, setLocationOpen] = useState(false);
+  const [locationSaving, setLocationSaving] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
   const portalTarget = typeof document === "undefined" ? null : document.body;
   const published = formatPublishedDate(project.publishedAt);
 
@@ -182,6 +186,16 @@ export function OwnerProjectCard({
           {project.tourUrl ? (
             <ProjectTourVideo projectName={project.name} url={project.tourUrl} className="size-9 shrink-0" />
           ) : null}
+          <button
+            type="button"
+            onClick={() => {
+              setLocationError(null);
+              setLocationOpen(true);
+            }}
+            className="flex h-9 items-center justify-center rounded-card border border-edge px-2.5 text-xs font-bold text-brand transition-colors hover:border-brand"
+          >
+            Ubicación
+          </button>
           <Link
             href={adminMode ? ROUTES.panel.admin.projects : ROUTES.panel.owner.base}
             className="flex h-9 items-center justify-center rounded-card border border-edge px-2.5 text-xs font-bold text-brand transition-colors hover:border-brand"
@@ -247,6 +261,24 @@ export function OwnerProjectCard({
           onSubmit={handleReviewSubmit}
         />
       ) : null}
+      {locationOpen && portalTarget
+        ? createPortal(
+            <ProjectLocationModal
+              project={project}
+              adminMode={adminMode}
+              saving={locationSaving}
+              error={locationError}
+              onClose={() => setLocationOpen(false)}
+              onSavingChange={setLocationSaving}
+              onError={setLocationError}
+              onSaved={() => {
+                setLocationOpen(false);
+                router.refresh();
+              }}
+            />,
+            portalTarget,
+          )
+        : null}
     </article>
   );
 }

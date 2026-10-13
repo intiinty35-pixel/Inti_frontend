@@ -2,7 +2,7 @@ export type ProjectStage = "preventa" | "en-construccion" | "entregado";
 
 export type ProjectCategory = "lotizacion";
 
-export type ProjectCurrency = "PEN";
+export type ProjectCurrency = "PEN" | "USD";
 
 export type ServiceKey =
   | "habilitacion-urbana"
@@ -53,6 +53,7 @@ export interface ProjectDraft {
   stage: ProjectStage;
   name: string;
   description: string;
+  currency: ProjectCurrency;
   priceFrom?: number;
   priceTo?: number;
 

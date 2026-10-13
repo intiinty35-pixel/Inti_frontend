@@ -192,7 +192,7 @@ export function WelcomeModal() {
 
             <div className="relative h-72 w-full shrink-0 md:h-auto md:w-[42%]">
               <Image
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMyaWILAdnha53jj19aPCZ4gnYCVxQw4boZu60mxegag&s=10"
+                src="/web_v/modal.png"
                 alt="Persona revisando recompensas y oportunidades"
                 fill
                 className="object-cover"

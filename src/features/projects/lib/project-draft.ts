@@ -34,6 +34,7 @@ export const PROJECT_DRAFT_DEFAULTS: ProjectDraft = {
   stage: "preventa",
   name: "",
   description: "",
+  currency: "PEN",
   priceFrom: undefined,
   priceTo: undefined,
 

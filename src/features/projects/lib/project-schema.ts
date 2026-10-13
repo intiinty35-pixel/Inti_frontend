@@ -12,6 +12,7 @@ import {
 
 const CATEGORY_KEYS = ["lotizacion"] as const;
 const STAGE_KEYS = ["preventa", "en-construccion", "entregado"] as const;
+const CURRENCY_KEYS = ["PEN", "USD"] as const;
 const LOT_MODE_KEYS = ["individual", "grupo"] as const;
 const LOT_STATUS_KEYS = ["disponible", "reservado", "vendido", "bloqueado"] as const;
 const SERVICE_KEYS = [
@@ -219,6 +220,7 @@ export const projectDraftSchema = z
         MIN_DESCRIPTION_LENGTH,
         `Describe el proyecto con al menos ${MIN_DESCRIPTION_LENGTH} caracteres`,
       ),
+    currency: z.enum(CURRENCY_KEYS, { error: "Elige la moneda del proyecto" }),
     priceFrom: amount("priceFrom"),
     priceTo: amount("priceTo"),
 
@@ -308,6 +310,22 @@ export const projectDraftSchema = z
       });
     }
 
+    if (draft.lat === undefined) {
+      context.addIssue({
+        code: "custom",
+        path: ["lat"],
+        message: "Fija la ubicación en el mapa o ingresa la latitud",
+      });
+    }
+
+    if (draft.lng === undefined) {
+      context.addIssue({
+        code: "custom",
+        path: ["lng"],
+        message: "Fija la ubicación en el mapa o ingresa la longitud",
+      });
+    }
+
     if (draft.ruc && !draft.businessName?.trim()) {
       context.addIssue({
         code: "custom",
@@ -357,6 +375,7 @@ const STEP_ONE_FIELDS = [
   "stage",
   "name",
   "description",
+  "currency",
   "priceFrom",
   "priceTo",
   "ruc",
