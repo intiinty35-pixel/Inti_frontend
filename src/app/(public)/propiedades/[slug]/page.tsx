@@ -22,6 +22,7 @@ import type { PropertyDetail } from "@/features/listings";
 import { PropertyPhotoGallery } from "@/features/listings/components/property-photo-gallery";
 import { ExpandableText } from "@/features/listings/components/expandable-text";
 import { PriceAlertButton } from "@/features/listings/components/price-alert-button";
+import { buildGoogleMapsUrl } from "@/shared/lib/maps-link";
 import { LazyPropertyLocationMap } from "@/features/listings/components/property-location-map-client";
 import { LeadForm } from "@/features/leads";
 import { QuickQuestions } from "@/features/listings/components/Quickquestions";
@@ -326,12 +327,12 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
               </div>
               {hasCoords ? (
                 <a
-                  href={`https://www.openstreetmap.org/?mlat=${property.location.lat}&mlon=${property.location.lng}#map=17/${property.location.lat}/${property.location.lng}`}
+                  href={buildGoogleMapsUrl(property.location.lat as number, property.location.lng as number)}
                   target="_blank"
                   rel="noreferrer"
                   className="flex h-10 items-center gap-2 rounded-card border border-edge px-4 text-xs font-bold text-brand transition-colors hover:border-brand"
                 >
-                  Abrir en el mapa
+                  Abrir en Google Maps
                   <ArrowRightIcon className="size-3.5" />
                 </a>
               ) : null}

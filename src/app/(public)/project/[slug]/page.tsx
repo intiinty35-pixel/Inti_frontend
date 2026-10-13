@@ -20,6 +20,7 @@ import {
 import { PropertyPhotoGallery } from "@/features/listings/components/property-photo-gallery";
 import { ProjectTourVideo } from "@/features/listings/components/project-tour-video";
 import { ExpandableText } from "@/features/listings/components/expandable-text";
+import { buildGoogleMapsUrl } from "@/shared/lib/maps-link";
 import { LazyPropertyLocationMap } from "@/features/listings/components/property-location-map-client";
 import { QuickQuestions } from "@/features/listings/components/Quickquestions";
 import { SharePropertyButton } from "@/features/listings/components/share-property-button";
@@ -129,7 +130,8 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
   const lat = Number(project.location?.latitude);
   const lng = Number(project.location?.longitude);
-  const hasCoords = Number.isFinite(lat) && Number.isFinite(lng);
+  const hasCoords =
+    project.location?.latitude != null && project.location?.longitude != null && Number.isFinite(lat) && Number.isFinite(lng);
   const whatsappDigits = project.agent.whatsapp?.replace(/\D/g, "");
   const whatsappUrl = whatsappDigits
     ? `https://wa.me/${whatsappDigits}?text=${encodeURIComponent(
@@ -542,12 +544,12 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               </div>
               {hasCoords ? (
                 <a
-                  href={`https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=17/${lat}/${lng}`}
+                  href={buildGoogleMapsUrl(lat, lng)}
                   target="_blank"
                   rel="noreferrer"
                   className="flex h-10 items-center gap-2 rounded-card border border-edge px-4 text-xs font-bold text-brand transition-colors hover:border-brand"
                 >
-                  Abrir en el mapa
+                  Abrir en Google Maps
                   <ArrowRightIcon className="size-3.5" />
                 </a>
               ) : null}
