@@ -18,6 +18,8 @@ export function changeCustomerPassword(input: {
 
 export function requestCustomerMembership(input: {
   propertyLimit: number;
+  durationDays: number;
+  price: number;
   receiptUrl: string;
 }): Promise<Subscription> {
   return apiClient.post<Subscription>("/customer/membership", input);
