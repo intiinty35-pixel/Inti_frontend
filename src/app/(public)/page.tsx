@@ -89,13 +89,19 @@ export default async function PublicHomePage() {
           <p className="mt-2 max-w-xl text-xs font-semibold text-white/90 sm:text-sm lg:text-base">
             Compra, vende, alquila e invierte con el respaldo de una empresa solida y confiable.
           </p>
-          <div className="mt-6 flex flex-wrap gap-3">
+          <div className="mt-6 mb-10 flex w-full max-w-xl gap-2 sm:mb-0 sm:w-auto sm:flex-wrap sm:gap-3">
             <ReferralCta />
             <Link
               href={ROUTES.properties}
-              className="inline-flex h-11 items-center justify-center rounded-[6px] border border-[#25D366] bg-brand px-5 text-sm font-black text-on-brand shadow-[0_10px_26px_rgb(0_0_0_/_0.18)] transition-colors hover:bg-brand-hover"
+              className="inline-flex h-10 min-w-0 flex-1 items-center justify-center rounded-[6px] border border-brand bg-accent px-2 text-center text-[10px] leading-tight font-black text-brand shadow-[0_10px_26px_rgb(0_0_0_/_0.18)] transition-colors hover:bg-[#d99a00] sm:h-11 sm:flex-none sm:px-5 sm:text-sm"
             >
               Buscar propiedades
+            </Link>
+            <Link
+              href={ROUTES.projects}
+              className="inline-flex h-10 min-w-0 flex-1 items-center justify-center rounded-[6px] border border-brand bg-accent px-2 text-center text-[10px] leading-tight font-black text-brand shadow-[0_10px_26px_rgb(0_0_0_/_0.18)] transition-colors hover:bg-[#d99a00] sm:h-11 sm:flex-none sm:px-5 sm:text-sm"
+            >
+              Ver proyectos
             </Link>
           </div>
         </div>

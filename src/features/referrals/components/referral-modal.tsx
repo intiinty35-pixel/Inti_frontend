@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -21,6 +21,7 @@ interface FormErrors {
   referrerEmail?: string;
   referrerPhone?: string;
   referrerCode?: string;
+  referrerPayment?: string;
   name?: string;
   email?: string;
   phone?: string;
@@ -29,6 +30,7 @@ interface FormErrors {
 }
 
 type ModalView = 'initial' | 'existing-code' | 'existing-form' | 'new-step1' | 'new-step2' | 'new-step3';
+type PaymentMethod = '' | 'bank' | 'yape' | 'plin';
 
 const INTEREST_OPTIONS = [
   { value: 'VENTA', label: 'Venta' },
@@ -44,6 +46,8 @@ const AVAILABILITY_OPTIONS = [
   { value: 'AVERIGUAR', label: 'Averiguar' },
   { value: 'POR_CONFIRMAR', label: 'Por confirmar' },
 ] as const;
+
+const BANK_OPTIONS = ['BBVA', 'BCP', 'Interbank', 'Scotiabank', 'Banco de la Nación'] as const;
 
 const INTEREST_DETAIL_OPTIONS: Partial<Record<(typeof INTEREST_OPTIONS)[number]['value'], readonly string[]>> = {
   COMPRA: ['Comprar propiedades', 'Comprar proyectos', 'Comprar terrenos', 'Comprar lotes'],
@@ -86,6 +90,11 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
   const [referrerName, setReferrerName] = useState('');
   const [referrerEmail, setReferrerEmail] = useState('');
   const [referrerPhone, setReferrerPhone] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('');
+  const [referrerBank, setReferrerBank] = useState('');
+  const [referrerBankAccount, setReferrerBankAccount] = useState('');
+  const [referrerYape, setReferrerYape] = useState('');
+  const [referrerPlin, setReferrerPlin] = useState('');
   const [referrerCode, setReferrerCode] = useState('');
   const [validatedReferrer, setValidatedReferrer] = useState<{ id: string; name: string; email: string; phone: string } | null>(null);
   const [name, setName] = useState('');
@@ -140,10 +149,10 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
       return;
     }
 
-    // Validar formato: REF-XXXXXXXX (12 caracteres)
-    const codeRegex = /^REF-[A-Z0-9]{8}$/;
+    // Validar formato: APCOD-XXXXXXXX
+    const codeRegex = /^APCOD-[A-Z0-9]{8}$/;
     if (!codeRegex.test(referrerCode.trim())) {
-      setErrors({ referrerCode: 'Formato inválido. Debe ser REF-XXXXXXXX (12 caracteres).' });
+      setErrors({ referrerCode: 'Formato inválido. Debe ser APCOD-XXXXXXXX.' });
       return;
     }
 
@@ -175,6 +184,16 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
     else if (!isValidEmail(referrerEmail)) next.referrerEmail = 'Ingresa un correo válido, por ejemplo nombre@correo.com.';
     if (!referrerPhone.trim()) next.referrerPhone = 'Ingresa tu teléfono.';
     else if (!isValidPeruPhone(referrerPhone)) next.referrerPhone = 'Ingresa tu celular de 9 dígitos (ej. 923 655 566).';
+    if (!paymentMethod) {
+      next.referrerPayment = 'Elige cómo quieres recibir tus recompensas.';
+    } else if (paymentMethod === 'bank') {
+      if (!referrerBank) next.referrerPayment = 'Elige el banco de tu cuenta.';
+      else if (!/^\d{14}$/.test(referrerBankAccount)) next.referrerPayment = 'Ingresa un número de cuenta de 14 dígitos.';
+    } else if (paymentMethod === 'yape' && !/^9\d{8}$/.test(referrerYape)) {
+      next.referrerPayment = 'Ingresa un número Yape de 9 dígitos que empiece con 9.';
+    } else if (paymentMethod === 'plin' && !/^9\d{8}$/.test(referrerPlin)) {
+      next.referrerPayment = 'Ingresa un número Plin de 9 dígitos que empiece con 9.';
+    }
     return next;
   }
 
@@ -260,6 +279,10 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
             referrerEmail: referrerEmail.trim(),
             referrerPhone: buildPeruPhone(referrerPhone),
             referrerCode: referrerCode.trim() || undefined,
+            referrerBankAccount:
+              paymentMethod === 'bank' ? `${referrerBank} - ${referrerBankAccount}` : undefined,
+            referrerYape: paymentMethod === 'yape' ? referrerYape : undefined,
+            referrerPlin: paymentMethod === 'plin' ? referrerPlin : undefined,
             name: name.trim(),
             email: email.trim(),
             phone: buildPeruPhone(phone),
@@ -285,6 +308,11 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
     setReferrerName('');
     setReferrerEmail('');
     setReferrerPhone('');
+    setPaymentMethod('');
+    setReferrerBank('');
+    setReferrerBankAccount('');
+    setReferrerYape('');
+    setReferrerPlin('');
     setReferrerCode('');
     setValidatedReferrer(null);
     setName('');
@@ -442,19 +470,16 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
         aria-modal="true"
         aria-labelledby="referral-modal-title"
       >
-        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-edge p-6">
-          <div>
-            <p className="text-[11px] font-black tracking-[0.18em] text-accent uppercase">
-              Refiere con Ariz
-            </p>
-            <h2 id="referral-modal-title" className="mt-1 font-display text-2xl font-black text-brand">
-              Bienvenidos al club de proyectos refiere, gana, acumula y disfruta
+        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-edge bg-brand p-6">
+          <div className="flex-1 text-center">
+            <h2 id="referral-modal-title" className="font-display text-2xl font-black text-white">
+              Bienvenidos al Ariz Club, Refiere, Gana, Acumula y disfruta.
             </h2>
           </div>
           <button
             type="button"
             onClick={handleClose}
-            className="text-2xl leading-none text-muted transition-colors hover:text-ink"
+            className="text-2xl leading-none text-white/80 transition-colors hover:text-white"
             aria-label="Cerrar"
           >
             ×
@@ -489,7 +514,7 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
                   <KeyRound className="size-6" aria-hidden />
                 </div>
                 <div>
-                  <p className="font-bold text-ink">Soy miembro Arizgroup</p>
+                  <p className="font-bold text-ink">Soy miembro de Ariz Club</p>
                 </div>
               </button>
               <button
@@ -501,7 +526,7 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
                   <UserRoundPlus className="size-6" aria-hidden />
                 </div>
                 <div>
-                  <p className="font-bold text-ink">Quiero inscribirme para ser miembro de Arizgroup</p>
+                  <p className="font-bold text-ink">Quiero inscribirme para ser miembro de Ariz Club</p>
                 </div>
               </button>
             </div>
@@ -512,12 +537,12 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
               Ingresa tu código de referente
             </p>
             <Input
-              placeholder="REF-XXXXXXXX"
+              placeholder="APCOD-XXXXXXXX"
               value={referrerCode}
               onChange={(e) => setReferrerCode(e.target.value.toUpperCase())}
               error={errors.referrerCode}
               required
-              maxLength={12}
+              maxLength={14}
               className="h-14 max-w-[220px] mx-auto text-center text-lg font-mono tracking-wider border-2 border-brand"
             />
             {error && (
@@ -632,6 +657,105 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
                   hint="Solo 9 dígitos; el +51 se agrega automáticamente."
                   required
                 />
+                <div className="flex flex-col gap-2">
+                  <span className="text-sm font-bold text-ink">
+                    ¿Cómo quieres recibir tus recompensas?
+                  </span>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[
+                      { value: 'bank', label: 'Cuenta' },
+                      { value: 'yape', label: 'Yape' },
+                      { value: 'plin', label: 'Plin' },
+                    ].map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        onClick={() => {
+                          setPaymentMethod(option.value as PaymentMethod);
+                          setErrors((current) => ({ ...current, referrerPayment: undefined }));
+                        }}
+                        className={`h-10 rounded-lg border px-2 text-xs font-black transition-colors ${
+                          paymentMethod === option.value
+                            ? 'border-brand bg-brand text-on-brand'
+                            : 'border-edge bg-surface text-brand hover:border-brand hover:bg-brand-soft'
+                        }`}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                  {errors.referrerPayment ? (
+                    <p className="text-xs font-medium text-error">{errors.referrerPayment}</p>
+                  ) : (
+                    <p className="text-xs text-muted">Elige una opción: cuenta bancaria, Yape o Plin.</p>
+                  )}
+                </div>
+                {paymentMethod === 'bank' ? (
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <label className="flex flex-col gap-1.5">
+                      <span className="text-[13px] font-semibold text-brand">
+                        Banco
+                      </span>
+                      <span className="relative">
+                        <select
+                          value={referrerBank}
+                          onChange={(event) => {
+                            setReferrerBank(event.target.value);
+                            setErrors((current) => ({ ...current, referrerPayment: undefined }));
+                          }}
+                          className="h-11 w-full appearance-none rounded-card border border-brand/35 bg-surface px-3.5 pr-10 text-sm font-semibold text-ink shadow-[var(--shadow-card)] transition-colors outline-none hover:border-brand focus:border-brand focus:outline-2 focus:outline-brand/25"
+                        >
+                          <option value="">Elige banco</option>
+                          {BANK_OPTIONS.map((bank) => (
+                            <option key={bank} value={bank}>
+                              {bank}
+                            </option>
+                          ))}
+                        </select>
+                        <span
+                          aria-hidden
+                          className="pointer-events-none absolute top-1/2 right-3 flex size-6 -translate-y-1/2 items-center justify-center rounded-full bg-brand-soft text-xs font-black text-brand"
+                        >
+                          ▼
+                        </span>
+                      </span>
+                    </label>
+                    <Input
+                      label="Número de cuenta"
+                      type="tel"
+                      inputMode="numeric"
+                      placeholder="14 dígitos"
+                      maxLength={14}
+                      value={referrerBankAccount}
+                      onChange={(e) => setReferrerBankAccount(e.target.value.replace(/\D/g, '').slice(0, 14))}
+                      hint="Solo 14 números."
+                    />
+                  </div>
+                ) : null}
+                {paymentMethod === 'yape' ? (
+                  <Input
+                    label="Yape"
+                    type="tel"
+                    inputMode="numeric"
+                    placeholder="Número Yape"
+                    maxLength={9}
+                    value={referrerYape}
+                    onChange={(e) => setReferrerYape(e.target.value.replace(/\D/g, '').slice(0, 9))}
+                    hint="Solo 9 números, debe empezar con 9."
+                  />
+                ) : null}
+                {paymentMethod === 'plin' ? (
+                  <Input
+                    label="Plin"
+                    type="tel"
+                    inputMode="numeric"
+                    placeholder="Número Plin"
+                    maxLength={9}
+                    value={referrerPlin}
+                    onChange={(e) => setReferrerPlin(e.target.value.replace(/\D/g, '').slice(0, 9))}
+                    hint="Solo 9 números, debe empezar con 9."
+                  />
+                ) : null}
                 <div className="mt-2 flex gap-3">
                   <Button type="button" variant="secondary" onClick={handleBack} className="flex-1">
                     Atrás

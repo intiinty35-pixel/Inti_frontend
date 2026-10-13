@@ -21,6 +21,16 @@ const nextConfig: NextConfig = {
         hostname: "media.istockphoto.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "encrypted-tbn0.gstatic.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "www.elemprendedor.pe",
+        pathname: "/**",
+      },
     ],
   },
   async rewrites() {

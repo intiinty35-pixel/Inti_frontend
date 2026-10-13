@@ -75,7 +75,7 @@ export default function MyRedemptionsPage() {
 
             <div className="mt-8 flex flex-col gap-4">
               <Input
-                placeholder="REF-XXXXXXXX"
+                placeholder="APCOD-XXXXXXXX"
                 value={referralCode}
                 onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
                 maxLength={12}

@@ -63,7 +63,7 @@ export default function RewardsPage() {
     }
   }
 
-  // Si llegamos con un codigo en la URL (ej. desde el modal "Refiere con Ariz"),
+  // Si llegamos con un codigo en la URL (ej. desde el modal "Ariz Club"),
   // lo precargamos via el estado inicial y lo validamos una sola vez para aterrizar
   // directo en el catalogo. Se lee aqui (y no con `useSearchParams`) porque ese
   // hook provoca un bailout de CSR que remonta el arbol y reinicia el estado.
@@ -124,7 +124,7 @@ export default function RewardsPage() {
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
         await navigator.share({
-          title: "Refiere con Ariz",
+          title: "Ariz Club",
           text: `Hola, ${access.referrer.name} te invita a descubrir nuevas oportunidades inmobiliarias con Ariz.`,
           url: shareUrl,
         });
@@ -216,8 +216,8 @@ export default function RewardsPage() {
               >
                 <Input
                   label="Código de referente"
-                  hint="Por ejemplo: REF-XXXXXXXX"
-                  placeholder="REF-XXXXXXXX"
+                  hint="Por ejemplo: APCOD-XXXXXXXX"
+                  placeholder="APCOD-XXXXXXXX"
                   value={referralCode}
                   onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
                   maxLength={12}

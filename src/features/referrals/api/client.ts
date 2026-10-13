@@ -5,6 +5,9 @@ export interface PublicReferralInput {
   referrerEmail: string;
   referrerPhone: string;
   referrerCode?: string;
+  referrerBankAccount?: string;
+  referrerYape?: string;
+  referrerPlin?: string;
   name: string;
   email: string;
   phone: string;

@@ -6,7 +6,7 @@ import { Card, CardContent, Button } from "@/shared/ui";
 import { getMyReferrals, type MyReferral, type ReferralStatus } from "@/features/referrals/api/client";
 
 interface ReferralsStatusProps {
-  /** Codigo del referente ya validado (ej. REF-80CF0F2B). */
+  /** Codigo del referente ya validado (ej. APCOD-80CF0F2B). */
   code: string;
   onTotalPointsChange?: (totalPoints: number) => void;
 }

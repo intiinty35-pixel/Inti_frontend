@@ -6,7 +6,7 @@ import { Button, type ButtonProps } from "@/shared/ui";
 import { ROUTES } from "@/shared/config/routes";
 
 interface ReferralShareButtonProps {
-  /** Codigo del referente ya validado (ej. REF-80CF0F2B). */
+  /** Codigo del referente ya validado (ej. APCOD-80CF0F2B). */
   code: string;
   /** Nombre del referente para personalizar el mensaje compartido. */
   referrerName?: string;
@@ -45,7 +45,7 @@ export function ReferralShareButton({
 
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
-        await navigator.share({ title: "Refiere con Ariz", text, url });
+        await navigator.share({ title: "Ariz Club", text, url });
         return;
       } catch (error) {
         if (error instanceof Error && error.name === "AbortError") return;

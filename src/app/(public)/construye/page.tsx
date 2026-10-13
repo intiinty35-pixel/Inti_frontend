@@ -13,8 +13,8 @@ export const metadata = buildMetadata({
 export default function ConstruyePage() {
   return (
     <main className="bg-canvas">
-      <section className="bg-brand px-4 py-20 text-left text-white sm:px-6 lg:px-8 xl:px-10">
-        <div className="mx-auto w-full max-w-[105rem]">
+      <section className="bg-brand px-4 py-20 text-center text-white sm:px-6 lg:px-8 xl:px-10">
+        <div className="mx-auto flex w-full max-w-[105rem] flex-col items-center">
           <h1 className="font-display text-3xl font-black uppercase tracking-tight text-accent sm:text-5xl">
             ARIZ PROYECTOS CONSTRUYE
           </h1>
