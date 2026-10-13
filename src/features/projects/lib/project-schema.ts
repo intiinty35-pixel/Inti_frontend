@@ -258,8 +258,8 @@ export const projectDraftSchema = z
     province: requiredText("Selecciona la provincia"),
     district: requiredText("Selecciona el distrito"),
     zone: optionalText(),
-    street: requiredText("Ingresa la calle, avenida o manzana"),
-    streetNumber: requiredText("Ingresa el número o lote"),
+    street: z.string().trim(),
+    streetNumber: z.string().trim(),
     lat: z
       .number({ error: "Ingresa la latitud" })
       .min(-90, "La latitud va de -90 a 90")

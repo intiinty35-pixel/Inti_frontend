@@ -17,8 +17,8 @@ type SocialNetwork = "Facebook" | "Instagram" | "TikTok" | "LinkedIn";
 
 const SOCIAL_LINKS: readonly { name: SocialNetwork; href?: string }[] = [
   { name: "Facebook", href: "https://web.facebook.com/Arizproyectos?locale=es_LA" },
-  { name: "Instagram", href: "https://www.instagram.com/ariz.inmobiliaria/?hl=es" },
-  { name: "TikTok", href: "https://www.tiktok.com/@inmobiliariaarizp" },
+  { name: "Instagram", href: "https://www.instagram.com/arizproyectos?utm_source=qr&xtok=MWV5Mnd1OG1meWhseg==" },
+  { name: "TikTok", href: "https://www.tiktok.com/@ariz.proyectos.pe?_r=1&_t=ZS-9AOSF3g1aIk" },
   { name: "LinkedIn" },
 ];
 

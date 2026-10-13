@@ -69,3 +69,10 @@ export async function setReferralStatus(id: string, status: ReferralStatus) {
   });
   if (!response.ok) throw new Error(`No se pudo actualizar el estado (${response.status})`);
 }
+
+export async function deleteAdminReferrer(id: string) {
+  const response = await backendFetch(`/admin/referrals/referrers/${encodeURIComponent(id)}`, {
+    method: 'DELETE',
+  });
+  if (!response.ok) throw new Error(`No se pudo eliminar el referente (${response.status})`);
+}

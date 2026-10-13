@@ -53,11 +53,6 @@ export function ProjectLocationModal({
       return;
     }
 
-    if (!draft.street.trim() || !draft.streetNumber.trim()) {
-      onError("Completa calle, avenida o manzana y número o lote.");
-      return;
-    }
-
     if (typeof draft.lat !== "number" || typeof draft.lng !== "number") {
       onError("Fija el punto en el mapa o ingresa latitud y longitud.");
       return;

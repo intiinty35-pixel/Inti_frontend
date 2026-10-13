@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { BadgeCheck, Handshake, LineChart, MapPinned, ShieldCheck } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { Container } from "@/shared/ui";
 
 interface Reason {
   key: string;
@@ -65,14 +64,14 @@ const REASONS: readonly Reason[] = [
   },
   {
     key: "seguridad",
-    title: "Procesos seguros",
-    description: "Cada operación se maneja con respaldo legal y pagos transparentes.",
+    title: "Inmobiliaria registrada",
+    description: "Operamos con registro inmobiliario para brindarte respaldo y confianza.",
     Icon: ShieldCheck,
-    backTitle: "Opera con tranquilidad",
+    backTitle: "Respaldo institucional",
     backPoints: [
-      "Contratos y documentación en regla.",
-      "Pagos y reservas transparentes.",
-      "Respaldo legal en cada operación.",
+      "Codigo de agencia inmobiliaria N.º 02407-PJ-MVCS.",
+      "Atencion responsable en cada operacion.",
+      "Procesos orientados a seguridad y transparencia.",
     ],
   },
 ];

@@ -1,60 +1,131 @@
 import Link from "next/link";
-import { Building2, Mail, MapPin, Phone } from "lucide-react";
+import { Building2, Handshake, Lightbulb, Mail, MapPin, Network, Phone, ShieldCheck, Share2, UsersRound } from "lucide-react";
 import { ContactForm } from "@/app/(public)/contacto/contact-form";
 
-const INFO = [
+const VALUE_PROPS = [
   {
-    label: "Correo",
-    value: "arizcenter@gmail.com",
-    href: "mailto:arizcenter@gmail.com",
-    Icon: Mail,
-  },
-  {
-    label: "Direccion",
-    value: "Tumbes, Peru",
-    href: "https://www.google.com/maps/search/Tumbes%2C%20Peru",
-    Icon: MapPin,
-  },
-  {
-    label: "Industria",
-    value: "Inmobiliaria, inversiones y desarrollo de proyectos",
-    href: "/servicios",
+    title: "Enfoque integral",
+    text: "Integramos servicios inmobiliarios, comerciales y de construccion en una propuesta articulada.",
     Icon: Building2,
   },
   {
-    label: "Atencion",
-    value: "Consultas comerciales y soporte de plataforma",
-    href: "/centro-de-ayuda",
+    title: "Conocimiento del mercado regional",
+    text: "Desarrollamos nuestra actividad desde Tumbes, con cercania al entorno local y sus oportunidades.",
+    Icon: MapPin,
+  },
+  {
+    title: "Respaldo institucional",
+    text: "Identidad empresarial y registro de agencia inmobiliaria ante el Ministerio de Vivienda.",
+    Icon: ShieldCheck,
+  },
+  {
+    title: "Acompanamiento personalizado",
+    text: "Buscamos relaciones duraderas con clientes, propietarios, promotores e inversionistas.",
+    Icon: Handshake,
+  },
+  {
+    title: "Capacidad de articulacion",
+    text: "Coordinamos la intervencion de especialistas tecnicos, legales y financieros, segun la operacion.",
+    Icon: Network,
+  },
+  {
+    title: "Vision de innovacion",
+    text: "Proyectamos nuevos canales digitales, una red de referidos y programas de capacitacion.",
+    Icon: Lightbulb,
+  },
+] as const;
+
+const INFO = [
+  {
+    label: "Oficina",
+    value: "Calle Huascar 310, Tumbes, Tumbes",
+    href: "https://www.google.com/maps/search/Calle%20Huascar%20310%2C%20Tumbes%2C%20Tumbes",
+    Icon: MapPin,
+  },
+  {
+    label: "WhatsApp / Telefono",
+    value: "956 678 664",
+    href: "https://wa.me/51956678664",
     Icon: Phone,
   },
-];
+  {
+    label: "Correo",
+    value: "arizproyectos@gmail.com",
+    href: "mailto:arizproyectos@gmail.com",
+    Icon: Mail,
+  },
+  {
+    label: "Facebook",
+    value: "Inmobiliaria Ariz Proyectos",
+    href: "https://web.facebook.com/Arizproyectos?locale=es_LA",
+    Icon: Share2,
+  },
+] as const;
 
 export default function ContactPage() {
   return (
     <main className="bg-canvas">
       <section className="bg-brand px-4 pb-14 pt-28 text-white sm:px-6 lg:px-8 xl:px-10">
-        <div className="mx-auto w-full max-w-[105rem]">
-          <p className="text-[11px] font-black uppercase tracking-[0.18em] text-accent">Contacto</p>
+        <div className="mx-auto flex w-full max-w-[105rem] flex-col items-center text-center">
+          <p className="text-[11px] font-black uppercase tracking-[0.18em] text-accent">
+            Presentacion corporativa
+          </p>
           <h1 className="mt-4 max-w-4xl font-display text-4xl font-black leading-tight sm:text-6xl">
-            Hablemos sobre tu propiedad, proyecto o inversion
+            Un solo aliado para distintas necesidades del ciclo inmobiliario.
           </h1>
           <p className="mt-5 max-w-2xl text-base font-semibold leading-7 text-white/78">
-            Dejanos tus datos y el equipo de ARIZ te orientara con la informacion que necesitas.
+            Ponte en contacto con Ariz Proyectos para identificar oportunidades,
+            administrar procesos comerciales y materializar proyectos inmobiliarios.
           </p>
         </div>
       </section>
 
       <section className="px-4 py-10 sm:px-6 lg:px-8 xl:px-10">
-        <div className="mx-auto grid w-full max-w-[105rem] gap-6 lg:grid-cols-[minmax(0,1fr)_390px]">
+        <div className="mx-auto w-full max-w-[105rem]">
+          <div className="mb-5 flex flex-col gap-2">
+            <p className="text-xs font-black uppercase tracking-[0.16em] text-accent">
+              Nuestra propuesta de valor
+            </p>
+            <h2 className="font-display text-3xl font-black text-brand">
+              Por que Ariz Proyectos
+            </h2>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {VALUE_PROPS.map(({ title, text, Icon }) => (
+              <article key={title} className="rounded-card border border-edge bg-surface p-5 shadow-[var(--shadow-card)]">
+                <span className="flex size-11 items-center justify-center rounded-card bg-brand/10 text-brand">
+                  <Icon className="size-5" />
+                </span>
+                <h3 className="mt-4 text-lg font-black text-brand">{title}</h3>
+                <p className="mt-2 text-sm leading-7 text-muted">{text}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 pb-10 sm:px-6 lg:px-8 xl:px-10">
+        <div className="mx-auto grid w-full max-w-[105rem] gap-6 lg:grid-cols-[minmax(0,1fr)_410px]">
           <ContactForm />
 
           <aside className="grid h-fit gap-4">
             <div className="rounded-card border border-edge bg-surface p-5 shadow-[var(--shadow-card)]">
-              <p className="text-[11px] font-black uppercase tracking-[0.16em] text-accent">ARIZ</p>
-              <h2 className="mt-2 text-2xl font-black text-brand">Informacion de contacto</h2>
-              <p className="mt-3 text-sm leading-7 text-muted">
-                Atendemos consultas sobre compra, venta, alquiler, inversiones, publicaciones
-                profesionales y servicios inmobiliarios.
+              <div className="flex items-center gap-3">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-card bg-brand/10 text-brand">
+                  <UsersRound className="size-5" />
+                </span>
+                <div>
+                  <p className="text-[11px] font-black uppercase tracking-[0.16em] text-accent">
+                    Trabajemos juntos
+                  </p>
+                  <h2 className="text-2xl font-black text-brand">ARIZ Proyectos</h2>
+                </div>
+              </div>
+              <p className="mt-4 text-sm leading-7 text-muted">
+                Ponemos a disposicion de nuestros clientes y aliados una propuesta empresarial
+                orientada a identificar oportunidades, administrar procesos comerciales y
+                materializar proyectos inmobiliarios con responsabilidad y compromiso.
               </p>
             </div>
 
@@ -74,6 +145,11 @@ export default function ContactPage() {
                 </span>
               </Link>
             ))}
+
+            <p className="rounded-card border border-edge bg-surface-muted p-4 text-xs leading-6 text-muted">
+              Documento de presentacion institucional. La disponibilidad de servicios especificos se
+              confirma mediante propuesta comercial y contrato correspondiente.
+            </p>
           </aside>
         </div>
       </section>

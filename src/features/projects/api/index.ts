@@ -457,6 +457,10 @@ export async function publishAdminProject(id: string): Promise<ProjectApiSummary
   return apiClient.patch<ProjectApiSummary>(`/admin/projects/${encodeURIComponent(id)}/publish`);
 }
 
+export async function deleteAdminProject(id: string): Promise<void> {
+  return apiClient.delete<void>(`/admin/projects/${encodeURIComponent(id)}`);
+}
+
 export async function updateProjectLocation(
   id: string,
   location: ProjectLocationInput,

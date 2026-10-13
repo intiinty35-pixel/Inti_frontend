@@ -64,6 +64,10 @@ export async function publishProperty(id: string): Promise<Listing> {
   return apiClient.patch<Listing>(`/properties/${encodeURIComponent(id)}/publish`);
 }
 
+export async function deleteProperty(id: string): Promise<void> {
+  return apiClient.delete<void>(`/properties/${encodeURIComponent(id)}`);
+}
+
 export async function getProjectBySlug(slug: string): Promise<Project> {
   return apiClient.get<Project>(`/projects/${encodeURIComponent(slug)}`);
 }

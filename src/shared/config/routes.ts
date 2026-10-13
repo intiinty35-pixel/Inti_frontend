@@ -26,6 +26,7 @@ export const ROUTES = {
       subscriptions: "/panel/admin/subscriptions",
       projects: "/panel/admin/projects",
       newProject: "/panel/admin/projects/new",
+      editProject: (id: string): string => `/panel/admin/projects/${id}/edit`,
       investmentOpportunities: "/panel/admin/investment-opportunities",
       developers: "/panel/admin/developers",
       developer: (id: string): string => `/panel/admin/developers/${id}`,
