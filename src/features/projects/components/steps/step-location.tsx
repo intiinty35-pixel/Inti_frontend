@@ -7,6 +7,7 @@ import { SearchCombobox } from "@/shared/ui/combobox";
 import { NumericField, TextField } from "@/shared/ui/rhf-fields";
 import { Button } from "@/shared/ui/button";
 import { CrosshairIcon, MapIcon, PinIcon } from "@/shared/ui/icons";
+import { GoogleMapsLinkField } from "@/shared/ui/google-maps-link-field";
 import { LocationPicker, preloadLocationPicker, type MapPoint } from "@/shared/ui/location-picker";
 import { buildAddressQuery, searchMapPlace } from "@/shared/lib/geo";
 import {
@@ -235,6 +236,10 @@ export function StepLocation() {
               {locating ? "Ubicando..." : "Ubicar dirección"}
             </Button>
           </div>
+        </div>
+
+        <div className="mb-3">
+          <GoogleMapsLinkField onPoint={applyPoint} />
         </div>
 
         <LocationPicker
