@@ -55,7 +55,7 @@ const categories: readonly Category[] = [
     slug: "construir",
     label: "Construir mi casa",
     subtitle: "Hacemos realidad tu proyecto.",
-    href: ROUTES.services,
+    href: ROUTES.construye,
     Icon: Hammer,
   },
   {
