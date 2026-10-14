@@ -385,10 +385,10 @@ export function ServicesSection() {
           onPointerMove={handleDragMove}
           onPointerUp={handleDragEnd}
           onPointerCancel={handleDragEnd}
-          className="horizontal-scrollbar-hidden grid cursor-grab auto-cols-[72vw] touch-pan-x select-none grid-flow-col grid-rows-1 gap-3 overflow-x-auto scroll-smooth pb-3 active:cursor-grabbing sm:auto-cols-[250px] lg:auto-cols-[280px]"
+          className="horizontal-scrollbar-hidden grid cursor-grab auto-cols-[100%] touch-pan-x select-none snap-x snap-mandatory grid-flow-col grid-rows-1 gap-3 overflow-x-auto scroll-smooth pb-3 active:cursor-grabbing sm:auto-cols-[calc((100%_-_0.75rem)/2)] lg:auto-cols-[calc((100%_-_1.5rem)/3)] xl:auto-cols-[calc((100%_-_2.25rem)/4)]"
         >
           {SERVICE_CARDS.map((service) => (
-            <RevealOnScroll key={service.title}>
+            <RevealOnScroll key={service.title} className="snap-start">
               <article
                 data-service-card
                 className="flex h-full min-h-40 flex-col items-center justify-center rounded-card border border-[#25D366] bg-surface p-4 text-center shadow-[var(--shadow-card)] transition duration-200 hover:-translate-y-0.5 hover:border-[#128C7E] sm:min-h-44 sm:p-5"
