@@ -84,8 +84,7 @@ export function PlanRequestModal({ plan, onClose }: { plan: Plan; onClose: () =>
           <div className="mt-4 rounded-card border border-edge bg-brand-soft p-3 text-xs text-ink">
             <p className="font-semibold">Sigue estos pasos:</p>
             <ol className="mt-1 list-decimal pl-4">
-              <li>Paga el monto con Yape, Plin o transferencia bancaria.</li>
-              <li>Escanea el código QR o usa los datos de contacto.</li>
+              <li>Paga el monto con Yape, Plin o una transferencia a la cuenta oficial de ARIZ.</li>
               <li>Envía tu captura de pago más abajo.</li>
               <li>El agente valida el pago y se activan tus beneficios.</li>
             </ol>
@@ -95,21 +94,11 @@ export function PlanRequestModal({ plan, onClose }: { plan: Plan; onClose: () =>
             <>
               <div className="mt-4 flex flex-col gap-2">
                 <p className="text-[11px] font-bold tracking-[0.16em] text-muted uppercase">Datos para pagar</p>
-                <PaymentRow label="Yape" value={env.payment.yapeNumber} />
-                <PaymentRow label="Plin" value={env.payment.plinNumber} />
-                <PaymentRow label={`Transferencia · ${env.payment.bankName}`} value={env.payment.bankAccount} />
+                <PaymentRow label="Yape / Plin" value={env.payment.yapePlinNumber} />
+                <PaymentRow label={`Cuenta corriente · ${env.payment.bankName}`} value={env.payment.bankAccount} />
+                <PaymentRow label="CCI" value={env.payment.bankCci} />
                 <PaymentRow label="Titular de la cuenta" value={env.payment.accountHolder} />
-              </div>
-
-              <div className="mt-4 flex items-center gap-3 rounded-card border border-edge bg-surface p-3">
-                <img src="/qr/qr.png" alt="Código QR de Yape para escanear" className="size-20 shrink-0 rounded-card border border-edge bg-surface object-contain" />
-                <div className="min-w-0 flex-1 text-xs text-muted">
-                  <p className="font-semibold text-ink">Escanea el código QR</p>
-                  <p className="mt-1">
-                    Abre Yape, escanea este código y confirma el pago con el monto del plan. También puedes
-                    copiar el número y hacer el pago manualmente.
-                  </p>
-                </div>
+                <PaymentRow label="RUC" value={env.payment.taxId} />
               </div>
             </>
           ) : (

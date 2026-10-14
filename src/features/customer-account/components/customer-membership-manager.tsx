@@ -314,12 +314,13 @@ export function CustomerMembershipManager({
                   {env.paymentConfigured ? (
                     <div className="rounded-card border border-edge bg-canvas p-4 text-sm text-muted">
                       <p className="mb-2 font-semibold text-ink">Datos para realizar el pago</p>
-                      {env.payment.yapeNumber ? <p>Yape: {env.payment.yapeNumber}</p> : null}
-                      {env.payment.plinNumber ? <p>Plin: {env.payment.plinNumber}</p> : null}
+                      {env.payment.yapePlinNumber ? <p>Yape / Plin: {env.payment.yapePlinNumber}</p> : null}
                       {env.payment.bankAccount ? (
-                        <p>Transferencia · {env.payment.bankName}: {env.payment.bankAccount}</p>
+                        <p>Cuenta corriente · {env.payment.bankName}: {env.payment.bankAccount}</p>
                       ) : null}
+                      {env.payment.bankCci ? <p>CCI: {env.payment.bankCci}</p> : null}
                       {env.payment.accountHolder ? <p>Titular: {env.payment.accountHolder}</p> : null}
+                      {env.payment.taxId ? <p>RUC: {env.payment.taxId}</p> : null}
                     </div>
                   ) : (
                     <p className="rounded-card bg-warning/10 p-4 text-sm text-warning">

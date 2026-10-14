@@ -10,19 +10,25 @@ function isPlaceholder(value: string) {
   return normalized.length === 0 || PLACEHOLDER_PATTERNS.some((pattern) => pattern.test(normalized));
 }
 
+/**
+ * Cuenta oficial de ARIZ GROUP SAC para depositos y transferencias, definida en
+ * las variables `NEXT_PUBLIC_PAYMENT_*`. Si falta `BANK_ACCOUNT` la seccion de pago
+ * no se muestra. `YAPE_PLIN_NUMBER` es el celular de Yape y Plin de ARIZ.
+ */
 const payment = {
-  yapeNumber: process.env.NEXT_PUBLIC_PAYMENT_YAPE_NUMBER ?? "",
-  plinNumber: process.env.NEXT_PUBLIC_PAYMENT_PLIN_NUMBER ?? "",
+  yapePlinNumber: process.env.NEXT_PUBLIC_PAYMENT_YAPE_PLIN_NUMBER ?? "",
   bankName: process.env.NEXT_PUBLIC_PAYMENT_BANK_NAME ?? "",
   bankAccount: process.env.NEXT_PUBLIC_PAYMENT_BANK_ACCOUNT ?? "",
+  bankCci: process.env.NEXT_PUBLIC_PAYMENT_BANK_CCI ?? "",
   accountHolder: process.env.NEXT_PUBLIC_PAYMENT_ACCOUNT_HOLDER ?? "",
+  taxId: process.env.NEXT_PUBLIC_PAYMENT_TAX_ID ?? "",
 } as const;
 
 /**
- * true solo cuando Yape o Plin tienen un numero real: son los unicos canales
- * que el cliente puede usar sin verificar el titular por su cuenta.
+ * true cuando hay datos reales de la cuenta bancaria o del celular de Yape y Plin.
  */
-const paymentConfigured = !isPlaceholder(payment.yapeNumber) || !isPlaceholder(payment.plinNumber);
+const paymentConfigured =
+  !isPlaceholder(payment.bankAccount) || !isPlaceholder(payment.yapePlinNumber);
 
 export const env = {
   apiUrl: process.env.NEXT_PUBLIC_API_URL ?? "",
