@@ -1,6 +1,6 @@
 import type { SessionUser } from "@/features/auth/types/session";
 import { signInWithPopup } from "firebase/auth";
-import { firebaseAuth, googleProvider } from "@/shared/lib/firebase";
+import { getFirebaseSignIn } from "@/shared/lib/firebase";
 
 export type ProfessionalType = "INDEPENDENT_AGENT" | "REAL_ESTATE_AGENCY" | "DEVELOPER";
 
@@ -82,6 +82,7 @@ export async function login(input: {
 
 export async function loginWithGoogle(): Promise<SessionUser> {
   try {
+    const { firebaseAuth, googleProvider } = getFirebaseSignIn();
     const credential = await signInWithPopup(firebaseAuth, googleProvider);
     const idToken = await credential.user.getIdToken();
     return (await post<{ user: SessionUser }>("google", { idToken })).user;

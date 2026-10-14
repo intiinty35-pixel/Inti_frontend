@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import {
   ArrowUpRight,
   Coins,
@@ -13,9 +14,12 @@ import { Card, CardContent, Pagination } from "@/shared/ui";
 import { ROUTES } from "@/shared/config/routes";
 import { listAdminReferrals } from "@/features/admin/api/referrals";
 import { ReferralPointsForm } from "@/features/admin/components/referral-points-form";
+import { ProjectPointsModal } from "@/features/admin/components/project-points-modal";
 import { ReferralsExportButtons } from "./referrals-export-buttons";
 import { HideReferrerButton } from "./hide-referrer-button";
 import { ReferralFilters } from "./referral-filters";
+
+const PAGE_SIZE = 12;
 
 export default async function AdminReferralsPage({
   searchParams,
@@ -23,11 +27,19 @@ export default async function AdminReferralsPage({
   searchParams: Promise<{ page?: string; search?: string; from?: string; to?: string }>;
 }) {
   const { page: pageParam, search = "", from = "", to = "" } = await searchParams;
-  const page = Math.max(1, Number(pageParam) || 1);
-  const data = await listAdminReferrals(page, 12, { search, from, to });
+  const requestedPage = Number(pageParam);
+  const page = Number.isSafeInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1;
+  const data = await listAdminReferrals(page, PAGE_SIZE, { search, from, to });
   const filterQuery = new URLSearchParams(
     Object.entries({ search, from, to }).filter(([, value]) => value),
   ).toString();
+  const buildPageHref = (nextPage: number) => {
+    const params = new URLSearchParams(filterQuery);
+    params.set("page", String(nextPage));
+    return `${ROUTES.panel.admin.referrals}?${params.toString()}`;
+  };
+  const totalPages = Math.max(1, Math.ceil(data.total / PAGE_SIZE));
+  if (page > totalPages) redirect(buildPageHref(totalPages));
   const filtered = Boolean(search || from || to);
   const visibleReferrals = data.items.reduce((sum, referrer) => sum + referrer.referrals.length, 0);
   const visiblePoints = data.items.reduce((sum, referrer) => sum + referrer.totalPoints, 0);
@@ -49,7 +61,10 @@ export default async function AdminReferralsPage({
               desde esta vista.
             </p>
           </div>
-          {data.items.length > 0 && <ReferralsExportButtons query={filterQuery} />}
+          <div className="flex flex-wrap items-center gap-2">
+            <ProjectPointsModal />
+            {data.items.length > 0 && <ReferralsExportButtons query={filterQuery} />}
+          </div>
         </div>
       </section>
 
@@ -175,12 +190,20 @@ export default async function AdminReferralsPage({
         </section>
       )}
 
-      <Pagination
-        page={page}
-        pageSize={data.pageSize}
-        total={data.total}
-        buildHref={(p) => `${ROUTES.panel.admin.referrals}?${new URLSearchParams({ ...(filterQuery ? Object.fromEntries(new URLSearchParams(filterQuery)) : {}), page: String(p) }).toString()}`}
-      />
+      {data.total > 0 && (
+        <div className="flex flex-col items-center gap-3">
+          <p className="text-center text-sm font-semibold text-muted" role="status">
+            Mostrando {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, data.total)} de {data.total} miembros
+            {" · "}Página {page} de {totalPages}
+          </p>
+          <Pagination
+            page={page}
+            pageSize={PAGE_SIZE}
+            total={data.total}
+            buildHref={buildPageHref}
+          />
+        </div>
+      )}
     </div>
   );
 }

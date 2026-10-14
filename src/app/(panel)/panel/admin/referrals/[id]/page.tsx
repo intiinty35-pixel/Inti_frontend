@@ -2,12 +2,14 @@ import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { ArrowLeft, CalendarDays, Gem, Mail, Phone, Ticket, TrendingUp, UserRoundCheck, UsersRound } from "lucide-react";
-import { Card, CardContent } from "@/shared/ui";
+import { Card, CardContent, Pagination } from "@/shared/ui";
 import { ROUTES } from "@/shared/config/routes";
 import { AdminPageHeader } from "@/app/(panel)/panel/admin/admin-shell";
 import { deleteAdminReferrer, getAdminReferrer, setReferralStatus, type AdminReferral, type ReferralStatus } from "@/features/admin/api/referrals";
 import { DeleteReferrerButton } from "@/features/admin/components/delete-referrer-button";
 import { ReferralStatusForm } from "@/features/admin/components/referral-status-form";
+
+const PAGE_SIZE = 12;
 
 const STATUS_LABELS: Record<ReferralStatus, string> = {
   CONTACTED: "Contactado",
@@ -56,9 +58,20 @@ function countByStatus(referrals: AdminReferral[], status: ReferralStatus) {
   return referrals.filter((referral) => referral.status === status).length;
 }
 
-export default async function AdminReferrerDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function AdminReferrerDetailPage({ params, searchParams }: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ page?: string }>;
+}) {
   const { id } = await params;
+  const { page: pageParam } = await searchParams;
+  const requestedPage = Number(pageParam);
+  const page = Number.isSafeInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1;
   const referrer = await getAdminReferrer(id);
+  const total = referrer.referrals.length;
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const buildPageHref = (nextPage: number) => `${ROUTES.panel.admin.referrer(id)}?page=${nextPage}`;
+  if (page > totalPages) redirect(buildPageHref(totalPages));
+  const visibleReferrals = referrer.referrals.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
   const latestReferral = referrer.referrals[0];
 
   return (
@@ -157,7 +170,7 @@ export default async function AdminReferrerDetailPage({ params }: { params: Prom
           </Card>
         ) : (
           <div className="grid gap-4">
-            {referrer.referrals.map((referral) => (
+            {visibleReferrals.map((referral) => (
               <Card key={referral.id} className="overflow-hidden">
                 <div className="grid gap-5 p-5 xl:grid-cols-[minmax(0,1fr)_180px_240px] xl:items-start">
                   <div className="min-w-0">
@@ -227,6 +240,15 @@ export default async function AdminReferrerDetailPage({ params }: { params: Prom
                 </div>
               </Card>
             ))}
+          </div>
+        )}
+        {total > 0 && (
+          <div className="flex flex-col items-center gap-3">
+            <p className="text-center text-sm font-semibold text-muted">
+              Mostrando {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, total)} de {total} referidos
+              {" · "}Página {page} de {totalPages}
+            </p>
+            <Pagination page={page} pageSize={PAGE_SIZE} total={total} buildHref={buildPageHref} />
           </div>
         )}
       </section>

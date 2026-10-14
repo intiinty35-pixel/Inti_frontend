@@ -16,21 +16,7 @@ export interface AdminProjectWithPoints {
 }
 
 export async function listAdminProjectPoints(): Promise<AdminProjectWithPoints[]> {
-  try {
-    const response = await backendFetch('/admin/projects?pageSize=200');
-    if (!response.ok) {
-      return [];
-    }
-    const data = (await response.json()) as {
-      items: Array<{ id: string; name: string; slug: string }>;
-    };
-    return data.items.map((project) => ({
-      id: project.id,
-      name: project.name,
-      slug: project.slug,
-      points: { CONTACTED: 0, VISIT: 0, OPERATION_COMPLETED: 0 },
-    }));
-  } catch {
-    return [];
-  }
+  const response = await backendFetch('/admin/campaigns/project-points');
+  if (!response.ok) throw new Error('No se pudieron cargar los puntos por proyecto Ariz.');
+  return response.json() as Promise<AdminProjectWithPoints[]>;
 }

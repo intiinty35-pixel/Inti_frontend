@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CalendarRange, FileSpreadsheet, Loader2, Mail, MessageCircle, Phone, RefreshCw, Search, Trophy } from "lucide-react";
+import { MemberActions } from "./member-actions";
 
 interface RankingRow {
   rank: number;
@@ -130,7 +131,7 @@ export function RankingDashboard() {
           <div>
             <p className="text-sm font-black uppercase tracking-[0.22em] text-accent">Control de miembros</p>
             <h1 className="mt-2 font-display text-3xl font-black tracking-tight text-brand sm:text-4xl">
-              Quienes más refirieron
+              Miembros
             </h1>
             <p className="mt-2 max-w-2xl text-sm font-semibold leading-6 text-muted">
               Ranking de miembros por cantidad de referidos, con sus datos de contacto para llamarlos.
@@ -247,18 +248,19 @@ export function RankingDashboard() {
                 <th className="px-4 py-3 text-right">Concretados</th>
                 <th className="px-4 py-3 text-right">Puntos</th>
                 <th className="px-4 py-3">Último referido</th>
+                <th className="px-4 py-3">Acciones</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-edge">
               {loading && !data ? (
                 <tr>
-                  <td colSpan={8} className="px-4 py-10 text-center text-muted">
+                  <td colSpan={9} className="px-4 py-10 text-center text-muted">
                     Cargando ranking...
                   </td>
                 </tr>
               ) : data && data.items.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-4 py-10 text-center text-muted">
+                  <td colSpan={9} className="px-4 py-10 text-center text-muted">
                     No hay miembros con ese filtro.
                   </td>
                 </tr>
@@ -304,6 +306,7 @@ export function RankingDashboard() {
                     <td className="px-4 py-3 text-right font-bold text-ink">{row.completedCount}</td>
                     <td className="px-4 py-3 text-right font-bold text-ink">{row.points.toLocaleString("es-PE")}</td>
                     <td className="px-4 py-3 text-xs text-muted">{formatDate(row.lastReferralAt)}</td>
+                    <td className="px-4 py-3"><MemberActions id={row.id} name={row.name} onUpdated={load} /></td>
                   </tr>
                 ))
               )}

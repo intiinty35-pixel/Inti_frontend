@@ -20,6 +20,7 @@ import {
   MessageSquareText,
   Trophy,
   UserCog,
+  UsersRound,
 } from "lucide-react";
 import { cn } from "@/shared/lib/cn";
 import { ROUTES } from "@/shared/config/routes";
@@ -107,9 +108,16 @@ const NAV_ITEMS: readonly AdminNavItem[] = [
   },
   {
     key: "referral-ranking",
-    label: "Quienes más refirieron",
+    label: "Miembros",
     href: ROUTES.panel.admin.referralRanking,
     Icon: Trophy,
+    group: "recompensas",
+  },
+  {
+    key: "referral-records",
+    label: "Control de referidos",
+    href: ROUTES.panel.admin.referralRecords,
+    Icon: UsersRound,
     group: "recompensas",
   },
   {
@@ -163,7 +171,8 @@ function isActiveAdminRoute(pathname: string, href: string) {
   if (href === ROUTES.panel.admin.referrals) {
     return (
       (pathname === href || pathname.startsWith(`${href}/`)) &&
-      !pathname.startsWith(ROUTES.panel.admin.referralRanking)
+      !pathname.startsWith(ROUTES.panel.admin.referralRanking) &&
+      !pathname.startsWith(ROUTES.panel.admin.referralRecords)
     );
   }
   return pathname === href || pathname.startsWith(`${href}/`);
@@ -179,15 +188,13 @@ export function AdminNav({
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
-  let currentGroup: AdminNavGroup | null = null;
 
   return (
     <nav className={cn(mobile ? "flex flex-col gap-1" : "flex flex-col gap-1.5")}>
-      {NAV_ITEMS.map((item) => {
+      {NAV_ITEMS.map((item, index) => {
         const active = isActiveAdminRoute(pathname, item.href);
         const Icon = item.Icon;
-        const showGroup = !collapsed && currentGroup !== item.group;
-        currentGroup = item.group;
+        const showGroup = !collapsed && NAV_ITEMS[index - 1]?.group !== item.group;
 
         return (
           <div key={item.key} className={cn(showGroup && "mt-2 first:mt-0")}>

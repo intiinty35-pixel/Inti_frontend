@@ -2,6 +2,21 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
+## Imagen Docker
+
+Desde esta carpeta, completa las variables públicas de Firebase y de pagos en `.env` y ejecuta:
+
+```powershell
+pnpm run docker:build
+```
+
+El comando pasa únicamente las variables públicas permitidas como argumentos de compilación y crea `roberto523/app-arisproyectos-frontend:latest`. El archivo `.env` permanece fuera de la imagen. La API usa `/api` y el sitio usa el dominio de producción configurado en el Dockerfile.
+
+Para otra etiqueta: `pnpm run docker:build -- mi-frontend:latest`.
+Vuelve a compilar la imagen cuando cambies Firebase o los datos públicos de pago.
+
+## Desarrollo local
+
 First, run the development server:
 
 ```bash

@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { Calendar, Copy, Check, Edit, Plus, Settings2 } from "lucide-react";
+import { Calendar, Edit, Plus, Settings2 } from "lucide-react";
 import { Card, CardContent } from "@/shared/ui";
 import { ROUTES } from "@/shared/config/routes";
 import { listAdminCampaignsServer, type CampaignStatus } from "@/features/admin/api/campaigns";
 import { CopyCodeButton } from "./copy-code-button";
+import { DeleteCampaignButton } from "./delete-campaign-button";
 
 const STATUS_STYLES: Record<CampaignStatus, { bg: string; text: string; label: string }> = {
   ACTIVE: { bg: "bg-success/10", text: "text-success", label: "Activa" },
@@ -220,6 +221,7 @@ export default async function AdminCampaignsPage() {
                       <Edit className="size-3.5" aria-hidden="true" />
                       Editar
                     </Link>
+                    <DeleteCampaignButton id={campaign.id} name={campaign.name} />
                   </div>
                 </CardContent>
               </Card>

@@ -38,6 +38,7 @@ export const ROUTES = {
       agencies: "/panel/admin/agencies",
       referrals: "/panel/admin/referrals",
       referralRanking: "/panel/admin/referrals/ranking",
+      referralRecords: "/panel/admin/referrals/records",
       reports: "/panel/admin/reports",
       agency: (id: string): string => `/panel/admin/agencies/${id}`,
       referrer: (id: string): string => `/panel/admin/referrals/${id}`,

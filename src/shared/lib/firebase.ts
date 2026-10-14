@@ -13,9 +13,12 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
-
-export const firebaseAuth = getAuth(app);
-export const googleProvider = new GoogleAuthProvider();
-
-googleProvider.setCustomParameters({ prompt: "select_account" });
+export function getFirebaseSignIn() {
+  if (!firebaseConfig.apiKey || !firebaseConfig.authDomain || !firebaseConfig.projectId) {
+    throw new Error('Falta la configuración pública de Firebase para iniciar sesión con Google.');
+  }
+  const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+  const googleProvider = new GoogleAuthProvider();
+  googleProvider.setCustomParameters({ prompt: "select_account" });
+  return { firebaseAuth: getAuth(app), googleProvider };
+}

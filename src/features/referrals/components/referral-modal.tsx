@@ -43,6 +43,7 @@ type PaymentMethod = '' | 'bank' | 'yape' | 'plin';
 /** Opción solo de pantalla: se envía como COMPRA_LOTE con el proyecto Ariz elegido. */
 const ARIZ_PROJECT_INTEREST = 'PROYECTO_ARIZ';
 const SKIP_PROJECT = 'SKIP';
+const allowsArizProject = (interest: string) => [ARIZ_PROJECT_INTEREST, 'INVERSION', 'COMPRA_LOTE'].includes(interest);
 
 const INTEREST_OPTIONS = [
   { value: ARIZ_PROJECT_INTEREST, label: 'Vender proyecto o comprar lotes' },
@@ -118,24 +119,28 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
   const [interestDetail, setInterestDetail] = useState('');
   const [arizProjects, setArizProjects] = useState<ArizProjectPoints[] | null>(null);
   const [projectChoice, setProjectChoice] = useState('');
+  const [choosingProject, setChoosingProject] = useState(false);
   const [loadingProjects, setLoadingProjects] = useState(false);
+  const [projectsError, setProjectsError] = useState(false);
+  const [projectsRetry, setProjectsRetry] = useState(0);
   const [campaignCode, setCampaignCode] = useState('');
   const [validatedCampaign, setValidatedCampaign] = useState<{ id: string; name: string } | null>(null);
   const [validatingCampaign, setValidatingCampaign] = useState(false);
 
   useEffect(() => {
-    if (!open || interest !== ARIZ_PROJECT_INTEREST || arizProjects !== null) return;
+    if (!open || !allowsArizProject(interest) || arizProjects !== null) return;
     let active = true;
     // eslint-disable-next-line react-hooks/set-state-in-effect -- indica la carga al abrir la lista de proyectos.
     setLoadingProjects(true);
+    setProjectsError(false);
     getArizProjects()
       .then((projects) => active && setArizProjects(projects))
-      .catch(() => active && setArizProjects([]))
+      .catch(() => active && setProjectsError(true))
       .finally(() => active && setLoadingProjects(false));
     return () => {
       active = false;
     };
-  }, [open, interest, arizProjects]);
+  }, [open, interest, arizProjects, projectsRetry]);
 
   useEffect(() => {
     if (open) {
@@ -248,7 +253,7 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
     if (!phone.trim()) next.phone = 'Ingresa el teléfono del referido.';
     else if (!isValidPeruPhone(phone)) next.phone = 'Ingresa un celular de 9 dígitos (ej. 923 655 566).';
     if (!interest) next.interest = 'Selecciona qué desea hacer.';
-    if (interest === ARIZ_PROJECT_INTEREST && !projectChoice) {
+    if (allowsArizProject(interest) && !projectChoice) {
       next.project = 'Elige un proyecto Ariz o selecciona "Omitir proyecto".';
     }
     if (!availability) next.availability = 'Selecciona la disponibilidad.';
@@ -258,7 +263,7 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
   function validatePreferences(): FormErrors {
     const next: FormErrors = {};
     if (!interest) next.interest = 'Selecciona qué desea hacer.';
-    if (interest === ARIZ_PROJECT_INTEREST && !projectChoice) {
+    if (allowsArizProject(interest) && !projectChoice) {
       next.project = 'Elige un proyecto Ariz o selecciona "Omitir proyecto".';
     }
     if (!availability) next.availability = 'Selecciona la disponibilidad.';
@@ -299,7 +304,7 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
         setValidatedCampaign(null);
         setErrors((prev) => ({ ...prev, campaignCode: result.message || 'Código no válido' }));
       }
-    } catch (cause) {
+    } catch {
       setValidatedCampaign(null);
       setErrors((prev) => ({ ...prev, campaignCode: 'No se pudo validar el código de campaña' }));
     } finally {
@@ -338,7 +343,7 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
             phone: buildPeruPhone(phone),
             interest: interest === ARIZ_PROJECT_INTEREST ? 'COMPRA_LOTE' : interest,
             availability,
-            projectId: interest === ARIZ_PROJECT_INTEREST && projectChoice && projectChoice !== SKIP_PROJECT ? projectChoice : undefined,
+            projectId: allowsArizProject(interest) && projectChoice && projectChoice !== SKIP_PROJECT ? projectChoice : undefined,
             campaignCode: validatedCampaign ? campaignCode.trim() : undefined,
           }
         : {
@@ -355,7 +360,7 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
             phone: buildPeruPhone(phone),
             interest: interest === ARIZ_PROJECT_INTEREST ? 'COMPRA_LOTE' : interest,
             availability,
-            projectId: interest === ARIZ_PROJECT_INTEREST && projectChoice && projectChoice !== SKIP_PROJECT ? projectChoice : undefined,
+            projectId: allowsArizProject(interest) && projectChoice && projectChoice !== SKIP_PROJECT ? projectChoice : undefined,
             campaignCode: validatedCampaign ? campaignCode.trim() : undefined,
           };
 
@@ -432,6 +437,71 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
     );
   }
 
+  function renderProjectPicker() {
+    return <div className="flex flex-col gap-4 p-6">
+      <button type="button" onClick={() => setChoosingProject(false)} className="w-fit text-sm font-bold text-brand hover:underline">? Volver a las opciones</button>
+      <div className="flex flex-col gap-1.5">
+            <span className="text-[13px] font-semibold text-brand">Elige el proyecto Ariz</span>
+            <p className="text-xs text-muted">Al recomendar un proyecto Ariz, sus puntos adicionales se suman a los puntos normales según el estado del referido.</p>
+            {loadingProjects ? (
+              <p className="text-xs text-muted">Cargando proyectos...</p>
+            ) : projectsError ? (
+              <div className="text-xs">
+                <p role="alert" className="text-error">No se pudieron cargar los proyectos Ariz.</p>
+                <button type="button" onClick={() => setProjectsRetry((value) => value + 1)} className="mt-1 font-bold text-brand underline">Reintentar</button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-2">
+                {arizProjects?.length === 0 && <p className="text-xs text-muted">No hay proyectos Ariz publicados disponibles. Puedes continuar con “Omitir proyecto”.</p>}
+                {(arizProjects ?? []).map((project) => (
+                  <button
+                    key={project.id}
+                    type="button"
+                    onClick={() => {
+                      setProjectChoice(project.id);
+                      setChoosingProject(false);
+                      setErrors((prev) => ({ ...prev, project: undefined }));
+                    }}
+                    className={`rounded-lg border p-3 text-left transition-colors ${
+                      projectChoice === project.id
+                        ? 'border-brand bg-brand text-on-brand'
+                        : 'border-edge text-ink hover:border-brand/50 hover:bg-brand-soft'
+                    }`}
+                  >
+                    <span className="block text-sm font-semibold">{project.name}</span>
+                    <span
+                      className={`mt-0.5 block text-[11px] font-semibold ${
+                        projectChoice === project.id ? 'text-white/85' : 'text-accent'
+                      }`}
+                    >
+                      {project.totalExtraPoints > 0
+                        ? `Puntos adicionales: +${project.points.CONTACTED} al contactar · +${project.points.VISIT} en visita · +${project.points.OPERATION_COMPLETED} al concretar`
+                        : 'Sin puntos adicionales'}
+                    </span>
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setProjectChoice(SKIP_PROJECT);
+                    setChoosingProject(false);
+                    setErrors((prev) => ({ ...prev, project: undefined }));
+                  }}
+                  className={`rounded-lg border p-3 text-left text-sm font-semibold transition-colors ${
+                    projectChoice === SKIP_PROJECT
+                      ? 'border-brand bg-brand text-on-brand'
+                      : 'border-dashed border-edge text-muted hover:border-brand/50 hover:bg-brand-soft'
+                  }`}
+                >
+                  Omitir proyecto
+                </button>
+              </div>
+            )}
+            {errors.project && <p className="text-xs font-medium text-error">{errors.project}</p>}
+          </div>
+    </div>;
+  }
+
   function renderPreferenceFields() {
     const details = INTEREST_DETAIL_OPTIONS[interest as keyof typeof INTEREST_DETAIL_OPTIONS] ?? [];
 
@@ -496,58 +566,19 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
           </div>
         ) : null}
 
-        {interest === ARIZ_PROJECT_INTEREST ? (
-          <div className="flex flex-col gap-1.5">
-            <span className="text-[13px] font-semibold text-brand">Elige el proyecto Ariz</span>
-            {loadingProjects ? (
-              <p className="text-xs text-muted">Cargando proyectos...</p>
-            ) : (
-              <div className="grid grid-cols-1 gap-2">
-                {(arizProjects ?? []).map((project) => (
-                  <button
-                    key={project.id}
-                    type="button"
-                    onClick={() => {
-                      setProjectChoice(project.id);
-                      setErrors((prev) => ({ ...prev, project: undefined }));
-                    }}
-                    className={`rounded-lg border p-3 text-left transition-colors ${
-                      projectChoice === project.id
-                        ? 'border-brand bg-brand text-on-brand'
-                        : 'border-edge text-ink hover:border-brand/50 hover:bg-brand-soft'
-                    }`}
-                  >
-                    <span className="block text-sm font-semibold">{project.name}</span>
-                    <span
-                      className={`mt-0.5 block text-[11px] font-semibold ${
-                        projectChoice === project.id ? 'text-white/85' : 'text-accent'
-                      }`}
-                    >
-                      {project.totalExtraPoints > 0
-                        ? `Puntos adicionales: +${project.points.CONTACTED} al contactar · +${project.points.VISIT} en visita · +${project.points.OPERATION_COMPLETED} al concretar`
-                        : 'Sin puntos adicionales'}
-                    </span>
-                  </button>
-                ))}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setProjectChoice(SKIP_PROJECT);
-                    setErrors((prev) => ({ ...prev, project: undefined }));
-                  }}
-                  className={`rounded-lg border p-3 text-left text-sm font-semibold transition-colors ${
-                    projectChoice === SKIP_PROJECT
-                      ? 'border-brand bg-brand text-on-brand'
-                      : 'border-dashed border-edge text-muted hover:border-brand/50 hover:bg-brand-soft'
-                  }`}
-                >
-                  Omitir proyecto
-                </button>
-              </div>
-            )}
-            {errors.project && <p className="text-xs font-medium text-error">{errors.project}</p>}
+        {allowsArizProject(interest) && (
+          <div className="flex items-center justify-between gap-3 rounded-lg border border-brand/20 bg-brand-soft p-3">
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-brand">
+                {projectChoice === SKIP_PROJECT ? 'Sin proyecto Ariz' : arizProjects?.find((project) => project.id === projectChoice)?.name || 'Proyectos y lotes Ariz'}
+              </p>
+              {errors.project && <p className="mt-1 text-xs font-medium text-error">{errors.project}</p>}
+            </div>
+            <button type="button" onClick={() => setChoosingProject(true)} className="shrink-0 rounded-lg bg-brand px-3 py-2 text-xs font-bold text-on-brand hover:bg-brand-hover">
+              {projectChoice ? 'Cambiar' : 'Elegir lotes Ariz'}
+            </button>
           </div>
-        ) : null}
+        )}
 
         <div className="flex flex-col gap-1.5">
           <span className="text-[13px] font-semibold text-brand">
@@ -623,7 +654,7 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
               </Button>
             </div>
           </div>
-        ) : view === 'initial' ? (
+        ) : choosingProject ? renderProjectPicker() : view === 'initial' ? (
           <div className="flex flex-col gap-4 p-6">
             <p className="text-center text-sm text-muted">
               Selecciona una opción
