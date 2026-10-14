@@ -13,7 +13,20 @@ export interface PublicReferralInput {
   phone: string;
   interest: string;
   availability?: string;
+  projectId?: string;
   campaignCode?: string;
+}
+
+export interface ArizProjectPoints {
+  id: string;
+  name: string;
+  slug: string;
+  points: { CONTACTED: number; VISIT: number; OPERATION_COMPLETED: number };
+  totalExtraPoints: number;
+}
+
+export function getArizProjects() {
+  return apiClient.get<ArizProjectPoints[]>('/referrals/ariz-projects');
 }
 
 export interface PublicReferralResponse {
