@@ -21,7 +21,13 @@ import {
 import { ROUTES } from "@/shared/config/routes";
 import { buildAddressQuery, searchMapPlace } from "@/shared/lib/geo";
 import type { ApiOperationType, ApiPropertyType, PropertyCreateInput, PropertyEditData } from "@/features/listings/types/listing";
-import { createProperty, publishProperty, updateProperty } from "@/features/listings/api";
+import {
+  createAdminProperty,
+  createProperty,
+  publishAdminProperty,
+  publishProperty,
+  updateProperty,
+} from "@/features/listings/api";
 import { PROPERTY_FORM_CONFIG, PROPERTY_TYPE_OPTIONS, amenityCode } from "@/features/listings/config/property-form";
 import { uploadPropertyImage } from "@/features/listings/api/media";
 import { GoogleMapsLinkField } from "@/shared/ui/google-maps-link-field";
@@ -149,7 +155,7 @@ export function PropertyPublishWizard({
   audience = "owner",
   initialProperty,
 }: {
-  audience?: "owner" | "customer";
+  audience?: "owner" | "customer" | "admin";
   /** Propiedad existente que se edita; sin esto el asistente publica una nueva. */
   initialProperty?: PropertyEditData;
 }) {
@@ -158,7 +164,9 @@ export function PropertyPublishWizard({
   const listingsPath =
     audience === "customer"
       ? ROUTES.panel.client.properties
-      : ROUTES.panel.owner.listings;
+      : audience === "admin"
+        ? ROUTES.panel.admin.properties
+        : ROUTES.panel.owner.listings;
   const formRef = useRef<HTMLFormElement>(null);
   const errorsRef = useRef<HTMLDivElement>(null);
   const issuesRef = useRef<string[]>([]);
@@ -615,8 +623,8 @@ export function PropertyPublishWizard({
         router.refresh();
         return;
       }
-      const created = await createProperty(input);
-      const published = await publishProperty(created.id);
+      const created = await (audience === "admin" ? createAdminProperty(input) : createProperty(input));
+      const published = await (audience === "admin" ? publishAdminProperty(created.id) : publishProperty(created.id));
       localStorage.removeItem("ariz.propertyDraft");
       // Confirmamos dentro del panel y llevamos al owner a "Mis propiedades"
       // sin sacarlo de su perfil (antes iba a la ficha publica).

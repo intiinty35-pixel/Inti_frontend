@@ -43,11 +43,14 @@ export function OwnerListingCard({
   isAgency = false,
   agencyName,
   showMetrics = true,
+  editHref,
 }: {
   listing: Listing;
   isAgency?: boolean;
   agencyName?: string;
   showMetrics?: boolean;
+  /** Destino del boton "Editar"; por defecto depende del panel (profesional o cliente). */
+  editHref?: string;
 }) {
   const router = useRouter();
   const status = listing.status ?? "disponible";
@@ -168,9 +171,10 @@ export function OwnerListingCard({
           )}
           <Link
             href={
-              showMetrics
+              editHref ??
+              (showMetrics
                 ? ROUTES.panel.owner.editListing(listing.id)
-                : ROUTES.panel.client.editProperty(listing.id)
+                : ROUTES.panel.client.editProperty(listing.id))
             }
             className="flex h-9 min-w-[76px] flex-1 items-center justify-center rounded-card border border-brand px-2.5 text-center text-xs font-bold text-brand transition-colors hover:bg-brand hover:text-on-brand"
           >

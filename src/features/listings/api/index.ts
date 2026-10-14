@@ -56,6 +56,14 @@ export async function createProperty(input: PropertyCreateInput): Promise<Listin
   return apiClient.post<Listing>("/properties", input);
 }
 
+export async function createAdminProperty(input: PropertyCreateInput): Promise<Listing> {
+  return apiClient.post<Listing>("/admin/properties", input);
+}
+
+export async function publishAdminProperty(id: string): Promise<Listing> {
+  return apiClient.patch<Listing>(`/admin/properties/${encodeURIComponent(id)}/publish`);
+}
+
 export async function updateProperty(id: string, input: PropertyCreateInput): Promise<Listing> {
   return apiClient.patch<Listing>(`/properties/${encodeURIComponent(id)}`, input);
 }
