@@ -99,7 +99,7 @@ function Brand() {
   );
 }
 
-export function PublicFooter() {
+export function PublicFooter({ publishHref = ROUTES.registerProfessional }: { publishHref?: string }) {
   return (
     <footer className="bg-brand text-white">
       <Container size="wide" className="py-14 sm:py-16">
@@ -127,7 +127,7 @@ export function PublicFooter() {
                   <li key={link.label}>
                     {link.href ? (
                       <Link
-                        href={link.href}
+                        href={link.label === "Publicar propiedad" ? publishHref : link.href}
                         className="inline-flex items-center gap-2 text-sm text-white/75 transition-colors hover:text-white"
                       >
                         {link.href === ROUTES.claims ? <BookOpenText className="size-4 text-accent" /> : null}
@@ -182,7 +182,15 @@ export function PublicFooter() {
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col gap-3 border-t border-white/20 pt-6 text-xs text-white/70 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-10 flex items-center justify-center sm:justify-start">
+          <img
+            src="/logo/ministerio-vivienda.png"
+            alt="Ministerio de Vivienda, Construcción y Saneamiento del Perú"
+            className="h-[4.5rem] w-72 max-w-full rounded-sm bg-white object-cover object-center"
+          />
+        </div>
+
+        <div className="mt-6 flex flex-col gap-3 border-t border-white/20 pt-6 text-xs text-white/70 sm:flex-row sm:items-center sm:justify-between">
           <span>© {new Date().getFullYear()} Ariz Proyectos</span>
           <Link href={ROUTES.terms} className="font-semibold text-accent transition-colors hover:text-white">
             Términos y condiciones

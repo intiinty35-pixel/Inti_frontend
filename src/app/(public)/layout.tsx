@@ -42,6 +42,17 @@ export default async function PublicLayout({ children }: { children: ReactNode }
     accountAvatarUrl = profile.avatarUrl ?? undefined;
   }
 
+  // Con sesion iniciada, "Publicar propiedad" lleva directo al formulario de publicar;
+    // el registro redirige a quien ya esta logueado y nunca llegaria alli.
+  const publishHref =
+    session?.role === "USER"
+      ? ROUTES.panel.client.newProperty
+      : session?.role === "REAL_ESTATE"
+        ? ROUTES.panel.owner.newListing
+        : session?.role === "ADMIN"
+          ? ROUTES.panel.admin.base
+          : ROUTES.registerProfessional;
+
   return (
     <PublicShell>
       {/*
@@ -56,13 +67,14 @@ export default async function PublicLayout({ children }: { children: ReactNode }
         accountAvatarUrl={accountAvatarUrl}
         accountRole={session?.role}
         accountHref={session ? getHomeRoute(session.role) : ROUTES.login}
+        publishHref={publishHref}
       />
 
       <FavoritesProvider isAuthenticated={Boolean(session)}>
         <main className="flex flex-1 flex-col">{children}</main>
       </FavoritesProvider>
 
-      <PublicFooter />
+      <PublicFooter publishHref={publishHref} />
 
       <FloatingWhatsapp />
     </PublicShell>

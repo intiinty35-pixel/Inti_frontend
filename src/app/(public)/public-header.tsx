@@ -18,6 +18,8 @@ export interface PublicHeaderProps {
   accountAvatarUrl?: string;
   accountHref: string;
   accountRole?: UserRole;
+  /** Destino de "Publicar propiedad": el formulario de publicar si hay sesión, el registro si no. */
+  publishHref?: string;
 }
 
 function Logo({ light }: { light: boolean }) {
@@ -55,6 +57,7 @@ export function PublicHeader({
   accountAvatarUrl,
   accountHref,
   accountRole,
+  publishHref = ROUTES.registerProfessional,
 }: PublicHeaderProps) {
   const pathname = usePathname();
   const overlay = hasOverlayHeader(pathname);
@@ -162,7 +165,7 @@ export function PublicHeader({
 
         {isCustomer ? (
           <div className="hidden items-center gap-2 lg:flex">
-            <Link href={ROUTES.registerProfessional} className={accountClass(true)}>
+            <Link href={publishHref} className={accountClass(true)}>
               Publicar propiedad
             </Link>
             <div className="relative" ref={desktopAccountMenuRef}>
@@ -267,7 +270,7 @@ export function PublicHeader({
               Sobre el hero oscuro el azul de marca no se distingue del fondo,
               asi que el registro pasa a amarillo, que es el acento de la marca.
             */}
-            <Link href={ROUTES.registerProfessional} className={accountClass(true)}>
+            <Link href={publishHref} className={accountClass(true)}>
               Publicar propiedad
             </Link>
           </div>
@@ -404,7 +407,7 @@ export function PublicHeader({
                   Mi cuenta
                 </Link>
                 <Link
-                  href={ROUTES.registerProfessional}
+                  href={publishHref}
                   onClick={() => setMenuOpen(false)}
                   className="flex h-11 items-center justify-center rounded-card bg-accent px-3 text-sm font-bold text-on-accent"
                 >
@@ -438,7 +441,7 @@ export function PublicHeader({
                   <LogIn className="size-4 shrink-0 translate-y-0.5" aria-hidden="true" />
                 </Link>
                 <Link
-                  href={ROUTES.registerProfessional}
+                  href={publishHref}
                   onClick={() => setMenuOpen(false)}
                   className="flex h-11 items-center justify-center rounded-card bg-accent px-4 text-sm font-bold text-on-accent"
                 >

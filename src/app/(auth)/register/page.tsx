@@ -22,9 +22,9 @@ const OPTIONS = [
   {
     href: ROUTES.registerCustomer,
     icon: <House className="size-5" aria-hidden />,
-    title: "Busco una propiedad",
+    title: "Eres dueño de propiedad",
     description: "Busca propiedades, guarda favoritos y recibe oportunidades según tus necesidades.",
-    action: "Crear cuenta como comprador →",
+    action: "Crear cuenta →",
   },
   {
     href: ROUTES.registerProfessional,
