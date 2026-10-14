@@ -105,6 +105,14 @@ export async function registerProfessional(
   return (await post<{ user: SessionUser }>("register/professional", input)).user;
 }
 
+export async function requestPasswordReset(email: string): Promise<void> {
+  await post<{ ok: true }>("forgot-password", { email });
+}
+
+export async function resetPassword(token: string, password: string): Promise<void> {
+  await post<{ ok: true }>("reset-password", { token, password });
+}
+
 export async function logout(): Promise<void> {
   await post<void>("logout");
 }

@@ -3,6 +3,8 @@ import type { UserRole } from "@/shared/config/roles";
 export const ROUTES = {
   home: "/",
   login: "/login",
+  forgotPassword: "/forgot-password",
+  resetPassword: "/reset-password",
   register: "/register",
   registerCustomer: "/register/customer",
   registerProfessional: "/register/professional",
