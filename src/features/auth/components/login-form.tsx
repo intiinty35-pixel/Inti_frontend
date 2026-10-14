@@ -93,12 +93,9 @@ export function LoginForm({ next }: LoginFormProps) {
       />
       <div className="flex items-center justify-between">
         <Checkbox name="rememberMe" label="Recordarme" />
-        <span
-          className="cursor-not-allowed text-[11px] font-semibold text-brand/60"
-          title="Disponible próximamente"
-        >
+        <Link href={ROUTES.forgotPassword} className="text-[11px] font-semibold text-brand hover:underline">
           ¿Olvidaste tu contraseña?
-        </span>
+        </Link>
       </div>
       <AuthAlert messages={errors} />
       <Button type="submit" size="lg" className="w-full" disabled={loading}>
