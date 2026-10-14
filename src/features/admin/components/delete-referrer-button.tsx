@@ -19,7 +19,7 @@ export function DeleteReferrerButton({
       variant="secondary"
       disabled={disabled || pending}
       onClick={() => {
-        if (!confirm("¿Eliminar este miembro del club y todo su historial de referidos?")) return;
+        if (!confirm("¿Eliminar este miembro de la lista? Su historial de referidos y puntos se conserva.")) return;
         startTransition(() => {
           void action();
         });

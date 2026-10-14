@@ -50,8 +50,22 @@ export interface AdminReferralsPage {
   statusPoints: ReferralStatusPoint[];
 }
 
-export async function listAdminReferrals(page = 1, pageSize = 20): Promise<AdminReferralsPage> {
-  const response = await backendFetch(`/admin/referrals?page=${page}&pageSize=${pageSize}`);
+export interface AdminReferralFilters {
+  search?: string;
+  from?: string;
+  to?: string;
+}
+
+export async function listAdminReferrals(
+  page = 1,
+  pageSize = 20,
+  filters: AdminReferralFilters = {},
+): Promise<AdminReferralsPage> {
+  const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
+  if (filters.search) params.set('search', filters.search);
+  if (filters.from) params.set('from', filters.from);
+  if (filters.to) params.set('to', filters.to);
+  const response = await backendFetch(`/admin/referrals?${params.toString()}`);
   if (!response.ok) throw new Error(`No se pudieron cargar los referidos (${response.status})`);
   return (await response.json()) as AdminReferralsPage;
 }

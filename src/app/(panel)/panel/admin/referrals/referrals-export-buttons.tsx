@@ -4,21 +4,21 @@ import { useState } from "react";
 import { FileDown, FileSpreadsheet, Loader2 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 
-export function ReferralsExportButtons() {
+export function ReferralsExportButtons({ query = "" }: { query?: string }) {
   const [loadingExcel, setLoadingExcel] = useState(false);
   const [loadingPdf, setLoadingPdf] = useState(false);
 
   async function handleExportExcel() {
     setLoadingExcel(true);
     try {
-      const response = await fetch("/api/admin/referrals/export/excel");
+      const response = await fetch(`/api/admin/referrals/export/excel${query ? `?${query}` : ""}`);
       if (!response.ok) throw new Error("Error al exportar");
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `referidos-${new Date().toISOString().split("T")[0]}.xlsx`;
+      link.download = `miembros-y-puntos-${new Date().toISOString().split("T")[0]}.xlsx`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -33,14 +33,14 @@ export function ReferralsExportButtons() {
   async function handleExportPdf() {
     setLoadingPdf(true);
     try {
-      const response = await fetch("/api/admin/referrals/export/pdf");
+      const response = await fetch(`/api/admin/referrals/export/pdf${query ? `?${query}` : ""}`);
       if (!response.ok) throw new Error("Error al exportar");
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `referidos-${new Date().toISOString().split("T")[0]}.pdf`;
+      link.download = `miembros-y-puntos-${new Date().toISOString().split("T")[0]}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

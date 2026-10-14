@@ -14,15 +14,21 @@ import { ROUTES } from "@/shared/config/routes";
 import { listAdminReferrals } from "@/features/admin/api/referrals";
 import { ReferralPointsForm } from "@/features/admin/components/referral-points-form";
 import { ReferralsExportButtons } from "./referrals-export-buttons";
+import { HideReferrerButton } from "./hide-referrer-button";
+import { ReferralFilters } from "./referral-filters";
 
 export default async function AdminReferralsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; search?: string; from?: string; to?: string }>;
 }) {
-  const { page: pageParam } = await searchParams;
+  const { page: pageParam, search = "", from = "", to = "" } = await searchParams;
   const page = Math.max(1, Number(pageParam) || 1);
-  const data = await listAdminReferrals(page, 12);
+  const data = await listAdminReferrals(page, 12, { search, from, to });
+  const filterQuery = new URLSearchParams(
+    Object.entries({ search, from, to }).filter(([, value]) => value),
+  ).toString();
+  const filtered = Boolean(search || from || to);
   const visibleReferrals = data.items.reduce((sum, referrer) => sum + referrer.referrals.length, 0);
   const visiblePoints = data.items.reduce((sum, referrer) => sum + referrer.totalPoints, 0);
 
@@ -36,22 +42,24 @@ export default async function AdminReferralsPage({
               Programa de referidos
             </p>
             <h1 className="mt-2 font-display text-4xl font-black tracking-tight text-brand sm:text-5xl">
-              Referentes
+              Miembros y puntos
             </h1>
             <p className="mx-auto mt-3 max-w-2xl text-sm font-semibold leading-6 text-muted sm:text-base sm:mx-0">
               Los puntos se calculan con reglas configurables por estado. Puedes cambiar los valores
               desde esta vista.
             </p>
           </div>
-          {data.items.length > 0 && <ReferralsExportButtons />}
+          {data.items.length > 0 && <ReferralsExportButtons query={filterQuery} />}
         </div>
       </section>
 
+      <ReferralFilters search={search} from={from} to={to} />
+
       <section className="grid gap-4 md:grid-cols-3">
         <MetricCard
-          label="Referentes"
+          label="Miembros"
           value={data.total}
-          hint="Personas con codigo registrado."
+          hint={filtered ? "Miembros que coinciden con el filtro." : "Personas con codigo registrado."}
           tone="bg-brand-soft text-brand"
           Icon={UsersRound}
         />
@@ -94,20 +102,23 @@ export default async function AdminReferralsPage({
               <UsersRound className="size-7" aria-hidden="true" />
             </span>
             <h2 className="mt-5 font-display text-2xl font-black text-brand">
-              Aun no hay referentes registrados
+              {filtered ? "No hay miembros con ese filtro" : "Aun no hay miembros registrados"}
             </h2>
             <p className="mt-2 max-w-md text-sm leading-6 text-muted">
-              Cuando se registren codigos de referencia, apareceran aqui.
+              {filtered
+                ? "Prueba con otro nombre o amplia el rango de fechas."
+                : "Cuando se registren codigos de referencia, apareceran aqui."}
             </p>
           </CardContent>
         </Card>
       ) : (
         <section className="grid min-w-0 max-w-full gap-4 overflow-x-hidden md:grid-cols-2 xl:grid-cols-4">
           {data.items.map((referrer) => (
+            <div key={referrer.id} className="relative min-w-0">
+            <HideReferrerButton id={referrer.id} name={referrer.name} />
             <Link
-              key={referrer.id}
               href={ROUTES.panel.admin.referrer(referrer.id)}
-              className="min-w-0"
+              className="block min-w-0"
             >
               <Card className="flex h-full min-w-0 flex-col overflow-hidden transition duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-pop)]">
                 <div className="h-1.5 bg-brand" aria-hidden="true" />
@@ -159,6 +170,7 @@ export default async function AdminReferralsPage({
                 </CardContent>
               </Card>
             </Link>
+            </div>
           ))}
         </section>
       )}
@@ -167,7 +179,7 @@ export default async function AdminReferralsPage({
         page={page}
         pageSize={data.pageSize}
         total={data.total}
-        buildHref={(p) => `${ROUTES.panel.admin.referrals}?page=${p}`}
+        buildHref={(p) => `${ROUTES.panel.admin.referrals}?${new URLSearchParams({ ...(filterQuery ? Object.fromEntries(new URLSearchParams(filterQuery)) : {}), page: String(p) }).toString()}`}
       />
     </div>
   );
