@@ -16,7 +16,9 @@ import {
   HandCoins,
   Landmark,
   LayoutDashboard,
+  House,
   MessageSquareText,
+  Trophy,
   UserCog,
 } from "lucide-react";
 import { cn } from "@/shared/lib/cn";
@@ -98,9 +100,16 @@ const NAV_ITEMS: readonly AdminNavItem[] = [
   },
   {
     key: "referrals",
-    label: "Referidos y puntos",
+    label: "Miembros y puntos",
     href: ROUTES.panel.admin.referrals,
     Icon: Coins,
+    group: "recompensas",
+  },
+  {
+    key: "referral-ranking",
+    label: "Quienes más refirieron",
+    href: ROUTES.panel.admin.referralRanking,
+    Icon: Trophy,
     group: "recompensas",
   },
   {
@@ -132,6 +141,13 @@ const NAV_ITEMS: readonly AdminNavItem[] = [
     group: "portafolio",
   },
   {
+    key: "ariz-properties",
+    label: "Publicar propiedades Ariz",
+    href: ROUTES.panel.admin.properties,
+    Icon: House,
+    group: "portafolio",
+  },
+  {
     key: "investment-opportunities",
     label: "Proyectos de inversión",
     href: ROUTES.panel.admin.investmentOpportunities,
@@ -143,6 +159,12 @@ const NAV_ITEMS: readonly AdminNavItem[] = [
 function isActiveAdminRoute(pathname: string, href: string) {
   if (href === ROUTES.panel.admin.base || href === ROUTES.panel.admin.projects) {
     return pathname === href;
+  }
+  if (href === ROUTES.panel.admin.referrals) {
+    return (
+      (pathname === href || pathname.startsWith(`${href}/`)) &&
+      !pathname.startsWith(ROUTES.panel.admin.referralRanking)
+    );
   }
   return pathname === href || pathname.startsWith(`${href}/`);
 }
