@@ -87,7 +87,7 @@ export function WelcomeModal() {
             onClick={closePropertyModal}
             className="absolute inset-0 cursor-default"
           />
-          <div className="relative flex w-full max-w-3xl flex-col overflow-hidden rounded-card border border-edge bg-surface shadow-[var(--shadow-pop)] md:flex-row">
+          <div className="relative flex w-full max-w-3xl flex-col max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-card border border-edge bg-surface shadow-[var(--shadow-pop)] md:flex-row">
             <button
               type="button"
               onClick={closePropertyModal}
@@ -151,7 +151,7 @@ export function WelcomeModal() {
             onClick={closeClubModal}
             className="absolute inset-0 cursor-default"
           />
-          <div className="relative flex w-full max-w-4xl flex-col overflow-hidden rounded-card border border-brand/20 bg-surface shadow-[var(--shadow-pop)] md:flex-row">
+          <div className="relative flex w-full max-w-4xl flex-col max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-card border border-brand/20 bg-surface shadow-[var(--shadow-pop)] md:flex-row">
             <button
               type="button"
               onClick={closeClubModal}
