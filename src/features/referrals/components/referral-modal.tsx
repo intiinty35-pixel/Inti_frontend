@@ -1,6 +1,6 @@
 ﻿'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { KeyRound, UserRoundPlus } from 'lucide-react';
 import { createPortal } from 'react-dom';
@@ -62,6 +62,14 @@ const AVAILABILITY_OPTIONS = [
 ] as const;
 
 const BANK_OPTIONS = ['BBVA', 'BCP', 'Interbank', 'Scotiabank', 'Banco de la Nación'] as const;
+
+const BANK_ACCOUNT_LENGTHS: Record<string, number> = {
+  'BCP': 14,
+  'BBVA': 18,
+  'Interbank': 13,
+  'Scotiabank': 10,
+  'Banco de la Nación': 11,
+};
 
 const INTEREST_DETAIL_OPTIONS: Partial<Record<(typeof INTEREST_OPTIONS)[number]['value'], readonly string[]>> = {
   COMPRA: ['Comprar propiedades', 'Comprar proyectos', 'Comprar terrenos', 'Comprar lotes'],
@@ -126,6 +134,19 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
   const [campaignCode, setCampaignCode] = useState('');
   const [validatedCampaign, setValidatedCampaign] = useState<{ id: string; name: string } | null>(null);
   const [validatingCampaign, setValidatingCampaign] = useState(false);
+  const [bankDropdownOpen, setBankDropdownOpen] = useState(false);
+  const bankDropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!bankDropdownOpen) return;
+    function handleClickOutside(event: MouseEvent) {
+      if (bankDropdownRef.current && !bankDropdownRef.current.contains(event.target as Node)) {
+        setBankDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [bankDropdownOpen]);
 
   useEffect(() => {
     if (!open || !allowsArizProject(interest) || arizProjects !== null) return;
@@ -226,7 +247,12 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
       next.referrerPayment = 'Elige cómo quieres recibir tus recompensas.';
     } else if (paymentMethod === 'bank') {
       if (!referrerBank) next.referrerPayment = 'Elige el banco de tu cuenta.';
-      else if (!/^\d{14}$/.test(referrerBankAccount)) next.referrerPayment = 'Ingresa un número de cuenta de 14 dígitos.';
+      else {
+        const requiredLength = BANK_ACCOUNT_LENGTHS[referrerBank];
+        if (!new RegExp(`^\\d{${requiredLength}}$`).test(referrerBankAccount)) {
+          next.referrerPayment = `Ingresa un número de cuenta de ${requiredLength} dígitos.`;
+        }
+      }
     } else if (paymentMethod === 'yape' && !/^9\d{8}$/.test(referrerYape)) {
       next.referrerPayment = 'Ingresa un número Yape de 9 dígitos que empiece con 9.';
     } else if (paymentMethod === 'plin' && !/^9\d{8}$/.test(referrerPlin)) {
@@ -396,6 +422,7 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
     setAvailability('');
     setInterestDetail('');
     setProjectChoice('');
+    setBankDropdownOpen(false);
     onClose();
   }
 
@@ -848,6 +875,7 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
                         type="button"
                         onClick={() => {
                           setPaymentMethod(option.value as PaymentMethod);
+                          setBankDropdownOpen(false);
                           setErrors((current) => ({ ...current, referrerPayment: undefined }));
                         }}
                         className={`h-10 rounded-lg border px-2 text-xs font-black transition-colors ${
@@ -868,43 +896,66 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
                 </div>
                 {paymentMethod === 'bank' ? (
                   <div className="grid gap-4 sm:grid-cols-2">
-                    <label className="flex flex-col gap-1.5">
+                    <div className="relative flex flex-col gap-1.5" ref={bankDropdownRef}>
                       <span className="text-[13px] font-semibold text-brand">
                         Banco
                       </span>
-                      <span className="relative">
-                        <select
-                          value={referrerBank}
-                          onChange={(event) => {
-                            setReferrerBank(event.target.value);
-                            setErrors((current) => ({ ...current, referrerPayment: undefined }));
-                          }}
-                          className="h-11 w-full appearance-none rounded-card border border-brand/35 bg-surface px-3.5 pr-10 text-sm font-semibold text-ink shadow-[var(--shadow-card)] transition-colors outline-none hover:border-brand focus:border-brand focus:outline-2 focus:outline-brand/25"
+                      <div className="relative">
+                        <button
+                          type="button"
+                          onClick={() => setBankDropdownOpen((prev) => !prev)}
+                          className={`flex h-11 w-full items-center justify-between rounded-card border bg-surface px-3.5 text-sm font-semibold text-ink shadow-[var(--shadow-card)] transition-colors outline-none ${
+                            bankDropdownOpen ? 'border-brand' : 'border-brand/35 hover:border-brand'
+                          }`}
                         >
-                          <option value="">Elige banco</option>
-                          {BANK_OPTIONS.map((bank) => (
-                            <option key={bank} value={bank}>
-                              {bank}
-                            </option>
-                          ))}
-                        </select>
-                        <span
-                          aria-hidden
-                          className="pointer-events-none absolute top-1/2 right-3 flex size-6 -translate-y-1/2 items-center justify-center rounded-full bg-brand-soft text-xs font-black text-brand"
-                        >
-                          ▼
-                        </span>
-                      </span>
-                    </label>
+                          <span className={referrerBank ? 'text-ink' : 'text-muted'}>
+                            {referrerBank || 'Elige banco'}
+                          </span>
+                          <span
+                            aria-hidden
+                            className={`flex size-5 items-center justify-center rounded-full bg-brand-soft text-[10px] font-black text-brand transition-transform ${
+                              bankDropdownOpen ? 'rotate-180' : ''
+                            }`}
+                          >
+                            ▼
+                          </span>
+                        </button>
+                        {bankDropdownOpen && (
+                          <div className="absolute top-full left-0 z-50 mt-1 w-full overflow-hidden rounded-card border border-brand/30 bg-surface shadow-lg">
+                            <div className="max-h-48 overflow-y-auto">
+                              {BANK_OPTIONS.map((bank) => (
+                                <button
+                                  key={bank}
+                                  type="button"
+                                  onClick={() => {
+                                    setReferrerBank(bank);
+                                    setReferrerBankAccount('');
+                                    setBankDropdownOpen(false);
+                                    setErrors((current) => ({ ...current, referrerPayment: undefined }));
+                                  }}
+                                  className={`w-full px-3.5 py-2 text-left text-sm font-semibold transition-colors ${
+                                    referrerBank === bank
+                                      ? 'bg-brand text-on-brand'
+                                      : 'text-ink hover:bg-brand-soft'
+                                  }`}
+                                >
+                                  {bank}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                     <Input
                       label="Número de cuenta"
                       type="tel"
                       inputMode="numeric"
-                      placeholder="14 dígitos"
-                      maxLength={14}
+                      placeholder={`${BANK_ACCOUNT_LENGTHS[referrerBank] ?? 14} dígitos`}
+                      maxLength={BANK_ACCOUNT_LENGTHS[referrerBank] ?? 14}
                       value={referrerBankAccount}
-                      onChange={(e) => setReferrerBankAccount(e.target.value.replace(/\D/g, '').slice(0, 14))}
-                      hint="Solo 14 números."
+                      onChange={(e) => setReferrerBankAccount(e.target.value.replace(/\D/g, '').slice(0, BANK_ACCOUNT_LENGTHS[referrerBank] ?? 14))}
+                      hint={`Solo ${BANK_ACCOUNT_LENGTHS[referrerBank] ?? 14} números.`}
                     />
                   </div>
                 ) : null}
