@@ -144,9 +144,9 @@ export function ClaimForm({ onSuccess }: ClaimFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="overflow-hidden rounded-[5px] border border-[#bfc8d6] bg-white shadow-sm">
-      <header className="relative border-b border-[#c9d1dc] px-5 py-6 text-center">
-        <img src="/logo/logo.png" alt="ARIZ" className="absolute right-5 top-5 h-6 w-auto" />
-        <h1 className="text-[20px] font-black uppercase tracking-wide text-[#001b3f]">Libro de Reclamaciones</h1>
+      <header className="relative border-b border-[#c9d1dc] px-3 py-6 text-center sm:px-5">
+        <img src="/logo/logo.png" alt="ARIZ" className="absolute right-3 top-4 h-5 w-auto sm:right-5 sm:top-5 sm:h-6" />
+        <h1 className="pr-16 text-[20px] font-black uppercase tracking-wide text-[#001b3f] sm:pr-20">Libro de Reclamaciones</h1>
         <p className="mt-1 text-[11px] font-medium text-[#35445c]">(Ley N° 29571, Codigo de Proteccion y Defensa del Consumidor)</p>
       </header>
 

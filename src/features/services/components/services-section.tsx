@@ -385,32 +385,32 @@ export function ServicesSection() {
           onPointerMove={handleDragMove}
           onPointerUp={handleDragEnd}
           onPointerCancel={handleDragEnd}
-          className="horizontal-scrollbar-hidden grid cursor-grab auto-cols-[100%] touch-pan-x select-none snap-x snap-mandatory grid-flow-col grid-rows-1 gap-3 overflow-x-auto scroll-smooth pb-3 active:cursor-grabbing sm:auto-cols-[calc((100%_-_0.75rem)/2)] lg:auto-cols-[calc((100%_-_1.5rem)/3)] xl:auto-cols-[calc((100%_-_2.25rem)/4)]"
+          className="horizontal-scrollbar-hidden grid cursor-grab auto-cols-[calc((100%_-_0.75rem)/2)] touch-pan-x select-none snap-x snap-mandatory grid-flow-col grid-rows-1 gap-3 overflow-x-auto scroll-smooth pb-3 active:cursor-grabbing sm:auto-cols-[calc((100%_-_0.75rem)/2)] lg:auto-cols-[calc((100%_-_1.5rem)/3)] xl:auto-cols-[calc((100%_-_2.25rem)/4)]"
         >
           {SERVICE_CARDS.map((service) => (
             <RevealOnScroll key={service.title} className="snap-start">
               <article
                 data-service-card
-                className="flex h-full min-h-40 flex-col items-center justify-center rounded-card border border-[#25D366] bg-surface p-4 text-center shadow-[var(--shadow-card)] transition duration-200 hover:-translate-y-0.5 hover:border-[#128C7E] sm:min-h-44 sm:p-5"
+                className="flex h-full min-h-28 flex-col items-center justify-center rounded-card border border-[#25D366] bg-surface p-3 text-center shadow-[var(--shadow-card)] transition duration-200 hover:-translate-y-0.5 hover:border-[#128C7E] sm:min-h-44 sm:p-5"
               >
-                <h3 className="text-sm font-black uppercase leading-5 text-brand sm:text-base sm:leading-6">
+                <h3 className="text-xs font-black uppercase leading-4 text-brand sm:text-base sm:leading-6">
                   {service.title}
                 </h3>
-                <span className="mt-3 flex size-11 items-center justify-center rounded-card bg-brand text-on-brand shadow-[0_8px_18px_rgb(7_26_90_/_0.14)]">
-                  <service.icon className="size-5" strokeWidth={2.2} aria-hidden="true" />
+                <span className="mt-2 flex size-9 items-center justify-center rounded-card bg-brand text-on-brand shadow-[0_8px_18px_rgb(7_26_90_/_0.14)] sm:mt-3 sm:size-11">
+                  <service.icon className="size-4 sm:size-5" strokeWidth={2.2} aria-hidden="true" />
                 </span>
-                <div className="mt-5 grid w-full gap-2">
+                <div className="mt-3 grid w-full gap-1.5 sm:mt-5 sm:gap-2">
                   <a
                     href={buildServiceWhatsappUrl(service.title)}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex h-10 items-center justify-center rounded-card bg-accent px-4 text-sm font-black text-on-accent transition hover:bg-accent-hover"
+                    className="inline-flex h-8 items-center justify-center rounded-card bg-accent px-4 text-xs font-black text-on-accent transition hover:bg-accent-hover sm:h-10 sm:text-sm"
                   >
                     Consultar
                   </a>
                   <a
                     href={service.href}
-                    className="inline-flex h-10 items-center justify-center rounded-card border border-brand px-4 text-sm font-black text-brand transition hover:bg-brand hover:text-on-brand"
+                    className="inline-flex h-8 items-center justify-center rounded-card border border-brand px-4 text-xs font-black text-brand transition hover:bg-brand hover:text-on-brand sm:h-10 sm:text-sm"
                   >
                     Conocer
                   </a>

@@ -203,7 +203,7 @@ export function SortSelect({
   }
 
   return (
-    <div className="relative z-10 isolate w-48">
+    <div className="relative z-10 isolate w-full">
       <Listbox
         name="sort"
         value={value ?? "recent"}
@@ -211,7 +211,7 @@ export function SortSelect({
         onValueChange={handleChange}
         label="Ordenar resultados"
         className="w-full"
-        triggerClassName="h-10 rounded-card border border-edge bg-surface px-3 text-sm font-bold text-brand focus-visible:border-brand"
+        triggerClassName="h-10 w-full rounded-card border border-edge bg-surface px-3 text-sm font-bold text-brand focus-visible:border-brand"
         listClassName="min-w-full"
       />
     </div>

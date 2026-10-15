@@ -32,10 +32,11 @@ export function SharePropertyButton({ title }: { title: string }) {
       <button
         type="button"
         onClick={share}
-        className="inline-flex min-h-10 items-center justify-center gap-2 rounded-card border border-brand px-3 text-xs font-bold text-brand transition-colors hover:bg-brand-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand sm:px-4 sm:text-sm"
+        className="inline-flex h-9 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-card border border-brand px-2.5 text-[11px] font-bold text-brand transition-colors hover:bg-brand-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand sm:min-h-10 sm:px-4 sm:text-xs"
       >
-        <Share2 className="size-4 shrink-0" aria-hidden="true" />
-        Compartir propiedad
+        <Share2 className="size-3.5 shrink-0" aria-hidden="true" />
+        <span className="hidden sm:inline">Compartir propiedad</span>
+        <span className="sm:hidden">Compartir</span>
       </button>
       <span aria-live="polite" className="text-right text-xs text-muted">
         {message}

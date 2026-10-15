@@ -170,13 +170,15 @@ export function ContactForm() {
         </p>
       ) : null}
 
-      <button
-        disabled={submitting}
-        className="mt-5 inline-flex h-11 items-center justify-center gap-2 rounded-card bg-brand px-5 text-sm font-black text-on-brand hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-70"
-      >
-        <Send className="size-4" />
-        {submitting ? "Enviando..." : "Enviar consulta"}
-      </button>
+      <div className="mt-5 flex justify-center">
+        <button
+          disabled={submitting}
+          className="inline-flex h-11 items-center justify-center gap-2 rounded-card bg-brand px-5 text-sm font-black text-on-brand hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-70"
+        >
+          <Send className="size-4" />
+          {submitting ? "Enviando..." : "Enviar consulta"}
+        </button>
+      </div>
     </form>
   );
 }

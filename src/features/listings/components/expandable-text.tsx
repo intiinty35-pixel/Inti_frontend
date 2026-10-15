@@ -14,21 +14,29 @@ export function ExpandableText({ text, lines = 4, maxWords, className }: Expanda
   const [expanded, setExpanded] = useState(false);
   const [overflows, setOverflows] = useState(false);
 
+  const normalizedText = useMemo(() => {
+    return text
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0)
+      .join("\n");
+  }, [text]);
+
   const wordPreview = useMemo(() => {
     if (!maxWords) {
-      return { text, truncated: false };
+      return { text: normalizedText, truncated: false };
     }
 
-    const words = text.trim().split(/\s+/).filter(Boolean);
+    const words = normalizedText.trim().split(/\s+/).filter(Boolean);
     if (words.length <= maxWords) {
-      return { text, truncated: false };
+      return { text: normalizedText, truncated: false };
     }
 
     return {
       text: `${words.slice(0, maxWords).join(" ")}...`,
       truncated: true,
     };
-  }, [maxWords, text]);
+  }, [maxWords, normalizedText]);
 
   useEffect(() => {
     if (maxWords) {
@@ -46,10 +54,10 @@ export function ExpandableText({ text, lines = 4, maxWords, className }: Expanda
     check();
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
-  }, [text, lines, expanded, maxWords]);
+  }, [normalizedText, lines, expanded, maxWords]);
 
   const canToggle = maxWords ? wordPreview.truncated : overflows || expanded;
-  const visibleText = expanded ? text : wordPreview.text;
+  const visibleText = expanded ? normalizedText : wordPreview.text;
 
   return (
     <div>

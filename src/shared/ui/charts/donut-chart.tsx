@@ -26,9 +26,9 @@ export function DonutChart({ data, centerLabel = "total" }: DonutChartProps) {
   let offset = 0;
 
   return (
-    <div className="grid w-full gap-4 rounded-card border border-edge bg-white p-4 shadow-[var(--shadow-card)] sm:grid-cols-[220px_minmax(0,1fr)] sm:items-center">
+    <div className="grid w-full gap-4 rounded-card border border-edge bg-white p-3 sm:p-4 shadow-[var(--shadow-card)] sm:grid-cols-[220px_minmax(0,1fr)] sm:items-center">
       <div className="relative mx-auto">
-        <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="size-52" role="img" aria-label={`Distribucion ${centerLabel}`}>
+        <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="size-40 sm:size-52" role="img" aria-label={`Distribucion ${centerLabel}`}>
           <circle cx={SIZE / 2} cy={SIZE / 2} r={RADIUS} fill="none" stroke="#edf1f6" strokeWidth={STROKE} />
           {hasData
             ? data.map((datum, index) => {

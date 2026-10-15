@@ -141,9 +141,9 @@ async function ProjectsResults({
   const { cards, points } = toProjectPoints(items);
 
   return (
-    <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(340px,380px)] 2xl:grid-cols-[minmax(0,1fr)_400px]">
+    <div className="grid w-full min-w-0 grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(340px,380px)] 2xl:grid-cols-[minmax(0,1fr)_400px]">
       {cards.length > 0 ? (
-        <div className="flex min-w-0 flex-col gap-4">
+        <div className="flex w-full min-w-0 flex-col gap-4">
           {cards.map((project) => (
             <ProjectListingCard key={project.id} project={project} />
           ))}
@@ -154,11 +154,13 @@ async function ProjectsResults({
         </div>
       )}
 
-      <ListingsMapExperience
-        points={points}
-        filters={{ operation, type: "projects", district }}
-        isProjectMode
-      />
+      <div className="w-full min-w-0 overflow-hidden lg:overflow-visible">
+        <ListingsMapExperience
+          points={points}
+          filters={{ operation, type: "projects", district }}
+          isProjectMode
+        />
+      </div>
     </div>
   );
 }
@@ -199,8 +201,7 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
         pageSize: PAGE_SIZE,
         hasMore: false,
       }));
-  // En modo proyectos el listado real viene de /projects: el contador de
-  // propiedades no aplica y se omite en vez de mostrar un "0" enganoso.
+
   const totalLabel = isProjectMode
     ? "Proyectos publicados"
     : `${result.total} propiedades disponibles`;
@@ -238,73 +239,81 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
   };
 
   return (
-    <>
+    <div className="w-full max-w-full overflow-x-hidden">
       <Container size="full" className="flex flex-1 flex-col gap-6 py-8">
-      <PropertyFiltersBar basePath="/propiedades" value={filterBarValue} />
-
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-sm text-muted">{totalLabel}</p>
-          <h1 className="font-display text-3xl font-semibold text-ink">{heading}</h1>
+        <div className="w-full min-w-0 overflow-x-auto">
+          <PropertyFiltersBar basePath="/propiedades" value={filterBarValue} />
         </div>
-        <div className="flex items-center gap-2">
-          <Link
-            href={ROUTES.services}
-            className="inline-flex h-10 items-center rounded-card border border-edge px-4 text-sm font-bold text-brand transition-colors hover:border-brand"
-          >
-            Conócenos
-          </Link>
-          <SortSelect value={sort} basePath="/propiedades" currentParams={currentParams} />
-        </div>
-      </div>
 
-      {isProjectMode ? (
-        <ProjectsResults operation={operation} district={district} />
-      ) : (
-        <>
-          <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(340px,380px)] 2xl:grid-cols-[minmax(0,1fr)_400px]">
-            {result.items.length > 0 ? (
-              <div className="flex min-w-0 flex-col gap-4">
-                {result.items.map((listing) => (
-                  <ListingCard
-                    key={listing.id}
-                    listing={listing}
-                    favoriteAction={
-                      <FavoriteButton propertyId={listing.id} title={listing.title} />
-                    }
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="rounded-card border border-dashed border-edge bg-surface-muted p-10 text-center text-sm text-muted">
-                No encontramos propiedades con esos filtros.
-              </div>
-            )}
-
-            {/*
-              La vista previa del mapa vive en la columna derecha. Al abrirla se
-              monta el mapa interactivo completo (mismo panel de siempre) en un
-              modal: en movil tambien aparece el boton flotante "Mapa".
-            */}
-            <ListingsMapExperience
-              points={toListingPoints(result.items)}
-              filters={{ operation, type, district, roomsMin, priceMin, priceMax, areaMin }}
-              isProjectMode={false}
-            />
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm text-muted">{totalLabel}</p>
+            <h1 className="font-display text-3xl font-semibold text-ink">{heading}</h1>
           </div>
+          <div className="grid grid-cols-2 gap-2 min-w-0 w-full sm:w-auto sm:flex sm:items-center sm:gap-2">
+            <Link
+              href={ROUTES.services}
+              className="inline-flex h-10 items-center justify-center rounded-card border border-edge px-4 text-sm font-bold text-brand transition-colors hover:border-brand whitespace-nowrap"
+            >
+              Conócenos
+            </Link>
+            <div className="min-w-0">
+              <SortSelect value={sort} basePath="/propiedades" currentParams={currentParams} />
+            </div>
+          </div>
+        </div>
 
-          {result.items.length > 0 ? (
-            <Pagination
-              page={page}
-              pageSize={PAGE_SIZE}
-              total={result.total}
-              buildHref={buildPageHref}
-            />
-          ) : null}
-        </>
-      )}
+        {isProjectMode ? (
+          <ProjectsResults operation={operation} district={district} />
+        ) : (
+          <>
+            <div className="grid w-full min-w-0 grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(340px,380px)] 2xl:grid-cols-[minmax(0,1fr)_400px]">
+              {result.items.length > 0 ? (
+                <div className="flex w-full min-w-0 flex-col gap-4">
+                  {result.items.map((listing) => (
+                    <ListingCard
+                      key={listing.id}
+                      listing={listing}
+                      favoriteAction={
+                        <FavoriteButton propertyId={listing.id} title={listing.title} />
+                      }
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="rounded-card border border-dashed border-edge bg-surface-muted p-10 text-center text-sm text-muted">
+                  No encontramos propiedades con esos filtros.
+                </div>
+              )}
+
+              <div className="w-full min-w-0 overflow-hidden lg:overflow-visible">
+                <ListingsMapExperience
+                  points={toListingPoints(result.items)}
+                  filters={{ operation, type, district, roomsMin, priceMin, priceMax, areaMin }}
+                  isProjectMode={false}
+                />
+              </div>
+            </div>
+
+            {result.items.length > 0 ? (
+              <div className="w-full min-w-0 overflow-x-auto">
+                <Pagination
+                  page={page}
+                  pageSize={PAGE_SIZE}
+                  total={result.total}
+                  buildHref={buildPageHref}
+                />
+              </div>
+            ) : null}
+          </>
+        )}
       </Container>
-      {operation === "buy" ? <InvestmentGrowthBanner /> : null}
-    </>
+
+      {operation === "buy" ? (
+        <div className="w-full max-w-full overflow-hidden">
+          <InvestmentGrowthBanner />
+        </div>
+      ) : null}
+    </div>
   );
 }
