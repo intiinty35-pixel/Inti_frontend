@@ -223,7 +223,7 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
     if (!referrerPhone.trim()) next.referrerPhone = 'Ingresa tu teléfono.';
     else if (!isValidPeruPhone(referrerPhone)) next.referrerPhone = 'Ingresa tu celular de 9 dígitos (ej. 923 655 566).';
     if (!paymentMethod) {
-      next.referrerPayment = 'Elige cómo quieres recibir tus recompensas.';
+      next.referrerPayment = 'Elige cómo quieres recibir tu bono.';
     } else if (paymentMethod === 'bank') {
       if (!referrerBank) next.referrerPayment = 'Elige el banco de tu cuenta.';
       else if (!/^\d{14}$/.test(referrerBankAccount)) next.referrerPayment = 'Ingresa un número de cuenta de 14 dígitos.';
@@ -835,7 +835,7 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
                 />
                 <div className="flex flex-col gap-2">
                   <span className="text-sm font-bold text-ink">
-                    ¿Cómo quieres recibir tus recompensas?
+                    ¿Cómo quieres recibir tu bono?
                   </span>
                   <div className="grid grid-cols-3 gap-2">
                     {[
