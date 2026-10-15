@@ -54,7 +54,7 @@ export function ProjectCard({ project }: { project: Project }) {
           </time>
         ) : null}
 
-        <DataGrid columns={4} className="mt-1.5 grid-cols-2 gap-x-1 sm:grid-cols-4 sm:gap-x-2 sm:mt-2.5">
+        <DataGrid columns={4} className="mt-1.5 gap-x-1 sm:mt-2.5 sm:gap-x-2">
           <DataCell label="Área" value={formatArea(project.areaRange.min)} />
           <DataCell label={project.lotsLabel ?? "lotes"} value={project.lotsTotal} />
           <DataCell label="Entrega" value={project.deliveryStage} />

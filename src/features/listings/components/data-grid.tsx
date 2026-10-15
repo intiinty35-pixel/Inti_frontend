@@ -7,23 +7,30 @@ export interface DataGridProps {
   className?: string;
 }
 
+/**
+ * Las 4 columnas dependen del ancho de la propia tarjeta (container query), no
+ * de la pantalla: en una tarjeta angosta, como las de dos por fila en celular,
+ * caen a 2 columnas para que las etiquetas y valores no se corten.
+ */
 const COLUMNS = {
   2: "grid-cols-2 gap-x-3",
-  4: "grid-cols-4 gap-x-2",
+  4: "grid-cols-2 gap-x-2 @[18rem]:grid-cols-4",
 } as const;
 
 /** Ficha técnica: 4 columnas de label + valor, o 2 cuando los valores son largos. */
 export function DataGrid({ children, columns = 2, className }: DataGridProps) {
   return (
-    <dl
-      className={cn(
-        "grid gap-y-1.5 border-t border-edge pt-2",
-        COLUMNS[columns],
-        className,
-      )}
-    >
-      {children}
-    </dl>
+    <div className="@container">
+      <dl
+        className={cn(
+          "grid gap-y-1.5 border-t border-edge pt-2",
+          COLUMNS[columns],
+          className,
+        )}
+      >
+        {children}
+      </dl>
+    </div>
   );
 }
 

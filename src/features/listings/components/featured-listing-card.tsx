@@ -52,7 +52,7 @@ export function FeaturedListingCard({
           </time>
         ) : null}
 
-        <DataGrid columns={4} className="mt-1.5 grid-cols-2 gap-x-1 sm:grid-cols-4 sm:gap-x-2 sm:mt-2.5">
+        <DataGrid columns={4} className="mt-1.5 gap-x-1 sm:mt-2.5 sm:gap-x-2">
           <DataCell label="Área" value={formatArea(listing.areaM2)} />
           <DataCell label="Dorm." value={listing.rooms} />
           <DataCell label="Baños" value={listing.bathrooms} />
