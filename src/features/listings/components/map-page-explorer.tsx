@@ -28,6 +28,11 @@ import type { Listing } from "@/features/listings/types/listing";
 import type { MapPoint } from "@/features/listings/components/listings-map";
 
 const PAGE_SIZE = 10;
+
+/** Los proyectos del mapa abren su propia ficha, no la de una propiedad. */
+function listingHref(listing: Listing): string {
+  return listing.type === "projects" ? ROUTES.project(listing.slug) : ROUTES.property(listing.slug);
+}
 const MAP_DEFAULT_CENTER: [number, number] = [-12.046374, -77.042793];
 
 const ListingsMap = dynamic<{
@@ -151,7 +156,7 @@ export function MapPageExplorer({
             id: listing.id,
             lat,
             lng,
-            href: ROUTES.property(listing.slug),
+            href: listingHref(listing),
             priceLabel: `${formatPrice(listing.price.amount, listing.price.currency)}${
               listing.price.period === "mensual" ? " / mes" : ""
             }`,
@@ -383,7 +388,7 @@ export function MapPageExplorer({
                       </div>
                       <div className="flex shrink-0 flex-col justify-center gap-2 border-l border-edge pl-2">
                         <Link
-                          href={ROUTES.property(listing.slug)}
+                          href={listingHref(listing)}
                           aria-label={`Ver descripción de ${listing.title}`}
                           title="Ver descripción"
                           className="flex size-9 items-center justify-center rounded-xl bg-brand text-on-brand transition-colors hover:bg-brand-hover"
