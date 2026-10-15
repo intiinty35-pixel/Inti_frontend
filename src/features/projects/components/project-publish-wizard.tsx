@@ -121,18 +121,19 @@ export function ProjectPublishWizard({
   const statuses = useMemo<StepStatus[]>(
     () =>
       WIZARD_STEPS.map((_, index) => {
-        if (index < step) {
+        // Al editar, el proyecto ya esta completo: todos los pasos se pueden abrir.
+        if (index < step || (editing && index !== step)) {
           return "done";
         }
 
         return index === step ? "current" : "todo";
       }),
-    [step],
+    [step, editing],
   );
 
   const goToStep = useCallback(
     (target: number) => {
-      if (target < step) {
+      if (target < step || editing) {
         setStep(target);
         return;
       }
@@ -145,7 +146,7 @@ export function ProjectPublishWizard({
         });
       }
     },
-    [step, trigger],
+    [step, trigger, editing],
   );
 
   const goNext = useCallback(async () => {

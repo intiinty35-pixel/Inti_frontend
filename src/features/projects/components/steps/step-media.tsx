@@ -42,8 +42,8 @@ function KeptMediaList({
     <div className="mb-3">
       <p className="text-xs font-bold text-brand">{KEPT_LABELS[type]}</p>
       <ul className="mt-2 flex flex-wrap gap-2">
-        {own.map((item) => (
-          <li key={item.url} className="relative size-20 overflow-hidden rounded-card border border-edge bg-surface-muted">
+        {own.map((item, index) => (
+          <li key={`${item.url}-${index}`} className="relative size-20 overflow-hidden rounded-card border border-edge bg-surface-muted">
             {type === "FLOOR_PLAN" && /\.pdf($|\?)/i.test(item.url) ? (
               <span className="flex size-full items-center justify-center text-[11px] font-bold text-brand">PDF</span>
             ) : (
