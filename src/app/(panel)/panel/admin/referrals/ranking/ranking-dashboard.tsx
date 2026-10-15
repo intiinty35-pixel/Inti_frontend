@@ -235,7 +235,73 @@ export function RankingDashboard() {
 
       {error ? <p className="rounded-card bg-error/10 px-4 py-3 text-sm font-semibold text-error">{error}</p> : null}
 
-      <section className="overflow-hidden rounded-card border border-edge bg-surface shadow-[var(--shadow-card)]">
+      {/* En celular cada miembro es una tarjeta; la tabla aparece desde pantallas medianas. */}
+      <section className="grid gap-3 md:hidden">
+        {loading && !data ? (
+          <p className="rounded-card border border-edge bg-surface p-6 text-center text-sm text-muted">Cargando ranking...</p>
+        ) : data && data.items.length === 0 ? (
+          <p className="rounded-card border border-edge bg-surface p-6 text-center text-sm text-muted">No hay miembros con ese filtro.</p>
+        ) : (
+          data?.items.map((row) => (
+            <article key={row.id} className="rounded-card border border-edge bg-surface p-4 shadow-[var(--shadow-card)]">
+              <div className="flex items-start gap-3">
+                <span
+                  className={`inline-flex size-9 shrink-0 items-center justify-center rounded-full text-xs font-black ${
+                    row.rank <= 3 ? "bg-accent text-on-accent" : "bg-brand-soft text-brand"
+                  }`}
+                >
+                  {row.rank <= 3 ? <Trophy className="size-4" aria-hidden="true" /> : row.rank}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="break-words font-bold text-brand">{row.name}</p>
+                  <p className="text-xs text-muted">{row.code}</p>
+                </div>
+              </div>
+              <div className="mt-3 grid grid-cols-3 gap-2 border-y border-edge py-2 text-center">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.1em] text-muted">Referidos</p>
+                  <p className="text-lg font-black text-brand">{row.referralsCount}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.1em] text-muted">Concretados</p>
+                  <p className="text-lg font-black text-ink">{row.completedCount}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.1em] text-muted">Puntos</p>
+                  <p className="text-lg font-black text-ink">{row.points.toLocaleString("es-PE")}</p>
+                </div>
+              </div>
+              <div className="mt-3 flex flex-wrap gap-2 text-xs font-bold">
+                <a href={`tel:${row.phone.replace(/\s/g, "")}`} className="inline-flex h-9 items-center gap-1.5 rounded-card border border-edge px-3 text-brand">
+                  <Phone className="size-3.5" aria-hidden="true" />
+                  Llamar
+                </a>
+                <a
+                  href={`https://wa.me/${row.phone.replace(/\D/g, "")}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex h-9 items-center gap-1.5 rounded-card border border-edge px-3 text-brand"
+                >
+                  <MessageCircle className="size-3.5" aria-hidden="true" />
+                  WhatsApp
+                </a>
+                <a href={`mailto:${row.email}`} className="inline-flex h-9 items-center gap-1.5 rounded-card border border-edge px-3 text-brand">
+                  <Mail className="size-3.5" aria-hidden="true" />
+                  Correo
+                </a>
+              </div>
+              <p className="mt-2 text-[11px] text-muted">
+                {row.paymentType} · Último referido: {formatDate(row.lastReferralAt)}
+              </p>
+              <div className="mt-3 border-t border-edge pt-3">
+                <MemberActions id={row.id} name={row.name} onUpdated={load} />
+              </div>
+            </article>
+          ))
+        )}
+      </section>
+
+      <section className="hidden overflow-hidden rounded-card border border-edge bg-surface shadow-[var(--shadow-card)] md:block">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[56rem] text-left text-sm">
             <thead className="bg-surface-muted text-[11px] font-black uppercase tracking-[0.12em] text-muted">
