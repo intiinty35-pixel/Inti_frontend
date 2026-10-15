@@ -107,7 +107,7 @@ export function SearchForm() {
               setType("all");
             }}
             className={cn(
-              "-mb-px border-b-2 px-3 py-2.5 text-[12px] font-bold transition-colors",
+              "-mb-px border-b-2 px-1.5 py-2.5 text-[12px] font-bold transition-colors sm:px-3",
               item.key === tab.key
                 ? "border-accent text-brand"
                 : "border-transparent text-muted hover:text-brand",
