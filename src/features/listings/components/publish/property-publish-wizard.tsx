@@ -171,7 +171,8 @@ export function PropertyPublishWizard({
   const errorsRef = useRef<HTMLDivElement>(null);
   const issuesRef = useRef<string[]>([]);
   const [step, setStep] = useState<Step>(1);
-  const [maxStepReached, setMaxStepReached] = useState<Step>(1);
+  // Al editar, la propiedad ya esta completa: todos los pasos se pueden abrir desde el inicio.
+  const [maxStepReached, setMaxStepReached] = useState<Step>(editing ? 4 : 1);
   const [operationType, setOperationType] = useState<ApiOperationType>(initialProperty?.operationType ?? "SALE");
   const [propertyType, setPropertyType] = useState<ApiPropertyType>(initialProperty?.propertyType ?? "APARTMENT");
   const [currency, setCurrency] = useState<"PEN" | "USD">(initialProperty?.currency ?? "PEN");
