@@ -182,12 +182,13 @@ export function PublicFooter({ publishHref = ROUTES.registerProfessional }: { pu
           </div>
         </div>
 
-        <div className="mt-10 flex items-center justify-center sm:justify-start">
+        <div className="mt-10 flex flex-col items-center gap-2 sm:items-start">
           <img
             src="/logo/ministerio-vivienda.png"
             alt="Ministerio de Vivienda, Construcción y Saneamiento del Perú"
             className="h-[4.5rem] w-72 max-w-full rounded-sm bg-white object-cover object-center"
           />
+          <p className="text-xs font-bold tracking-wide text-white/85">CÓDIGO N° 02407 - PJ - MVCS</p>
         </div>
 
         <div className="mt-6 flex flex-col gap-3 border-t border-white/20 pt-6 text-xs text-white/70 sm:flex-row sm:items-center sm:justify-between">
