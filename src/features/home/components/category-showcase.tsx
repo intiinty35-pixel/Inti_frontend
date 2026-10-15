@@ -41,7 +41,7 @@ const categories: readonly Category[] = [
     slug: "invertir",
     label: "Invertir con Ariz",
     subtitle: "Oportunidades con alta plusvalia.",
-    href: `${ROUTES.properties}?operation=buy&type=projects`,
+    href: ROUTES.investments,
     Icon: TrendingUp,
   },
   {
