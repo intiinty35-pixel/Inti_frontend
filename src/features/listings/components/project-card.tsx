@@ -128,11 +128,11 @@ export function ProjectListingCard({ project }: { project: Project }) {
           <DataCell label="Distrito" value={project.location.district} />
         </DataGrid>
 
-        <div className="mt-auto flex flex-wrap items-center justify-between gap-2 pt-4">
-          <p className="mr-auto text-base font-bold text-brand">
+        <div className="mt-auto flex flex-col gap-2 pt-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+          <p className="text-base font-bold text-brand">
             Desde {formatPrice(project.startingPrice.amount, project.startingPrice.currency)}
           </p>
-          <div className="flex flex-wrap justify-end gap-2">
+          <div className="grid w-full grid-cols-2 gap-2 sm:w-auto sm:flex sm:flex-wrap sm:justify-end">
             <Link
               href={ROUTES.project(project.slug)}
               className="flex h-10 items-center justify-center rounded bg-accent px-4 text-sm font-bold text-on-accent transition-colors hover:bg-accent-hover"

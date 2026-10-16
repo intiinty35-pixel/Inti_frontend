@@ -103,11 +103,6 @@ export function PublicFooter({ publishHref = ROUTES.registerProfessional }: { pu
   return (
     <footer className="bg-brand text-white">
       <Container size="wide" className="py-14 sm:py-16">
-        {/*
-          En movil el footer va a dos columnas: la marca ocupa todo el ancho y
-          debajo las columnas de enlaces se aparean, quedando "Ariz" junto a
-          "Siguenos" a la misma altura.
-        */}
         <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-2 sm:gap-10 lg:grid-cols-[1.4fr_repeat(3,1fr)_auto] lg:gap-8">
           <div className="col-span-2 flex flex-col items-center text-center sm:col-span-1 sm:items-start sm:text-left">
             <Brand />
@@ -151,8 +146,6 @@ export function PublicFooter({ publishHref = ROUTES.registerProfessional }: { pu
             <h2 className="text-[11px] font-bold tracking-[0.18em] text-accent uppercase">
               Síguenos
             </h2>
-            {/* En movil el bloque se alinea a la izquierda de su celda (igual que
-                "Ariz") y los iconos van de 2 en 2 por fila para no desbordar. */}
             <ul className="mt-4 grid grid-cols-2 justify-items-start gap-3 sm:flex sm:items-center sm:justify-items-end">
               {SOCIAL_LINKS.map(({ name, href }) => (
                 <li key={name}>
@@ -182,20 +175,28 @@ export function PublicFooter({ publishHref = ROUTES.registerProfessional }: { pu
           </div>
         </div>
 
-        <div className="mt-10 flex flex-col items-center gap-2 sm:items-start">
-          <img
-            src="/logo/ministerio-vivienda.png"
-            alt="Ministerio de Vivienda, Construcción y Saneamiento del Perú"
-            className="h-[4.5rem] w-72 max-w-full rounded-sm bg-white object-cover object-center"
-          />
-          <p className="text-xs font-bold tracking-wide text-white/85">CÓDIGO N° 02407 - PJ - MVCS</p>
-        </div>
+        {/* Sección inferior */}
+        <div className="mt-10 grid grid-cols-1 items-center gap-6 border-t border-white/20 pt-6 text-xs text-white/70 md:grid-cols-3">
+          {/* Izquierda: Copyright y Términos */}
+          <div className="order-2 flex flex-col items-center gap-1 text-center md:order-1 md:items-start md:text-left">
+            <span>© {new Date().getFullYear()} Ariz Proyectos</span>
+            <Link href={ROUTES.terms} className="font-semibold text-accent transition-colors hover:text-white">
+              Términos y condiciones
+            </Link>
+          </div>
 
-        <div className="mt-6 flex flex-col gap-3 border-t border-white/20 pt-6 text-xs text-white/70 sm:flex-row sm:items-center sm:justify-between">
-          <span>© {new Date().getFullYear()} Ariz Proyectos</span>
-          <Link href={ROUTES.terms} className="font-semibold text-accent transition-colors hover:text-white">
-            Términos y condiciones
-          </Link>
+          {/* Centro: Imagen del MVCS y Código */}
+          <div className="order-1 flex flex-col items-center gap-1 text-center md:order-2">
+            <img
+              src="/logo/ministerio-vivienda.png"
+              alt="Ministerio de Vivienda, Construcción y Saneamiento del Perú"
+              className="h-[4.5rem] w-72 max-w-full rounded-sm bg-white object-cover object-center"
+            />
+            <p className="text-xs font-bold tracking-wide text-white/85">CÓDIGO N° 02407 - PJ - MVCS</p>
+          </div>
+
+          {/* Columna derecha vacía para balancear el grid en desktop */}
+          <div className="hidden md:order-3 md:block" />
         </div>
       </Container>
     </footer>

@@ -119,7 +119,7 @@ function ExcelColumnChart({
   const max = Math.max(1, ...series.flatMap((item) => item.values));
 
   return (
-    <div className="min-w-0">
+    <div className="min-w-0 w-full">
       <TrendLegend items={series} />
       <div className="mt-5 grid min-h-72 grid-cols-[auto_minmax(0,1fr)] gap-3">
         <div className="flex flex-col justify-between pb-7 text-right text-[11px] font-bold text-muted">
@@ -127,27 +127,27 @@ function ExcelColumnChart({
             <span key={tick}>{tick}</span>
           ))}
         </div>
-        <div className="relative grid min-w-0 grid-flow-col gap-2 overflow-x-auto pb-1">
+        <div className="relative grid min-w-0 grid-flow-col gap-1 sm:gap-2 pb-1 overflow-hidden">
           <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-edge" />
           <div className="pointer-events-none absolute inset-x-0 top-1/3 h-px bg-edge/70" />
           <div className="pointer-events-none absolute inset-x-0 top-2/3 h-px bg-edge/70" />
           {categories.map((category, categoryIndex) => (
-            <div key={category} className="flex min-w-14 flex-col justify-end gap-2">
-              <div className="relative flex h-60 items-end justify-center gap-1 rounded-card px-1 transition-colors hover:bg-surface-muted">
+            <div key={category} className="flex min-w-0 flex-col justify-end gap-2">
+              <div className="relative flex h-48 sm:h-60 items-end justify-center gap-0.5 sm:gap-1 rounded-card px-0.5 sm:px-1 transition-colors hover:bg-surface-muted">
                 {series.map((item) => {
                   const value = item.values[categoryIndex] ?? 0;
-                  const height = Math.max(value > 0 ? 8 : 2, (value / max) * 220);
+                  const height = Math.max(value > 0 ? 8 : 2, (value / max) * 180);
                   return (
                     <div
                       key={`${category}-${item.label}`}
                       title={`${item.label} - ${category}: ${value}`}
-                      className="w-2.5 rounded-t-full transition-all duration-200 hover:-translate-y-1 hover:opacity-80 sm:w-3"
+                      className="w-1.5 sm:w-2.5 md:w-3 rounded-t-full transition-all duration-200 hover:-translate-y-1 hover:opacity-80"
                       style={{ height, backgroundColor: item.color }}
                     />
                   );
                 })}
               </div>
-              <span className="truncate text-center text-[11px] font-bold capitalize text-muted" title={category}>
+              <span className="truncate text-center text-[9px] sm:text-[11px] font-bold capitalize text-muted" title={category}>
                 {category}
               </span>
             </div>
@@ -180,8 +180,8 @@ function ExcelLineChart({ data, color }: { data: Array<{ label: string; value: n
   const area = `${path} L ${left + (points.length - 1) * step} ${top + plotHeight} L ${left} ${top + plotHeight} Z`;
 
   return (
-    <div className="min-w-0 overflow-x-auto">
-      <svg viewBox={`0 0 ${width} ${height}`} className="min-w-[620px]">
+    <div className="min-w-0 w-full">
+      <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto">
         <defs>
           <linearGradient id="publicationTrendFill" x1="0" x2="0" y1="0" y2="1">
             <stop offset="0%" stopColor={color} stopOpacity="0.22" />
@@ -259,7 +259,7 @@ function ExcelPieChart({ data }: { data: Array<{ label: string; value: number; c
 
   return (
     <div className="grid items-center gap-5 md:grid-cols-[minmax(0,1fr)_220px]">
-      <svg viewBox="0 0 300 240" className="mx-auto w-full max-w-[360px]">
+      <svg viewBox="0 0 300 240" className="mx-auto w-full max-w-[360px] h-auto">
         <rect x="0" y="0" width="300" height="240" fill="#ffffff" />
         {slices.map((item, index) => {
           const startRad = (Math.PI / 180) * item.start;

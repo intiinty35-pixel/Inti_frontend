@@ -51,19 +51,19 @@ export function TrendChart({ data, color = "#0b5ed7", height = 300 }: TrendChart
   const labelEvery = Math.max(1, Math.ceil(data.length / 8));
 
   return (
-    <div className="w-full rounded-card border border-edge bg-white p-3 shadow-[var(--shadow-card)]">
-      <div className="mb-2 flex items-center justify-between gap-3">
+    <div className="w-full rounded-card border border-edge bg-white p-2 sm:p-3 shadow-[var(--shadow-card)]">
+      <div className="mb-2 flex items-center justify-between gap-2 sm:gap-3">
         <div>
-          <p className="text-[11px] font-black uppercase tracking-[0.16em] text-muted">Tendencia de consultas</p>
-          <p className="text-sm font-bold text-ink">Ultimos 30 dias</p>
+          <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.16em] text-muted">Tendencia de consultas</p>
+          <p className="text-xs sm:text-sm font-bold text-ink">Ultimos 30 dias</p>
         </div>
-        <div className="rounded-card border border-edge bg-surface-muted px-3 py-1.5 text-right">
-          <p className="text-[10px] font-black uppercase tracking-wide text-muted">{active?.label}</p>
-          <p className="text-lg font-black text-brand">{active?.value ?? 0}</p>
+        <div className="rounded-card border border-edge bg-surface-muted px-2 sm:px-3 py-1 sm:py-1.5 text-right">
+          <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-wide text-muted">{active?.label}</p>
+          <p className="text-base sm:text-lg font-black text-brand">{active?.value ?? 0}</p>
         </div>
       </div>
 
-      <svg viewBox={`0 0 ${WIDTH} ${height}`} className="w-full" role="img" aria-label="Tendencia de consultas">
+      <svg viewBox={`0 0 ${WIDTH} ${height}`} className="w-full h-auto" role="img" aria-label="Tendencia de consultas">
         <rect x="0" y="0" width={WIDTH} height={height} fill="#ffffff" />
 
         {chart.gridY.map((line) => (

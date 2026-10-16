@@ -252,13 +252,13 @@ export function CampaignForm({
                   key={project.id}
                   type="button"
                   onClick={() => toggleProject(project.id)}
-                  className={`flex items-center justify-between rounded-card border p-3 text-left text-sm font-bold transition-colors ${
+                  className={`flex items-center justify-between rounded-card border p-2 sm:p-3 text-left text-[10px] sm:text-sm font-bold transition-colors ${
                     isSelected
                       ? "border-brand bg-brand-soft text-brand"
                       : "border-edge bg-canvas text-ink hover:border-brand"
                   }`}
                 >
-                  <span className="truncate">{project.name}</span>
+                  <span className="min-w-0 truncate">{project.name}</span>
                   {isSelected ? (
                     <X className="size-4 shrink-0 text-brand" />
                   ) : (

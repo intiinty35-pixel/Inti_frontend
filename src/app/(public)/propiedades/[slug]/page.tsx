@@ -178,21 +178,21 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
   const published = formatPublishedDate(property.publishedAt);
 
   return (
-    <Container size="full" className="flex flex-1 flex-col py-6 lg:py-8">
-      <div className="grid flex-1 items-start gap-6 lg:grid-cols-[minmax(0,7fr)_minmax(0,3fr)] xl:gap-8">
-        <main className="min-w-0">
+    <Container size="wide" className="flex w-full flex-1 flex-col overflow-x-hidden py-6 lg:py-8">
+      <div className="flex w-full max-w-full flex-1 flex-col gap-4 overflow-hidden sm:gap-6 lg:flex-row lg:gap-8">
+        <main className="w-full min-w-0 max-w-full flex-1 overflow-hidden lg:max-w-[70%]">
           <PropertyPhotoGallery
             images={property.images}
             title={property.title}
-            className="h-[300px] sm:h-[440px] lg:h-[520px] 2xl:h-[600px]"
+            className="h-[300px] w-full sm:h-[440px] lg:h-[520px] 2xl:h-[600px]"
           />
 
-          <header className="mt-5 flex items-start justify-between gap-3 lg:mt-6">
-            <div className="min-w-0 flex-1">
-              <h1 className="title-listing">{property.title}</h1>
-              <p className="mt-2 flex items-center gap-2 text-sm font-semibold text-muted lg:text-base">
+          <header className="mt-5 flex w-full flex-col items-start justify-between gap-3 overflow-hidden lg:mt-6 lg:flex-row">
+            <div className="w-full min-w-0">
+              <h1 className="title-listing break-words">{property.title}</h1>
+              <p className="mt-2 flex w-full items-center gap-2 text-sm font-semibold text-muted lg:text-base">
                 <PinIcon className="size-4 shrink-0 text-brand lg:size-5" />
-                <span className="line-clamp-2">{locationLine}</span>
+                <span className="line-clamp-2 break-all">{locationLine}</span>
               </p>
               {published ? (
                 <time dateTime={published.iso} className="mt-2 flex items-center gap-2 text-sm font-semibold text-muted">
@@ -372,7 +372,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
         </main>
 
         {/* Columna lateral: formulario de contacto + tarjeta del anunciante. */}
-        <aside id="contacto" className="flex flex-col gap-4 lg:sticky lg:top-20">
+        <aside id="contacto" className="flex w-full min-w-0 flex-col gap-4 lg:w-[30%] lg:sticky lg:top-20">
           <div className="rounded-2xl border border-edge bg-surface p-5 xl:p-6">
             <h2 className="text-base font-bold text-ink xl:text-lg">Contacta al anunciante</h2>
             <LeadForm

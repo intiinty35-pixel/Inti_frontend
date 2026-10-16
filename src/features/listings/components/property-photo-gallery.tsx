@@ -63,7 +63,7 @@ export function PropertyPhotoGallery({
       tabIndex={0}
       onKeyDown={onKeyDown}
       className={cn(
-        "group relative overflow-hidden rounded-card border border-edge bg-brand outline-none focus-visible:ring-2 focus-visible:ring-accent",
+        "group relative box-border w-full max-w-full overflow-hidden rounded-card border border-edge bg-brand outline-none focus-visible:ring-2 focus-visible:ring-accent",
         className,
       )}
     >
@@ -78,10 +78,10 @@ export function PropertyPhotoGallery({
 
       <button
         type="button"
-        className="absolute top-3.5 right-3.5 flex h-9 items-center gap-2 rounded-card bg-surface/95 px-3.5 text-xs font-bold text-brand shadow-[var(--shadow-card)] backdrop-blur transition-colors hover:bg-surface sm:top-4 sm:right-4"
+        className="absolute top-3.5 right-3.5 flex h-8 items-center gap-1.5 rounded-card bg-surface/95 px-2.5 text-[11px] font-bold text-brand shadow-[var(--shadow-card)] backdrop-blur transition-colors hover:bg-surface sm:top-4 sm:right-4 sm:h-9 sm:gap-2 sm:px-3.5 sm:text-xs"
         aria-label="Ver todas las fotos"
       >
-        <CameraIcon className="size-4" />
+        <CameraIcon className="size-3.5 sm:size-4" />
         <span className="hidden sm:inline">Ver todas las fotos</span>
         <span className="font-black text-muted">
           {active + 1}/{total || 1}
