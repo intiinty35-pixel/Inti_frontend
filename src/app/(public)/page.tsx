@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { SearchForm } from "@/features/search";
 import {
@@ -7,6 +6,7 @@ import {
   ArizProjectsSection,
   CategoryShowcase,
   FeaturedListingsSection,
+  HeroPromotions,
   HomeHeroBackground,
   InvestmentEntrySection,
   InvestmentGrowthBanner,
@@ -64,19 +64,7 @@ export default async function PublicHomePage() {
           className="pointer-events-none absolute inset-0 -z-10 hidden lg:block"
           style={{ backgroundImage: HERO_OVERLAY }}
         />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute right-0 bottom-6 z-5 hidden w-[48vw] max-w-[760px] min-w-[520px] lg:block xl:right-8"
-        >
-          <Image
-            src="/logo/image.png"
-            alt=""
-            width={1536}
-            height={1024}
-            priority
-            className="h-auto w-full object-contain drop-shadow-[0_28px_55px_rgb(0_0_0_/_0.28)]"
-          />
-        </div>
+        <HeroPromotions />
         <span aria-hidden className="absolute inset-x-0 bottom-0 h-1 bg-accent" />
 
         <div className={`${HERO_TEXT} relative z-10 flex flex-col items-start`}>
