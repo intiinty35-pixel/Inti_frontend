@@ -7,6 +7,7 @@ import type { Project, ProjectStatus } from "@/features/listings/types/project";
 import { DataCell, DataGrid } from "@/features/listings/components/data-grid";
 import { ListingImage } from "@/features/listings/components/listing-image";
 import { ProjectTourVideo } from "@/features/listings/components/project-tour-video";
+import { ShareListingIcon } from "@/features/listings/components/share-listing-icon";
 
 const STATUS_LABELS: Record<ProjectStatus, string> = {
   preventa: "En preventa",
@@ -31,12 +32,25 @@ export function ProjectCard({ project }: { project: Project }) {
           ) : null}
         </ListingImage>
         {project.tourUrl ? (
-          <ProjectTourVideo
-            projectName={project.name}
-            url={project.tourUrl}
-            className="absolute right-2 bottom-2"
+          <>
+            <ProjectTourVideo
+              projectName={project.name}
+              url={project.tourUrl}
+              className="absolute right-2 bottom-2"
+            />
+            <ShareListingIcon
+              title={project.name}
+              href={ROUTES.project(project.slug)}
+              className="absolute bottom-12 right-2 z-10"
+            />
+          </>
+        ) : (
+          <ShareListingIcon
+            title={project.name}
+            href={ROUTES.project(project.slug)}
+            className="absolute bottom-2 right-2 z-10"
           />
-        ) : null}
+        )}
       </div>
 
       <div className="flex flex-1 flex-col p-2 sm:p-3.5 xl:p-4">
@@ -97,12 +111,25 @@ export function ProjectListingCard({ project }: { project: Project }) {
           </span>
         ) : null}
         {project.tourUrl ? (
-          <ProjectTourVideo
-            projectName={project.name}
-            url={project.tourUrl}
+          <>
+            <ProjectTourVideo
+              projectName={project.name}
+              url={project.tourUrl}
+              className="absolute top-12 right-2 z-10"
+            />
+            <ShareListingIcon
+              title={project.name}
+              href={ROUTES.project(project.slug)}
+              className="absolute top-2 right-2 z-20"
+            />
+          </>
+        ) : (
+          <ShareListingIcon
+            title={project.name}
+            href={ROUTES.project(project.slug)}
             className="absolute top-2 right-2 z-10"
           />
-        ) : null}
+        )}
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col gap-1.5 p-4">

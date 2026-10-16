@@ -3,15 +3,41 @@
 import { useState } from "react";
 import { Share2 } from "lucide-react";
 
-export function SharePropertyButton({ title }: { title: string }) {
+interface SharePropertyButtonProps {
+  title: string;
+  latitude?: number;
+  longitude?: number;
+  address?: string;
+}
+
+export function SharePropertyButton({ title, latitude, longitude, address }: SharePropertyButtonProps) {
   const [message, setMessage] = useState("");
+
+  function buildMapsUrl(): string | null {
+    if (latitude != null && longitude != null && Number.isFinite(latitude) && Number.isFinite(longitude)) {
+      return `https://www.google.com/maps?q=${latitude},${longitude}`;
+    }
+    return null;
+  }
+
+  function buildShareText(): string {
+    const parts = [`Mira esta propiedad: ${title}`];
+    const mapsUrl = buildMapsUrl();
+    if (mapsUrl) {
+      parts.push(`Ubicación: ${mapsUrl}`);
+    } else if (address) {
+      parts.push(`Ubicación: ${address}`);
+    }
+    return parts.join("\n");
+  }
 
   async function share() {
     const url = window.location.href;
+    const text = buildShareText();
 
     if (navigator.share) {
       try {
-        await navigator.share({ title, text: `Mira esta propiedad: ${title}`, url });
+        await navigator.share({ title, text, url });
       } catch (error) {
         if (error instanceof Error && error.name === "AbortError") return;
         setMessage("No se pudo compartir la propiedad.");
@@ -20,7 +46,7 @@ export function SharePropertyButton({ title }: { title: string }) {
     }
 
     try {
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(`${text}\n${url}`);
       setMessage("Enlace copiado.");
     } catch {
       setMessage("No se pudo copiar el enlace.");

@@ -15,6 +15,7 @@ export interface PublicReferralInput {
   availability?: string;
   projectId?: string;
   campaignCode?: string;
+  invitedByCode?: string;
 }
 
 export interface ArizProjectPoints {

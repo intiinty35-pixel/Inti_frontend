@@ -21,6 +21,7 @@ import {
   MessageSquareText,
   Trophy,
   UserCog,
+  UserRound,
   UsersRound,
 } from "lucide-react";
 import { cn } from "@/shared/lib/cn";
@@ -129,6 +130,13 @@ const NAV_ITEMS: readonly AdminNavItem[] = [
     group: "recompensas",
   },
   {
+    key: "referral-registrations",
+    label: "Miembros por código",
+    href: ROUTES.panel.admin.referralRegistrations,
+    Icon: UserRound,
+    group: "recompensas",
+  },
+  {
     key: "campaigns",
     label: "Campañas",
     href: ROUTES.panel.admin.campaigns,
@@ -180,7 +188,8 @@ function isActiveAdminRoute(pathname: string, href: string) {
     return (
       (pathname === href || pathname.startsWith(`${href}/`)) &&
       !pathname.startsWith(ROUTES.panel.admin.referralRanking) &&
-      !pathname.startsWith(ROUTES.panel.admin.referralRecords)
+      !pathname.startsWith(ROUTES.panel.admin.referralRecords) &&
+      !pathname.startsWith(ROUTES.panel.admin.referralRegistrations)
     );
   }
   return pathname === href || pathname.startsWith(`${href}/`);

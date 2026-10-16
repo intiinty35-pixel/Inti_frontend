@@ -6,10 +6,12 @@ import Link from "next/link";
 import {
   ArrowLeft,
   ArrowRight,
+  Check,
   LoaderCircle,
   MapPin,
   RotateCcw,
   Search,
+  Share2,
   SlidersHorizontal,
 } from "lucide-react";
 import { formatPrice } from "@/shared/lib/format";
@@ -114,6 +116,7 @@ export function MapPageExplorer({
   const [activeId, setActiveId] = useState<string | null>(null);
   const [mapCenter, setMapCenter] = useState<[number, number]>(MAP_DEFAULT_CENTER);
   const [locatingRegion, setLocatingRegion] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
   const departmentOptions = useMemo<readonly ComboboxOption[]>(
     () => PERU_DEPARTMENTS.map((value) => ({ value, label: value })),
     [],
@@ -235,6 +238,36 @@ export function MapPageExplorer({
     setMapCenter(MAP_DEFAULT_CENTER);
   }
 
+  async function handleShareMap() {
+    const url = window.location.href;
+    const filterParts = [district, province, department].filter(Boolean);
+    const locationText = filterParts.length > 0 ? filterParts.join(", ") : "todo el Perú";
+    const shareText = `Explora ${filteredListings.length} ${filteredListings.length === 1 ? "propiedad" : "propiedades"} en ${locationText}`;
+
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
+        await navigator.share({
+          title: "Propiedades en el mapa - ARIZ",
+          text: shareText,
+          url,
+        });
+        return;
+      } catch (error) {
+        if (error instanceof Error && error.name === "AbortError") return;
+      }
+    }
+
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(`${shareText}\n${url}`);
+        setShareCopied(true);
+        setTimeout(() => setShareCopied(false), 2000);
+      } catch (error) {
+        console.error("No se pudo copiar el enlace:", error);
+      }
+    }
+  }
+
   return (
     <div className="flex min-w-0 flex-col gap-5">
       <header className="relative overflow-hidden rounded-2xl border border-edge bg-surface shadow-[var(--shadow-card)]">
@@ -256,9 +289,29 @@ export function MapPageExplorer({
               </p>
             </div>
           </div>
-          <div className="flex w-fit items-center gap-2 rounded-full bg-brand-soft px-4 py-2 text-sm font-bold text-brand">
-            <MapPin className="size-4" aria-hidden />
-            {filteredListings.length} {filteredListings.length === 1 ? "propiedad" : "propiedades"}
+          <div className="flex w-fit items-center gap-3">
+            <div className="flex items-center gap-2 rounded-full bg-brand-soft px-4 py-2 text-sm font-bold text-brand">
+              <MapPin className="size-4" aria-hidden />
+              {filteredListings.length} {filteredListings.length === 1 ? "propiedad" : "propiedades"}
+            </div>
+            <button
+              type="button"
+              onClick={handleShareMap}
+              className="inline-flex h-10 items-center gap-2 rounded-full border border-brand bg-brand-soft px-4 text-sm font-bold text-brand transition-colors hover:bg-brand hover:text-on-brand"
+              aria-label="Compartir propiedades del mapa"
+            >
+              {shareCopied ? (
+                <>
+                  <Check className="size-4" aria-hidden />
+                  <span className="hidden sm:inline">¡Copiado!</span>
+                </>
+              ) : (
+                <>
+                  <Share2 className="size-4" aria-hidden />
+                  <span className="hidden sm:inline">Compartir</span>
+                </>
+              )}
+            </button>
           </div>
         </div>
       </header>

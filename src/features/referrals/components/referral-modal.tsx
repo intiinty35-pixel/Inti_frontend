@@ -35,6 +35,7 @@ interface FormErrors {
   availability?: string;
   project?: string;
   campaignCode?: string;
+  invitedByCode?: string;
 }
 
 type ModalView = 'initial' | 'existing-code' | 'existing-form' | 'new-step1' | 'new-step2' | 'new-step3';
@@ -134,8 +135,12 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
   const [campaignCode, setCampaignCode] = useState('');
   const [validatedCampaign, setValidatedCampaign] = useState<{ id: string; name: string } | null>(null);
   const [validatingCampaign, setValidatingCampaign] = useState(false);
+  const [invitedByCode, setInvitedByCode] = useState('');
+  const [validatedInviter, setValidatedInviter] = useState<{ id: string; name: string } | null>(null);
+  const [validatingInviter, setValidatingInviter] = useState(false);
   const [bankDropdownOpen, setBankDropdownOpen] = useState(false);
   const bankDropdownRef = useRef<HTMLDivElement>(null);
+  const inviterDebounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => {
     if (!bankDropdownOpen) return;
@@ -147,6 +152,12 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [bankDropdownOpen]);
+
+  useEffect(() => {
+    return () => {
+      if (inviterDebounceRef.current) clearTimeout(inviterDebounceRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (!open || !allowsArizProject(interest) || arizProjects !== null) return;
@@ -338,6 +349,36 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
     }
   }
 
+  function handleInvitedByCodeChange(value: string) {
+    const upper = value.toUpperCase();
+    setInvitedByCode(upper);
+    if (inviterDebounceRef.current) clearTimeout(inviterDebounceRef.current);
+    const trimmed = upper.trim();
+    if (!trimmed) {
+      setValidatedInviter(null);
+      setErrors((prev) => ({ ...prev, invitedByCode: undefined }));
+      return;
+    }
+    setValidatingInviter(true);
+    inviterDebounceRef.current = setTimeout(async () => {
+      try {
+        const result = await validateReferrerCode(trimmed);
+        if (result.valid && result.referrer) {
+          setValidatedInviter({ id: result.referrer.id, name: result.referrer.name });
+          setErrors((prev) => ({ ...prev, invitedByCode: undefined }));
+        } else {
+          setValidatedInviter(null);
+          setErrors((prev) => ({ ...prev, invitedByCode: 'Código no válido' }));
+        }
+      } catch {
+        setValidatedInviter(null);
+        setErrors((prev) => ({ ...prev, invitedByCode: 'No se pudo validar el código' }));
+      } finally {
+        setValidatingInviter(false);
+      }
+    }, 500);
+  }
+
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     
@@ -388,6 +429,7 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
             availability,
             projectId: allowsArizProject(interest) && projectChoice && projectChoice !== SKIP_PROJECT ? projectChoice : undefined,
             campaignCode: validatedCampaign ? campaignCode.trim() : undefined,
+            invitedByCode: validatedInviter ? invitedByCode.trim() : undefined,
           };
 
       await submitPublicReferral(payload);
@@ -422,6 +464,8 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
     setAvailability('');
     setInterestDetail('');
     setProjectChoice('');
+    setInvitedByCode('');
+    setValidatedInviter(null);
     setBankDropdownOpen(false);
     onClose();
   }
@@ -983,6 +1027,24 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
                     hint="Solo 9 números, debe empezar con 9."
                   />
                 ) : null}
+                <div className="border-t border-edge pt-4">
+                  <Input
+                    label="¿Tienes un código de referido? (opcional)"
+                    placeholder="APCOD-XXXXXXXX"
+                    value={invitedByCode}
+                    onChange={(e) => handleInvitedByCodeChange(e.target.value)}
+                    error={errors.invitedByCode}
+                    disabled={validatingInviter}
+                    maxLength={14}
+                    hint={
+                      validatedInviter
+                        ? `Código válido — Miembro: ${validatedInviter.name}`
+                        : validatingInviter
+                          ? 'Verificando código...'
+                          : 'Si un miembro de Ariz te invitó, ingresa su código aquí.'
+                    }
+                  />
+                </div>
                 <div className="mt-2 flex gap-3">
                   <Button type="button" variant="secondary" onClick={handleBack} className="flex-1">
                     Atrás

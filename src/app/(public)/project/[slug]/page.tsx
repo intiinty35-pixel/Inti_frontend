@@ -240,7 +240,12 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                 </time>
               ) : null}
             </div>
-            <SharePropertyButton title={project.name} />
+            <SharePropertyButton
+              title={project.name}
+              latitude={lat}
+              longitude={lng}
+              address={locationLine}
+            />
           </header>
 
           <section className="mt-6 grid gap-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center lg:mt-8">

@@ -6,6 +6,7 @@ import { formatPublishedDate } from "@/shared/lib/published-date";
 import type { Listing } from "@/features/listings/types/listing";
 import { DataCell, DataGrid } from "@/features/listings/components/data-grid";
 import { ListingImage } from "@/features/listings/components/listing-image";
+import { ShareListingIcon } from "@/features/listings/components/share-listing-icon";
 import type { ReactNode } from "react";
 
 export function FeaturedListingCard({
@@ -32,6 +33,11 @@ export function FeaturedListingCard({
         {favoriteAction ? (
           <div className="absolute top-2 right-2">{favoriteAction}</div>
         ) : null}
+        <ShareListingIcon
+          title={listing.title}
+          href={ROUTES.property(listing.slug)}
+          className={favoriteAction ? "absolute bottom-2 right-2 z-10" : "absolute top-2 right-2 z-10"}
+        />
       </div>
 
       <div className="flex flex-1 flex-col p-2 sm:p-3.5 xl:p-4">

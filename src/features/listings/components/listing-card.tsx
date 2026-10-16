@@ -6,6 +6,7 @@ import { formatPublishedDate } from "@/shared/lib/published-date";
 import type { Listing } from "@/features/listings/types/listing";
 import { ListingImage } from "@/features/listings/components/listing-image";
 import { ListingSpecs } from "@/features/listings/components/listing-specs";
+import { ShareListingIcon } from "@/features/listings/components/share-listing-icon";
 import type { ReactNode } from "react";
 
 const OPERATION_LABEL: Record<string, string> = {
@@ -54,6 +55,19 @@ export function ListingCard({
         {favoriteAction ? (
           <div className="absolute top-2.5 right-2.5">{favoriteAction}</div>
         ) : null}
+        {!favoriteAction ? (
+          <ShareListingIcon
+            title={listing.title}
+            href={ROUTES.property(listing.slug)}
+            className="absolute top-2.5 right-2.5 z-10"
+          />
+        ) : (
+          <ShareListingIcon
+            title={listing.title}
+            href={ROUTES.property(listing.slug)}
+            className="absolute bottom-2.5 right-2.5 z-10"
+          />
+        )}
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col gap-1.5 p-4">

@@ -90,3 +90,52 @@ export async function deleteAdminReferrer(id: string) {
   });
   if (!response.ok) throw new Error(`No se pudo eliminar el referente (${response.status})`);
 }
+
+export interface RegistrationReferralMember {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+}
+
+export interface RegistrationReferralInviter {
+  id: string;
+  name: string;
+  email: string;
+  code: string;
+}
+
+export interface RegistrationReferralItem {
+  id: string;
+  newReferrer: RegistrationReferralMember;
+  inviter: RegistrationReferralInviter;
+  inviterCode: string;
+  pointsAwarded: number;
+  createdAt: string;
+}
+
+export interface RegistrationReferralsPage {
+  generatedAt: string;
+  page: number;
+  pageSize: number;
+  total: number;
+  totals: {
+    registrations: number;
+    points: number;
+  };
+  items: RegistrationReferralItem[];
+}
+
+export async function listAdminRegistrationReferrals(
+  page = 1,
+  pageSize = 20,
+  filters: AdminReferralFilters = {},
+): Promise<RegistrationReferralsPage> {
+  const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
+  if (filters.search) params.set('search', filters.search);
+  if (filters.from) params.set('from', filters.from);
+  if (filters.to) params.set('to', filters.to);
+  const response = await backendFetch(`/admin/referrals/registrations?${params.toString()}`);
+  if (!response.ok) throw new Error(`No se pudieron cargar las inscripciones (${response.status})`);
+  return (await response.json()) as RegistrationReferralsPage;
+}

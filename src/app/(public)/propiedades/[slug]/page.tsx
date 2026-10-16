@@ -201,7 +201,12 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                 </time>
               ) : null}
             </div>
-            <SharePropertyButton title={property.title} />
+            <SharePropertyButton
+              title={property.title}
+              latitude={property.location.lat}
+              longitude={property.location.lng}
+              address={property.location.address}
+            />
           </header>
 
           {/* Precio + datos clave */}

@@ -8,13 +8,6 @@ import { PublicFooter } from "@/app/(public)/public-footer";
 import { FavoritesProvider } from "@/features/favorites";
 import { FloatingWhatsapp } from "@/app/(public)/floating-whatsapp";
 
-/**
- * Cabecera, pie y flotantes del sitio.
- *
- * El mapa a pantalla completa (`map-modal.tsx`) marca este bloque como `inert`
- * mientras esta abierto, asi el tabulador y los lectores de pantalla se quedan
- * dentro del mapa aunque visualmente ya lo tape todo.
- */
 function PublicShell({ children }: { children: ReactNode }) {
   return (
     <div id="ariz-public-shell" className="flex min-h-screen flex-col">
@@ -42,8 +35,6 @@ export default async function PublicLayout({ children }: { children: ReactNode }
     accountAvatarUrl = profile.avatarUrl ?? undefined;
   }
 
-  // Con sesion iniciada, "Publicar propiedad" lleva directo al formulario de publicar;
-    // el registro redirige a quien ya esta logueado y nunca llegaria alli.
   const publishHref =
     session?.role === "USER"
       ? ROUTES.panel.client.newProperty
@@ -55,12 +46,6 @@ export default async function PublicLayout({ children }: { children: ReactNode }
 
   return (
     <PublicShell>
-      {/*
-        La cabecera es un componente client: necesita `usePathname` para saber si
-        la pagina arranca con hero oscuro (header transparente) y si ya se
-        scrolleo (para entonces ganar fondo). Los datos de sesion se resuelven
-        aqui y bajan como props.
-      */}
       <PublicHeader
         isLoggedIn={Boolean(session)}
         accountName={accountName}
