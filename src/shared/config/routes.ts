@@ -49,6 +49,7 @@ export const ROUTES = {
       redemption: (id: string): string => `/panel/admin/redemptions/${id}`,
       claims: "/panel/admin/claims",
       claim: (id: string): string => `/panel/admin/claims/${id}`,
+      promotions: "/panel/admin/promotions",
       campaigns: "/panel/admin/campaigns",
       campaignProjectPoints: "/panel/admin/campaigns/project-points",
       newCampaign: "/panel/admin/campaigns/new",

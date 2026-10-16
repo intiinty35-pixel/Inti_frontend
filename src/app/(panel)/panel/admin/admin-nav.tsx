@@ -17,6 +17,7 @@ import {
   Landmark,
   LayoutDashboard,
   House,
+  Megaphone,
   MessageSquareText,
   Trophy,
   UserCog,
@@ -97,6 +98,13 @@ const NAV_ITEMS: readonly AdminNavItem[] = [
     label: "Recibo de Reclamos",
     href: ROUTES.panel.admin.claims,
     Icon: BookOpen,
+    group: "operacion",
+  },
+  {
+    key: "promotions",
+    label: "Promociones",
+    href: ROUTES.panel.admin.promotions,
+    Icon: Megaphone,
     group: "operacion",
   },
   {
