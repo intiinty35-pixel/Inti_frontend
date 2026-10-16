@@ -9,6 +9,8 @@ interface IncentiveImageFieldProps {
   initialUrl?: string | null;
   initialPublicId?: string | null;
   folder?: string;
+  /** Permite pegar una URL externa además de subir un archivo. */
+  allowUrl?: boolean;
   error?: string;
 }
 
@@ -16,9 +18,10 @@ export function IncentiveImageField({
   initialUrl,
   initialPublicId,
   folder = "ariz/incentives",
+  allowUrl = true,
   error,
 }: IncentiveImageFieldProps) {
-  const [mode, setMode] = useState<"url" | "upload">(initialUrl && !initialPublicId ? "url" : "upload");
+  const [mode, setMode] = useState<"url" | "upload">(allowUrl && initialUrl && !initialPublicId ? "url" : "upload");
   const [imageUrl, setImageUrl] = useState(initialUrl ?? "");
   const [publicId, setPublicId] = useState(initialPublicId ?? "");
   const [uploading, setUploading] = useState(false);
@@ -72,6 +75,7 @@ export function IncentiveImageField({
 
   return (
     <div className="flex flex-col gap-3">
+      {allowUrl ? (
       <div className="flex items-center gap-2">
         <button
           type="button"
@@ -100,6 +104,7 @@ export function IncentiveImageField({
           URL de imagen
         </button>
       </div>
+      ) : null}
 
       {mode === "url" ? (
         <div className="flex flex-col gap-1.5">
