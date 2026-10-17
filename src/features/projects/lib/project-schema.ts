@@ -289,6 +289,7 @@ export const projectDraftSchema = z
     images: z.array(fileSchema).max(MAX_PROJECT_IMAGES, `Máximo ${MAX_PROJECT_IMAGES} imágenes`),
     plans: z.array(fileSchema).max(MAX_PLAN_FILES, `Máximo ${MAX_PLAN_FILES} planos`),
     tourUrl: optionalUrl("recorrido virtual"),
+    tourVideo: fileSchema.optional(),
     renderImages: z.array(fileSchema).max(MAX_RENDER_IMAGES, `Máximo ${MAX_RENDER_IMAGES} renders`),
   })
   .superRefine((draft, context) => {
@@ -439,6 +440,7 @@ const STEP_FIVE_FIELDS = [
   "images",
   "plans",
   "tourUrl",
+  "tourVideo",
   "renderImages",
 ] as const satisfies readonly FieldPath<ProjectDraft>[];
 
@@ -453,7 +455,7 @@ export const WIZARD_STEPS: readonly WizardStep[] = [
   { key: "location", title: "Ubicación del inmueble", fields: STEP_TWO_FIELDS },
   { key: "lots", title: "Inventario de lotes", fields: STEP_THREE_FIELDS },
   { key: "timeline", title: "Timeline del proyecto", fields: STEP_FOUR_FIELDS },
-  { key: "media", title: "Multimedia", fields: STEP_FIVE_FIELDS },
+  { key: "media", title: "Imágenes y video", fields: STEP_FIVE_FIELDS },
 ];
 
 export const LAST_STEP_INDEX = WIZARD_STEPS.length - 1;

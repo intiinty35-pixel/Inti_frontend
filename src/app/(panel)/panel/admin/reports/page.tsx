@@ -1,7 +1,17 @@
 import { Mail, MessageSquareText, Phone, UserRound } from "lucide-react";
 import { Card, CardContent, Pagination } from "@/shared/ui";
 import { ROUTES } from "@/shared/config/routes";
-import { listContactReports } from "@/features/admin/api/server";
+import { revalidatePath } from "next/cache";
+import { ConfirmSubmitButton } from "@/features/admin/components/confirm-submit-button";
+import { deleteContactReport, listContactReports } from "@/features/admin/api/server";
+
+async function removeReport(formData: FormData) {
+  "use server";
+  const id = String(formData.get("id") ?? "");
+  if (!id) return;
+  await deleteContactReport(id);
+  revalidatePath(ROUTES.panel.admin.reports);
+}
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("es-PE", {
@@ -16,8 +26,11 @@ export default async function AdminReportsPage({
   searchParams: Promise<{ page?: string }>;
 }) {
   const { page: pageParam } = await searchParams;
-  const page = Math.max(1, Number(pageParam) || 1);
-  const data = await listContactReports(page, 12);
+  const parsedPage = Number(pageParam);
+  const requestedPage = Number.isSafeInteger(parsedPage) && parsedPage > 0 ? parsedPage : 1;
+  let data = await listContactReports(requestedPage, 10);
+  const page = Math.min(requestedPage, Math.max(1, Math.ceil(data.total / 10)));
+  if (page !== requestedPage) data = await listContactReports(page, 10);
 
   return (
     <div className="flex min-w-0 max-w-full flex-col gap-7 overflow-x-hidden">
@@ -89,12 +102,27 @@ export default async function AdminReportsPage({
                 <p className="mt-4 whitespace-pre-line rounded-card bg-canvas p-4 text-sm font-medium leading-6 text-ink">
                   {report.message}
                 </p>
+                <form action={removeReport} className="mt-4 flex justify-end">
+                  <input type="hidden" name="id" value={report.id} />
+                  <ConfirmSubmitButton
+                    variant="secondary"
+                    size="xs"
+                    confirmTitle="?Eliminar este reporte?"
+                    confirmDescription="Se ocultar? del listado y se conservar? en el historial del sistema."
+                    confirmLabel="Eliminar"
+                  >
+                    Eliminar
+                  </ConfirmSubmitButton>
+                </form>
               </CardContent>
             </Card>
           ))}
         </section>
       )}
 
+      <p className="text-center text-xs text-muted">
+        {data.total === 0 ? 0 : (page - 1) * 10 + 1}?{Math.min((page - 1) * 10 + data.items.length, data.total)} de {data.total} reportes
+      </p>
       <Pagination
         page={page}
         pageSize={data.pageSize}

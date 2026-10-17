@@ -1,8 +1,8 @@
 "use client";
 
+import { ProjectVideoInput } from "@/features/projects/components/project-video-input";
 import { useFormContext } from "react-hook-form";
 import { FieldSet, useFieldError } from "@/shared/ui/field-shell";
-import { TextField } from "@/shared/ui/rhf-fields";
 import { Uploader } from "@/shared/ui/uploader";
 import { ImageIcon } from "@/shared/ui/icons";
 import { X } from "lucide-react";
@@ -81,7 +81,6 @@ export function StepMedia() {
   const imagesError = useFieldError<ProjectDraft>("images");
   const plansError = useFieldError<ProjectDraft>("plans");
   const rendersError = useFieldError<ProjectDraft>("renderImages");
-  const tourError = useFieldError<ProjectDraft>("tourUrl");
 
   return (
     <div className="flex flex-col gap-6">
@@ -127,17 +126,10 @@ export function StepMedia() {
 
       <FieldSet
         legend="Recorrido virtual"
-        description="Pega el enlace público de YouTube; el video se reproducirá dentro de la tarjeta del proyecto."
+        description="Pega un enlace o selecciona un video local de hasta 2 minutos."
       >
-        <TextField<ProjectDraft>
-          name="tourUrl"
-          label="Enlace del recorrido virtual"
-          type="url"
-          inputMode="url"
-          placeholder="https://www.youtube.com/watch?v=..."
-          hint="También puedes pegar un enlace corto de YouTube (youtu.be)."
-          error={tourError}
-        />
+        <ProjectVideoInput />
+
       </FieldSet>
 
       <FieldSet

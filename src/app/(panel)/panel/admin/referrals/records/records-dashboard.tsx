@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { CalendarRange, FileSpreadsheet, Loader2, Mail, MessageCircle, Phone, RefreshCw, Search } from "lucide-react";
+import { ArrowLeft, ArrowRight, CalendarRange, FileSpreadsheet, Loader2, Mail, MessageCircle, Phone, RefreshCw, Search } from "lucide-react";
 import { ROUTES } from "@/shared/config/routes";
 import { RecordActions } from "./record-actions";
+import styles from "./records-table.module.css";
 
 interface ReferralRecord {
   id: string; code: string; name: string; email: string; phone: string;
@@ -39,6 +40,7 @@ export function ReferralRecordsDashboard() {
   const [error, setError] = useState<string | null>(null);
   const [exporting, setExporting] = useState(false);
   const [live, setLive] = useState(true);
+  const tableScroll = useRef<HTMLDivElement>(null);
   const requestId = useRef(0);
   const invalidateRequest = useCallback(() => { requestId.current++; }, []);
   const query = useCallback((paginated = true) => {
@@ -145,28 +147,41 @@ export function ReferralRecordsDashboard() {
         <p className="mt-3 text-xs text-muted">Las fechas corresponden al registro del referido. Los totales y el Excel incluyen todos los resultados del filtro.</p>
       </section>
       {error && <p role="alert" className="rounded-card bg-error/10 px-4 py-3 text-sm font-semibold text-error">{error}</p>}
-      <section className="overflow-hidden rounded-card border border-edge bg-surface shadow-[var(--shadow-card)]">
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[70rem] text-left text-sm">
+      <section className="min-w-0 overflow-hidden rounded-card border border-edge bg-surface shadow-[var(--shadow-card)]">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-edge px-5 py-4 sm:px-6">
+          <div>
+            <h2 className="text-sm font-bold text-brand">Detalle de referidos</h2>
+            <p id="records-scroll-hint" className="mt-1 text-xs text-muted">Desliza hacia la derecha para ver todas las columnas.</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button type="button" aria-label="Desplazar tabla a la izquierda" onClick={() => tableScroll.current?.scrollBy({ left: -440, behavior: 'smooth' })} className={`${buttonClass} size-9 !h-9 !px-0`}><ArrowLeft className="size-4" aria-hidden="true" /></button>
+            <button type="button" aria-label="Desplazar tabla a la derecha" onClick={() => tableScroll.current?.scrollBy({ left: 440, behavior: 'smooth' })} className={`${buttonClass} size-9 !h-9 !px-0`}><ArrowRight className="size-4" aria-hidden="true" /></button>
+          </div>
+        </div>
+        <div ref={tableScroll} role="region" aria-label="Tabla de referidos" aria-describedby="records-scroll-hint" tabIndex={0} className={`${styles.scrollArea} focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand`}>
+          <table className={`${styles.table} w-full table-fixed text-left text-sm`}>
+            <colgroup>
+              {[240, 280, 240, 220, 240, 220, 100, 140, 200].map((width, i) => <col key={i} style={{ width }} />)}
+            </colgroup>
             <thead className="bg-surface-muted text-[11px] font-black uppercase tracking-[0.12em] text-muted"><tr>
-              {['Referido', 'Contacto del referido', 'Miembro Ariz', 'Estado', 'Interés / disponibilidad', 'Proyecto', 'Puntos', 'Registro', 'Acciones'].map(label => <th key={label} scope="col" className="px-4 py-3">{label}</th>)}
+              {['Referido', 'Contacto del referido', 'Miembro Ariz', 'Estado', 'Interés / disponibilidad', 'Proyecto', 'Puntos', 'Registro', 'Acciones'].map(label => <th key={label} scope="col" className="px-6 py-5">{label}</th>)}
             </tr></thead>
             <tbody className="divide-y divide-edge">
               {!data ? <tr><td colSpan={9} className="px-4 py-10 text-center text-muted">{error ? 'No se pudo cargar la lista.' : 'Cargando referidos...'}</td></tr> : !data.items.length ? <tr><td colSpan={9} className="px-4 py-10 text-center text-muted">No hay referidos con estos filtros.</td></tr> : data.items.map(row => (
-                <tr key={row.id} className="hover:bg-surface-muted/60">
-                  <td className="px-4 py-3"><p className="font-bold text-brand">{row.name}</p><p className="text-xs text-muted">{row.code}</p></td>
-                  <td className="px-4 py-3"><div className="flex flex-col gap-1 text-xs">
+                <tr key={row.id} className="group bg-surface transition-colors hover:bg-surface-muted/60">
+                  <td className="px-6 py-5"><p className="font-bold text-brand">{row.name}</p><p className="text-xs text-muted">{row.code}</p></td>
+                  <td className="px-6 py-5"><div className="flex flex-col gap-2.5 text-xs">
                     <a href={`tel:${row.phone.replace(/\s/g, '')}`} className="inline-flex items-center gap-1.5 font-semibold hover:text-brand"><Phone className="size-3.5 text-accent" />{row.phone}</a>
                     <a href={`https://wa.me/${row.phone.replace(/\D/g, '')}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 font-semibold hover:text-brand"><MessageCircle className="size-3.5 text-accent" />WhatsApp</a>
                     <a href={`mailto:${row.email}`} className="inline-flex items-center gap-1.5 break-all font-semibold hover:text-brand"><Mail className="size-3.5 shrink-0 text-accent" />{row.email}</a>
                   </div></td>
-                  <td className="px-4 py-3"><Link href={ROUTES.panel.admin.referrer(row.referrer.id)} className="font-bold text-brand hover:underline">{row.referrer.name}</Link><p className="text-xs text-muted">{row.referrer.code}</p></td>
-                  <td className="px-4 py-3"><span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-bold ${row.status === 'OPERATION_COMPLETED' ? 'bg-success/10 text-success' : row.status === 'REJECTED' ? 'bg-error/10 text-error' : 'bg-brand-soft text-brand'}`}>{row.statusLabel}</span></td>
-                  <td className="px-4 py-3 text-xs"><p className="font-semibold">{row.interestLabel}</p><p className="text-muted">{row.availabilityLabel}</p></td>
-                  <td className="px-4 py-3 text-xs">{row.project?.name ?? 'Sin proyecto'}</td>
-                  <td className="px-4 py-3 font-black text-brand">{row.points.toLocaleString('es-PE')}</td>
-                  <td className="px-4 py-3 text-xs text-muted">{new Date(row.createdAt).toLocaleDateString('es-PE', { timeZone: 'America/Lima' })}</td>
-                  <td className="px-4 py-3"><RecordActions id={row.id} name={row.name} points={row.points} onUpdated={load} /></td>
+                  <td className="px-6 py-5"><Link href={ROUTES.panel.admin.referrer(row.referrer.id)} className="font-bold text-brand hover:underline">{row.referrer.name}</Link><p className="text-xs text-muted">{row.referrer.code}</p></td>
+                  <td className="px-6 py-5"><span className={`inline-flex whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-bold ${row.status === 'OPERATION_COMPLETED' ? 'bg-success/10 text-success' : row.status === 'REJECTED' ? 'bg-error/10 text-error' : 'bg-brand-soft text-brand'}`}>{row.statusLabel}</span></td>
+                  <td className="px-6 py-5 text-xs"><p className="font-semibold">{row.interestLabel}</p><p className="text-muted">{row.availabilityLabel}</p></td>
+                  <td className="px-6 py-5 text-xs">{row.project?.name ?? 'Sin proyecto'}</td>
+                  <td className="px-6 py-5 font-black text-brand">{row.points.toLocaleString('es-PE')}</td>
+                  <td className="px-6 py-5 text-xs text-muted">{new Date(row.createdAt).toLocaleDateString('es-PE', { timeZone: 'America/Lima' })}</td>
+                  <td className="px-6 py-5"><RecordActions id={row.id} name={row.name} points={row.points} onUpdated={load} /></td>
                 </tr>
               ))}
             </tbody>

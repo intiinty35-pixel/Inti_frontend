@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import { validateProjectVideo } from "@/features/projects/lib/project-video";
+import { uploadToCloudinary, PROJECT_MEDIA_FOLDER } from "@/shared/lib/api/cloudinary";
 import Link from "next/link";
 import { FormProvider, useForm, type FieldErrors } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -44,7 +46,7 @@ const STEP_SUMMARIES = [
   "Departamento, provincia y dirección",
   "Fichas de lotes del inventario",
   "Fechas, hitos y certificaciones",
-  "Imágenes, planos y renders",
+  "Imágenes, video, planos y renders",
 ] as const;
 
 function StepHeader({ current, title, detail }: { current: number; title: string; detail: string }) {
@@ -150,12 +152,16 @@ export function ProjectPublishWizard({
   );
 
   const goNext = useCallback(async () => {
+    if (editing) {
+      setStep((current) => Math.min(current + 1, LAST_STEP_INDEX));
+      return;
+    }
     const ok = await trigger(WIZARD_STEPS[step].fields, { shouldFocus: true });
 
     if (ok && step < LAST_STEP_INDEX) {
       setStep(step + 1);
     }
-  }, [step, trigger]);
+  }, [step, trigger, editing]);
 
   const goBack = useCallback(() => {
     if (step > 0) {
@@ -179,6 +185,9 @@ export function ProjectPublishWizard({
       setReviewedLots(getValues("lots"));
       setError(null);
       setPayload(buildProjectPayload(draft));
+    }, (invalid) => {
+      const firstInvalidStep = WIZARD_STEPS.findIndex((item) => countStepErrors(invalid as FieldErrors, item.fields) > 0);
+      if (firstInvalidStep >= 0) setStep(firstInvalidStep);
     })();
 
   // Sube los adjuntos y guarda el proyecto como borrador.
@@ -187,6 +196,12 @@ export function ProjectPublishWizard({
       setSaving(true);
       setError(null);
       try {
+        const video = getValues("tourVideo");
+        let tourUrl = next.tourUrl;
+        if (video) {
+          await validateProjectVideo(video);
+          tourUrl = (await uploadToCloudinary(video, PROJECT_MEDIA_FOLDER, "video")).url;
+        }
         const images = await uploadProjectFiles(getValues("images"), "IMAGE", 0);
         const plans = await uploadProjectFiles(getValues("plans"), "FLOOR_PLAN", images.length);
         const renders = await uploadProjectFiles(
@@ -196,7 +211,7 @@ export function ProjectPublishWizard({
         );
 
         const media = mergeProjectMedia(getValues("keptMedia"), [...images, ...plans, ...renders]);
-        const input = toProjectInput(next, media);
+        const input = toProjectInput({ ...next, tourUrl }, media);
         if (initialProject) {
           await updateProject(initialProject.id, input);
         } else {
@@ -280,7 +295,6 @@ export function ProjectPublishWizard({
         noValidate
         onSubmit={(event) => {
           event.preventDefault();
-          void submit();
         }}
         className="grid min-w-0 gap-6"
       >
@@ -309,7 +323,7 @@ export function ProjectPublishWizard({
               const StepComponent = STEP_COMPONENTS[index];
 
               return (
-                <section key={item.key} hidden={step !== index} className="grid gap-6">
+                <section key={item.key} hidden={step !== index} className={step === index ? "grid gap-6" : "hidden"}>
                   <StepHeader
                     current={index + 1}
                     title={item.title}
@@ -332,12 +346,15 @@ export function ProjectPublishWizard({
                 </p>
 
                 {step < LAST_STEP_INDEX ? (
-                  <Button type="button" onClick={() => void goNext()}>
-                    Continuar
+                  <Button key="next-step" type="button" onClick={(event) => {
+                    event.preventDefault();
+                    void goNext();
+                  }}>
+                    {step === LAST_STEP_INDEX - 1 ? "Continuar a imágenes y video" : "Continuar"}
                     <ArrowRightIcon className="size-4" />
                   </Button>
                 ) : (
-                  <Button type="submit">
+                  <Button key="review-project" type="button" onClick={() => void submit()}>
                     Revisar proyecto
                     <ArrowRightIcon className="size-4" />
                   </Button>

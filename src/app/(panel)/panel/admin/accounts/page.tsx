@@ -38,6 +38,27 @@ const PUBLICATION_FILTERS = [
 
 const PAGE_LIMIT = 10;
 
+// Read only the API pages that overlap the requested range, including the
+// boundary where the combined list switches from properties to projects.
+async function readPublicationRange<T>(
+  first: { items: T[]; total: number },
+  offset: number,
+  count: number,
+  loadPage: (page: number) => Promise<{ items: T[] }>,
+): Promise<T[]> {
+  if (count <= 0 || offset >= first.total) return [];
+  const firstPage = Math.floor(offset / PAGE_LIMIT) + 1;
+  const lastPage = Math.floor((offset + count - 1) / PAGE_LIMIT) + 1;
+  const pages = await Promise.all(
+    Array.from({ length: lastPage - firstPage + 1 }, (_, i) => {
+      const page = firstPage + i;
+      return page === 1 ? Promise.resolve(first) : loadPage(page);
+    }),
+  );
+  const start = offset % PAGE_LIMIT;
+  return pages.flatMap((result) => result.items).slice(start, start + count);
+}
+
 async function updateStatus(formData: FormData) {
   "use server";
 
@@ -70,24 +91,46 @@ function StatBox({ label, value }: { label: string; value: number }) {
 
 export default async function AdminAccountsPage({ searchParams }: AdminAccountsPageProps) {
   const { page: pageParam, tipo, vista } = await searchParams;
-  const page = Math.max(1, Number(pageParam) || 1);
+  const parsedPage = Number(pageParam);
+  const page = Number.isSafeInteger(parsedPage) && parsedPage > 0 ? parsedPage : 1;
   const filter = PUBLICATION_FILTERS.some((item) => item.key === tipo) ? tipo : "all";
   const activeView = vista === "publications" || vista === "users" ? vista : null;
-  const [{ items: professionals, total, pageSize }, professionalPool, propertiesPage, projectsPage] =
+  const [professionalsResult, professionalPool, propertiesPage, projectsPage] =
     await Promise.all([
-      listProfessionals(page, PAGE_LIMIT),
+      listProfessionals(activeView === "publications" ? 1 : page, PAGE_LIMIT),
       listProfessionals(1, 200),
       getPublicListingsServer(PAGE_LIMIT, 1).catch(() => ({ items: [], total: 0, page: 1, pageSize: PAGE_LIMIT, hasMore: false })),
       getPublicProjectsServer(PAGE_LIMIT).catch(() => ({ items: [], total: 0, page: 1, pageSize: PAGE_LIMIT, hasMore: false })),
     ]);
 
+  const { total, pageSize } = professionalsResult;
+  const accountsPage = Math.min(page, Math.max(1, Math.ceil(total / pageSize)));
+  const { items: professionals } = activeView !== "publications" && accountsPage !== page
+    ? await listProfessionals(accountsPage, PAGE_LIMIT)
+    : professionalsResult;
+  const accountsOffset = (accountsPage - 1) * pageSize;
+  const accountsRange = `${total === 0 ? 0 : accountsOffset + 1}?${Math.min(accountsOffset + professionals.length, total)} de ${total}`;
+
   const pending = professionals.filter((item) => item.status === "PENDING").length;
   const approved = professionalPool.items.filter((item) => item.status === "APPROVED").length;
   const agencies = professionalPool.items.filter((item) => item.type === "REAL_ESTATE_AGENCY").length;
   const agents = professionalPool.items.filter((item) => item.type === "INDEPENDENT_AGENT").length;
+  const publicationTotal = (filter !== "projects" ? propertiesPage.total : 0)
+    + (filter !== "properties" ? projectsPage.total : 0);
+  const publicationPage = Math.min(page, Math.max(1, Math.ceil(publicationTotal / PAGE_LIMIT)));
+  const offset = (publicationPage - 1) * PAGE_LIMIT;
+  const propertyCount = filter === "projects" ? 0 : Math.min(PAGE_LIMIT, Math.max(0, propertiesPage.total - offset));
+  const projectOffset = filter === "projects" ? offset : Math.max(0, offset - propertiesPage.total);
+  const [propertyItems, projectItems] = activeView === "publications"
+    ? await Promise.all([
+        readPublicationRange(propertiesPage, offset, propertyCount, (p) => getPublicListingsServer(PAGE_LIMIT, p)),
+        readPublicationRange(projectsPage, projectOffset, filter === "properties" ? 0 : PAGE_LIMIT - propertyCount,
+          (p) => getPublicProjectsServer(PAGE_LIMIT, undefined, undefined, p)),
+      ])
+    : [[], []];
   const publications = [
     ...(filter !== "projects"
-      ? propertiesPage.items.map((item) => ({
+      ? propertyItems.map((item) => ({
           id: item.id,
           kind: "Propiedad",
           name: item.title,
@@ -97,7 +140,7 @@ export default async function AdminAccountsPage({ searchParams }: AdminAccountsP
         }))
       : []),
     ...(filter !== "properties"
-      ? projectsPage.items.map((item) => ({
+      ? projectItems.map((item) => ({
           id: item.id,
           kind: "Proyecto",
           name: item.name,
@@ -106,8 +149,8 @@ export default async function AdminAccountsPage({ searchParams }: AdminAccountsP
           date: item.publishedAt,
         }))
       : []),
-  ].slice(0, PAGE_LIMIT);
-  const visibleUsers = professionalPool.items.slice(0, PAGE_LIMIT);
+  ];
+  const visibleUsers = professionals;
 
   return (
     <div className="flex flex-col gap-7">
@@ -263,7 +306,8 @@ export default async function AdminAccountsPage({ searchParams }: AdminAccountsP
               </table>
             </div>
           </Card>
-          <Pagination page={page} pageSize={pageSize} total={total} buildHref={(p) => `${ROUTES.panel.admin.accounts}?page=${p}`} />
+          <p className="text-center text-xs text-muted">{accountsRange} cuentas</p>
+          <Pagination page={accountsPage} pageSize={pageSize} total={total} buildHref={(p) => `${ROUTES.panel.admin.accounts}?page=${p}`} />
         </>
       )}
       </>
@@ -314,6 +358,9 @@ export default async function AdminAccountsPage({ searchParams }: AdminAccountsP
                 </tr>
               </thead>
               <tbody>
+                {publications.length === 0 ? (
+                  <tr><td colSpan={6} className="px-4 py-10 text-center text-muted">No hay publicaciones para este filtro.</td></tr>
+                ) : null}
                 {publications.map((item) => (
                   <tr key={`${item.kind}-${item.id}`} className="hover:bg-surface-muted/60">
                     <td className="border-b border-edge px-4 py-3 font-bold text-brand">{item.kind}</td>
@@ -333,6 +380,15 @@ export default async function AdminAccountsPage({ searchParams }: AdminAccountsP
             </table>
           </div>
         </Card>
+        <p className="text-center text-xs text-muted">
+          {publicationTotal === 0 ? 0 : offset + 1}?{Math.min(offset + publications.length, publicationTotal)} de {publicationTotal} publicaciones
+        </p>
+        <Pagination
+          page={publicationPage}
+          pageSize={PAGE_LIMIT}
+          total={publicationTotal}
+          buildHref={(p) => `${ROUTES.panel.admin.accounts}?vista=publications${filter === "all" ? "" : `&tipo=${filter}`}&page=${p}`}
+        />
       </section>
       ) : null}
 
@@ -365,6 +421,9 @@ export default async function AdminAccountsPage({ searchParams }: AdminAccountsP
                 </tr>
               </thead>
               <tbody>
+                {visibleUsers.length === 0 ? (
+                  <tr><td colSpan={6} className="px-4 py-10 text-center text-muted">No hay usuarios registrados.</td></tr>
+                ) : null}
                 {visibleUsers.map((item) => {
                   const name = `${item.user.firstName} ${item.user.lastName ?? ""}`.trim() || item.businessName || "Usuario";
                   return (
@@ -395,6 +454,13 @@ export default async function AdminAccountsPage({ searchParams }: AdminAccountsP
             </table>
           </div>
         </Card>
+        <p className="text-center text-xs text-muted">{accountsRange} usuarios</p>
+        <Pagination
+          page={accountsPage}
+          pageSize={pageSize}
+          total={total}
+          buildHref={(p) => `${ROUTES.panel.admin.accounts}?vista=users&page=${p}`}
+        />
       </section>
       ) : null}
     </div>

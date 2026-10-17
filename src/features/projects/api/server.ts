@@ -13,8 +13,9 @@ export async function getPublicProjectsServer(
   pageSize = 10,
   origin?: "ADMIN" | "AGENT",
   sort?: "recent" | "price-asc" | "price-desc" | "featured",
+  page = 1,
 ): Promise<ProjectApiPaged> {
-  const params = new URLSearchParams({ pageSize: String(pageSize) });
+  const params = new URLSearchParams({ pageSize: String(pageSize), page: String(page) });
   if (origin) params.set("origin", origin);
   if (sort) params.set("sort", sort);
   const response = await fetch(`${env.backendUrl}/projects?${params.toString()}`, {

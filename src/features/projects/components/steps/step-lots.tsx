@@ -158,8 +158,15 @@ export function StepLots() {
         legend="Modo de inventario"
         description="Individual para una ficha por lote; grupo para una ficha por grupo de lotes."
         required
+        className="gap-5 p-5 sm:p-6 [&>p]:text-sm [&>p]:leading-relaxed"
       >
-        <RadioGroup<ProjectDraft> name="lotMode" ariaLabel="Modo de inventario" options={LOT_MODES} />
+        <RadioGroup<ProjectDraft>
+          name="lotMode"
+          ariaLabel="Modo de inventario"
+          options={LOT_MODES}
+          columns={2}
+          className="grid-cols-1 gap-4 sm:grid-cols-2 [&>label]:flex [&>label]:min-h-28 [&>label]:gap-2 [&>label]:p-5 [&>label]:focus-within:ring-2 [&>label]:focus-within:ring-brand/30 [&>label>span:first-of-type]:text-sm [&>label>span:last-of-type]:text-xs [&>label>span:last-of-type]:leading-relaxed"
+        />
         {lotModeError ? (
           <p className="text-sm text-error" role="alert">
             {lotModeError}

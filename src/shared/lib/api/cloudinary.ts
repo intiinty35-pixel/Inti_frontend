@@ -18,7 +18,7 @@ export interface CloudinaryUpload {
   publicId: string;
 }
 
-export type CloudinaryResourceType = "image" | "raw" | "auto";
+export type CloudinaryResourceType = "image" | "raw" | "auto" | "video";
 
 /** Sube un archivo firmado a Cloudinary dentro de la carpeta indicada. */
 export async function uploadToCloudinary(

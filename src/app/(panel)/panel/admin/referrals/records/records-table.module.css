@@ -1,0 +1,61 @@
+.scrollArea {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: auto;
+  scrollbar-color: var(--brand) var(--surface-muted);
+}
+
+.scrollArea::-webkit-scrollbar {
+  height: 12px;
+}
+
+.scrollArea::-webkit-scrollbar-track {
+  background: var(--surface-muted);
+  border-radius: 999px;
+}
+
+.scrollArea::-webkit-scrollbar-thumb {
+  background: var(--brand);
+  border: 3px solid var(--surface-muted);
+  border-radius: 999px;
+}
+
+.table {
+  min-width: 1940px;
+}
+
+.table td {
+  vertical-align: middle;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+
+.table td p + p {
+  margin-top: 6px;
+}
+
+.table th:first-child,
+.table td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--surface);
+  box-shadow: 5px 0 12px -9px var(--brand);
+}
+
+.table th:first-child {
+  background: var(--surface-muted);
+}
+
+.table tr:hover td:first-child {
+  background: var(--surface-muted);
+}
+
+@media (max-width: 640px) {
+  .table th:first-child,
+  .table td:first-child {
+    position: static;
+    box-shadow: none;
+  }
+}

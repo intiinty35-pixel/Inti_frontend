@@ -12,6 +12,9 @@ interface RankingRow {
   email: string;
   phone: string;
   paymentType: string;
+  bankAccount: string | null;
+  yape: string | null;
+  plin: string | null;
   referralsCount: number;
   visitCount: number;
   completedCount: number;
@@ -26,6 +29,7 @@ interface RankingResponse {
 }
 
 const REFRESH_MS = 15_000;
+const PAGE_SIZE = 10;
 
 /** Fecha de Lima (UTC-5) como YYYY-MM-DD, `daysAgo` dias atras. */
 function limaDate(daysAgo = 0) {
@@ -50,6 +54,7 @@ function formatDate(value: string | null) {
 }
 
 export function RankingDashboard() {
+  const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
@@ -122,6 +127,13 @@ export function RankingDashboard() {
   }
 
   const totals = data?.totals;
+  const count = data?.items.length ?? 0;
+  const totalPages = Math.max(1, Math.ceil(count / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const offset = (currentPage - 1) * PAGE_SIZE;
+  const visibleRows = data?.items.slice(offset, offset + PAGE_SIZE);
+  const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1)
+    .filter((p) => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1);
 
   return (
     <div className="flex min-w-0 flex-col gap-6">
@@ -185,7 +197,7 @@ export function RankingDashboard() {
               <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted" aria-hidden="true" />
               <input
                 value={search}
-                onChange={(event) => setSearch(event.target.value)}
+                onChange={(event) => { setSearch(event.target.value); setPage(1); }}
                 placeholder="Miembro, correo o código"
                 className="h-10 w-full rounded-card border border-edge bg-white pl-9 pr-3 text-sm font-normal outline-none focus:border-brand focus:ring-2 focus:ring-brand/15"
               />
@@ -196,7 +208,7 @@ export function RankingDashboard() {
             <input
               type="date"
               value={from}
-              onChange={(event) => setFrom(event.target.value)}
+              onChange={(event) => { setFrom(event.target.value); setPage(1); }}
               className="h-10 rounded-card border border-edge bg-white px-3 text-sm font-normal outline-none focus:border-brand focus:ring-2 focus:ring-brand/15"
             />
           </label>
@@ -205,7 +217,7 @@ export function RankingDashboard() {
             <input
               type="date"
               value={to}
-              onChange={(event) => setTo(event.target.value)}
+              onChange={(event) => { setTo(event.target.value); setPage(1); }}
               className="h-10 rounded-card border border-edge bg-white px-3 text-sm font-normal outline-none focus:border-brand focus:ring-2 focus:ring-brand/15"
             />
           </label>
@@ -217,6 +229,7 @@ export function RankingDashboard() {
               key={preset.label}
               type="button"
               onClick={() => {
+                setPage(1);
                 setFrom(resolve(preset.from));
                 setTo(resolve(preset.to));
               }}
@@ -242,7 +255,7 @@ export function RankingDashboard() {
         ) : data && data.items.length === 0 ? (
           <p className="rounded-card border border-edge bg-surface p-6 text-center text-sm text-muted">No hay miembros con ese filtro.</p>
         ) : (
-          data?.items.map((row) => (
+          visibleRows?.map((row) => (
             <article key={row.id} className="rounded-card border border-edge bg-surface p-4 shadow-[var(--shadow-card)]">
               <div className="flex items-start gap-3">
                 <span
@@ -293,6 +306,10 @@ export function RankingDashboard() {
               <p className="mt-2 text-[11px] text-muted">
                 {row.paymentType} · Último referido: {formatDate(row.lastReferralAt)}
               </p>
+              <div className="mt-3 rounded-card bg-canvas p-3">
+                <p className="mb-1 text-xs font-bold text-brand">Cuenta / celular de pago</p>
+                <PaymentDetails row={row} />
+              </div>
               <div className="mt-3 border-t border-edge pt-3">
                 <MemberActions id={row.id} name={row.name} onUpdated={load} />
               </div>
@@ -310,6 +327,7 @@ export function RankingDashboard() {
                 <th className="px-4 py-3">Miembro</th>
                 <th className="px-4 py-3">Contacto</th>
                 <th className="px-4 py-3">Tipo de pago</th>
+                <th className="px-4 py-3">Cuenta / celular de pago</th>
                 <th className="px-4 py-3 text-right">Referidos</th>
                 <th className="px-4 py-3 text-right">Concretados</th>
                 <th className="px-4 py-3 text-right">Puntos</th>
@@ -320,18 +338,18 @@ export function RankingDashboard() {
             <tbody className="divide-y divide-edge">
               {loading && !data ? (
                 <tr>
-                  <td colSpan={9} className="px-4 py-10 text-center text-muted">
+                  <td colSpan={10} className="px-4 py-10 text-center text-muted">
                     Cargando ranking...
                   </td>
                 </tr>
               ) : data && data.items.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="px-4 py-10 text-center text-muted">
+                  <td colSpan={10} className="px-4 py-10 text-center text-muted">
                     No hay miembros con ese filtro.
                   </td>
                 </tr>
               ) : (
-                data?.items.map((row) => (
+                visibleRows?.map((row) => (
                   <tr key={row.id} className="hover:bg-surface-muted/60">
                     <td className="px-4 py-3">
                       <span
@@ -368,6 +386,7 @@ export function RankingDashboard() {
                       </div>
                     </td>
                     <td className="px-4 py-3 text-xs font-semibold text-ink">{row.paymentType}</td>
+                    <td className="px-4 py-3"><PaymentDetails row={row} /></td>
                     <td className="px-4 py-3 text-right text-base font-black text-brand">{row.referralsCount}</td>
                     <td className="px-4 py-3 text-right font-bold text-ink">{row.completedCount}</td>
                     <td className="px-4 py-3 text-right font-bold text-ink">{row.points.toLocaleString("es-PE")}</td>
@@ -380,6 +399,23 @@ export function RankingDashboard() {
           </table>
         </div>
       </section>
+      {data && (
+        <div className="flex flex-col items-center gap-3">
+          <p className="text-xs text-muted">{count === 0 ? 0 : offset + 1}?{Math.min(offset + PAGE_SIZE, count)} de {count} miembros</p>
+          {totalPages > 1 && (
+            <nav aria-label="Paginaci?n del ranking" className="flex flex-wrap items-center justify-center gap-1.5">
+              <button type="button" disabled={currentPage === 1} onClick={() => setPage(currentPage - 1)} className="h-9 rounded-card border border-edge px-3 text-sm text-brand disabled:opacity-40">Anterior</button>
+              {pageNumbers.map((p, i) => (
+                <span key={p} className="contents">
+                  {i > 0 && p - pageNumbers[i - 1] > 1 && <span className="px-1 text-muted">?</span>}
+                  <button type="button" aria-current={p === currentPage ? "page" : undefined} onClick={() => setPage(p)} className={`h-9 min-w-9 rounded-card border px-3 text-sm ${p === currentPage ? "border-brand bg-brand-soft text-brand" : "border-edge text-ink"}`}>{p}</button>
+                </span>
+              ))}
+              <button type="button" disabled={currentPage === totalPages} onClick={() => setPage(currentPage + 1)} className="h-9 rounded-card border border-edge px-3 text-sm text-brand disabled:opacity-40">Siguiente</button>
+            </nav>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -392,5 +428,26 @@ function Kpi({ label, value }: { label: string; value: number | undefined }) {
         {value === undefined ? "–" : value.toLocaleString("es-PE")}
       </p>
     </div>
+  );
+}
+
+function PaymentDetails({ row }: { row: RankingRow }) {
+  const methods = [
+    { label: "Cuenta bancaria", value: row.bankAccount },
+    { label: "Yape", value: row.yape },
+    { label: "Plin", value: row.plin },
+  ].filter((method) => method.value?.trim());
+
+  if (methods.length === 0) return <p className="text-xs text-muted">Sin datos de pago registrados</p>;
+
+  return (
+    <dl className="space-y-2 text-xs">
+      {methods.map(({ label, value }) => (
+        <div key={label}>
+          <dt className="font-semibold text-muted">{label}</dt>
+          <dd className="select-all whitespace-nowrap font-mono text-ink">{value}</dd>
+        </div>
+      ))}
+    </dl>
   );
 }

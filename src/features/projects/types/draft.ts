@@ -104,6 +104,7 @@ export interface ProjectDraft {
   images: File[];
   plans: File[];
   tourUrl?: string;
+  tourVideo?: File;
   renderImages: File[];
 }
 

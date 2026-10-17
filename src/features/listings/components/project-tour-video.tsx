@@ -103,6 +103,9 @@ export function ProjectTourVideo({
                   </button>
                 </header>
                 <div className="aspect-video bg-black">
+                  {/\.(mp4|webm|mov|m4v|ogv)(?:$|[?#])/i.test(url) || url.includes("/video/upload/") ? (
+                    <video src={url} controls autoPlay playsInline className="size-full" />
+                  ) : (
                   <iframe
                     src={embedUrl}
                     title={`Recorrido virtual de ${projectName}`}
@@ -111,6 +114,7 @@ export function ProjectTourVideo({
                     referrerPolicy="strict-origin-when-cross-origin"
                     allowFullScreen
                   />
+                  )}
                 </div>
               </section>
             </div>,

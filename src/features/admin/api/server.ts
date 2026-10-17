@@ -157,6 +157,11 @@ export function listSubscriptions(page?: number, pageSize?: number): Promise<Pag
   return getJson<PagedResult<PendingSubscription>>(`/admin/subscriptions?${params.toString()}`);
 }
 
+export async function deleteContactReport(id: string): Promise<void> {
+  const response = await backendFetch(`/admin/contact-reports/${encodeURIComponent(id)}`, { method: "DELETE" });
+  if (!response.ok) throw new Error("No se pudo eliminar el reporte.");
+}
+
 export function listContactReports(page?: number, pageSize?: number): Promise<PagedResult<ContactReport>> {
   const params = new URLSearchParams();
   params.set("page", String(page ?? 1));
