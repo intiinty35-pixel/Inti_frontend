@@ -111,9 +111,24 @@ function CategoryCard({ category, index }: { category: Category; index: number }
   );
 }
 
-export function CategoryShowcase() {
+export interface CategoryShowcaseProps {
+  /**
+   * `"hero"` (por defecto): el buscador del hero se solapa sobre el borde
+   * superior de esta sección, por eso reserva espacio en móvil.
+   * `"section"`: hay una sección intermedia (promociones móviles) que ya
+   * absorbe ese solape y aquí solo se necesita el espaciado normal.
+   */
+  topSpacing?: "hero" | "section";
+}
+
+export function CategoryShowcase({ topSpacing = "hero" }: CategoryShowcaseProps) {
   return (
-    <section className="overflow-hidden bg-[#F3F4F8] pt-[180px] pb-7 sm:pt-[190px] lg:pt-32">
+    <section
+      className={cn(
+        "overflow-hidden bg-[#F3F4F8] pb-7 lg:pt-32",
+        topSpacing === "hero" ? "pt-[180px] sm:pt-[190px]" : "pt-7 sm:pt-8",
+      )}
+    >
       <div className="mx-auto w-full px-3 sm:px-4 lg:px-5 xl:px-6">
         <div className="flex items-center justify-between gap-4">
           <h2 className="text-[28px] font-black leading-none tracking-tight text-brand sm:text-[34px] lg:text-[40px]">

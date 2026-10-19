@@ -1,6 +1,6 @@
 import Image from "next/image";
-import { getCurrentPromotionsServer } from "@/features/promotions/api/server";
 import { HeroPromotionsCarousel } from "@/features/home/components/hero-promotions-carousel";
+import type { CurrentPromotion } from "@/features/promotions/types";
 
 const HERO_SLOT =
   "pointer-events-none absolute right-0 bottom-6 z-5 hidden w-[48vw] max-w-[760px] min-w-[520px] lg:block xl:right-8";
@@ -9,9 +9,7 @@ const HERO_SLOT =
  * Espacio derecho del hero. Si hay promociones vigentes las muestra en carrusel;
  * si no, deja la imagen de la familia de siempre.
  */
-export async function HeroPromotions() {
-  const promotions = await getCurrentPromotionsServer();
-
+export function HeroPromotions({ promotions }: { promotions: CurrentPromotion[] }) {
   if (promotions.length === 0) {
     return (
       <div aria-hidden className={HERO_SLOT}>

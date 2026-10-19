@@ -3,6 +3,7 @@ export { ArizProjectsSection } from "@/features/home/components/ariz-projects-se
 export { CategoryShowcase } from "@/features/home/components/category-showcase";
 export { FeaturedListingsSection } from "@/features/home/components/featured-listings-section";
 export { HeroPromotions } from "@/features/home/components/hero-promotions";
+export { HomePromotionsMobileSection } from "@/features/home/components/home-promotions-mobile-section";
 export {
   HomeHeroBackground,
   type HomeHeroBackgroundProps,

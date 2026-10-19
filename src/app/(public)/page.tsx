@@ -7,6 +7,7 @@ import {
   CategoryShowcase,
   FeaturedListingsSection,
   HeroPromotions,
+  HomePromotionsMobileSection,
   HomeHeroBackground,
   InvestmentEntrySection,
   InvestmentGrowthBanner,
@@ -18,6 +19,7 @@ import {
 import { ROUTES } from "@/shared/config/routes";
 import { buildMetadata } from "@/shared/lib/seo";
 import { ReferralCta } from "@/features/referrals/components/referral-cta";
+import { getCurrentPromotionsServer } from "@/features/promotions/api/server";
 
 export const metadata = buildMetadata({
   title: "Inmobiliaria en Peru: venta, alquiler y proyectos",
@@ -49,6 +51,8 @@ function SearchFormFallback() {
 }
 
 export default async function PublicHomePage() {
+  const promotions = await getCurrentPromotionsServer();
+
   return (
     <>
       <WelcomeModal />
@@ -64,7 +68,7 @@ export default async function PublicHomePage() {
           className="pointer-events-none absolute inset-0 -z-10 hidden lg:block"
           style={{ backgroundImage: HERO_OVERLAY }}
         />
-        <HeroPromotions />
+        <HeroPromotions promotions={promotions} />
         <span aria-hidden className="absolute inset-x-0 bottom-0 h-1 bg-accent" />
 
         <div className={`${HERO_TEXT} relative z-10 flex flex-col items-start`}>
@@ -103,7 +107,8 @@ export default async function PublicHomePage() {
         </div>
       </section>
 
-      <CategoryShowcase />
+      <HomePromotionsMobileSection promotions={promotions} />
+      <CategoryShowcase topSpacing={promotions.length > 0 ? "section" : "hero"} />
       <ArizProjectsSection />
       <FeaturedListingsSection />
       <PublishedProjectsSection />

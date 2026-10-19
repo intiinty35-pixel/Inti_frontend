@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   category: "Real Estate",
   icons: {
     icon: [
-      { rel: "icon", url: "/web_v/logo_web.png", type: "image/png" },
+      { rel: "icon", url: "/web_v/logo_web.ico", type: "image/x-icon" },
       { rel: "apple-touch-icon", url: "/web_v/logo_web.png", type: "image/png" },
     ],
   },
