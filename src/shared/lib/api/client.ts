@@ -50,7 +50,9 @@ async function request<T>(path: string, init: ApiInit = {}): Promise<T> {
     throw new ApiError(message, response.status);
   }
 
-  return response.json() as Promise<T>;
+  const text = await response.text();
+  if (!text) return undefined as T;
+  return JSON.parse(text) as T;
 }
 
 export const apiClient = {

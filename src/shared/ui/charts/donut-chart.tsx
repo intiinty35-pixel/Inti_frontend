@@ -14,8 +14,9 @@ export interface DonutChartProps {
 }
 
 const SIZE = 210;
-const STROKE = 28;
-const RADIUS = (SIZE - STROKE) / 2;
+const STROKE = 22;
+const ACTIVE_STROKE = STROKE + 4;
+const RADIUS = (SIZE - ACTIVE_STROKE) / 2 - 2;
 const CIRC = 2 * Math.PI * RADIUS;
 
 export function DonutChart({ data, centerLabel = "total" }: DonutChartProps) {
@@ -26,9 +27,9 @@ export function DonutChart({ data, centerLabel = "total" }: DonutChartProps) {
   let offset = 0;
 
   return (
-    <div className="grid w-full gap-4 rounded-card border border-edge bg-white p-3 sm:p-4 shadow-[var(--shadow-card)] sm:grid-cols-[220px_minmax(0,1fr)] sm:items-center">
+    <div className="grid w-full gap-4 sm:grid-cols-[minmax(130px,150px)_minmax(0,1fr)] sm:items-center">
       <div className="relative mx-auto">
-        <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="size-40 sm:size-52" role="img" aria-label={`Distribucion ${centerLabel}`}>
+        <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="size-32 sm:size-36 md:size-40" role="img" aria-label={`Distribucion ${centerLabel}`}>
           <circle cx={SIZE / 2} cy={SIZE / 2} r={RADIUS} fill="none" stroke="#edf1f6" strokeWidth={STROKE} />
           {hasData
             ? data.map((datum, index) => {
@@ -43,7 +44,7 @@ export function DonutChart({ data, centerLabel = "total" }: DonutChartProps) {
                     r={RADIUS}
                     fill="none"
                     stroke={datum.color}
-                    strokeWidth={activeIndex === index ? STROKE + 4 : STROKE}
+                    strokeWidth={activeIndex === index ? ACTIVE_STROKE : STROKE}
                     strokeDasharray={`${length} ${CIRC - length}`}
                     strokeDashoffset={-currentOffset}
                     strokeLinecap="round"
@@ -55,36 +56,36 @@ export function DonutChart({ data, centerLabel = "total" }: DonutChartProps) {
                 );
               })
             : null}
-          <text x={SIZE / 2} y={SIZE / 2 - 3} textAnchor="middle" fontSize="32" fontWeight="900" fill="#073763">
+          <text x={SIZE / 2} y={SIZE / 2 - 3} textAnchor="middle" fontSize="30" fontWeight="900" fill="#073763">
             {total}
           </text>
-          <text x={SIZE / 2} y={SIZE / 2 + 19} textAnchor="middle" fontSize="11" fontWeight="800" fill="#667085">
+          <text x={SIZE / 2} y={SIZE / 2 + 17} textAnchor="middle" fontSize="10" fontWeight="800" fill="#667085">
             {centerLabel}
           </text>
         </svg>
       </div>
 
-      <div>
+      <div className="min-w-0">
         <p className="text-[11px] font-black uppercase tracking-[0.16em] text-muted">Distribucion por canal</p>
-        <p className="mt-1 text-sm font-bold text-ink">
+        <p className="mt-1 truncate text-sm font-bold text-ink">
           {active ? `${active.label}: ${active.value} consultas` : "Sin datos"}
         </p>
-        <ul className="mt-4 grid gap-2">
+        <ul className="mt-3 grid gap-2">
           {data.map((datum, index) => {
             const percent = total > 0 ? Math.round((datum.value / total) * 100) : 0;
             return (
-              <li key={datum.label}>
+              <li key={datum.label} className="min-w-0">
                 <button
                   type="button"
                   onMouseEnter={() => setActiveIndex(index)}
                   onClick={() => setActiveIndex(index)}
-                  className={`flex w-full items-center gap-3 rounded-card border px-3 py-2 text-left transition ${
+                  className={`relative flex w-full items-center gap-2.5 rounded-card border py-1.5 pr-10 pl-2.5 text-left transition ${
                     activeIndex === index ? "border-brand bg-brand-soft" : "border-edge bg-surface hover:border-brand/50"
                   }`}
                 >
-                  <span className="size-3 rounded-full" style={{ backgroundColor: datum.color }} />
+                  <span className="size-3 shrink-0 rounded-full" style={{ backgroundColor: datum.color }} />
                   <span className="min-w-0 flex-1 truncate text-sm font-bold text-ink">{datum.label}</span>
-                  <span className="text-xs font-black text-muted">{percent}%</span>
+                  <span className="absolute right-2.5 text-xs font-black text-muted">{percent}%</span>
                 </button>
               </li>
             );

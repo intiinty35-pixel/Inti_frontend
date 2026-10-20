@@ -461,6 +461,10 @@ export async function deleteAdminProject(id: string): Promise<void> {
   return apiClient.delete<void>(`/admin/projects/${encodeURIComponent(id)}`);
 }
 
+export async function deleteProject(id: string): Promise<void> {
+  return apiClient.delete<void>(`/projects/${encodeURIComponent(id)}`);
+}
+
 export async function updateProjectLocation(
   id: string,
   location: ProjectLocationInput,

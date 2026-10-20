@@ -15,7 +15,7 @@ import {
   type ApiProjectStatus,
   type ProjectApiSummary,
 } from "@/features/projects/types/api";
-import { deleteAdminProject, publishAdminProject, publishProject } from "@/features/projects/api";
+import { deleteAdminProject, deleteProject, publishAdminProject, publishProject } from "@/features/projects/api";
 import { PROJECT_STAGE_LABELS } from "@/features/projects/data/project-catalogs";
 import type { ProjectStage } from "@/features/projects/types/draft";
 import { DataCell, DataGrid } from "@/features/listings/components/data-grid";
@@ -86,15 +86,18 @@ export function OwnerProjectCard({
   }
 
   async function handleDelete() {
-    if (!adminMode) return;
-    if (!window.confirm(`¿Eliminar el proyecto "${project.name}"? Se ocultara del sitio y quedara registrado para auditoria.`)) {
+    if (!window.confirm(`¿Eliminar el proyecto "${project.name}"?`)) {
       return;
     }
 
     setDeleting(true);
     setDeleteError(null);
     try {
-      await deleteAdminProject(project.id);
+      if (adminMode) {
+        await deleteAdminProject(project.id);
+      } else {
+        await deleteProject(project.id);
+      }
       router.refresh();
     } catch (cause) {
       setDeleteError(cause instanceof Error ? cause.message : "No se pudo eliminar el proyecto.");
@@ -221,22 +224,22 @@ export function OwnerProjectCard({
           >
             Editar
           </Link>
-          {adminMode ? (
-            <button
-              type="button"
-              onClick={() => void handleDelete()}
-              disabled={deleting}
-              className="flex h-9 min-w-[82px] flex-1 items-center justify-center rounded-card border border-error/30 px-2.5 text-center text-xs font-bold text-error transition-colors hover:border-error hover:bg-error/10 disabled:cursor-wait disabled:opacity-60"
-            >
-              {deleting ? "Eliminando..." : "Eliminar"}
-            </button>
-          ) : null}
-          <Link
-            href={adminMode ? ROUTES.panel.admin.projects : ROUTES.panel.owner.base}
-            className="flex h-9 min-w-[72px] flex-1 items-center justify-center rounded-card border border-edge px-2.5 text-center text-xs font-bold text-brand transition-colors hover:border-brand"
+          <button
+            type="button"
+            onClick={() => void handleDelete()}
+            disabled={deleting}
+            className="flex h-9 min-w-[82px] flex-1 items-center justify-center rounded-card border border-error/30 px-2.5 text-center text-xs font-bold text-error transition-colors hover:border-error hover:bg-error/10 disabled:cursor-wait disabled:opacity-60"
           >
-            Panel
-          </Link>
+            {deleting ? "Eliminando..." : "Eliminar"}
+          </button>
+          {adminMode ? (
+            <Link
+              href={ROUTES.panel.admin.projects}
+              className="flex h-9 min-w-[72px] flex-1 items-center justify-center rounded-card border border-edge px-2.5 text-center text-xs font-bold text-brand transition-colors hover:border-brand"
+            >
+              Panel
+            </Link>
+          ) : null}
         </div>
         {deleteError ? (
           <p className="mt-2 rounded-card bg-error/10 px-3 py-2 text-xs font-semibold text-error">
