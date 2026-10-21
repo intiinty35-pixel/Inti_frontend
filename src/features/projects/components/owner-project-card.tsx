@@ -224,6 +224,7 @@ export function OwnerProjectCard({
           >
             Editar
           </Link>
+          {adminMode && <Link href={`/panel/admin/projects/${project.id}/site-plan`} className="rounded-card border border-edge px-3 py-2 text-xs font-bold text-brand">Plano y lotes</Link>}
           <button
             type="button"
             onClick={() => void handleDelete()}

@@ -122,6 +122,8 @@ export interface ProjectApiAgent {
 }
 
 export interface ProjectApiDetail extends ProjectApiSummary {
+  hasSitePlan?: boolean;
+  hasPublishedSitePlan?: boolean;
   ruc: string | null;
   businessName: string | null;
   downPayment: number | null;

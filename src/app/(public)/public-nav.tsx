@@ -97,7 +97,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
     isActive: (path, _operation, type) => path === ROUTES.properties && type === "land",
   },
   {
-    label: "Mapa",
+    label: "Mapa de proyectos",
     href: ROUTES.map,
     isActive: (path) => path === ROUTES.map,
   },

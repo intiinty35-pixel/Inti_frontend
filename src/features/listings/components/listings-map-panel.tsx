@@ -26,6 +26,8 @@ const ListingsMap = dynamic<{
   loading: () => <MapSkeleton className="h-full w-full" />,
 });
 
+const ProjectGoogleMap = dynamic(() => import("@/shared/ui/google-listings-map").then(module => module.GoogleListingsMap), { ssr: false, loading: () => <MapSkeleton className="h-full w-full" /> });
+
 const MAP_FILTER_TYPE: readonly ListboxOption[] = [
   { value: "", label: "Todos los inmuebles" },
   { value: "houses", label: "Casas" },
@@ -96,6 +98,7 @@ export function ListingsMapPanel({
   variant = "inline",
 }: ListingsMapPanelProps) {
   const router = useRouter();
+  const ActiveMap = isProjectMode ? ProjectGoogleMap : ListingsMap;
   const [activeId, setActiveId] = useState<string | null>(null);
   const [stage, setStage] = useState("");
   const [district, setDistrict] = useState(filters.district ?? "");
@@ -217,7 +220,7 @@ export function ListingsMapPanel({
         <div className="overflow-hidden rounded-card border border-edge bg-surface shadow-[var(--shadow-card)]">
           {points.length > 0 ? (
             <div className={mapHeight}>
-              <ListingsMap
+              <ActiveMap
                 points={points}
                 activeId={activeId}
                 onSelect={setActiveId}

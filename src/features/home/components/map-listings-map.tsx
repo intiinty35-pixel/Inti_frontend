@@ -108,7 +108,7 @@ export function MapListingsMap({ markers, mapHref }: { markers: MapListingMarker
       {mapHref ? (
         <Link
           href={mapHref}
-          aria-label="Ver mapa completo con propiedades y proyectos"
+          aria-label="Ver mapa completo de proyectos"
           className="absolute inset-0 z-[450] flex items-end justify-end p-4"
         >
           <span className="rounded-full bg-brand px-4 py-2 text-xs font-black text-on-brand shadow-[var(--shadow-pop)] transition-colors hover:bg-brand-hover">

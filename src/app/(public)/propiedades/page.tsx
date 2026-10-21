@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Container, Pagination } from "@/shared/ui";
 import { buildMetadata } from "@/shared/lib/seo";
 import { formatPrice } from "@/shared/lib/format";
-import { getListings, ListingCard, ProjectListingCard, type ListingFilters } from "@/features/listings";
+import { getListings, ListingCard, type ListingFilters } from "@/features/listings";
 import { getPropertyTypeLabel } from "@/features/search";
 import type {
   Listing,
@@ -11,8 +11,6 @@ import type {
   PropertyType,
   SortOption,
 } from "@/features/listings/types/listing";
-import type { Project } from "@/features/listings/types/project";
-import type { ProjectApiSummary } from "@/features/projects/types/api";
 import {
   PropertyFiltersBar,
   SortSelect,
@@ -20,13 +18,11 @@ import {
 } from "@/features/listings/components/property-filters-bar";
 import { ListingsMapExperience } from "@/features/listings/components/listings-map-experience";
 import type { MapPoint } from "@/features/listings/components/listings-map";
-import { getPublicProjectsServer } from "@/features/projects/api/server";
-import { toProjectCardModel } from "@/features/projects/lib/project-card";
 import { FavoriteButton } from "@/features/favorites";
 import { ROUTES } from "@/shared/config/routes";
-import { InvestmentGrowthBanner } from "@/features/home";
+import { InvestmentGrowthBanner, MapExplorerSection } from "@/features/home";
 
-export const metadata: Metadata = buildMetadata({
+const propertyMetadata: Metadata = buildMetadata({
   title: "Propiedades en venta y alquiler en Peru",
   description:
     "Encuentra propiedades en venta y alquiler: casas, departamentos, terrenos, lotes, locales y proyectos inmobiliarios publicados en Ariz Proyectos.",
@@ -58,9 +54,6 @@ function numberOf(input: string | string[] | undefined) {
 const FILTERABLE_TYPES = new Set<PropertyType>(["houses", "apartments", "land", "country-lots", "commercial"]);
 const PAGE_SIZE = 10;
 
-/** Cuantos proyectos se traen al mapa: el endpoint publico no pagina por tipo. */
-const PROJECT_MAP_LIMIT = 60;
-
 function toListingPoints(items: readonly Listing[]): MapPoint[] {
   return items.flatMap((listing) => {
     const { lat, lng } = listing.location;
@@ -86,83 +79,14 @@ function toListingPoints(items: readonly Listing[]): MapPoint[] {
   });
 }
 
-/** Proyectos publicados: se convierten al modelo de card + punto del mapa. */
-function toProjectPoints(items: readonly ProjectApiSummary[]): {
-  cards: Project[];
-  points: MapPoint[];
-} {
-  const cards = items.map(toProjectCardModel);
-
-  const points = cards.flatMap((project) => {
-    const { lat, lng } = project.location;
-
-    if (lat === undefined || lng === undefined) {
-      return [];
-    }
-
-    return [
-      {
-        id: project.id,
-        lat,
-        lng,
-        title: project.name,
-        priceLabel: `Desde ${formatPrice(project.startingPrice.amount, project.startingPrice.currency)}`,
-        districtLabel: `${project.location.district}, ${project.location.department}`,
-        coverImage: project.images[0],
-        href: `/project/${project.slug}`,
-        badge: project.developer,
-        publishedAt: project.publishedAt,
-      },
-    ];
+export async function generateMetadata({ searchParams }: PropertiesPageProps): Promise<Metadata> {
+  const params = await searchParams;
+  if (valueOf(params.type) === "projects") return buildMetadata({
+    title: "Mapa de proyectos en Perú",
+    description: "Explora los proyectos publicados, sus planos y las fichas de sus lotes en Google Maps.",
+    path: "/propiedades?operation=buy&type=projects",
   });
-
-  return { cards, points };
-}
-
-/**
- * Rama "Proyectos": los proyectos viven en `/projects`, no en `/properties`, asi
- * que se consultan aparte y se reusan el card y el mapa del buscador.
- */
-async function ProjectsResults({
-  operation,
-  district,
-}: {
-  operation: ListingOperation;
-  district?: string;
-}) {
-  const page = await getPublicProjectsServer(PROJECT_MAP_LIMIT);
-  const items = page.items.filter((project) => {
-    if (district && project.location.district.toLowerCase() !== district.toLowerCase()) {
-      return false;
-    }
-    // Los proyectos publicos son de venta; si el menu pide alquiler no hay nada.
-    return operation !== "rent";
-  });
-  const { cards, points } = toProjectPoints(items);
-
-  return (
-    <div className="grid w-full min-w-0 grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(340px,380px)] 2xl:grid-cols-[minmax(0,1fr)_400px]">
-      {cards.length > 0 ? (
-        <div className="flex w-full min-w-0 flex-col gap-4">
-          {cards.map((project) => (
-            <ProjectListingCard key={project.id} project={project} />
-          ))}
-        </div>
-      ) : (
-        <div className="rounded-card border border-dashed border-edge bg-surface-muted p-10 text-center text-sm text-muted">
-          No encontramos proyectos publicados con esos filtros.
-        </div>
-      )}
-
-      <div className="w-full min-w-0 overflow-hidden lg:overflow-visible">
-        <ListingsMapExperience
-          points={points}
-          filters={{ operation, type: "projects", district }}
-          isProjectMode
-        />
-      </div>
-    </div>
-  );
+  return propertyMetadata;
 }
 
 export default async function PropertiesPage({ searchParams }: PropertiesPageProps) {
@@ -170,6 +94,7 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
   const rawType = valueOf(params.type);
   const requestedType = valueOf(params.type) as PropertyType | undefined;
   const isProjectMode = rawType === "projects";
+  if (isProjectMode) return <MapExplorerSection />;
   const type = FILTERABLE_TYPES.has(rawType as PropertyType) ? (rawType as PropertyType) : undefined;
   const operation: ListingOperation = valueOf(params.operation) === "rent" ? "rent" : "buy";
   const district = valueOf(params.district);
@@ -192,9 +117,7 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
     page,
     pageSize: PAGE_SIZE,
   };
-  const result = isProjectMode
-    ? { items: [], total: 0, page, pageSize: PAGE_SIZE, hasMore: false }
-    : await getListings(filters).catch(() => ({
+  const result = await getListings(filters).catch(() => ({
         items: [],
         total: 0,
         page,
@@ -202,9 +125,7 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
         hasMore: false,
       }));
 
-  const totalLabel = isProjectMode
-    ? "Proyectos publicados"
-    : `${result.total} propiedades disponibles`;
+  const totalLabel = `${result.total} propiedades disponibles`;
   const heading = requestedType ? getPropertyTypeLabel(requestedType) : "Propiedades";
 
   const currentParams: Record<string, string | undefined> = {
@@ -263,9 +184,6 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
           </div>
         </div>
 
-        {isProjectMode ? (
-          <ProjectsResults operation={operation} district={district} />
-        ) : (
           <>
             <div className="grid w-full min-w-0 grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(340px,380px)] 2xl:grid-cols-[minmax(0,1fr)_400px]">
               {result.items.length > 0 ? (
@@ -306,7 +224,6 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
               </div>
             ) : null}
           </>
-        )}
       </Container>
 
       {operation === "buy" ? (

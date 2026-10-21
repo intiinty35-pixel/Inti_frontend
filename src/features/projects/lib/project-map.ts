@@ -1,6 +1,7 @@
 import type { Listing } from "@/features/listings/types/listing";
 import type { ProjectApiSummary } from "@/features/projects/types/api";
 
+
 /**
  * Adapta un proyecto publicado a la forma de una publicacion del mapa. Solo se
  * muestran los proyectos con coordenadas: sin punto no hay donde dibujarlos.

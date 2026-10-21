@@ -1,3 +1,4 @@
+import { ProjectSitePlan } from "@/features/projects/components/project-site-plan";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -406,7 +407,8 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             </section>
           ) : null}
 
-          {project.lots.length > 0 ? (
+          {project.hasPublishedSitePlan && <ProjectSitePlan slug={slug} center={{ lat: hasCoords ? lat : -12.0464, lng: hasCoords ? lng : -77.0428 }} currency={project.currency} />}
+          {!project.hasPublishedSitePlan && project.lots.length > 0 ? (
             <ProjectLotsBrowser
               lots={project.lots}
               lotMode={project.lotMode}

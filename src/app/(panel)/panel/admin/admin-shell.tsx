@@ -66,7 +66,7 @@ export function AdminShell({ name, roleLabel, children }: AdminShellProps) {
           </p>
         )}
 
-        <div className="mt-4 flex-1 overflow-y-auto">
+        <div className="mt-4 flex-1 overflow-y-auto horizontal-scrollbar-hidden">
           <AdminNav collapsed={collapsed} />
         </div>
 
@@ -101,7 +101,7 @@ export function AdminShell({ name, roleLabel, children }: AdminShellProps) {
               <Image src="/logo/logo.png" alt="Ariz Proyectos" width={144} height={40} className="h-10 w-auto" style={{ width: "auto" }} />
             </Link>
             <p className="px-2 text-[10px] font-bold tracking-[0.22em] text-muted uppercase">Panel administrador</p>
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto horizontal-scrollbar-hidden">
               <AdminNav mobile onNavigate={() => setMobileOpen(false)} />
             </div>
             <LogoutButton />

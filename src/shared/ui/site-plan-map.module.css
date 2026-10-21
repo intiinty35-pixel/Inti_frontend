@@ -1,0 +1,3 @@
+.compactControls :global(.gm-style-mtc) {
+  display: none !important;
+}

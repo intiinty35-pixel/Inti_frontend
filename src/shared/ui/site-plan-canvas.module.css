@@ -1,0 +1,91 @@
+.controls {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.controls button {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  padding: 0 !important;
+  border-radius: 11px !important;
+  border: 1px solid #e1e7ee;
+  box-shadow: 0 2px 5px #19344516;
+  background: white;
+  color: #24415b;
+}
+.controls button.locked {
+  background: #1974f4;
+  color: white;
+  border-color: #1974f4;
+}
+.controls span {
+  font-size: 10px;
+  text-align: center;
+  padding: 3px;
+  color: #64748b;
+  background: #ffffffdf;
+  border-radius: 7px;
+}
+.viewport {
+  position: relative;
+  height: clamp(460px, calc(100dvh - 250px), 850px);
+  overflow: hidden;
+  touch-action: none;
+  padding: 24px 64px;
+  overscroll-behavior: contain;
+}
+.viewport button.resizeHandle {
+  opacity: 0;
+  position: absolute;
+  z-index: 4;
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  padding: 0;
+  border-radius: 4px;
+  background: #1974f4;
+  border: 2px solid white;
+  box-shadow: 0 0 0 1px #1974f4;
+  transform: translate(-50%, -50%);
+  cursor: nwse-resize;
+  touch-action: none;
+}
+.viewport[data-transforming="true"] button.resizeHandle,
+.viewport button.resizeHandle:focus-visible { opacity: 1; }
+.selectionFrame {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border: 1px solid #1974f4;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+.hint {
+  position: absolute;
+  bottom: 9px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100% - 24px);
+  border-radius: 8px;
+  background: #fffffff0;
+  padding: 5px 9px;
+  font-size: 11px !important;
+  text-align: center;
+  color: #64748b;
+  pointer-events: none;
+}
+@media (max-width: 700px) {
+  .viewport {
+    height: 460px;
+    padding: 18px 48px;
+  }
+  .controls {
+    left: 8px;
+    top: 8px;
+  }
+}

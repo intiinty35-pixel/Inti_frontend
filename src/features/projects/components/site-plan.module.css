@@ -1,0 +1,303 @@
+.editor {
+  display: grid;
+  gap: 18px;
+  color: #193445;
+}
+.groupRotation {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+}
+.editor .groupRotation input[type="range"] {
+  width: 140px;
+  padding: 0;
+}
+.editor .groupRotation input[type="number"] {
+  width: 76px;
+  padding: 8px;
+}
+.editor button,
+.editor .button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid #dfe6ee;
+  border-radius: 12px;
+  background: white;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+  text-decoration: none;
+}
+.editor button:hover,
+.editor .button:hover {
+  background: #eef5ff;
+}
+.editor button:disabled {
+  opacity: 0.45;
+  cursor: wait;
+}
+.editor button.primary,
+.editor button.active {
+  background: #1974f4;
+  color: white;
+  border-color: #1974f4;
+}
+.editor button.danger {
+  color: #c53232;
+}
+.toolbar,
+.card {
+  background: white;
+  border: 1px solid #dfe6ee;
+  border-radius: 16px;
+  padding: 20px;
+}
+.toolbar {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+}
+.actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 18px;
+  align-items: start;
+}
+.lotBook {
+  min-width: 0;
+  padding: 18px;
+  background: white;
+  border: 1px solid #e1e7ee;
+  border-radius: 14px;
+  transform-origin: right center;
+  animation: openLotBook 180ms ease-out;
+}
+.bookView {
+  width: 100%;
+  min-width: 0;
+  min-height: calc(100dvh - 120px);
+  align-content: stretch;
+}
+.bookView .lotBook {
+  display: flex;
+  flex-direction: column;
+}
+.bookView .lotBook > div:last-child {
+  flex: 1;
+  max-height: calc(100dvh - 240px);
+}
+.lotTableTools {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+  white-space: nowrap;
+}
+.lotTableTools > * { flex-shrink: 0; }
+.editor .lotTableTools input {
+  width: 160px;
+  flex: 1 0 120px;
+}
+.editor .lotTableTools select { width: auto; }
+.editor .lotTableTools button { padding: 9px 10px; font-size: 12px; }
+.lotTableTools span { font-size: 12px; }
+@keyframes openLotBook {
+  from { opacity: 0; transform: translateX(16px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lotBook { animation: none; }
+}
+.sidebar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  display: grid;
+  gap: 16px;
+  position: sticky;
+  top: 16px;
+  max-height: calc(100dvh - 160px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  align-content: start;
+}
+.sidebar::-webkit-scrollbar,
+.list::-webkit-scrollbar,
+.preview::-webkit-scrollbar { display: none; }
+.list, .preview { scrollbar-width: none; -ms-overflow-style: none; }
+.panelTabs {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #f5f7fa;
+  padding: 4px 0 9px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.editor .panelTabs button,
+.editor .lotTabs button {
+  font-size: 11px;
+  padding: 8px 10px;
+  border-radius: 9px;
+}
+.lotTabs {
+  display: flex;
+  gap: 6px;
+}
+.editSummary {
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 16px;
+  cursor: pointer;
+}
+.editor h1 {
+  font-size: 23px;
+  font-weight: 800;
+}
+.editor h2 {
+  font-size: 16px;
+  font-weight: 750;
+  margin-bottom: 12px;
+}
+.editor p {
+  font-size: 13px;
+  line-height: 1.6;
+}
+.muted {
+  color: #718293;
+}
+.badge {
+  display: inline-flex;
+  border-radius: 20px;
+  padding: 4px 10px;
+  background: #fff4e6;
+  color: #a45b08;
+  font-size: 11px;
+  font-weight: 700;
+}
+.editor label {
+  display: grid;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 650;
+}
+.editor input:not([type="checkbox"]),
+.editor select,
+.editor textarea {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #ced8e2;
+  border-radius: 10px;
+  background: white;
+  color: #193445;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 450;
+}
+.editor input:focus,
+.editor select:focus,
+.editor textarea:focus {
+  outline: 2px solid #92beff;
+  outline-offset: 1px;
+}
+.fields {
+  display: grid;
+  gap: 13px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.check {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+}
+.check input {
+  width: 16px;
+  height: 16px;
+  accent-color: #1974f4;
+}
+.list {
+  display: grid;
+  gap: 8px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+.editor .row {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  text-align: left;
+}
+.row small {
+  display: block;
+  color: #718293;
+  font-weight: 450;
+}
+.metric {
+  padding: 14px;
+  border: 1px solid #e1e7ee;
+  border-radius: 12px;
+  font-size: 12px;
+}
+.metric strong {
+  display: block;
+  margin-top: 5px;
+  font-size: 19px;
+  color: #1974f4;
+}
+.notice {
+  background: #eff6ff;
+  color: #235486;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 13px;
+}
+.error {
+  background: #fff0f0;
+  color: #ac2222;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 13px;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.table th,
+.table td {
+  padding: 9px;
+  text-align: left;
+  border-bottom: 1px solid #e4eaf0;
+}
+.preview {
+  max-height: 300px;
+  overflow: auto;
+}
+@media (max-width: 1100px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    position: static;
+    max-height: none;
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

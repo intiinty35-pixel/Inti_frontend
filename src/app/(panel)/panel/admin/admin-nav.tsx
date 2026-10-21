@@ -7,6 +7,7 @@ import {
   BadgeDollarSign,
   BookOpen,
   Boxes,
+  Map as MapIcon,
   Building2,
   CalendarClock,
   ChartNoAxesCombined,
@@ -156,6 +157,13 @@ const NAV_ITEMS: readonly AdminNavItem[] = [
     href: ROUTES.panel.admin.redemptions,
     Icon: HandCoins,
     group: "recompensas",
+  },
+  {
+    key: "all-projects",
+    label: "Todos los proyectos",
+    href: "/panel/admin/projects/all",
+    Icon: MapIcon,
+    group: "portafolio",
   },
   {
     key: "projects",

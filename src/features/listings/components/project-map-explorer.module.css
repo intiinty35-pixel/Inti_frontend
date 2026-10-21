@@ -1,0 +1,32 @@
+.explorer { display: grid; gap: 16px; color: #16324c; }
+.header, .listHeader, .sheetHeader, .lotSheet header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.header { position: absolute; z-index: 10; top: 12px; right: 70px; }
+.header > div { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.header p, .sheetHeader p { color: #718096; font-size: 13px; margin-top: 4px; }
+.primary, .secondary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 12px; padding: 11px 16px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.primary { color: white; background: #1974f4; }
+.secondary { border: 1px solid #dce4ef; background: white; color: #16324c; }
+.layout { display: grid; min-width: 0; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+.map { position: relative; min-width: 0; }
+.mapSurface { height: calc(100dvh - var(--header-h, 80px) - 24px); min-height: 560px; }
+.sidebar { min-width: 0; height: calc(100dvh - var(--header-h, 80px) - 24px); min-height: 560px; overflow-y: auto; border: 1px solid #e1e7ee; border-radius: 18px; background: #f8fafc; scrollbar-width: thin; }
+.projectBar { position: absolute; top: 66px; left: 14px; display: flex; align-items: center; gap: 12px; max-width: calc(100% - 28px); }
+.projectBar > span { background: white; border-radius: 10px; padding: 10px 14px; }
+.projectBar strong { font-size: 14px; }.projectBar p, .projectBar span { font-size: 12px; color: #64748b; }
+.listHeader { padding: 18px; position: sticky; top: 0; background: #f8fafc; z-index: 1; border-bottom: 1px solid #e1e7ee; }
+.listHeader h2 { font-size: 15px; font-weight: 800; }
+.cards { display: grid; gap: 14px; padding: 14px; }
+.card { background: white; border: 1px solid #e1e7ee; border-radius: 16px; overflow: hidden; }
+.activeCard { border-color: #1974f4; box-shadow: 0 0 0 2px #1974f422; }
+.card > button { width: 100%; cursor: pointer; text-align: left; }
+.card > .imageToggle { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 14px; background: #1974f4; color: white; font-size: 13px; font-weight: 700; text-align: center; }
+.cover { height: 150px; }.cardBody { padding: 14px; }.cardBody h3 { font-weight: 800; font-size: 16px; }.cardBody p { display: flex; align-items: center; gap: 4px; color: #64748b; font-size: 12px; margin: 7px 0 12px; }.cardBody strong { color: #1974f4; font-size: 14px; }
+.card > a, .projectLink, .sheetFooter a { display: flex; align-items: center; gap: 7px; color: #1974f4; font-weight: 700; font-size: 13px; padding: 12px 14px; border-top: 1px solid #e1e7ee; }
+.lotSheet { padding: 20px; background: white; min-height: 100%; }.lotSheet header { align-items: flex-start; }.lotSheet h2 { font-size: 24px; font-weight: 800; }.lotSheet header p { font-size: 13px; color: #64748b; }.lotSheet .eyebrow { text-transform: uppercase; font-size: 10px; letter-spacing: .1em; font-weight: 700; margin-bottom: 4px; }
+.status { display: inline-block; font-size: 12px; font-weight: 800; padding: 8px 0; margin: 8px 0; }
+.lotSheet table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 18px; }.lotSheet th, .lotSheet td { border: 1px solid #e1e7ee; padding: 10px; text-align: left; }.lotSheet th { color: #64748b; font-weight: 500; background: #f8fafc; width: 43%; }.lotSheet td { font-weight: 650; }.lotSheet .primary { width: 100%; }.projectLink { margin-top: 14px; justify-content: center; }
+.finance { padding: 14px; margin-bottom: 18px; background: #eff6ff; border-radius: 12px; font-size: 12px; line-height: 1.9; }.finance h3 { font-weight: 800; }
+.notice { padding: 14px; border-radius: 12px; background: #eff6ff; font-size: 13px; }
+.sheet { width: min(1300px, 96vw); max-width: none; max-height: 94dvh; margin: auto; padding: 0; border: 1px solid #dce4ef; border-radius: 20px; overflow: auto; background: white; box-shadow: 0 20px 80px #00124f40; }.sheet::backdrop { background: #00124f88; }.sheetHeader { padding: 20px 24px; border-bottom: 1px solid #e1e7ee; }.sheetHeader h2 { font-weight: 800; font-size: 20px; }.sheetFooter { padding: 8px 14px; }.sheetFooter a { border-top: 0; justify-content: flex-end; }
+@media (min-width: 1024px) { .withPanel { grid-template-columns: minmax(0, 7fr) minmax(0, 3fr); } }
+@media (max-width: 1023px) { .sidebar { height: auto; max-height: 65dvh; min-height: 0; }.cards { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }.projectBar { right: 14px; top: 60px; }.mapSurface { min-height: 480px; height: 65dvh; } }

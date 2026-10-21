@@ -329,7 +329,12 @@ export function ProjectPublishWizard({
                     title={item.title}
                     detail={STEP_SUMMARIES[index]}
                   />
-                  <StepComponent />
+                  {index === 2 && initialProject?.hasSitePlan ? (
+                    <div className="rounded-xl border border-edge bg-surface-muted p-5 text-sm">
+                      <p>Este inventario se administra desde el editor del plano. Los cambios generales del proyecto conservan sus lotes y polígonos.</p>
+                      {adminMode && <Link className="mt-3 inline-block font-bold text-brand" href={`/panel/admin/projects/${initialProject.id}/site-plan`}>Abrir editor de plano y lotes →</Link>}
+                    </div>
+                  ) : <StepComponent />}
                 </section>
               );
             })}
