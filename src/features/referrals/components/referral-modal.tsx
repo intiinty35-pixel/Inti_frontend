@@ -1029,7 +1029,7 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
                 ) : null}
                 <div className="border-t border-edge pt-4">
                   <Input
-                    label="Coloque su código de asesor Ariz (opcional)"
+                    label="Coloque el código del asesor Ariz (opcional)"
                     placeholder="APCOD-XXXXXXXX"
                     value={invitedByCode}
                     onChange={(e) => handleInvitedByCodeChange(e.target.value)}
