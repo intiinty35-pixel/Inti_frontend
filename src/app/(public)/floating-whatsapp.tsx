@@ -1,9 +1,14 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { WhatsappIcon } from "@/shared/ui";
 import { buildServiceWhatsappUrl } from "@/features/services";
+import { ROUTES } from "@/shared/config/routes";
 
 export function FloatingWhatsapp() {
+  const pathname = usePathname();
+  if (pathname === ROUTES.map) return null;
+
   return (
     <a
       href={buildServiceWhatsappUrl("información general")}

@@ -57,12 +57,12 @@ export interface MapsSdk {
 }
 let loading: Promise<MapsSdk> | undefined;
 export function loadGoogleMaps(key: string): Promise<MapsSdk> {
-  if (!key)
-    return Promise.reject(
-      new Error(
-        "Configura NEXT_PUBLIC_GOOGLE_MAPS_API_KEY en el .env del frontend y reinicia la aplicación.",
-      ),
+  if (!key) {
+    console.error(
+      "Configura NEXT_PUBLIC_GOOGLE_MAPS_API_KEY en el .env del frontend y reinicia la aplicación.",
     );
+    return Promise.reject(new Error("No se pudieron cargar los datos..."));
+  }
   const global = window as unknown as {
     google?: { maps: MapsSdk };
     arizMapsReady?: () => void;
@@ -75,11 +75,10 @@ export function loadGoogleMaps(key: string): Promise<MapsSdk> {
       const fail = () => {
         loading = undefined;
         script.remove();
-        reject(
-          new Error(
-            "No se pudo cargar Google Maps. Revisa la clave, Maps JavaScript API y los dominios autorizados.",
-          ),
+        console.error(
+          "No se pudo cargar Google Maps. Revisa la clave, Maps JavaScript API y los dominios autorizados.",
         );
+        reject(new Error("No se pudieron cargar los datos..."));
       };
       const timer = setTimeout(fail, 20000);
       global.arizMapsReady = () => {

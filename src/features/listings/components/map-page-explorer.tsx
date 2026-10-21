@@ -8,10 +8,13 @@ import { LOT_LABELS, LOT_COLORS, type SitePlan, type PlanLot } from '@/shared/li
 import { apiClient } from '@/shared/lib/api/client';
 import { env } from '@/shared/lib/env';
 import { formatPrice } from '@/shared/lib/format';
+import { buildArizWhatsappUrl } from '@/shared/lib/whatsapp';
 import { ROUTES } from '@/shared/config/routes';
 import { uniqueProjectListings } from '../lib/map-projects';
 import { ListingImage } from './listing-image';
+import { SharePropertyButton } from './share-property-button';
 import type { Listing } from '../types/listing';
+import { WhatsappIcon } from '@/shared/ui/icons';
 import styles from './project-map-explorer.module.css';
 
 type PublishedPlan = SitePlan & { currency?: 'PEN' | 'USD' };
@@ -49,9 +52,18 @@ export function MapPageExplorer({ listings, loadError = false }: { listings: Lis
   const plan = result?.id === activeId ? result?.plan : undefined;
   const error = result?.id === activeId && result?.error;
   const lot = plan?.lots.find(l => l.id === selectedLot);
+  const lotCounts = useMemo(() => {
+    const counts = { available: 0, reserved: 0, sold: 0 };
+    for (const item of plan?.lots ?? []) {
+      if (item.status === 'AVAILABLE') counts.available += 1;
+      else if (item.status === 'RESERVED') counts.reserved += 1;
+      else if (item.status === 'SOLD') counts.sold += 1;
+    }
+    return counts;
+  }, [plan]);
   const markers = useMemo(() => projects.flatMap(project => {
     const { lat, lng } = project.location;
-    return lat != null && lng != null && Number.isFinite(lat) && Number.isFinite(lng) ? [{ id: project.id, lat, lng, title: project.title, priceLabel: formatPrice(project.price.amount, project.price.currency), iconUrl: '/web_v/ubicacion.png' }] : [];
+    return lat != null && lng != null && Number.isFinite(lat) && Number.isFinite(lng) ? [{ id: project.id, lat, lng, title: project.title, priceLabel: formatPrice(project.price.amount, project.price.currency), priceAmount: project.price.amount, priceCurrency: project.price.currency, iconUrl: '/web_v/ubicacion.png' }] : [];
   }), [projects]);
   useEffect(() => {
     if (!active) return;
@@ -91,7 +103,25 @@ export function MapPageExplorer({ listings, loadError = false }: { listings: Lis
           <header className={styles.listHeader}><h2>{panel === 'PROJECT' ? 'Proyecto seleccionado' : `Proyectos (${projects.length})`}</h2><button type="button" onClick={() => setPanel(null)} aria-label="Cerrar listado de proyectos"><X size={19} /></button></header>
           {panel === 'PROJECT' && plan === undefined && !error && <p className={styles.notice} role="status">Cargando plano…</p>}
           {panel === 'PROJECT' && plan === null && <p className={styles.notice} role={error ? "alert" : "status"}>{error ? 'No se pudo cargar el plano.' : 'Plano aún no publicado.'}</p>}
-          <div className={styles.cards}>{(panel === 'PROJECT' && active ? [active] : projects).map(project => <article key={project.id} className={`${styles.card} ${activeId === project.id ? styles.activeCard : ''}`}><button type="button" onClick={() => selectProject(project.id)} aria-label={`Ver ${project.title} en el mapa`}><ListingImage src={project.images[0]} className={styles.cover} /><div className={styles.cardBody}><h3>{project.title}</h3><p><MapPin size={13} /> {project.location.district}, {project.location.province}</p><strong>Desde {formatPrice(project.price.amount, project.price.currency)}</strong></div></button>{activeId === project.id && plan?.image && <button type="button" className={styles.imageToggle} onClick={() => { setShowPlanImage(value => !value); if (!showPlanImage) setFocusPlanRequest(value => value + 1); }}>{showPlanImage ? <EyeOff size={16} /> : <Eye size={16} />}{showPlanImage ? 'Ocultar imagen' : 'Ver imagen'}</button>}<Link href={ROUTES.project(project.slug)}>Ver proyecto <ArrowRight size={14} /></Link></article>)}</div>
+          <div className={styles.cards}>{(panel === 'PROJECT' && active ? [active] : projects).map(project => <article key={project.id} className={`${styles.card} ${activeId === project.id ? styles.activeCard : ''}`}>
+            <button type="button" onClick={() => selectProject(project.id)} aria-label={`Ver ${project.title} en el mapa`}><ListingImage src={project.images[0]} className={styles.cover} /><div className={styles.cardBody}><h3>{project.title}</h3><p><MapPin size={13} /> {project.location.district}, {project.location.province}</p><strong>Desde {formatPrice(project.price.amount, project.price.currency)}</strong></div></button>
+            {activeId === project.id && plan?.image && <button type="button" className={styles.imageToggle} onClick={() => { setShowPlanImage(value => !value); if (!showPlanImage) setFocusPlanRequest(value => value + 1); }}>{showPlanImage ? <EyeOff size={16} /> : <Eye size={16} />}{showPlanImage ? 'Ocultar imagen' : 'Ver imagen'}</button>}
+            {panel === 'PROJECT' && activeId === project.id && <>
+              {plan && <div className={styles.availability}>
+                <div><strong className={styles.available}>{lotCounts.available}</strong><span>Disponibles</span></div>
+                <div><strong className={styles.reserved}>{lotCounts.reserved}</strong><span>Reservados</span></div>
+                <div><strong className={styles.sold}>{lotCounts.sold}</strong><span>Vendidos</span></div>
+              </div>}
+              <div className={styles.contactBlock}>
+                <span className={styles.quickResponse}>Respuesta rápida</span>
+                <div className={styles.contactActions}>
+                  <a className={styles.contactButton} href={buildArizWhatsappUrl(`Hola ARIZ, vi el proyecto "${project.title}" en el mapa y quisiera más información.`)} target="_blank" rel="noreferrer"><WhatsappIcon className={styles.contactIcon} />Contactar</a>
+                  <SharePropertyButton title={project.title} latitude={project.location.lat} longitude={project.location.lng} address={project.location.address} href={ROUTES.project(project.slug)} label="Compartir" kind="proyecto" className="w-full" buttonClassName="w-full justify-center" />
+                </div>
+              </div>
+            </>}
+            <Link href={ROUTES.project(project.slug)}>Ver proyecto <ArrowRight size={14} /></Link>
+          </article>)}</div>
         </>}
       </aside>}
     </div>

@@ -20,7 +20,7 @@ export async function MapExplorerSection() {
   }
 
   return (
-      <section id="mapa" className="px-3 py-3 sm:px-4">
+      <section id="mapa" className="w-full">
         <MapPageExplorer listings={listings} loadError={loadError} />
       </section>
   );

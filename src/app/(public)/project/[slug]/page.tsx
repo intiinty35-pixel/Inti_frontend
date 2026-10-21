@@ -590,7 +590,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           />
         </main>
 
-        <aside className="flex flex-col gap-4 lg:sticky lg:top-20">
+        <aside id="contacto" className="flex flex-col gap-4 lg:sticky lg:top-20">
           <div className="rounded-2xl border border-edge bg-surface p-5 xl:p-6">
             <h2 className="text-base font-bold text-ink xl:text-lg">Contacta con el asesor</h2>
             <LeadForm
