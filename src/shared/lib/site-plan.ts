@@ -12,7 +12,7 @@ export type PlanImage = {
 };
 export type PlanZone = {
   id: string;
-  kind: "BLOCK" | "STREET" | "CONTOUR";
+  kind: "BLOCK" | "STREET" | "PARK" | "CONTOUR";
   name: string;
   path: Point[];
 };

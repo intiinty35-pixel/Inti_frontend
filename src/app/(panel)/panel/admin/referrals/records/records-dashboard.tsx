@@ -24,7 +24,7 @@ const STATUSES = [
   ["PENDING_VALIDATION", "Pendiente de validación"], ["CONTACTED", "Contactado"],
   ["VISIT", "Visita"], ["OPERATION_COMPLETED", "Operación concretada"], ["REJECTED", "Rechazado"],
 ];
-const inputClass = "h-10 w-full rounded-card border border-edge bg-white px-3 text-sm font-normal outline-none focus:border-brand focus:ring-2 focus:ring-brand/15";
+const inputClass = "h-10 min-w-0 w-full rounded-card border border-edge bg-white px-3 text-sm font-normal outline-none focus:border-brand focus:ring-2 focus:ring-brand/15";
 const buttonClass = "inline-flex h-10 items-center justify-center gap-2 rounded-card border border-edge px-3 text-xs font-bold text-brand hover:border-brand disabled:opacity-40";
 function limaDate(daysAgo = 0) {
   return new Date(Date.now() - 5 * 3_600_000 - daysAgo * 86_400_000).toISOString().slice(0, 10);
@@ -113,7 +113,7 @@ export function ReferralRecordsDashboard() {
           </div>
         </div>
       </section>
-      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <section className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         {([['Referidos', data?.totals.referrals], ['En visita', data?.totals.visits], ['Concretados', data?.totals.completed], ['Puntos', data?.totals.points]] as const).map(([label, value]) => (
           <div key={label} className="rounded-card border border-edge bg-surface p-4 text-center shadow-[var(--shadow-card)]">
             <p className="text-[11px] font-black uppercase tracking-[0.16em] text-muted">{label}</p>
@@ -122,25 +122,27 @@ export function ReferralRecordsDashboard() {
         ))}
       </section>
       <section className="rounded-card border border-edge bg-surface p-4 shadow-[var(--shadow-card)]">
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-[2fr_1fr_1fr_1fr]">
-          <label className="grid gap-1.5 text-xs font-bold text-brand">Buscar referido o miembro Ariz
-            <span className="relative"><Search className="pointer-events-none absolute left-3 top-3 size-4 text-muted" />
+        <div className="grid grid-cols-2 items-end gap-3 xl:grid-cols-[2fr_1fr_1fr_1fr]">
+          <label className="grid min-w-0 gap-1.5 text-xs font-bold text-brand">Buscar referido o miembro Ariz
+            <span className="relative min-w-0"><Search className="pointer-events-none absolute left-3 top-3 size-4 text-muted" />
               <input value={search} maxLength={80} onChange={(event) => { setSearch(event.target.value); setPage(1); }} placeholder="Nombre, correo, teléfono o código" className={`${inputClass} pl-9`} />
             </span>
           </label>
-          <label className="grid gap-1.5 text-xs font-bold text-brand">Estado del referido
+          <label className="grid min-w-0 gap-1.5 text-xs font-bold text-brand">Estado del referido
             <select value={status} onChange={(event) => { setStatus(event.target.value); setPage(1); }} className={inputClass}>
               <option value="">Todos los estados</option>{STATUSES.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
             </select>
           </label>
-          <label className="grid gap-1.5 text-xs font-bold text-brand">Desde<input type="date" value={from} max={to || undefined} onChange={(event) => { setFrom(event.target.value); setPage(1); }} className={inputClass} /></label>
-          <label className="grid gap-1.5 text-xs font-bold text-brand">Hasta<input type="date" value={to} min={from || undefined} onChange={(event) => { setTo(event.target.value); setPage(1); }} className={inputClass} /></label>
+          <label className="grid min-w-0 gap-1.5 text-xs font-bold text-brand">Desde<input type="date" value={from} max={to || undefined} onChange={(event) => { setFrom(event.target.value); setPage(1); }} className={inputClass} /></label>
+          <label className="grid min-w-0 gap-1.5 text-xs font-bold text-brand">Hasta<input type="date" value={to} min={from || undefined} onChange={(event) => { setTo(event.target.value); setPage(1); }} className={inputClass} /></label>
         </div>
         <div className="mt-3 flex flex-wrap items-center gap-2">
-          <CalendarRange className="size-4 text-muted" />
+          <div className="flex max-w-full flex-nowrap items-center gap-1 overflow-x-auto sm:gap-2">
+          <CalendarRange className="size-4 shrink-0 text-muted" />
           {([['Todo', null], ['Hoy', 0], ['7 días', 6], ['4 semanas', 27], ['3 meses', 89]] as const).map(([label, days]) => (
-            <button type="button" key={label} onClick={() => { setFrom(days === null ? '' : limaDate(days)); setTo(days === null ? '' : limaDate()); setPage(1); }} className="rounded-full border border-edge px-3 py-1 text-xs font-bold text-brand hover:border-brand">{label}</button>
+            <button type="button" key={label} onClick={() => { setFrom(days === null ? '' : limaDate(days)); setTo(days === null ? '' : limaDate()); setPage(1); }} className="shrink-0 whitespace-nowrap rounded-full border border-edge px-2 py-1 text-xs font-bold text-brand hover:border-brand sm:px-3">{label}</button>
           ))}
+          </div>
           {(search || from || to || status) && <button type="button" onClick={() => { setSearch(''); setFrom(''); setTo(''); setStatus(''); setPage(1); }} className="text-xs font-bold text-brand underline">Limpiar filtros</button>}
           {data && <span className="ml-auto text-[11px] font-semibold text-muted">Actualizado {new Intl.DateTimeFormat('es-PE', { timeStyle: 'medium', timeZone: 'America/Lima' }).format(new Date(data.generatedAt))}</span>}
         </div>

@@ -4,3 +4,23 @@
 .inventory > h2 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }.inventory > div:first-of-type { border: 1px solid var(--edge); border-radius: 20px; padding: 16px; margin-bottom: 20px; gap: 10px; background: white; }.inventory input { border: 1px solid var(--edge); padding: 10px 14px; border-radius: 12px; font-size: 13px; }.inventory button { cursor: pointer; }.inventory table { font-size: 12px; }.inventory thead { background: var(--brand); }.inventory th { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .035em; }.inventory td { padding-top: 18px; padding-bottom: 18px; }.inventory td button { padding: 7px 10px; border: 1px solid var(--edge); border-radius: 10px; background: white; color: var(--brand); }.inventory td button:last-child { color: #b3402e; }
 .pagination { display: flex; justify-content: flex-end; align-items: center; gap: 12px; flex-wrap: wrap; padding-top: 18px; font-size: 12px; color: var(--muted); }.pagination > span:first-child { margin-right: auto; }.pagination button { border: 1px solid var(--edge); border-radius: 10px; padding: 8px 12px; color: var(--brand); }.pagination button:disabled { opacity: .4; cursor: default; }
 @media (max-width: 1100px) { .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }.metrics .progress { grid-column: 1 / -1; } }@media (max-width: 640px) { .inventory { padding: 12px; border-radius: 20px; }.hero { padding: 18px; }.metrics > div { flex-wrap: wrap; } }
+.inventory table { table-layout: fixed; width: 100%; }
+.inventory th, .inventory td { padding-left: 6px; padding-right: 6px; white-space: normal; overflow-wrap: anywhere; }
+.inventory th:nth-child(2), .inventory td:nth-child(2) { width: 8%; }
+.inventory th:nth-child(3), .inventory td:nth-child(3) { width: 14%; }
+.inventory td:last-child button { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 32px; max-width: 100%; padding: 4px; vertical-align: middle; }
+.inventory { min-width: 0; max-width: 100%; }
+.inventory > * { min-width: 0; max-width: 100%; }
+.tableScroll { width: 100%; min-width: 0; max-width: 100%; overflow: auto; overscroll-behavior-x: contain; }
+@media (max-width: 640px) {
+  .inventory .tools { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding: 12px; overflow: visible; white-space: normal; align-items: stretch; }
+  .inventory .tools > * { min-width: 0; max-width: 100%; }
+  .inventory .tools > span, .inventory .tools > input, .inventory .tools > button:last-child { grid-column: 1 / -1; }
+  .inventory .tools > input { width: 100%; }
+  .inventory .tools button { width: 100%; min-height: 42px; white-space: normal; overflow-wrap: anywhere; }
+  .inventory .tools button > span { min-width: 0; white-space: normal; }
+  .inventory .hero h1 { overflow-wrap: anywhere; }
+  .inventory .metrics > div { min-width: 0; padding: 8px; }
+  .inventory table { min-width: 1150px; }
+  .inventory .pagination { gap: 8px; }
+}

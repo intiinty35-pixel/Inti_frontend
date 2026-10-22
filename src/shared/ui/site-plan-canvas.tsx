@@ -39,6 +39,8 @@ export function SitePlanCanvas({
   onComplete?: (path: Point[]) => void;
   previewPaths?: Point[][];
 }) {
+  const [labelsReady, setLabelsReady] = useState(false);
+  useEffect(() => { setLabelsReady(true); }, []);
   const svg = useRef<SVGSVGElement>(null);
   const viewport = useRef<HTMLDivElement>(null);
   const pan = useRef<{
@@ -187,7 +189,7 @@ export function SitePlanCanvas({
       lot: undefined,
       label: z.kind === "CONTOUR" ? "" : z.name,
       contour: z.kind === "CONTOUR",
-      color: z.kind === "CONTOUR" ? "#0ea5e9" : z.kind === "BLOCK" ? "#3b82f6" : "#a855f7",
+      color: z.kind === "CONTOUR" ? "#0ea5e9" : z.kind === "PARK" ? "#4d7c0f" : z.kind === "BLOCK" ? "#3b82f6" : "#92400e",
       zone: true,
     })),
     ...plan.lots
@@ -204,10 +206,10 @@ export function SitePlanCanvas({
   const active = shapes.find((shape) => shape.id === selected);
   const snapPaths = [
     ...plan.lots.filter(l => l.id !== selected && l.path.length >= 3).map(l => l.path),
-    ...plan.zones.filter(z => z.id !== selected && z.kind === "BLOCK").map(z => z.path),
+    ...plan.zones.filter(z => z.id !== selected && (z.kind === "BLOCK" || z.kind === "STREET")).map(z => z.path),
   ];
   const snap = (point: Point, disabled = false) => {
-    if (disabled || (tool !== "LOT" && tool !== "GROUP" && !(tool === "SELECT" && active && !active.zone))) return { point, snapped: false };
+    if (disabled || (tool !== "LOT" && tool !== "GROUP" && tool !== "STREET" && tool !== "BLOCK" && !(tool === "SELECT" && active && !active.contour))) return { point, snapped: false };
     const bounds = svg.current!.getBoundingClientRect();
     return snapPlanPoint(point, snapPaths, p => {
       const uv = geoToImage(p, image);
@@ -495,7 +497,7 @@ export function SitePlanCanvas({
                 <polygon
                   points={shape.path.map(position).join(" ")}
                   fill={shape.color}
-                  fillOpacity={shape.contour ? 0 : shape.zone ? 0.08 : 0.3}
+                  fillOpacity={shape.contour ? 0 : "kind" in shape && shape.kind === "PARK" ? 0.35 : "kind" in shape && shape.kind === "STREET" ? 0.3 : shape.zone ? 0.08 : 0.3}
                   stroke={shape.id === selected ? "#2563eb" : shape.color}
                   strokeWidth={shape.contour ? (shape.id === selected ? 5 : 4) : shape.id === selected ? 3 : !showImage ? 2.5 : 1.5}
                   strokeLinejoin="round"
@@ -513,7 +515,7 @@ export function SitePlanCanvas({
                     shape.zone ? `url(#zone-label-${shape.id})` : undefined
                   }
                 >
-                  {shape.lot ? <g transform={`scale(${1000 / renderedWidth} ${1000 / (renderedWidth * aspect)})`} pointerEvents="none">
+                  {!labelsReady ? null : shape.lot ? <g transform={`scale(${1000 / renderedWidth} ${1000 / (renderedWidth * aspect)})`} pointerEvents="none">
                     {lotAnnotations(shape.lot, coords.map(p => ({ x: p.x * renderedWidth, y: p.y * renderedWidth * aspect }))).map((item, index) => <text key={index} x={item.x} y={item.y} transform={`rotate(${item.angle} ${item.x} ${item.y})`} fontSize={item.size} fill={item.color} stroke="rgba(255,255,255,0.8)" strokeWidth={1.2} paintOrder="stroke" fontWeight={700} textAnchor="middle" dominantBaseline="middle">{item.text}</text>)}
                   </g> : <text
                     x={anchor ? 0 : cx}
@@ -565,10 +567,10 @@ export function SitePlanCanvas({
           )}
           {plan.zones.filter(z => z.kind === "CONTOUR").map(z => <polygon key={`outline-${z.id}`} points={z.path.map(position).join(" ")} fill="none" stroke="#0ea5e9" strokeWidth={4} strokeLinejoin="round" vectorEffect="non-scaling-stroke" pointerEvents="none" />)}
           {previewPaths.map((path, index) => <polygon key={`preview-${index}`} points={path.map(position).join(" ")} fill="#2563eb" fillOpacity={0.12} stroke="#2563eb" strokeWidth={2} strokeDasharray="5 3" vectorEffect="non-scaling-stroke" pointerEvents="none" />)}
-          {snapMarker && (tool === "LOT" || tool === "GROUP" || selected) && <circle
+          {snapMarker && (tool === "LOT" || tool === "GROUP" || tool === "STREET" || tool === "BLOCK" || selected) && <circle
             cx={geoToImage(snapMarker, image).x * 1000}
             cy={geoToImage(snapMarker, image).y * 1000}
-            r={7 * 1000 / renderedWidth}
+            r={4 * 1000 / renderedWidth}
             fill="none" stroke="#06b6d4" strokeWidth={2} vectorEffect="non-scaling-stroke" pointerEvents="none"
           />}
           {rectangle.length === 4 && (
@@ -588,9 +590,11 @@ export function SitePlanCanvas({
                 key={index}
                 cx={p.x * 1000}
                 cy={p.y * 1000}
-                r="4"
+                r={2.5 * 1000 / renderedWidth}
                 fill="#2563eb"
                 stroke="white"
+                strokeWidth={1}
+                vectorEffect="non-scaling-stroke"
                 pointerEvents="none"
               />
             );
@@ -603,10 +607,11 @@ export function SitePlanCanvas({
                   key={index}
                   cx={p.x * 1000}
                   cy={p.y * 1000}
-                  r="6"
+                  r={3.5 * 1000 / renderedWidth}
                   fill="white"
                   stroke="#2563eb"
                   strokeWidth="2"
+                  vectorEffect="non-scaling-stroke"
                   style={{ cursor: "grab", touchAction: "none" }}
                   onClick={(event) => event.stopPropagation()}
                   onPointerDown={(event) => {

@@ -309,7 +309,7 @@ export default async function AdminAccountsPage({ searchParams }: AdminAccountsP
           </div>
         </Card>
         <p className="text-center text-xs text-muted">
-          {publicationTotal === 0 ? 0 : offset + 1}?{Math.min(offset + publications.length, publicationTotal)} de {publicationTotal} publicaciones
+          {publicationTotal === 0 ? 0 : offset + 1} a {Math.min(offset + publications.length, publicationTotal)} de {publicationTotal} publicaciones
         </p>
         <Pagination
           page={publicationPage}

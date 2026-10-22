@@ -1,5 +1,6 @@
 .editor {
   display: grid;
+  min-width: 0;
   gap: 18px;
   color: #193445;
 }
@@ -69,6 +70,12 @@
   align-items: center;
   flex-wrap: wrap;
 }
+@media (min-width: 1024px) {
+  .planControls { flex: 1 1 100%; min-width: 0; max-width: 100%; flex-wrap: nowrap; gap: 6px; overflow-x: auto; padding-bottom: 4px; }
+  .planControls > * { flex-shrink: 0; white-space: nowrap; }
+  .editor .planControls button, .editor .planControls .button { padding: 8px; font-size: 11px; gap: 5px; }
+  .planControls .groupRotation { gap: 4px; font-size: 11px; }
+}
 .layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 360px;
@@ -86,7 +93,9 @@
 }
 .bookView {
   width: 100%;
+  max-width: 100%;
   min-width: 0;
+  min-inline-size: 0;
   min-height: calc(100dvh - 120px);
   align-content: stretch;
 }
@@ -314,3 +323,7 @@
   font-size: 11px;
   white-space: nowrap;
 }
+
+.drawingSelect { display: grid; gap: 5px; min-width: 220px; font-size: 12px; font-weight: 600; color: #475569; }
+.drawingSelect select { width: 100%; border: 1px solid #cbd5e1; border-radius: 10px; padding: 10px 36px 10px 12px; background: #fff; color: #0f172a; font: inherit; font-size: 14px; cursor: pointer; }
+.drawingSelect select:focus-visible { outline: 2px solid #16a34a; outline-offset: 2px; }

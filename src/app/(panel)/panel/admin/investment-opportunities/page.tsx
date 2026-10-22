@@ -43,23 +43,23 @@ export default async function AdminInvestmentOpportunitiesPage() {
         </div>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-card border border-edge bg-surface px-5 py-4 text-center shadow-[var(--shadow-card)]">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-muted">Total</p>
-          <p className="mt-2 font-display text-2xl font-black text-brand">{opportunities.length}</p>
-          <p className="mt-1 text-xs font-semibold text-muted">Oportunidades creadas</p>
+      <section className="grid grid-cols-3 gap-2 sm:gap-4">
+        <div className="min-w-0 rounded-card border border-edge bg-surface px-2 py-3 text-center shadow-[var(--shadow-card)] sm:px-5 sm:py-4">
+          <p className="text-[9px] font-bold uppercase tracking-wide text-muted sm:text-xs sm:tracking-[0.18em]">Total</p>
+          <p className="mt-1 sm:mt-2 font-display text-2xl font-black text-brand">{opportunities.length}</p>
+          <p className="mt-1 text-[10px] font-semibold leading-tight text-muted sm:text-xs">Oportunidades creadas</p>
         </div>
-        <div className="rounded-card border border-edge bg-surface px-5 py-4 text-center shadow-[var(--shadow-card)]">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-muted">Publicadas</p>
-          <p className="mt-2 font-display text-2xl font-black text-brand">{published}</p>
-          <p className="mt-1 text-xs font-semibold text-muted">Visibles al publico</p>
+        <div className="min-w-0 rounded-card border border-edge bg-surface px-2 py-3 text-center shadow-[var(--shadow-card)] sm:px-5 sm:py-4">
+          <p className="text-[9px] font-bold uppercase tracking-wide text-muted sm:text-xs sm:tracking-[0.18em]">Publicadas</p>
+          <p className="mt-1 sm:mt-2 font-display text-2xl font-black text-brand">{published}</p>
+          <p className="mt-1 text-[10px] font-semibold leading-tight text-muted sm:text-xs">Visibles al publico</p>
         </div>
-        <div className="rounded-card border border-edge bg-surface px-5 py-4 text-center shadow-[var(--shadow-card)]">
+        <div className="min-w-0 rounded-card border border-edge bg-surface px-2 py-3 text-center shadow-[var(--shadow-card)] sm:px-5 sm:py-4">
           <div className="mx-auto flex size-8 items-center justify-center rounded-card bg-brand/10 text-brand">
             <TrendingUp className="size-4" />
           </div>
-          <p className="mt-2 text-xs font-bold uppercase tracking-[0.18em] text-muted">Inversiones</p>
-          <p className="mt-1 text-xs font-semibold text-muted">Contenido del portal publico</p>
+          <p className="mt-2 text-[9px] font-bold uppercase tracking-wide text-muted sm:text-xs sm:tracking-[0.18em]">Inversiones</p>
+          <p className="mt-1 text-[10px] font-semibold leading-tight text-muted sm:text-xs">Contenido del portal publico</p>
         </div>
       </section>
 

@@ -77,12 +77,18 @@ export function ReferralFilters({ search, from, to }: { search: string; from: st
           ) : null}
         </div>
       </form>
-      <div className="mt-3 flex flex-wrap gap-2">
+      <div className="mt-3 flex flex-nowrap items-center gap-1 overflow-x-auto sm:gap-2">
+        <Link
+          href={search ? `${BASE}?${new URLSearchParams({ search }).toString()}` : BASE}
+          className={`shrink-0 whitespace-nowrap rounded-full border px-2 py-1 text-xs font-bold transition-colors sm:px-3 ${!from && !to ? "border-brand bg-brand text-on-brand" : "border-edge text-brand hover:border-brand"}`}
+        >
+          Todo
+        </Link>
         {presets.map((preset) => (
           <Link
             key={preset.label}
             href={presetHref(preset.from, search)}
-            className={`rounded-full border px-3 py-1 text-xs font-bold transition-colors ${
+            className={`shrink-0 whitespace-nowrap rounded-full border px-2 py-1 text-xs font-bold transition-colors sm:px-3 ${
               from === preset.from && to === limaDate(0)
                 ? "border-brand bg-brand text-on-brand"
                 : "border-edge text-brand hover:border-brand"

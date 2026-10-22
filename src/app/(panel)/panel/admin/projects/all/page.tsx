@@ -32,7 +32,7 @@ export default async function AllProjectsPage({
     ...Object.entries(PROJECT_STATUS_LABELS).map(([value, label]) => ({ label, status: value as ApiProjectStatus })),
   ];
   return (
-    <div className="grid gap-6">
+    <div className="grid min-w-0 max-w-full gap-6">
       <Suspense fallback={<p role="status" className="rounded-2xl border border-edge bg-surface p-5 text-sm text-muted">Cargando resumen del inventario…</p>}>
         <PortfolioOverview data={data} filtered={!!status} />
       </Suspense>

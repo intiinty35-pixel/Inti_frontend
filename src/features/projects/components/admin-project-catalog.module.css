@@ -4,8 +4,24 @@
 .tableWrap { overflow-x: auto; border: 1px solid var(--edge); border-radius: 22px; background: white; }.table { width: 100%; text-align: left; font-size: 13px; }.table th { background: #f5f7fb; color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .06em; padding: 18px; }.table td { padding: 20px 18px; border-top: 1px solid var(--edge); }.table strong { color: var(--ink); font-size: 14px; font-weight: 600; }.table p { color: var(--muted); font-size: 12px; margin-top: 5px; }
 .actions { display: flex; flex-wrap: wrap; gap: 8px; }.actions a { display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 9px 12px; border: 1px solid var(--edge); border-radius: 11px; color: var(--brand); font-size: 12px; font-weight: 600; background: white; }.actions a:hover { background: var(--brand-soft); }.actions .primary { background: var(--brand); color: white; border-color: var(--brand); }.actions .primary:hover { background: var(--brand-hover); }
 .badge { display: inline-block; border: 1px solid var(--edge); border-radius: 999px; padding: 5px 10px; color: var(--brand); background: #f7f8fc; font-size: 11px; font-weight: 600; white-space: nowrap; }
-.grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }.card { overflow: hidden; border: 1px solid var(--edge); border-radius: 18px; background: white; box-shadow: 0 4px 16px #00124f06; }.body { padding: 14px; }.body h2 { margin: 12px 0 7px; font-size: 15px; font-weight: 600; line-height: 1.4; color: var(--ink); }.body p { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 12px; margin-top: 8px; }.body .actions { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--edge); }
+.grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }.card { overflow: hidden; border: 1px solid var(--edge); border-radius: 18px; background: white; box-shadow: 0 4px 16px #00124f06; }.body { padding: 14px; }.body h3 { margin: 12px 0 7px; font-size: 15px; font-weight: 600; line-height: 1.4; color: var(--ink); }.body p { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 12px; margin-top: 8px; }.body .actions { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--edge); }
 .preview { position: relative; height: 170px; background: #f7f9fc; border-bottom: 1px solid var(--edge); }.preview svg, .preview > img { width: 100%; height: 100%; object-fit: contain; padding: 12px; }.previewEmpty { display: grid; place-content: center; justify-items: center; gap: 12px; height: 100%; color: var(--muted); font-size: 12px; }.previewEmpty button { color: var(--brand); text-decoration: underline; cursor: pointer; }.previewLabel { position: absolute; left: 12px; bottom: 12px; border: 1px solid var(--edge); border-radius: 999px; padding: 5px 9px; background: #ffffffed; color: var(--brand); font-size: 10px; }.empty { padding: 40px; border: 1px dashed var(--edge); border-radius: 22px; text-align: center; color: var(--muted); }
 @media (max-width: 1023px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }@media (max-width: 640px) { .grid { grid-template-columns: minmax(0, 1fr); }.toolbar { flex-wrap: wrap; } }
 
-.card .actions { gap:6px; }.card .actions a { padding:7px 9px; font-size:11px; }.body h2 { overflow-wrap:anywhere; }.body p { font-size:11px; }
+.card .actions { gap:6px; }.card .actions a { padding:7px 9px; font-size:11px; }.body h3 { overflow-wrap:anywhere; }.body p { font-size:11px; }
+
+.projectName { min-width: 220px; }
+.actionCell { min-width: 460px; }
+.table .actions { flex-wrap: nowrap; }
+.table .actions a { flex-shrink: 0; white-space: nowrap; }
+.scrollHint { margin-bottom: 10px; color: var(--muted); font-size: 12px; }
+.tableWrap:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+@media (max-width: 640px) {
+  .tableWrap { max-width: 100%; border-radius: 16px; overscroll-behavior-x: contain; }
+  .table { min-width: 1000px; }
+  .table th { padding: 12px 14px; }
+  .table td { padding: 14px; }
+  .table .actions { flex-wrap: nowrap; }
+  .table .actions a { white-space: nowrap; }
+  .body p { flex-wrap: wrap; overflow-wrap: anywhere; }
+}

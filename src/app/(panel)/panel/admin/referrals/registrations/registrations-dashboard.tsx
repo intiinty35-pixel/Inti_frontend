@@ -39,7 +39,7 @@ interface RegistrationsResponse {
 }
 
 const PAGE_SIZE = 12;
-const inputClass = "h-10 w-full rounded-card border border-edge bg-white px-3 text-sm font-normal outline-none focus:border-brand focus:ring-2 focus:ring-brand/15";
+const inputClass = "h-10 min-w-0 w-full rounded-card border border-edge bg-white px-3 text-sm font-normal outline-none focus:border-brand focus:ring-2 focus:ring-brand/15";
 const buttonClass = "inline-flex h-10 items-center justify-center gap-2 rounded-card border border-edge px-3 text-xs font-bold text-brand hover:border-brand disabled:opacity-40";
 
 function limaDate(daysAgo = 0) {
@@ -126,9 +126,9 @@ export function RegistrationReferralsDashboard() {
         </div>
       </section>
 
-      <section className="grid gap-3 sm:grid-cols-2">
+      <section className="grid grid-cols-2 gap-3">
         <div className="rounded-card border border-edge bg-surface p-4 text-center shadow-[var(--shadow-card)]">
-          <div className="flex items-center justify-center gap-3">
+          <div className="flex flex-col items-center justify-center gap-2 sm:flex-row sm:gap-3">
             <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-brand-soft text-brand">
               <UsersRound className="size-4" aria-hidden="true" />
             </span>
@@ -139,7 +139,7 @@ export function RegistrationReferralsDashboard() {
           </div>
         </div>
         <div className="rounded-card border border-edge bg-surface p-4 text-center shadow-[var(--shadow-card)]">
-          <div className="flex items-center justify-center gap-3">
+          <div className="flex flex-col items-center justify-center gap-2 sm:flex-row sm:gap-3">
             <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-success/10 text-success">
               <Coins className="size-4" aria-hidden="true" />
             </span>
@@ -152,8 +152,8 @@ export function RegistrationReferralsDashboard() {
       </section>
 
       <section className="rounded-card border border-edge bg-surface p-4 shadow-[var(--shadow-card)]">
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-[2fr_1fr_1fr]">
-          <label className="grid gap-1.5 text-xs font-bold text-brand">
+        <div className="grid grid-cols-2 items-end gap-3 xl:grid-cols-[2fr_1fr_1fr]">
+          <label className="col-span-2 grid min-w-0 gap-1.5 text-xs font-bold text-brand xl:col-span-1">
             Buscar miembro o invitante
             <span className="relative">
               <Search className="pointer-events-none absolute left-3 top-3 size-4 text-muted" />
@@ -166,27 +166,29 @@ export function RegistrationReferralsDashboard() {
               />
             </span>
           </label>
-          <label className="grid gap-1.5 text-xs font-bold text-brand">
+          <label className="grid min-w-0 gap-1.5 text-xs font-bold text-brand">
             Desde
             <input type="date" value={from} max={to || undefined} onChange={(event) => { setFrom(event.target.value); setPage(1); }} className={inputClass} />
           </label>
-          <label className="grid gap-1.5 text-xs font-bold text-brand">
+          <label className="grid min-w-0 gap-1.5 text-xs font-bold text-brand">
             Hasta
             <input type="date" value={to} min={from || undefined} onChange={(event) => { setTo(event.target.value); setPage(1); }} className={inputClass} />
           </label>
         </div>
         <div className="mt-3 flex flex-wrap items-center gap-2">
-          <CalendarRange className="size-4 text-muted" />
+          <div className="flex max-w-full flex-nowrap items-center gap-1 overflow-x-auto sm:gap-2">
+          <CalendarRange className="size-4 shrink-0 text-muted" />
           {([["Todo", null], ["Hoy", 0], ["7 días", 6], ["4 semanas", 27], ["3 meses", 89]] as const).map(([label, days]) => (
             <button
               type="button"
               key={label}
               onClick={() => { setFrom(days === null ? "" : limaDate(days)); setTo(days === null ? "" : limaDate()); setPage(1); }}
-              className="rounded-full border border-edge px-3 py-1 text-xs font-bold text-brand hover:border-brand"
+              className="shrink-0 whitespace-nowrap rounded-full border border-edge px-2 py-1 text-xs font-bold text-brand hover:border-brand sm:px-3"
             >
               {label}
             </button>
           ))}
+          </div>
           {(search || from || to) && (
             <button
               type="button"

@@ -182,7 +182,7 @@ export function RankingDashboard() {
         </div>
       </section>
 
-      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <section className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         <Kpi label="Miembros" value={totals?.members} />
         <Kpi label="Referidos" value={totals?.referrals} />
         <Kpi label="Concretados" value={totals?.completed} />
@@ -190,8 +190,8 @@ export function RankingDashboard() {
       </section>
 
       <section className="rounded-card border border-edge bg-surface p-4 shadow-[var(--shadow-card)]">
-        <div className="grid gap-3 lg:grid-cols-[1fr_auto_auto] lg:items-end">
-          <label className="grid gap-1.5 text-xs font-bold text-brand">
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-[1fr_auto_auto] lg:items-end">
+          <label className="col-span-2 grid gap-1.5 text-xs font-bold text-brand lg:col-span-1">
             Buscar por nombre
             <span className="relative">
               <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted" aria-hidden="true" />
@@ -203,27 +203,28 @@ export function RankingDashboard() {
               />
             </span>
           </label>
-          <label className="grid gap-1.5 text-xs font-bold text-brand">
+          <label className="grid min-w-0 gap-1.5 text-xs font-bold text-brand">
             Desde
             <input
               type="date"
               value={from}
               onChange={(event) => { setFrom(event.target.value); setPage(1); }}
-              className="h-10 rounded-card border border-edge bg-white px-3 text-sm font-normal outline-none focus:border-brand focus:ring-2 focus:ring-brand/15"
+              className="h-10 min-w-0 w-full rounded-card border border-edge bg-white px-3 text-sm font-normal outline-none focus:border-brand focus:ring-2 focus:ring-brand/15"
             />
           </label>
-          <label className="grid gap-1.5 text-xs font-bold text-brand">
+          <label className="grid min-w-0 gap-1.5 text-xs font-bold text-brand">
             Hasta
             <input
               type="date"
               value={to}
               onChange={(event) => { setTo(event.target.value); setPage(1); }}
-              className="h-10 rounded-card border border-edge bg-white px-3 text-sm font-normal outline-none focus:border-brand focus:ring-2 focus:ring-brand/15"
+              className="h-10 min-w-0 w-full rounded-card border border-edge bg-white px-3 text-sm font-normal outline-none focus:border-brand focus:ring-2 focus:ring-brand/15"
             />
           </label>
         </div>
         <div className="mt-3 flex flex-wrap items-center gap-2">
-          <CalendarRange className="size-4 text-muted" aria-hidden="true" />
+          <div className="flex max-w-full flex-nowrap items-center gap-1 overflow-x-auto sm:gap-2">
+          <CalendarRange className="size-4 shrink-0 text-muted" aria-hidden="true" />
           {PRESETS.map((preset) => (
             <button
               key={preset.label}
@@ -233,11 +234,12 @@ export function RankingDashboard() {
                 setFrom(resolve(preset.from));
                 setTo(resolve(preset.to));
               }}
-              className="rounded-full border border-edge px-3 py-1 text-xs font-bold text-brand transition-colors hover:border-brand"
+              className="shrink-0 whitespace-nowrap rounded-full border border-edge px-2 py-1 text-xs font-bold text-brand transition-colors hover:border-brand sm:px-3"
             >
               {preset.label}
             </button>
           ))}
+          </div>
           {data ? (
             <span className="ml-auto text-[11px] font-semibold text-muted">
               Actualizado {new Intl.DateTimeFormat("es-PE", { timeStyle: "medium" }).format(new Date(data.generatedAt))}

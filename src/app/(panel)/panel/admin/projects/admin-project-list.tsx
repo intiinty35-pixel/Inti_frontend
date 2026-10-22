@@ -15,10 +15,10 @@ function ProjectMetric({
   caption: string;
 }) {
   return (
-    <div className="rounded-card border border-edge bg-surface px-5 py-4 text-center shadow-[var(--shadow-card)]">
-      <p className="text-xs font-bold uppercase tracking-[0.18em] text-muted">{label}</p>
-      <p className="mt-2 font-display text-2xl font-black text-brand">{value}</p>
-      <p className="mt-1 text-xs font-semibold text-muted">{caption}</p>
+    <div className="min-w-0 rounded-card border border-edge bg-surface px-2 py-3 text-center shadow-[var(--shadow-card)] sm:px-5 sm:py-4">
+      <p className="text-[10px] font-bold uppercase tracking-wide text-muted sm:text-xs sm:tracking-[0.18em]">{label}</p>
+      <p className="mt-1 font-display text-2xl font-black text-brand sm:mt-2">{value}</p>
+      <p className="mt-1 text-[10px] font-semibold leading-tight text-muted sm:text-xs">{caption}</p>
     </div>
   );
 }
@@ -58,7 +58,7 @@ export async function AdminProjectList({
         </div>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-3">
+      <section className="grid grid-cols-3 gap-2 sm:gap-4">
         <ProjectMetric
           label="Total"
           value={total}

@@ -18,10 +18,10 @@ export function lotAnnotations(lot: PlanLot, points: XY[]): LotAnnotation[] {
   const size = Math.min(26, center.radius / 2.2, center.radius * 2 / (textLength * 0.58));
   if (size < 5) return [];
   const result: LotAnnotation[] = [
-    { ...center, x: center.x + Math.sin(orientation * Math.PI / 180) * size * 1.15, y: center.y - Math.cos(orientation * Math.PI / 180) * size * 1.15, text: lot.code, angle: orientation, size, color: '#172d48' },
-    { ...center, text: areaText, angle: orientation, size: size * 0.95, color: '#0f172a' },
+    { ...center, x: center.x + Math.sin(orientation * Math.PI / 180) * size * 1.15, y: center.y - Math.cos(orientation * Math.PI / 180) * size * 1.15, text: lot.code, angle: orientation, size, color: '#000000' },
+    { ...center, text: areaText, angle: orientation, size: size * 0.95, color: '#000000' },
   ];
-  if (lot.status === 'SOLD' || lot.status === 'RESERVED') result.push({ ...center, y: center.y + size * 1.8, text: lot.status === 'SOLD' ? 'Vendido' : 'Separado', angle: 0, size: size * 0.75, color: '#9f1239' });
+  if (lot.status === 'SOLD' || lot.status === 'RESERVED') result.push({ ...center, y: center.y + size * 1.8, text: lot.status === 'SOLD' ? 'Vendido' : 'Separado', angle: 0, size: size * 0.75, color: '#000000' });
   const sides = rectangularSides(lot.dimensions);
   const lengths = points.map((a, i) => Math.hypot(points[(i + 1) % points.length].x - a.x, points[(i + 1) % points.length].y - a.y));
   const evenLonger = points.length === 4 && lengths[0] + lengths[2] >= lengths[1] + lengths[3];
@@ -39,7 +39,7 @@ export function lotAnnotations(lot: PlanLot, points: XY[]): LotAnnotation[] {
     const official = sides && points.length === 4 ? ((i % 2 === 0) === evenLonger ? Math.max(sides.front, sides.depth) : Math.min(sides.front, sides.depth)) : undefined;
     const text = `${official === undefined ? '≈' : ''}${(official ?? measured).toFixed(2)} m`;
     const edgeSize = Math.max(4, Math.min(16, center.radius / 3, (lengths[i] - 8) / (text.length * 0.62)));
-    result.push({ x: mid.x + normal.x * direction * (edgeSize + 2), y: mid.y + normal.y * direction * (edgeSize + 2), text, angle, size: edgeSize, color: '#0f766e' });
+    result.push({ x: mid.x + normal.x * direction * (edgeSize + 2), y: mid.y + normal.y * direction * (edgeSize + 2), text, angle, size: edgeSize, color: '#000000' });
   });
   return result;
 }

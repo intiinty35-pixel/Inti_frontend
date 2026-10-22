@@ -43,7 +43,7 @@ export default async function AdminIncentivesPage({
         </p>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-3">
+      <section className="grid grid-cols-3 gap-2 sm:gap-4">
         <MetricCard
           label="Incentivos"
           value={data.total}
@@ -143,19 +143,19 @@ function MetricCard({
   Icon: typeof Gift;
 }) {
   return (
-    <Card className="p-4 text-center">
+    <Card className="min-w-0 p-2 text-center sm:p-4">
       <div className="flex items-center justify-center gap-3">
-        <span className={`flex size-9 shrink-0 items-center justify-center rounded-xl ${tone}`}>
+        <span className={`hidden size-9 shrink-0 items-center justify-center rounded-xl sm:flex ${tone}`}>
           <Icon className="size-4" aria-hidden="true" />
         </span>
-        <div>
-          <p className="text-[11px] font-black uppercase tracking-[0.16em] text-muted">{label}</p>
-          <p className="mt-1 font-display text-3xl font-black tracking-tight text-brand">
+        <div className="min-w-0">
+          <p className="flex min-h-7 items-center justify-center text-[9px] font-black uppercase leading-tight tracking-wide text-muted sm:min-h-0 sm:text-[11px] sm:tracking-[0.16em]">{label}</p>
+          <p className="mt-1 font-display text-2xl font-black tracking-tight text-brand sm:text-3xl">
             {value.toLocaleString("es-PE")}
           </p>
         </div>
       </div>
-      <p className="mx-auto mt-2 max-w-56 text-xs font-semibold leading-5 text-muted">{hint}</p>
+      <p className="mx-auto mt-1 max-w-56 text-[10px] font-semibold leading-tight text-muted sm:mt-2 sm:text-xs sm:leading-5">{hint}</p>
     </Card>
   );
 }

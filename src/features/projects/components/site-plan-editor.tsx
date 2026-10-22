@@ -39,10 +39,13 @@ import {
   type SitePlan,
 } from "../types/site-plan";
 import s from "./site-plan.module.css";
+import { samePlanPath } from "@/shared/lib/same-plan-path";
 
 const toolLabels: Partial<Record<PlanTool, string>> = {
   SELECT: "Seleccionar / mover",
   BLOCK: "Manzana",
+  STREET: "Calle",
+  PARK: "Parque",
   CONTOUR: "Contorno",
   LOT: "Lote",
 };
@@ -149,18 +152,19 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
         ? "GROUP"
         : tool === "LOT"
           ? "LOT"
-          : tool === "BLOCK" || tool === "CONTOUR"
+          : tool === "BLOCK" || tool === "STREET" || tool === "PARK" || tool === "CONTOUR"
             ? "ZONE"
             : panel;
+  const duplicateLot = lot ? plan.lots.find(existing => existing.id !== lot.id && lotKey(existing) === lotKey(lot)) : undefined;
   const formPending = Boolean(lot || zone || points.length || blockName.trim());
   const movingWholeBlock = !formPending && !busy && (moveAll || (view === "MAP" && !showImage && !blockFixed));
   const unsaved = dirty || formPending;
   const previewZone =
     zone ??
-    (tool === "BLOCK" && points.length >= 3
+    ((tool === "BLOCK" || tool === "STREET" || tool === "PARK") && points.length >= 3
       ? {
           id: "drawing-block",
-          kind: "BLOCK" as const,
+          kind: tool as "BLOCK" | "STREET" | "PARK",
           name: blockName,
           path: points,
         }
@@ -174,8 +178,9 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
         ],
       }
     : plan;
-  const previewPlan = lot && lot.path.length >= 3
-    ? { ...previewZonesPlan, lots: [...previewZonesPlan.lots.filter(l => l.id !== lot.id), lot] }
+  const drawingLot = lot && duplicateLot && (!duplicateLot.path.length || samePlanPath(duplicateLot.path, lot.path)) ? { ...duplicateLot, id: lot.id, path: lot.path } : lot;
+  const previewPlan = drawingLot && drawingLot.path.length >= 3
+    ? { ...previewZonesPlan, lots: [...previewZonesPlan.lots.filter(l => l.id !== drawingLot.id), drawingLot] }
     : previewZonesPlan;
   useEffect(() => {
     sidebar.current?.scrollTo({ top: 0 });
@@ -304,7 +309,7 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
       return;
     }
     setError("");
-    if (tool === "BLOCK" || tool === "STREET" || tool === "CONTOUR")
+    if (tool === "BLOCK" || tool === "STREET" || tool === "PARK" || tool === "CONTOUR")
       setZone({
         id: crypto.randomUUID(),
         kind: tool,
@@ -396,26 +401,33 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
       setError("Completa el código y un área mayor que cero.");
       return;
     }
-    if (plan.lots.some((l) => l.id !== lot.id && lotKey(l) === lotKey(lot))) {
-      setError("Ese código ya existe en la manzana.");
+    const existing = plan.lots.find(item => item.id !== lot.id && lotKey(item) === lotKey(lot));
+    if (existing && plan.lots.some(item => item.id === lot.id)) {
+      setError("Ese código pertenece a otro lote. Selecciona el lote existente para editarlo.");
       return;
     }
-    if (!lot.cashAllowed && !lot.financingAllowed) {
+    if (existing && lot.path.length < 3) {
+      setError("Dibuja al menos tres vértices para asignar el contorno al lote existente.");
+      return;
+    }
+    if (existing && existing.path.length >= 3 && !samePlanPath(existing.path, lot.path)) {
+      setError("Ya existe un lote con ese código y otro contorno. Se conserva su dibujo. Selecciónalo para editarlo o usa otro código.");
+      return;
+    }
+    const savedLot = existing ? { ...existing, path: lot.path } : lot;
+    if (!savedLot.cashAllowed && !savedLot.financingAllowed) {
       setError("Habilita al contado o financiamiento.");
       return;
     }
-    if (
-      lot.financingAllowed &&
-      (!lot.installments || lot.downPayment > lot.financedPrice)
-    ) {
+    if (savedLot.financingAllowed && (!savedLot.installments || savedLot.downPayment > savedLot.financedPrice)) {
       setError("Revisa el número de cuotas y la inicial del financiamiento.");
       return;
     }
     const nextPlan: SitePlan = {
       ...plan,
-      lots: plan.lots.some((l) => l.id === lot.id)
-        ? plan.lots.map((l) => (l.id === lot.id ? lot : l))
-        : [...plan.lots, lot],
+      lots: plan.lots.some((l) => l.id === savedLot.id)
+        ? plan.lots.map((l) => (l.id === savedLot.id ? savedLot : l))
+        : [...plan.lots, savedLot],
     };
     change(nextPlan);
     closeForm();
@@ -450,52 +462,53 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
     }
     const current =
       zone ??
-      (tool === "BLOCK"
+      ((tool === "BLOCK" || tool === "STREET" || tool === "PARK")
         ? {
             id: crypto.randomUUID(),
-            kind: "BLOCK" as const,
+            kind: tool as "BLOCK" | "STREET" | "PARK",
             name: blockName,
             path: points,
           }
         : undefined);
     if (!current?.name.trim()) {
-      setError("Escribe el nombre de la manzana.");
+      setError("Escribe el nombre de la zona.");
       return;
     }
     if (current.path.length < 3 || polygonMetrics(current.path).areaM2 <= 0) {
-      setError("Dibuja al menos tres vértices para guardar la manzana.");
+      setError("Dibuja al menos tres vértices para guardar la zona.");
       return;
     }
-    const previous = plan.zones.find((z) => z.id === current.id);
-    if (
-      plan.zones.some(
-        (z) =>
-          z.id !== current.id &&
-          z.kind === current.kind &&
-          z.name.trim().toLowerCase() === current.name.trim().toLowerCase(),
-      )
-    ) {
-      setError("Ya existe una zona con ese nombre.");
+    const matchingZone = plan.zones.find(z => z.id !== current.id && z.kind === current.kind && z.name.trim().toLowerCase() === current.name.trim().toLowerCase());
+    const originalZone = plan.zones.find(z => z.id === current.id);
+    if (originalZone && matchingZone) {
+      setError("Ese nombre pertenece a otra zona. Selecciona esa zona para editar su contorno.");
       return;
     }
+    if (matchingZone && !samePlanPath(matchingZone.path, current.path)) {
+      setError("Ya existe una zona de ese tipo y nombre con otro contorno. Se conserva su dibujo. Selecciónala para editarla o usa otro nombre.");
+      return;
+    }
+    const previous = originalZone ?? matchingZone;
     const field = current.kind === "BLOCK" ? "block" : "street";
-    const savedZone = { ...current, name: current.name.trim() };
-    change({
+    const savedZone = { ...current, id: previous?.id ?? current.id, name: current.name.trim() };
+    const nextPlan: SitePlan = {
       ...plan,
       zones: previous
-        ? plan.zones.map((z) => (z.id === current.id ? savedZone : z))
+        ? plan.zones.map((z) => (z.id === savedZone.id ? savedZone : z))
         : [...plan.zones, savedZone],
-      lots: previous && current.kind !== "CONTOUR"
+      lots: previous && (current.kind === "BLOCK" || current.kind === "STREET")
         ? plan.lots.map((l) =>
             l[field] === previous.name ? { ...l, [field]: savedZone.name } : l,
           )
         : plan.lots,
-    });
+    };
+    change(nextPlan);
     closeForm();
     setTool("SELECT");
     setPanel("ZONES");
     if (savedZone.kind === "BLOCK") setGroupBlock(savedZone.name);
     setError("");
+    await save(false, nextPlan);
   }
   function updatePath(id: string, path: Point[]) {
     if (busy) return;
@@ -633,8 +646,8 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
         bitmap.close();
         nextPlan = {
           ...plan,
-          lots: plan.image ? [] : plan.lots,
-          zones: [],
+          lots: plan.lots,
+          zones: plan.zones,
           image: {
             url: result.url,
             center,
@@ -674,7 +687,7 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
         logo
           ? "Logo guardado en el proyecto."
           : plan.image
-            ? "Plano reemplazado y guardado. Se limpiaron los lotes y las manzanas anteriores."
+            ? "Plano reemplazado y guardado. Se conservaron los lotes y las zonas anteriores."
             : "Plano guardado en el proyecto. Puedes refrescar sin perder la imagen.",
       );
       return true;
@@ -920,17 +933,12 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
       )}
       <div className={s.toolbar}>
         <div className={s.actions}>
-          {Object.entries(toolLabels).map(([value, label]) => (
-            <button
-              key={value}
-              disabled={busy}
-              className={tool === value ? s.active : ""}
-              onClick={() => chooseTool(value as PlanTool)}
-            >
-              {value === "SELECT" ? <Pencil size={14} /> : null}
-              {label}
-            </button>
-          ))}
+          <label className={s.drawingSelect}>
+            <span>Qué quieres diseñar</span>
+            <select value={tool} disabled={busy} onChange={event => chooseTool(event.target.value as PlanTool)}>
+              {Object.entries(toolLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+            </select>
+          </label>
           <button
             disabled={busy || points.length === 0}
             onClick={() => setPoints(points.slice(0, -1))}
@@ -976,7 +984,7 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
             Deshacer
           </button>
         </div>
-        <div className={s.actions}>
+        <div className={`${s.actions} ${s.planControls}`}>
           <button onClick={() => { setShowImage(!showImage); setMoveAll(false); setBlockFixed(false); }}>
             {showImage ? <EyeOff size={15} /> : <Eye size={15} />}
             {showImage ? "Ocultar imagen" : "Mostrar imagen"}
@@ -1115,7 +1123,7 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
               [
                 ["BASE", "Excel y lotes"],
                 ["IMAGE", "Plano"],
-                ["ZONES", "Manzanas"],
+                ["ZONES", "Zonas y calles"],
                 ["SUMMARY", "Resumen"],
               ] as const
             ).map(([key, label]) => (
@@ -1144,9 +1152,9 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
           )}
           {activePanel === "ZONE" && !zone && (
             <section className={s.card}>
-              <h2>Dibujar manzana</h2>
+              <h2>Dibujar {toolLabels[tool]?.toLowerCase()}</h2>
               <p>
-                Escribe el nombre, marca el contorno y pulsa «Guardar manzana».
+                Escribe el nombre y marca al menos tres vértices. Puedes añadir más de cuatro puntos antes de guardar.
               </p>
             </section>
           )}
@@ -1235,9 +1243,9 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
                     ? "Editar lote"
                     : "Guardar lote"}
                 </h2>
-                {points.length >= 3 && !selected && plan.lots.some(l => l.fromExcel && !l.path.length) && (
+                {lot.path.length >= 3 && !selected && plan.lots.length > 0 && (
                   <label>
-                    N.º de lote de la base
+                    Lote existente del proyecto
                     <select
                       value={
                         plan.lots.some((l) => l.id === lot.id) ? lot.id : ""
@@ -1254,21 +1262,32 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
                             )
                           )
                             return;
-                          setLot({ ...base, path: points });
-                        } else setLot(newLot(points));
+                          setLot({ ...base, path: lot.path });
+                        } else setLot(newLot(lot.path));
                       }}
                     >
                       <option value="">Crear lote desde cero</option>
-                      {plan.lots.filter(l => l.fromExcel && !l.path.length).map((l) => (
+                      {plan.lots.map((l) => (
                         <option key={l.id} value={l.id}>
                           {l.block ? `Mz. ${l.block} · ` : ""}
                           {l.code}
-                          {l.path.length ? " (dibujado)" : ""}
+                          {l.path.length >= 3 ? " (dibujado)" : " (sin dibujo)"}
                         </option>
                       ))}
                     </select>
                   </label>
                 )}
+                {duplicateLot && <div className={s.card} role="status">
+                  <p>El lote {duplicateLot.code} de la manzana {duplicateLot.block || "sin asignar"} ya está registrado: {duplicateLot.path.length >= 3 ? "tiene un dibujo en el plano" : "está registrado, pero aún no tiene dibujo"}.</p>
+                  <div className={s.actions}>
+                    <button type="button" onClick={() => select(duplicateLot.id)}>Ver lote existente</button>
+                    {lot.path.length >= 3 && <button type="button" onClick={() => {
+                      if (duplicateLot.path.length >= 3 && !samePlanPath(duplicateLot.path, lot.path)) { setError("El contorno es diferente. Selecciona el lote existente para editarlo."); return; }
+                      setLot({ ...structuredClone(duplicateLot), path: lot.path });
+                      setError("");
+                    }}>Usar este dibujo en el lote existente</button>}
+                  </div>
+                </div>}
                 {text("N.º de lote *", "code", true)}
                 <div className={s.grid}>
                   {text("Manzana", "block")}
@@ -1439,22 +1458,22 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
               </form>
             </details>
           )}
-          {(zone || tool === "BLOCK" || tool === "CONTOUR") && (
+          {(zone || tool === "BLOCK" || tool === "STREET" || tool === "PARK" || tool === "CONTOUR") && (
             <form
               key={zone?.id ?? "new-block"}
               className={`${s.card} ${s.fields}`}
               onSubmit={saveZone}
             >
               <h2>
-                {zone?.kind === "CONTOUR" || tool === "CONTOUR" ? "Guardar contorno" : zone?.kind === "STREET" ? "Calle / tramo" : "Guardar manzana"}
+                {zone?.kind === "CONTOUR" || tool === "CONTOUR" ? "Guardar contorno" : zone?.kind === "PARK" || tool === "PARK" ? "Guardar parque" : (zone?.kind === "STREET" || tool === "STREET") ? "Guardar calle" : "Guardar manzana"}
               </h2>
               {zone?.kind !== "CONTOUR" && tool !== "CONTOUR" && <label>
-                Nombre de la manzana *
+                {zone?.kind === "STREET" || tool === "STREET" ? "Nombre de la calle *" : zone?.kind === "PARK" || tool === "PARK" ? "Nombre del parque *" : "Nombre de la manzana *"}
                 <input
                   required
                   maxLength={100}
                   autoFocus
-                  placeholder="Ej. A o Los Pinos"
+                  placeholder={zone?.kind === "STREET" || tool === "STREET" ? "Ej. Avenida Los Pinos" : zone?.kind === "PARK" || tool === "PARK" ? "Ej. Parque Central" : "Ej. A o Los Pinos"}
                   value={zone?.name ?? blockName}
                   onChange={(e) =>
                     zone
@@ -1463,12 +1482,14 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
                   }
                 />
               </label>}
+              {(tool === "PARK" || zone?.kind === "PARK") && <p className={s.muted}>Marca todos los vértices del parque, sin límite de cuatro lados. Pulsa Terminar dibujo o Guardar parque cuando completes el contorno.</p>}
+              {tool === "STREET" && <p className={s.muted}>Dibuja el contorno de la calle junto a las manzanas. Los puntos se ajustan a sus bordes; mantén Shift para dibujar libremente.</p>}
               <div className={s.actions}>
                 <button
                   className={s.primary}
                   disabled={!zone && points.length < 3}
                 >
-                  {zone?.kind === "CONTOUR" || tool === "CONTOUR" ? "Guardar contorno" : "Guardar manzana"}
+                  {zone?.kind === "CONTOUR" || tool === "CONTOUR" ? "Guardar contorno" : zone?.kind === "PARK" || tool === "PARK" ? "Guardar parque" : zone?.kind === "STREET" || tool === "STREET" ? "Guardar calle" : "Guardar manzana"}
                 </button>
                 <button type="button" onClick={closeForm}>
                   Cerrar
@@ -1837,6 +1858,15 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
           )}
           {(activePanel === "ZONES" || activePanel === "ZONE") && (
             <section className={s.card}>
+              <h2>Calles ({plan.zones.filter(z => z.kind === "STREET").length})</h2>
+              <div className={s.list}>
+                {plan.zones.filter(z => z.kind === "STREET").map(z => <button type="button" key={z.id} className={s.row} onClick={() => select(z.id)}>
+                  <span>{z.name}<small>{z.path.length} vértices guardados</small></span><Pencil size={15} />
+                </button>)}
+                {!plan.zones.some(z => z.kind === "STREET") && <p className={s.muted}>No hay calles guardadas en este borrador.</p>}
+              </div>
+              <h2>Parques ({plan.zones.filter(z => z.kind === "PARK").length})</h2>
+              {plan.zones.filter(z => z.kind === "PARK").map(z => <button type="button" key={z.id} className={s.row} onClick={() => select(z.id)}>{z.name}<Pencil size={15} /></button>)}
               {plan.zones.some(z => z.kind === "CONTOUR") && <>
                 <h2>Contornos</h2>
                 <div className={s.list}>

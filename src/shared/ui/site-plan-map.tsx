@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { env } from "@/shared/lib/env";
 import { formatPrice } from "@/shared/lib/format";
 import { lotAnnotations } from "@/shared/lib/lot-annotations";
+import { snapPlanPoint } from "@/shared/lib/snap-plan-point";
 import { polygonLabel, fitPolygonText } from "@/shared/lib/polygon-label";
 import styles from './site-plan-map.module.css';
 import {
@@ -19,7 +20,7 @@ import {
   type PlanImage,
 } from "../lib/site-plan";
 
-export type PlanTool = "SELECT" | "BLOCK" | "STREET" | "LOT" | "GROUP" | "CONTOUR";
+export type PlanTool = "SELECT" | "BLOCK" | "STREET" | "PARK" | "LOT" | "GROUP" | "CONTOUR";
 export type PlanMapMarker = Point & {
   id: string;
   title: string;
@@ -267,11 +268,20 @@ export function SitePlanMap(props: Props) {
         }
         listeners.push(
           current.addListener("click", (event) => {
-            if (event.latLng)
-              callbacks.current.onPoint?.({
+            if (event.latLng) {
+              const point = {
                 lat: event.latLng.lat(),
                 lng: event.latLng.lng(),
-              });
+              };
+              const state = callbacks.current;
+              const paths = [
+                ...state.plan.zones.filter(zone => zone.id !== state.selected && (zone.kind === "BLOCK" || zone.kind === "STREET")).map(zone => zone.path),
+                ...state.plan.lots.filter(lot => lot.id !== state.selected).map(lot => lot.path),
+              ];
+              state.onPoint?.(state.tool === "STREET" || state.tool === "BLOCK"
+                ? snapPlanPoint(point, paths, p => mercatorPixel(p, current.getZoom() ?? 18)).point
+                : point);
+            }
           }),
         );
         listeners.push(
@@ -319,10 +329,12 @@ export function SitePlanMap(props: Props) {
       ...props.plan.zones.map((zone) => ({
         id: zone.id,
         path: zone.path,
-        color: zone.kind === "CONTOUR" ? (props.publicView ? "#18754b" : "#0ea5e9") : zone.kind === "BLOCK" ? "#3b82f6" : "#a855f7",
+        color: zone.kind === "CONTOUR" ? (props.publicView ? "#18754b" : "#0ea5e9") : zone.kind === "PARK" ? "#4d7c0f" : zone.kind === "BLOCK" ? "#3b82f6" : "#92400e",
         lot: undefined,
         label: zone.kind === "CONTOUR" ? "" : zone.name,
         contour: zone.kind === "CONTOUR",
+        street: zone.kind === "STREET",
+        park: zone.kind === "PARK",
         zone: true,
       })),
       ...props.plan.lots
@@ -335,6 +347,8 @@ export function SitePlanMap(props: Props) {
           label: lot.code,
           zone: false,
           contour: false,
+          street: false,
+          park: false,
         })),
     ];
     for (const shape of shapes) {
@@ -343,7 +357,7 @@ export function SitePlanMap(props: Props) {
         map: current,
         paths: shape.path,
         fillColor: shape.color,
-        fillOpacity: shape.contour ? 0 : shape.zone ? (props.publicView ? 0.025 : 0.08) : active ? 0.32 : props.publicView ? 0.13 : 0.36,
+        fillOpacity: shape.contour ? 0 : shape.park ? (props.publicView ? 0.25 : 0.35) : shape.street ? (props.publicView ? 0.15 : 0.3) : shape.zone ? (props.publicView ? 0.025 : 0.08) : active ? 0.32 : props.publicView ? 0.13 : 0.36,
         strokeColor: active && !props.publicView ? "#ffffff" : shape.color,
         strokeWeight: props.publicView ? (shape.contour ? 1.5 : active ? 2.5 : 1.6) : shape.contour ? (active ? 5 : 4) : active ? 3 : !props.showImage ? 2.5 : 1.5,
         editable: editing && active && !props.moveAll,

@@ -53,6 +53,39 @@ export function AdminProjectCatalog({ projects }: { projects: ProjectApiSummary[
   </div>;
   return <section className={s.catalog}>
     <div className={s.toolbar}><p>{projects.length} proyectos en esta página</p><div className={s.switch} role="group" aria-label="Vista de proyectos"><button type="button" aria-pressed={view === 'list'} onClick={() => setView('list')}><List size={16} />Lista</button><button type="button" aria-pressed={view === 'cards'} onClick={() => setView('cards')}><LayoutGrid size={16} />Tarjetas</button></div></div>
-    {!projects.length ? <p className={s.empty}>Todavía no hay proyectos registrados.</p> : view === 'list' ? <div className={s.tableWrap}><table className={s.table}><thead><tr>{['Proyecto', 'Origen', 'Estado', 'Lotes', 'Acciones'].map(label => <th key={label}>{label}</th>)}</tr></thead><tbody>{projects.map(project => <tr key={project.id}><td><strong>{project.name}</strong><p>{project.location?.district}</p></td><td>{project.origin === 'ADMIN' ? 'ARIZ' : 'Desarrollador'}</td><td><span className={s.badge}>{PROJECT_STATUS_LABELS[project.status]}</span></td><td>{project.lotsCount}</td><td>{actions(project)}</td></tr>)}</tbody></table></div> : <div className={s.grid}>{projects.map(project => <article className={s.card} key={project.id}><PlanPreview id={project.id} /><div className={s.body}><span className={s.badge}>{PROJECT_STATUS_LABELS[project.status]}</span><h2>{project.name}</h2><p><MapPin size={14} />{project.location?.district || 'Sin distrito'} · {project.origin === 'ADMIN' ? 'ARIZ' : 'Desarrollador'}</p><p><Layers size={14} />{project.lotsCount} lotes registrados</p>{actions(project)}</div></article>)}</div>}
+    {!projects.length ? <p className={s.empty}>Todavía no hay proyectos registrados.</p> : view === 'list' ? (
+          <div>
+          <p className={`${s.scrollHint} sm:hidden`}>Desliza hacia la derecha para ver todas las columnas.</p>
+          <div className={s.tableWrap} role="region" aria-label="Lista de proyectos" tabIndex={0}>
+            <table className={s.table}>
+              <caption className="sr-only">Lista de proyectos</caption>
+              <thead><tr>{['Proyecto', 'Departamento', 'Origen', 'Estado', 'Lotes', 'Acciones'].map(label => <th scope="col" key={label}>{label}</th>)}</tr></thead>
+              <tbody>{projects.map(project => (
+                <tr key={project.id}>
+                  <td data-label="Proyecto" className={s.projectName}><strong>{project.name}</strong></td>
+                  <td data-label="Departamento">{project.location?.department?.trim() || 'Sin departamento'}</td>
+                  <td data-label="Origen">{project.origin === 'ADMIN' ? 'ARIZ' : 'Desarrollador'}</td>
+                  <td data-label="Estado"><span className={s.badge}>{PROJECT_STATUS_LABELS[project.status]}</span></td>
+                  <td data-label="Lotes">{project.lotsCount}</td>
+                  <td data-label="Acciones" className={s.actionCell}>{actions(project)}</td>
+                </tr>
+              ))}</tbody>
+            </table>
+          </div>
+          </div>
+        ) : (
+          <div className={s.grid}>{projects.map(project => (
+            <article className={s.card} key={project.id}>
+              <PlanPreview id={project.id} />
+              <div className={s.body}>
+                <span className={s.badge}>{PROJECT_STATUS_LABELS[project.status]}</span>
+                <h3>{project.name}</h3>
+                <p><MapPin size={14} />{project.location?.district || 'Sin distrito'} · {project.origin === 'ADMIN' ? 'ARIZ' : 'Desarrollador'}</p>
+                <p><Layers size={14} />{project.lotsCount} lotes registrados</p>
+                {actions(project)}
+              </div>
+            </article>
+          ))}</div>
+        )}
   </section>;
 }
