@@ -3,7 +3,7 @@ import { projectToMapListing } from "@/features/projects/lib/project-map";
 import type { Listing } from "@/features/listings/types/listing";
 import { MapPageExplorer } from "@/features/listings/components/map-page-explorer";
 
-export async function MapExplorerSection() {
+export async function MapExplorerSection({ initialSlug }: { initialSlug?: string }) {
   const listings: Listing[] = [];
   let loadError = false;
 
@@ -21,7 +21,12 @@ export async function MapExplorerSection() {
 
   return (
       <section id="mapa" className="w-full">
-        <MapPageExplorer listings={listings} loadError={loadError} />
+        <MapPageExplorer
+          key={initialSlug ?? "todos"}
+          listings={listings}
+          loadError={loadError}
+          initialSlug={initialSlug}
+        />
       </section>
   );
 }

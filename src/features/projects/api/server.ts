@@ -92,6 +92,27 @@ export async function getAdminProjectsPagedServer(
   return (await response.json()) as ProjectApiPaged;
 }
 
+/**
+ * Portafolio completo: proyectos de ARIZ y de los desarrolladores. A diferencia
+ * de `getAdminProjectsPagedServer`, el backend acepta `status` y lo aplica en el
+ * `where`, asi que el filtro no se resuelve en el cliente.
+ */
+export async function getAdminAllProjectsPagedServer(
+  page: number,
+  status?: ApiProjectStatus,
+  pageSize = 12,
+): Promise<ProjectApiPaged> {
+  const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
+  if (status) params.set("status", status);
+
+  const response = await backendFetch(`/admin/projects/all?${params.toString()}`);
+  if (!response.ok) {
+    throw new Error(`No se pudieron cargar los proyectos (${response.status})`);
+  }
+
+  return (await response.json()) as ProjectApiPaged;
+}
+
 /** Detalle completo de un proyecto creado desde el panel ARIZ, para editarlo. */
 export async function getAdminProjectDetailServer(id: string): Promise<ProjectApiDetail | null> {
   const response = await backendFetch(`/admin/projects/${encodeURIComponent(id)}`);

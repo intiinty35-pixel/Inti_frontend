@@ -12,33 +12,18 @@ import { formatArea, formatPrice } from "@/shared/lib/format";
 import { formatPublishedDate } from "@/shared/lib/published-date";
 import {
   PROJECT_STATUS_LABELS,
-  type ApiProjectStatus,
   type ProjectApiSummary,
 } from "@/features/projects/types/api";
+import {
+  PROJECT_STATUS_STYLE,
+  projectStageLabel,
+} from "@/features/projects/lib/project-labels";
 import { deleteAdminProject, deleteProject, publishAdminProject, publishProject } from "@/features/projects/api";
-import { PROJECT_STAGE_LABELS } from "@/features/projects/data/project-catalogs";
-import type { ProjectStage } from "@/features/projects/types/draft";
 import { DataCell, DataGrid } from "@/features/listings/components/data-grid";
 import { ListingImage } from "@/features/listings/components/listing-image";
 import { ProjectTourVideo } from "@/features/listings/components/project-tour-video";
 import { ProjectLocationModal } from "@/features/projects/components/project-location-modal";
 import { ReviewPublishModal } from "@/shared/ui/review-publish-modal";
-
-const STATUS_STYLE: Record<ApiProjectStatus, string> = {
-  DRAFT: "bg-surface/90 text-muted",
-  PENDING_REVIEW: "bg-warning/15 text-warning",
-  PUBLISHED: "bg-success/12 text-success",
-  PAUSED: "bg-warning/15 text-warning",
-  SOLD: "bg-brand-soft text-brand",
-  REJECTED: "bg-error/12 text-error",
-  ARCHIVED: "bg-surface/90 text-muted",
-};
-
-const STAGE_LABELS: Record<string, ProjectStage> = {
-  PRE_SALE: "preventa",
-  UNDER_CONSTRUCTION: "en-construccion",
-  DELIVERED: "entregado",
-};
 
 export function OwnerProjectCard({
   project,
@@ -124,7 +109,7 @@ export function OwnerProjectCard({
         <span
           className={cn(
             "absolute top-2.5 right-2.5 rounded-full px-2.5 py-1 text-[10px] font-black tracking-[0.08em] uppercase backdrop-blur",
-            STATUS_STYLE[status],
+            PROJECT_STATUS_STYLE[status],
           )}
         >
           {PROJECT_STATUS_LABELS[status]}
@@ -175,7 +160,7 @@ export function OwnerProjectCard({
         <DataGrid columns={4} className="mt-3">
           <DataCell label="Área" value={formatArea(project.areaRange.min)} />
           <DataCell label="Lotes" value={project.totalLots ?? project.lotsCount} />
-          <DataCell label="Fase" value={PROJECT_STAGE_LABELS[STAGE_LABELS[project.stage]]} />
+          <DataCell label="Fase" value={projectStageLabel(project.stage)} />
           <DataCell label="Entrega" value={new Date(project.estimatedDelivery).getFullYear()} />
         </DataGrid>
 

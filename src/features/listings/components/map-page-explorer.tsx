@@ -39,10 +39,16 @@ function LotSheet({ lot, project, onClose }: { lot: PlanLot; project: Listing; o
   </article>;
 }
 
-export function MapPageExplorer({ listings, loadError = false }: { listings: Listing[]; loadError?: boolean }) {
+export function MapPageExplorer({ listings, loadError = false, initialSlug }: { listings: Listing[]; loadError?: boolean; initialSlug?: string }) {
   const projects = useMemo(() => uniqueProjectListings(listings), [listings]);
-  const [activeId, setActiveId] = useState<string>();
-  const [panel, setPanel] = useState<'PROJECTS' | 'PROJECT' | 'LOT' | null>(null);
+  // Entrada desde el panel: /mapa?proyecto=<slug> abre el mapa ya enfocado en
+  // ese proyecto, con su plano y sus poligonos, y no en el listado completo.
+  const focused = useMemo(
+    () => (initialSlug ? projects.find(project => project.slug === initialSlug) : undefined),
+    [initialSlug, projects],
+  );
+  const [activeId, setActiveId] = useState<string | undefined>(focused?.id);
+  const [panel, setPanel] = useState<'PROJECTS' | 'PROJECT' | 'LOT' | null>(focused ? 'PROJECT' : null);
   const [selectedLot, setSelectedLot] = useState<string>();
   const [showPlanImage, setShowPlanImage] = useState(false);
   const [focusPlanRequest, setFocusPlanRequest] = useState(0);
@@ -61,10 +67,18 @@ export function MapPageExplorer({ listings, loadError = false }: { listings: Lis
     }
     return counts;
   }, [plan]);
-  const markers = useMemo(() => projects.flatMap(project => {
+  const allMarkers = useMemo(() => projects.flatMap(project => {
     const { lat, lng } = project.location;
     return lat != null && lng != null && Number.isFinite(lat) && Number.isFinite(lng) ? [{ id: project.id, lat, lng, title: project.title, priceLabel: formatPrice(project.price.amount, project.price.currency), priceAmount: project.price.amount, priceCurrency: project.price.currency, iconUrl: '/web_v/ubicacion.png' }] : [];
   }), [projects]);
+  // Enfocado solo se muestra el pin del proyecto: el resto del mapa es ruido.
+  const markers = useMemo(
+    () => (focused ? allMarkers.filter(marker => marker.id === focused.id) : allMarkers),
+    [allMarkers, focused],
+  );
+  const focusPoint = focused && typeof focused.location.lat === 'number' && typeof focused.location.lng === 'number'
+    ? { lat: focused.location.lat, lng: focused.location.lng }
+    : null;
   useEffect(() => {
     if (!active) return;
     const controller = new AbortController();
@@ -95,7 +109,7 @@ export function MapPageExplorer({ listings, loadError = false }: { listings: Lis
     <div className={`${styles.layout} ${panel ? styles.withPanel : ''}`}>
       <div className={styles.map}>
     <header className={styles.header}><div><h1>Proyectos en el mapa</h1></div><button type="button" className={panel === 'PROJECTS' ? styles.primary : styles.secondary} aria-expanded={panel === 'PROJECTS'} onClick={() => { setSelectedLot(undefined); setPanel(panel === 'PROJECTS' ? null : 'PROJECTS'); }}><List size={18} /> Listar</button></header>
-        <SitePlanMap plan={plan ?? EMPTY} center={CENTER} overviewBounds={PERU_BOUNDS} mapType="roadmap" compactMapControl showImage={showPlanImage} publicView markers={markers} markerFocusId={activeId} hideFocusedMarker={!!plan} focusPlanRequest={focusPlanRequest} onMarkerSelect={selectProject} onSelect={selectLot} selected={selectedLot} className={styles.mapSurface} />
+        <SitePlanMap plan={plan ?? EMPTY} center={focusPoint ?? CENTER} overviewBounds={focusPoint ? undefined : PERU_BOUNDS} mapType="roadmap" compactMapControl showImage={showPlanImage} publicView markers={markers} markerFocusId={activeId} hideFocusedMarker={!!plan} focusPlanRequest={focusPlanRequest} onMarkerSelect={selectProject} onSelect={selectLot} selected={selectedLot} className={styles.mapSurface} />
 
       </div>
       {panel && <aside className={styles.sidebar} aria-label={panel === 'LOT' ? 'Ficha del lote' : panel === 'PROJECT' ? 'Proyecto seleccionado' : 'Listado de proyectos'}>

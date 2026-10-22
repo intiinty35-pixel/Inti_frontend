@@ -8,6 +8,11 @@ export const metadata = buildMetadata({
   path: ROUTES.map,
 });
 
-export default function MapPage() {
-  return <MapExplorerSection />;
+export default async function MapPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ proyecto?: string }>;
+}) {
+  const { proyecto } = await searchParams;
+  return <MapExplorerSection initialSlug={proyecto} />;
 }

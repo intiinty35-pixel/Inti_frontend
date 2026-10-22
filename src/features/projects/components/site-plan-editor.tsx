@@ -12,6 +12,7 @@ import {
   Undo2,
 } from "lucide-react";
 import { env } from "@/shared/lib/env";
+import { ROUTES } from "@/shared/config/routes";
 import {
   uploadImageToCloudinary,
   PROJECT_MEDIA_FOLDER,
@@ -868,7 +869,7 @@ export function SitePlanEditor({ initial }: { initial: PlanSession }) {
       {pdfFile && <PdfPlanImport file={pdfFile} onImport={(image, source) => upload(image, false, source)} onClose={() => setPdfFile(undefined)} />}
       <div className={s.toolbar}>
         <div>
-          <Link href="/panel/admin/projects/all" className={s.muted}>
+          <Link href={ROUTES.panel.admin.allProjects} className={s.muted}>
             ← Todos los proyectos
           </Link>
           <h1>{initial.project.name}</h1>
