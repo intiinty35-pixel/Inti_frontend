@@ -161,7 +161,7 @@ const NAV_ITEMS: readonly AdminNavItem[] = [
   {
     key: "all-projects",
     label: "Todos los proyectos",
-    href: "/panel/admin/projects/all",
+    href: ROUTES.panel.admin.allProjects,
     Icon: MapIcon,
     group: "portafolio",
   },
