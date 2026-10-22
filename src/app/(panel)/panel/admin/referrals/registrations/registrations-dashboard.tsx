@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import styles from "../ranking/ranking-table.module.css";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { CalendarRange, Coins, Loader2, Mail, Phone, RefreshCw, Search, Ticket, UserRound, UsersRound } from "lucide-react";
+import { CalendarRange, Coins, RefreshCw, Search, UsersRound } from "lucide-react";
 import { ROUTES } from "@/shared/config/routes";
 
 interface RegistrationMember {
@@ -209,90 +210,32 @@ export function RegistrationReferralsDashboard() {
         </p>
       )}
 
-      <section className="overflow-hidden rounded-card border border-edge bg-surface shadow-[var(--shadow-card)]">
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[56rem] text-left text-sm">
-            <thead className="bg-surface-muted text-[11px] font-black uppercase tracking-[0.12em] text-muted">
-              <tr>
-                {["Miembro inscrito", "Contacto", "Invitante (código usado)", "Puntos", "Fecha de inscripción"].map((label) => (
-                  <th key={label} scope="col" className="px-4 py-3">{label}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-edge">
-              {!data ? (
-                <tr>
-                  <td colSpan={5} className="px-4 py-10 text-center text-muted">
-                    {error ? "No se pudo cargar la lista." : "Cargando inscripciones..."}
-                  </td>
+      <section className={styles.sheet} aria-label="Inscripciones por código">
+        <div className={styles.scroll}>
+          <table className={styles.table}>
+            <thead><tr>{['N.º', 'Miembro inscrito', 'Correo del miembro', 'Teléfono', 'Invitante', 'Código usado', 'Correo del invitante', 'Puntos', 'Fecha de inscripción'].map(label => <th key={label} scope="col">{label}</th>)}</tr></thead>
+            <tbody>
+              {!data ? <tr><td colSpan={9} className={styles.empty}>{error ? 'No se pudo cargar la lista.' : 'Cargando inscripciones…'}</td></tr> : !data.items.length ? <tr><td colSpan={9} className={styles.empty}>No hay inscripciones con estos filtros.</td></tr> : data.items.map((row, index) => (
+                <tr key={row.id}>
+                  <td className={styles.rank}>{(displayedPage - 1) * PAGE_SIZE + index + 1}</td>
+                  <td><span className={styles.name} title={row.newReferrer.name}>{row.newReferrer.name}</span></td>
+                  <td><a className={styles.email} title={row.newReferrer.email} href={`mailto:${row.newReferrer.email}`}>{row.newReferrer.email || '—'}</a></td>
+                  <td>{row.newReferrer.phone ? <a href={`tel:${row.newReferrer.phone.replace(/\s/g, '')}`}>{row.newReferrer.phone}</a> : '—'}</td>
+                  <td><Link className={styles.name} title={row.inviter.name} href={ROUTES.panel.admin.referrer(row.inviter.id)}>{row.inviter.name}</Link></td>
+                  <td className={styles.code}>{row.inviter.code}</td>
+                  <td><a className={styles.email} title={row.inviter.email} href={row.inviter.email ? `mailto:${row.inviter.email}` : undefined}>{row.inviter.email || '—'}</a></td>
+                  <td className={styles.number}>+{row.pointsAwarded.toLocaleString('es-PE')}</td>
+                  <td>{formatDate(row.createdAt)}</td>
                 </tr>
-              ) : !data.items.length ? (
-                <tr>
-                  <td colSpan={5} className="px-4 py-10 text-center">
-                    <span className="flex flex-col items-center gap-2 text-muted">
-                      <UserRound className="size-7" aria-hidden="true" />
-                      <span className="text-sm">No hay inscripciones con estos filtros.</span>
-                    </span>
-                  </td>
-                </tr>
-              ) : (
-                data.items.map((row) => (
-                  <tr key={row.id} className="hover:bg-surface-muted/60">
-                    <td className="px-4 py-3">
-                      <p className="font-bold text-brand">{row.newReferrer.name}</p>
-                      <p className="text-xs text-muted">{row.newReferrer.email}</p>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex flex-col gap-1 text-xs">
-                        {row.newReferrer.phone ? (
-                          <a
-                            href={`tel:${row.newReferrer.phone.replace(/\s/g, "")}`}
-                            className="inline-flex items-center gap-1.5 font-semibold hover:text-brand"
-                          >
-                            <Phone className="size-3.5 text-accent" />
-                            {row.newReferrer.phone}
-                          </a>
-                        ) : null}
-                        <a
-                          href={`mailto:${row.newReferrer.email}`}
-                          className="inline-flex items-center gap-1.5 break-all font-semibold hover:text-brand"
-                        >
-                          <Mail className="size-3.5 shrink-0 text-accent" />
-                          {row.newReferrer.email}
-                        </a>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <Link
-                        href={ROUTES.panel.admin.referrer(row.inviter.id)}
-                        className="font-bold text-brand hover:underline"
-                      >
-                        {row.inviter.name}
-                      </Link>
-                      <div className="mt-1 flex items-center gap-1.5 text-xs text-muted">
-                        <Ticket className="size-3.5 shrink-0 text-accent" aria-hidden="true" />
-                        <span className="font-mono font-bold text-brand">{row.inviter.code}</span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-2.5 py-1 text-xs font-black text-success">
-                        <Coins className="size-3.5" aria-hidden="true" />
-                        +{row.pointsAwarded.toLocaleString("es-PE")}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-xs text-muted">{formatDate(row.createdAt)}</td>
-                  </tr>
-                ))
-              )}
+              ))}
             </tbody>
           </table>
         </div>
       </section>
-
       {data && data.total > 0 && (
         <div className="flex flex-col items-center gap-3">
           <p className="text-sm text-muted">
-            Mostrando {(displayedPage - 1) * PAGE_SIZE + 1}–{Math.min(displayedPage * PAGE_SIZE, data.total)} de {data.total} inscripciones
+            Mostrando {(displayedPage - 1) * PAGE_SIZE + 1} al {Math.min(displayedPage * PAGE_SIZE, data.total)} de {data.total} inscripciones
           </p>
           <nav aria-label="Paginación de inscripciones" className="flex items-center gap-3">
             <button type="button" disabled={page <= 1} onClick={() => setPage(page - 1)} className={buttonClass}>

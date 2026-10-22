@@ -161,24 +161,24 @@ export function ReferralRecordsDashboard() {
         <div ref={tableScroll} role="region" aria-label="Tabla de referidos" aria-describedby="records-scroll-hint" tabIndex={0} className={`${styles.scrollArea} focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand`}>
           <table className={`${styles.table} w-full table-fixed text-left text-sm`}>
             <colgroup>
-              {[240, 280, 240, 220, 240, 220, 100, 140, 200].map((width, i) => <col key={i} style={{ width }} />)}
+              {[200, 120, 130, 240, 120, 200, 120, 180, 170, 170, 220, 90, 130, 200].map((width, i) => <col key={i} style={{ width }} />)}
             </colgroup>
             <thead className="bg-surface-muted text-[11px] font-black uppercase tracking-[0.12em] text-muted"><tr>
-              {['Referido', 'Contacto del referido', 'Miembro Ariz', 'Estado', 'Interés / disponibilidad', 'Proyecto', 'Puntos', 'Registro', 'Acciones'].map(label => <th key={label} scope="col" className="px-6 py-5">{label}</th>)}
+              {['Referido', 'Código', 'Teléfono', 'Correo', 'WhatsApp', 'Miembro ARIZ', 'Código miembro', 'Estado', 'Interés', 'Disponibilidad', 'Proyecto', 'Puntos', 'Registro', 'Acciones'].map(label => <th key={label} scope="col">{label}</th>)}
             </tr></thead>
             <tbody className="divide-y divide-edge">
-              {!data ? <tr><td colSpan={9} className="px-4 py-10 text-center text-muted">{error ? 'No se pudo cargar la lista.' : 'Cargando referidos...'}</td></tr> : !data.items.length ? <tr><td colSpan={9} className="px-4 py-10 text-center text-muted">No hay referidos con estos filtros.</td></tr> : data.items.map(row => (
+              {!data ? <tr><td colSpan={14} className="px-4 py-10 text-center text-muted">{error ? 'No se pudo cargar la lista.' : 'Cargando referidos...'}</td></tr> : !data.items.length ? <tr><td colSpan={14} className="px-4 py-10 text-center text-muted">No hay referidos con estos filtros.</td></tr> : data.items.map(row => (
                 <tr key={row.id} className="group bg-surface transition-colors hover:bg-surface-muted/60">
-                  <td className="px-6 py-5"><p className="font-bold text-brand">{row.name}</p><p className="text-xs text-muted">{row.code}</p></td>
-                  <td className="px-6 py-5"><div className="flex flex-col gap-2.5 text-xs">
-                    <a href={`tel:${row.phone.replace(/\s/g, '')}`} className="inline-flex items-center gap-1.5 font-semibold hover:text-brand"><Phone className="size-3.5 text-accent" />{row.phone}</a>
-                    <a href={`https://wa.me/${row.phone.replace(/\D/g, '')}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 font-semibold hover:text-brand"><MessageCircle className="size-3.5 text-accent" />WhatsApp</a>
-                    <a href={`mailto:${row.email}`} className="inline-flex items-center gap-1.5 break-all font-semibold hover:text-brand"><Mail className="size-3.5 shrink-0 text-accent" />{row.email}</a>
-                  </div></td>
-                  <td className="px-6 py-5"><Link href={ROUTES.panel.admin.referrer(row.referrer.id)} className="font-bold text-brand hover:underline">{row.referrer.name}</Link><p className="text-xs text-muted">{row.referrer.code}</p></td>
+                  <td title={row.name}><span className={styles.cellText}>{row.name}</span></td>
+                  <td>{row.code}</td>
+                  <td><a href={`tel:${row.phone.replace(/\s/g, '')}`}>{row.phone}</a></td>
+                  <td title={row.email}><a className={styles.cellText} href={`mailto:${row.email}`}>{row.email}</a></td>
+                  <td><a href={`https://wa.me/${row.phone.replace(/\D/g, '')}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5"><MessageCircle className="size-3.5" />Contactar</a></td>
+                  <td title={row.referrer.name}><Link href={ROUTES.panel.admin.referrer(row.referrer.id)} className={styles.cellText}>{row.referrer.name}</Link></td>
+                  <td>{row.referrer.code}</td>
                   <td className="px-6 py-5"><span className={`inline-flex whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-bold ${row.status === 'OPERATION_COMPLETED' ? 'bg-success/10 text-success' : row.status === 'REJECTED' ? 'bg-error/10 text-error' : 'bg-brand-soft text-brand'}`}>{row.statusLabel}</span></td>
-                  <td className="px-6 py-5 text-xs"><p className="font-semibold">{row.interestLabel}</p><p className="text-muted">{row.availabilityLabel}</p></td>
-                  <td className="px-6 py-5 text-xs">{row.project?.name ?? 'Sin proyecto'}</td>
+                  <td title={row.interestLabel}><span className={styles.cellText}>{row.interestLabel}</span></td><td title={row.availabilityLabel}><span className={styles.cellText}>{row.availabilityLabel}</span></td>
+                  <td title={row.project?.name}><span className={styles.cellText}>{row.project?.name ?? 'Sin proyecto'}</span></td>
                   <td className="px-6 py-5 font-black text-brand">{row.points.toLocaleString('es-PE')}</td>
                   <td className="px-6 py-5 text-xs text-muted">{new Date(row.createdAt).toLocaleDateString('es-PE', { timeZone: 'America/Lima' })}</td>
                   <td className="px-6 py-5"><RecordActions id={row.id} name={row.name} points={row.points} onUpdated={load} /></td>
@@ -189,7 +189,7 @@ export function ReferralRecordsDashboard() {
         </div>
       </section>
       {data && data.total > 0 && <div className="flex flex-col items-center gap-3">
-        <p className="text-sm text-muted">Mostrando {(displayedPage - 1) * PAGE_SIZE + 1}–{Math.min(displayedPage * PAGE_SIZE, data.total)} de {data.total} referidos</p>
+        <p className="text-sm text-muted">Mostrando {(displayedPage - 1) * PAGE_SIZE + 1} al {Math.min(displayedPage * PAGE_SIZE, data.total)} de {data.total} referidos</p>
         <nav aria-label="Paginación de referidos" className="flex items-center gap-3">
           <button type="button" disabled={page <= 1} onClick={() => setPage(page - 1)} className={buttonClass}>Anterior</button>
           <span className="text-sm font-semibold text-brand">Página {displayedPage} de {totalPages}</span>

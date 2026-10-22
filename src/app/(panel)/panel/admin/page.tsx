@@ -1,6 +1,8 @@
-﻿import Link from "next/link";
+import { ProfileDistribution } from "@/features/admin/components/profile-distribution";
+import { loadProfileDistribution } from "@/features/admin/api/profile-distribution";
+import Link from "next/link";
 import { Building2, Crown, Home, LineChart, Users } from "lucide-react";
-import { CATEGORICAL, Card, STATUS } from "@/shared/ui";
+import { CATEGORICAL, Card } from "@/shared/ui";
 import { ROUTES } from "@/shared/config/routes";
 import {
   listPendingSubscriptions,
@@ -9,7 +11,8 @@ import {
 } from "@/features/admin/api/server";
 import { getPublicListingsServer } from "@/features/listings/api/server";
 import { getPublicProjectsServer } from "@/features/projects/api/server";
-import { AdminPageHeader } from "@/app/(panel)/panel/admin/admin-shell";
+import { getSession } from "@/features/auth/api/server";
+import { AdminDashboardWelcome, AdminDashboardShortcuts } from "@/features/admin/components/admin-dashboard-welcome";
 
 const PROFILE_FILTERS = [
   { key: "all", label: "Todos", href: ROUTES.panel.admin.base },
@@ -123,8 +126,8 @@ function ExcelColumnChart({
       <TrendLegend items={series} />
       <div className="mt-5 grid min-h-72 grid-cols-[auto_minmax(0,1fr)] gap-3">
         <div className="flex flex-col justify-between pb-7 text-right text-[11px] font-bold text-muted">
-          {[max, Math.ceil(max * 0.66), Math.ceil(max * 0.33), 0].map((tick) => (
-            <span key={tick}>{tick}</span>
+          {[max, Math.ceil(max * 0.66), Math.ceil(max * 0.33), 0].map((tick, index) => (
+            <span key={`axis-tick-${index}`}>{tick}</span>
           ))}
         </div>
         <div className="relative grid min-w-0 grid-flow-col gap-1 sm:gap-2 pb-1 overflow-hidden">
@@ -243,74 +246,13 @@ function ExcelLineChart({ data, color }: { data: Array<{ label: string; value: n
   );
 }
 
-function ExcelPieChart({ data }: { data: Array<{ label: string; value: number; color: string }> }) {
-  const total = data.reduce((sum, item) => sum + item.value, 0);
-
-  if (total === 0) {
-    return <div className="flex min-h-64 items-center justify-center text-sm text-muted">Sin datos para graficar.</div>;
-  }
-
-  const slices = data.map((item, index) => {
-    const previous = data.slice(0, index).reduce((sum, entry) => sum + entry.value, 0);
-    const start = -90 + (previous / total) * 360;
-    const end = start + (item.value / total) * 360;
-    return { ...item, start, end, slice: end - start };
-  });
-
-  return (
-    <div className="grid items-center gap-5 md:grid-cols-[minmax(0,1fr)_220px]">
-      <svg viewBox="0 0 300 240" className="mx-auto w-full max-w-[360px] h-auto">
-        <rect x="0" y="0" width="300" height="240" fill="#ffffff" />
-        {slices.map((item, index) => {
-          const startRad = (Math.PI / 180) * item.start;
-          const endRad = (Math.PI / 180) * item.end;
-          const largeArc = item.slice > 180 ? 1 : 0;
-          const x1 = 150 + 88 * Math.cos(startRad);
-          const y1 = 120 + 88 * Math.sin(startRad);
-          const x2 = 150 + 88 * Math.cos(endRad);
-          const y2 = 120 + 88 * Math.sin(endRad);
-
-          return (
-            <path
-              key={`slice-${index}-${item.label}`}
-              d={`M 150 120 L ${x1} ${y1} A 88 88 0 ${largeArc} 1 ${x2} ${y2} Z`}
-              fill={item.color}
-              stroke="#ffffff"
-              strokeWidth="2"
-              className="cursor-default transition-opacity duration-200 hover:opacity-80"
-            >
-              <title>{`${item.label}: ${item.value}`}</title>
-            </path>
-          );
-        })}
-        <circle cx="150" cy="120" r="48" fill="#ffffff" />
-        <text x="150" y="116" textAnchor="middle" fontSize="24" fontWeight="800" fill="#0b0b0b">
-          {total}
-        </text>
-        <text x="150" y="136" textAnchor="middle" fontSize="10" fontWeight="700" fill="#52514e">
-          perfiles
-        </text>
-      </svg>
-      <ul className="grid gap-2 text-xs">
-        {data.map((item, index) => (
-          <li key={`pie-legend-${index}-${item.label}`} className="flex items-center gap-2 rounded-card px-2 py-1 transition-colors hover:bg-surface-muted">
-            <span className="size-3 shrink-0" style={{ backgroundColor: item.color }} />
-            <span className="min-w-0 flex-1 truncate text-ink">{item.label}</span>
-            <span className="font-black text-muted">{item.value}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
 function TopProjectList({ data }: { data: Array<{ label: string; value: number; color: string }> }) {
   const max = Math.max(1, ...data.map((item) => item.value));
 
   if (data.length === 0) {
     return (
       <div className="flex min-h-44 items-center justify-center rounded-card bg-surface-muted px-5 text-center text-sm text-muted">
-        Cuando existan proyectos en revisiÃ³n, los 10 con mayor demanda aparecerÃ¡n aquÃ­.
+        Aún no hay proyectos con lotes registrados para mostrar.
       </div>
     );
   }
@@ -378,7 +320,7 @@ export default async function PanelAdminPage({ searchParams }: PanelAdminPagePro
   const profile = PROFILE_FILTERS.some((item) => item.key === perfil) ? (perfil as ProfileFilter) : "all";
   const range = RANGE_FILTERS.some((item) => item.key === rango) ? (rango as RangeFilter) : "6m";
   const rangeConfig = RANGE_FILTERS.find((item) => item.key === range) ?? RANGE_FILTERS[1];
-  const [professionalPool, propertiesPage, projectsPage, subscriptions] =
+  const [professionalPool, propertiesPage, projectsPage, subscriptions, session, distribution] =
     await Promise.all([
       listProfessionals(1, 200),
       getPublicListingsServer(200, 1).catch(() => ({ items: [], total: 0, page: 1, pageSize: 200, hasMore: false })),
@@ -386,13 +328,12 @@ export default async function PanelAdminPage({ searchParams }: PanelAdminPagePro
       listSubscriptions(1, 200).catch(() =>
         listPendingSubscriptions(1, 100).catch(() => ({ items: [], total: 0, pageSize: 100 })),
       ),
+      getSession(),
+      loadProfileDistribution().then(result => result.data).catch(() => undefined),
     ]);
 
   const allProfessionals = professionalPool.items;
   const pending = allProfessionals.filter((item) => item.status === "PENDING").length;
-  const agenciesCount = allProfessionals.filter((item) => item.type === "REAL_ESTATE_AGENCY").length;
-  const agentsCount = allProfessionals.filter((item) => item.type === "INDEPENDENT_AGENT").length;
-  const developersCount = allProfessionals.filter((item) => item.type === "DEVELOPER").length;
   const approvedCount = allProfessionals.filter((item) => item.status === "APPROVED").length;
   const publishedProperties = propertiesPage.items.filter((item) => profileMatches(item.agent?.type, profile));
   const publishedProjects = projectsPage.items.filter((item) => profileMatches(item.agent?.type, profile));
@@ -432,50 +373,21 @@ export default async function PanelAdminPage({ searchParams }: PanelAdminPagePro
     .filter((project) => project.value > 0)
     .sort((a, b) => b.value - a.value)
     .slice(0, 10);
-  const profileBars = [
-    { label: "Inmobiliarias", value: agenciesCount, color: CATEGORICAL[0] },
-    { label: "Agentes", value: agentsCount, color: CATEGORICAL[1] },
-    { label: "Desarroll.", value: developersCount, color: CATEGORICAL[2] },
-    { label: "Pendientes", value: pending, color: STATUS.warning },
-  ];
   return (
     <div className="flex flex-col gap-7">
-      <AdminPageHeader
-        title="Centro de control"
-        description="Indicadores principales para cuentas, publicaciones, proyectos y membresias."
-        align="center"
-      />
+      <AdminDashboardWelcome name={session?.name} />
 
       <section className="relative overflow-hidden rounded-card border border-edge bg-surface p-5 shadow-[var(--shadow-card)] sm:p-6">
         <div className="absolute inset-x-0 top-0 h-1.5 bg-brand" aria-hidden />
         <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <p className="text-[11px] font-black tracking-[0.18em] text-accent uppercase">VisiÃ³n general</p>
+            <p className="text-[11px] font-black tracking-[0.18em] text-accent uppercase">Visión general</p>
             <h2 className="mt-1 font-display text-3xl font-black tracking-tight text-brand">
               Rendimiento del sistema
             </h2>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {PROFILE_FILTERS.map((item) => {
-              const active = item.key === profile;
-              return (
-                <Link
-                  key={item.key}
-                  href={`${item.href}${item.href.includes("?") ? "&" : "?"}rango=${range}`}
-                  className={`inline-flex h-9 items-center rounded-card border px-3 text-xs font-black transition-colors ${
-                    active
-                      ? "border-brand bg-brand text-on-brand"
-                      : "border-edge bg-surface text-muted hover:border-brand hover:text-brand"
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="mt-5 flex flex-wrap items-center justify-center gap-2 lg:justify-end">
+          <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2">
           {RANGE_FILTERS.map((item) => {
             const active = item.key === range;
             const params = new URLSearchParams();
@@ -495,6 +407,26 @@ export default async function PanelAdminPage({ searchParams }: PanelAdminPagePro
               </Link>
             );
           })}
+        </div>
+          <div className="flex flex-wrap gap-2 border-l border-edge pl-3">
+            {PROFILE_FILTERS.map((item) => {
+              const active = item.key === profile;
+              return (
+                <Link
+                  key={item.key}
+                  href={`${item.href}${item.href.includes("?") ? "&" : "?"}rango=${range}`}
+                  className={`inline-flex h-9 items-center rounded-card border px-3 text-xs font-black transition-colors ${
+                    active
+                      ? "border-brand bg-brand text-on-brand"
+                      : "border-edge bg-surface text-muted hover:border-brand hover:text-brand"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </div>
+          </div>
         </div>
 
         <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -577,7 +509,7 @@ export default async function PanelAdminPage({ searchParams }: PanelAdminPagePro
             <LineChart className="size-5 text-brand" aria-hidden="true" />
           </div>
           <div className="mt-6">
-            <ExcelPieChart data={profileBars} />
+            <ProfileDistribution initialData={distribution} />
           </div>
         </Card>
 
@@ -601,6 +533,7 @@ export default async function PanelAdminPage({ searchParams }: PanelAdminPagePro
         </Card>
         </aside>
       </section>
+      <AdminDashboardShortcuts />
     </div>
   );
 }

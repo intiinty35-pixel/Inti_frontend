@@ -301,3 +301,16 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+.editor .lotFormActions {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  width: 100%;
+  overflow-x: auto;
+}
+.editor .lotFormActions > button {
+  flex: 1 0 auto;
+  padding: 9px 7px;
+  font-size: 11px;
+  white-space: nowrap;
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { env } from "@/shared/lib/env";
 import { formatPrice } from "@/shared/lib/format";
 import { lotAnnotations } from "@/shared/lib/lot-annotations";
@@ -43,14 +43,19 @@ type Props = {
   onMapCenter?: (point: Point) => void;
   mapCenterRequest?: number;
   focusPlanRequest?: number;
+  planContextRadiusM?: number;
   publicView?: boolean;
   focusProject?: boolean;
   overviewBounds?: readonly Point[];
   mapType?: 'roadmap' | 'satellite';
   minimalControls?: boolean;
   compactMapControl?: boolean;
+  hideLegendOnMobile?: boolean;
+  legendAction?: ReactNode;
+  legendStatuses?: readonly (keyof typeof LOT_COLORS)[];
   className?: string;
   markers?: readonly PlanMapMarker[];
+  clusterMarkers?: boolean;
   markerFocusId?: string | null;
   hideFocusedMarker?: boolean;
   images?: PlanImage[];
@@ -248,7 +253,7 @@ export function SitePlanMap(props: Props) {
           );
         }
         const initialMarkers = callbacks.current.markers ?? [];
-        if (initialMarkers.length) {
+        if (initialMarkers.length && !callbacks.current.overviewBounds?.length) {
           fitMarkers(current, maps, initialMarkers);
         } else if (callbacks.current.overviewBounds?.length) {
           const bounds = new maps.LatLngBounds();
@@ -314,7 +319,7 @@ export function SitePlanMap(props: Props) {
       ...props.plan.zones.map((zone) => ({
         id: zone.id,
         path: zone.path,
-        color: zone.kind === "CONTOUR" ? "#0ea5e9" : zone.kind === "BLOCK" ? "#3b82f6" : "#a855f7",
+        color: zone.kind === "CONTOUR" ? (props.publicView ? "#18754b" : "#0ea5e9") : zone.kind === "BLOCK" ? "#3b82f6" : "#a855f7",
         lot: undefined,
         label: zone.kind === "CONTOUR" ? "" : zone.name,
         contour: zone.kind === "CONTOUR",
@@ -338,11 +343,11 @@ export function SitePlanMap(props: Props) {
         map: current,
         paths: shape.path,
         fillColor: shape.color,
-        fillOpacity: shape.contour ? 0 : shape.zone ? 0.08 : active ? 0.65 : 0.36,
-        strokeColor: active ? "#ffffff" : shape.color,
-        strokeWeight: shape.contour ? (active ? 5 : 4) : active ? 3 : !props.showImage ? 2.5 : 1.5,
+        fillOpacity: shape.contour ? 0 : shape.zone ? (props.publicView ? 0.025 : 0.08) : active ? 0.32 : props.publicView ? 0.13 : 0.36,
+        strokeColor: active && !props.publicView ? "#ffffff" : shape.color,
+        strokeWeight: props.publicView ? (shape.contour ? 1.5 : active ? 2.5 : 1.6) : shape.contour ? (active ? 5 : 4) : active ? 3 : !props.showImage ? 2.5 : 1.5,
         editable: editing && active && !props.moveAll,
-        draggable: editing && (active || props.moveAll),
+        draggable: editing && (!!props.moveAll || (active && !shape.contour)),
         clickable: !props.placementMode && (!props.tool || editing),
         zIndex: shape.contour ? 2 : shape.zone ? 1 : active ? 4 : 3,
       });
@@ -351,9 +356,9 @@ export function SitePlanMap(props: Props) {
         objects.push(new sdk.Polyline({
           map: current,
           path: [...shape.path, shape.path[0]],
-          strokeColor: "#0ea5e9",
+          strokeColor: shape.color,
           strokeOpacity: 1,
-          strokeWeight: 4,
+          strokeWeight: props.publicView ? 1.5 : 4,
           zIndex: 30,
           clickable: false,
         }));
@@ -406,10 +411,13 @@ export function SitePlanMap(props: Props) {
             Object.assign(node.style, { left: `${minX}px`, top: `${minY}px`, transform: 'none', width: `${width}px`, height: `${height}px` });
             const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
             svg.setAttribute('width', String(width)); svg.setAttribute('height', String(height));
-            for (const item of lotAnnotations(shape.lot, xy.map(p => ({ x: p.x - minX, y: p.y - minY })))) {
+            const annotations = lotAnnotations(shape.lot, xy.map(p => ({ x: p.x - minX, y: p.y - minY })));
+            // Overview: number and area only. Dimensions appear when inspecting a lot.
+            const visibleAnnotations = props.publicView && (!active || zoom < 20) ? annotations.slice(0, 2) : annotations;
+            for (const item of visibleAnnotations) {
               const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
               text.textContent = item.text;
-              for (const [key, value] of Object.entries({ x: item.x, y: item.y, transform: `rotate(${item.angle} ${item.x} ${item.y})`, 'font-size': item.size, fill: item.color, 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-weight': '700', stroke: 'rgba(255,255,255,0.8)', 'stroke-width': '1.2', 'paint-order': 'stroke' })) text.setAttribute(key, String(value));
+              for (const [key, value] of Object.entries({ x: item.x, y: item.y, transform: `rotate(${item.angle} ${item.x} ${item.y})`, 'font-size': props.publicView ? Math.min(item.size, 14) : item.size, fill: item.color, 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-weight': '600', stroke: 'rgba(255,255,255,0.8)', 'stroke-width': props.publicView ? '0.8' : '1.2', 'paint-order': 'stroke' })) text.setAttribute(key, String(value));
               svg.append(text);
             }
             node.append(svg);
@@ -506,6 +514,7 @@ export function SitePlanMap(props: Props) {
     props.placementMode,
     props.showImage,
     props.points,
+    props.publicView,
     zoom,
   ]);
 
@@ -543,7 +552,7 @@ export function SitePlanMap(props: Props) {
       (marker) => !(props.hideFocusedMarker && marker.id === props.markerFocusId),
     );
     const groups: MarkerGroup[] =
-      mapZoom >= MAX_CLUSTER_ZOOM
+      props.clusterMarkers === false || mapZoom >= MAX_CLUSTER_ZOOM
         ? visible.map((marker) => ({
             center: { lat: marker.lat, lng: marker.lng },
             markers: [marker],
@@ -556,7 +565,7 @@ export function SitePlanMap(props: Props) {
 
     function markerNode(marker: PlanMapMarker) {
       const focused = marker.id === props.markerFocusId;
-      const showPrice = !marker.iconUrl || mapZoom <= PRICE_MAX_ZOOM;
+      const showPrice = props.clusterMarkers === false || !marker.iconUrl || mapZoom <= PRICE_MAX_ZOOM;
       const node = document.createElement("button");
       node.type = "button";
       node.title = marker.title;
@@ -742,7 +751,7 @@ export function SitePlanMap(props: Props) {
       return overlay;
     });
     return () => overlays.forEach((overlay) => overlay.setMap(null));
-  }, [sdk, props.markers, props.markerFocusId, props.hideFocusedMarker, zoom]);
+  }, [sdk, props.markers, props.markerFocusId, props.hideFocusedMarker, props.clusterMarkers, zoom]);
 
   useEffect(() => {
     const current = map.current;
@@ -752,7 +761,7 @@ export function SitePlanMap(props: Props) {
       current.setZoom(18);
       return;
     }
-    if (props.markers.length) {
+    if (props.markers.length && !props.overviewBounds?.length) {
       fitMarkers(current, sdk, props.markers);
     } else if (props.overviewBounds?.length) {
       const overview = new sdk.LatLngBounds();
@@ -809,6 +818,19 @@ export function SitePlanMap(props: Props) {
     if (!points.length) return;
     const bounds = new sdk.LatLngBounds();
     points.forEach(p => bounds.extend(p));
+    const radius = callbacks.current.planContextRadiusM;
+    if (radius && radius > 0) {
+      const minLat = Math.min(...points.map(point => point.lat));
+      const maxLat = Math.max(...points.map(point => point.lat));
+      const minLng = Math.min(...points.map(point => point.lng));
+      const maxLng = Math.max(...points.map(point => point.lng));
+      const lat = (minLat + maxLat) / 2;
+      const lng = (minLng + maxLng) / 2;
+      const latSpan = Math.max((maxLat - minLat) * .8, radius / 111320);
+      const lngSpan = Math.max((maxLng - minLng) * .8, radius / (111320 * Math.max(.1, Math.cos(lat * Math.PI / 180))));
+      bounds.extend({ lat: lat - latSpan, lng: lng - lngSpan });
+      bounds.extend({ lat: lat + latSpan, lng: lng + lngSpan });
+    }
     map.current.fitBounds(bounds);
   }, [props.focusPlanRequest, sdk]);
   useEffect(() => {
@@ -843,12 +865,12 @@ export function SitePlanMap(props: Props) {
           {error}
         </div>
       )}
-      <div className="pointer-events-none absolute bottom-9 left-3 flex flex-wrap gap-2 rounded-xl bg-white/95 p-3 text-[11px] text-slate-700 shadow-sm">
-        {Object.entries(LOT_COLORS).filter(([status]) => status !== "AVAILABLE").map(([status, color]) => (
+      <div className={`${props.hideLegendOnMobile ? styles.hideLegendOnMobile : ''} pointer-events-none absolute bottom-9 left-3 flex flex-wrap gap-2 rounded-xl bg-white/95 p-3 text-[11px] text-slate-700 shadow-sm`}>
+        {(props.legendStatuses ?? ['RESERVED', 'SOLD', 'BLOCKED'] as const).map(status => (
           <span key={status} className="flex items-center gap-1">
             <i
               className="size-2.5 rounded-full"
-              style={{ background: color }}
+              style={{ background: LOT_COLORS[status] }}
             />
             {
               {
@@ -860,6 +882,7 @@ export function SitePlanMap(props: Props) {
             }
           </span>
         ))}
+        {props.legendAction && <div className="pointer-events-auto ml-2 border-l border-slate-200 pl-3">{props.legendAction}</div>}
       </div>
     </div>
   );

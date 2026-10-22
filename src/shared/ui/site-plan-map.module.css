@@ -1,3 +1,6 @@
 .compactControls :global(.gm-style-mtc) {
   display: none !important;
 }
+@media (max-width: 767px) {
+  .hideLegendOnMobile { display: none; }
+}

@@ -21,6 +21,8 @@ import {
   type InvestmentType,
 } from "@/features/investment-opportunities/types";
 import { ImageIcon, UploadIcon } from "@/shared/ui";
+import styles from './investment-opportunity-form.module.css';
+import { MapFilterSelect } from '@/features/listings/components/map-filter-select';
 
 const INITIAL_POINT: MapPoint = { latitude: -3.5669, longitude: -80.4515 };
 
@@ -73,7 +75,7 @@ function createEmptyInput(): InvestmentOpportunityInput {
 
 const inputClass =
   "mt-1.5 h-11 w-full rounded-lg border border-edge bg-white px-3 text-sm text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/15";
-const labelClass = "block text-sm font-bold text-ink";
+const labelClass = "block text-sm font-medium text-ink";
 
 function parseCoordinate(value: string): number | undefined {
   const parsed = Number(value.trim().replace(",", "."));
@@ -251,8 +253,9 @@ export function InvestmentOpportunityForm({
   }
 
   return (
-    <form onSubmit={save} className="flex flex-col gap-6">
+    <form onSubmit={save} className={`${styles.form} flex flex-col gap-6`}>
       <section className="grid gap-4 rounded-2xl border border-edge bg-surface p-5 shadow-[var(--shadow-card)] sm:grid-cols-2">
+        <div className={styles.sectionHeading}><span>01</span><div><h2>Información del proyecto</h2><p>Identidad y presentación de la oportunidad de inversión.</p></div></div>
         <label className={labelClass}>
           Nombre del proyecto
           <input className={inputClass} value={form.name} maxLength={120} required onChange={(e) => setField("name", e.target.value)} />
@@ -265,21 +268,9 @@ export function InvestmentOpportunityForm({
           Resumen para las tarjetas
           <input className={inputClass} value={form.summary} maxLength={180} required onChange={(e) => setField("summary", e.target.value)} />
         </label>
-        <label className={labelClass}>
-          Tipo de inversión
-          <select
-            className={inputClass}
-            value={form.investmentTypeId ?? ""}
-            onChange={(e) => setField("investmentTypeId", e.target.value || null)}
-          >
-            <option value="">Sin tipo asignado</option>
-            {investmentTypes.map((type) => (
-              <option key={type.id} value={type.id}>
-                {type.name}
-              </option>
-            ))}
-          </select>
-        </label>
+        <div className={styles.selectField}><span>Tipo de inversión</span>
+          <MapFilterSelect compact label="Tipo de inversión" value={form.investmentTypeId ?? ''} onChange={value => setField('investmentTypeId', value || null)} options={[{ value: '', label: 'Sin tipo asignado' }, ...investmentTypes.map(type => ({ value: type.id, label: type.name }))]} />
+        </div>
         <label className={labelClass}>
           Tipo visible
           <input className={inputClass} value={form.investmentKind} maxLength={80} required onChange={(e) => setField("investmentKind", e.target.value)} />
@@ -292,14 +283,10 @@ export function InvestmentOpportunityForm({
           Área / metraje
           <input className={inputClass} value={form.areaLabel} maxLength={80} placeholder="Desde 120 m²" required onChange={(e) => setField("areaLabel", e.target.value)} />
         </label>
-        <label className={labelClass}>
-          Objetivo de inversión
-          <select className={inputClass} value={form.investmentGoal} onChange={(e) => setField("investmentGoal", e.target.value as InvestmentGoal)}>
-            {Object.entries(INVESTMENT_GOAL_LABELS).map(([value, label]) => (
-              <option key={value} value={value}>{label}</option>
-            ))}
-          </select>
-        </label>
+        <div className={styles.sectionHeading}><span>02</span><div><h2>Condiciones de inversión</h2><p>Importes, objetivos y estimaciones comerciales.</p></div></div>
+        <div className={styles.selectField}><span>Objetivo de inversión</span>
+          <MapFilterSelect compact label="Objetivo de inversión" value={form.investmentGoal} onChange={value => setField('investmentGoal', value as InvestmentGoal)} options={Object.entries(INVESTMENT_GOAL_LABELS).map(([value, label]) => ({ value, label }))} />
+        </div>
         <label className={labelClass}>
           Inversión inicial desde (S/)
           <input className={inputClass} type="number" min="1" step="0.01" required value={form.initialInvestment || ""} onChange={(e) => setField("initialInvestment", Number(e.target.value))} />
@@ -316,31 +303,22 @@ export function InvestmentOpportunityForm({
           Plazo estimado (meses)
           <input className={inputClass} type="number" min="0" step="1" value={form.estimatedTermMonths ?? ""} onChange={(e) => setField("estimatedTermMonths", e.target.value ? Number(e.target.value) : null)} />
         </label>
-        <label className={labelClass}>
-          Estado comercial
-          <select className={inputClass} value={form.status} onChange={(e) => setField("status", e.target.value as InvestmentStatus)}>
-            {Object.entries(INVESTMENT_STATUS_LABELS).map(([value, label]) => (
-              <option key={value} value={value}>{label}</option>
-            ))}
-          </select>
-        </label>
-        <label className={labelClass}>
-          Nivel de riesgo
-          <select className={inputClass} value={form.riskLevel ?? ""} onChange={(e) => setField("riskLevel", (e.target.value || null) as InvestmentRiskLevel | null)}>
-            <option value="">No mostrar</option>
-            {Object.entries(INVESTMENT_RISK_LABELS).map(([value, label]) => (
-              <option key={value} value={value}>{label}</option>
-            ))}
-          </select>
-        </label>
+        <div className={styles.sectionHeading}><span>03</span><div><h2>Publicación y disponibilidad</h2><p>Estado de la oportunidad y presentación del contacto.</p></div></div>
+        <div className={styles.selectField}><span>Estado comercial</span>
+          <MapFilterSelect compact label="Estado comercial" value={form.status} onChange={value => setField('status', value as InvestmentStatus)} options={Object.entries(INVESTMENT_STATUS_LABELS).map(([value, label]) => ({ value, label }))} />
+        </div>
+        <div className={styles.selectField}><span>Nivel de riesgo</span>
+          <MapFilterSelect compact label="Nivel de riesgo" value={form.riskLevel ?? ''} onChange={value => setField('riskLevel', (value || null) as InvestmentRiskLevel | null)} options={[{ value: '', label: 'No mostrar' }, ...Object.entries(INVESTMENT_RISK_LABELS).map(([value, label]) => ({ value, label }))]} />
+        </div>
         <label className={labelClass}>
           Orden
           <input className={inputClass} type="number" step="1" value={form.sortOrder} onChange={(e) => setField("sortOrder", Number(e.target.value))} />
         </label>
         <label className={labelClass}>
-          Texto del CTA
+          Texto del botón de contacto
           <input className={inputClass} value={form.ctaLabel} maxLength={80} required onChange={(e) => setField("ctaLabel", e.target.value)} />
         </label>
+        <div className={styles.sectionHeading}><span>04</span><div><h2>Ubicación y descripción</h2><p>Datos de ubicación y argumentos que destacan el proyecto.</p></div></div>
         <label className={labelClass}>
           Región / departamento
           <input className={inputClass} value={form.department} maxLength={80} required onChange={(e) => setField("department", e.target.value)} />

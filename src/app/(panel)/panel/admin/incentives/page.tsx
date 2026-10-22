@@ -23,7 +23,7 @@ export default async function AdminIncentivesPage({
 }) {
   const { page: pageParam, status } = await searchParams;
   const page = Math.max(1, Number(pageParam) || 1);
-  const data = await listAdminIncentivesServer(page, 12, status);
+  const data = await listAdminIncentivesServer(page, 8, status);
   const activeCount = data.items.filter((item) => item.status === "ACTIVE").length;
   const stockVisible = data.items.reduce((sum, item) => sum + item.stock, 0);
   const statusLabel = status ? STATUS_LABELS[status] || "" : "";

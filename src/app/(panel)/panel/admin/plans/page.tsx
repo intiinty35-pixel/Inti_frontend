@@ -43,17 +43,18 @@ export default async function AdminPlansPage({ searchParams }: AdminPlansPagePro
   return (
     <div className="flex min-w-0 max-w-full flex-col gap-6 overflow-x-hidden">
       <div className="flex flex-col items-center gap-5 text-center">
-        <div className="mb-4 text-center">
+        <header className="relative w-full overflow-hidden rounded-card border border-edge bg-surface p-5 text-center shadow-[var(--shadow-card)] sm:p-6">
+          <div className="absolute inset-x-0 top-0 h-1.5 bg-brand" aria-hidden="true" />
           <p className="text-sm font-black uppercase tracking-[0.22em] text-accent">
             Suscripciones
           </p>
-          <h1 className="mt-2 font-display text-5xl font-black tracking-tight text-brand sm:text-6xl">
+          <h1 className="mt-2 font-display text-4xl font-black tracking-tight text-brand sm:text-5xl">
             Planes
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-base font-semibold leading-7 text-muted sm:text-lg">
+          <p className="mx-auto mt-3 max-w-2xl text-sm font-semibold leading-6 text-muted sm:text-base">
             Planes disponibles para inmobiliarias y profesionales.
           </p>
-        </div>
+        </header>
         <PlanForm />
       </div>
 

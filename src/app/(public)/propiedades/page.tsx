@@ -20,7 +20,9 @@ import { ListingsMapExperience } from "@/features/listings/components/listings-m
 import type { MapPoint } from "@/features/listings/components/listings-map";
 import { FavoriteButton } from "@/features/favorites";
 import { ROUTES } from "@/shared/config/routes";
-import { InvestmentGrowthBanner, MapExplorerSection } from "@/features/home";
+import { InvestmentGrowthBanner } from "@/features/home";
+import { ProjectDirectorySection } from "@/features/projects/components/project-directory-section";
+import { LandDirectorySection } from "@/features/listings/components/land-directory-section";
 
 const propertyMetadata: Metadata = buildMetadata({
   title: "Propiedades en venta y alquiler en Peru",
@@ -82,8 +84,8 @@ function toListingPoints(items: readonly Listing[]): MapPoint[] {
 export async function generateMetadata({ searchParams }: PropertiesPageProps): Promise<Metadata> {
   const params = await searchParams;
   if (valueOf(params.type) === "projects") return buildMetadata({
-    title: "Mapa de proyectos en Perú",
-    description: "Explora los proyectos publicados, sus planos y las fichas de sus lotes en Google Maps.",
+    title: "Proyectos inmobiliarios en Perú",
+    description: "Descubre los proyectos publicados por ARIZ e inmobiliarias del Perú. Filtra por ubicación, etapa y presupuesto, y explora sus ubicaciones en el mapa.",
     path: "/propiedades?operation=buy&type=projects",
   });
   return propertyMetadata;
@@ -94,7 +96,8 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
   const rawType = valueOf(params.type);
   const requestedType = valueOf(params.type) as PropertyType | undefined;
   const isProjectMode = rawType === "projects";
-  if (isProjectMode) return <MapExplorerSection />;
+  if (isProjectMode) return <ProjectDirectorySection />;
+  if (rawType === "land") return <LandDirectorySection operation={valueOf(params.operation) === "rent" ? "rent" : "buy"} />;
   const type = FILTERABLE_TYPES.has(rawType as PropertyType) ? (rawType as PropertyType) : undefined;
   const operation: ListingOperation = valueOf(params.operation) === "rent" ? "rent" : "buy";
   const district = valueOf(params.district);

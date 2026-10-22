@@ -1,10 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { CalendarRange, FileSpreadsheet, Loader2, Mail, MessageCircle, Phone, RefreshCw, Search, Trophy } from "lucide-react";
-import { MemberActions } from "./member-actions";
+import { CalendarRange, FileSpreadsheet, Loader2, RefreshCw, Search } from "lucide-react";
+import { RankingTable } from "./ranking-table";
 
-interface RankingRow {
+export interface RankingRow {
   rank: number;
   id: string;
   code: string;
@@ -248,166 +248,16 @@ export function RankingDashboard() {
 
       {error ? <p className="rounded-card bg-error/10 px-4 py-3 text-sm font-semibold text-error">{error}</p> : null}
 
-      {/* En celular cada miembro es una tarjeta; la tabla aparece desde pantallas medianas. */}
-      <section className="grid gap-3 md:hidden">
-        {loading && !data ? (
-          <p className="rounded-card border border-edge bg-surface p-6 text-center text-sm text-muted">Cargando ranking...</p>
-        ) : data && data.items.length === 0 ? (
-          <p className="rounded-card border border-edge bg-surface p-6 text-center text-sm text-muted">No hay miembros con ese filtro.</p>
-        ) : (
-          visibleRows?.map((row) => (
-            <article key={row.id} className="rounded-card border border-edge bg-surface p-4 shadow-[var(--shadow-card)]">
-              <div className="flex items-start gap-3">
-                <span
-                  className={`inline-flex size-9 shrink-0 items-center justify-center rounded-full text-xs font-black ${
-                    row.rank <= 3 ? "bg-accent text-on-accent" : "bg-brand-soft text-brand"
-                  }`}
-                >
-                  {row.rank <= 3 ? <Trophy className="size-4" aria-hidden="true" /> : row.rank}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="break-words font-bold text-brand">{row.name}</p>
-                  <p className="text-xs text-muted">{row.code}</p>
-                </div>
-              </div>
-              <div className="mt-3 grid grid-cols-3 gap-2 border-y border-edge py-2 text-center">
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.1em] text-muted">Referidos</p>
-                  <p className="text-lg font-black text-brand">{row.referralsCount}</p>
-                </div>
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.1em] text-muted">Concretados</p>
-                  <p className="text-lg font-black text-ink">{row.completedCount}</p>
-                </div>
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.1em] text-muted">Puntos</p>
-                  <p className="text-lg font-black text-ink">{row.points.toLocaleString("es-PE")}</p>
-                </div>
-              </div>
-              <div className="mt-3 flex flex-wrap gap-2 text-xs font-bold">
-                <a href={`tel:${row.phone.replace(/\s/g, "")}`} className="inline-flex h-9 items-center gap-1.5 rounded-card border border-edge px-3 text-brand">
-                  <Phone className="size-3.5" aria-hidden="true" />
-                  Llamar
-                </a>
-                <a
-                  href={`https://wa.me/${row.phone.replace(/\D/g, "")}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex h-9 items-center gap-1.5 rounded-card border border-edge px-3 text-brand"
-                >
-                  <MessageCircle className="size-3.5" aria-hidden="true" />
-                  WhatsApp
-                </a>
-                <a href={`mailto:${row.email}`} className="inline-flex h-9 items-center gap-1.5 rounded-card border border-edge px-3 text-brand">
-                  <Mail className="size-3.5" aria-hidden="true" />
-                  Correo
-                </a>
-              </div>
-              <p className="mt-2 text-[11px] text-muted">
-                {row.paymentType} · Último referido: {formatDate(row.lastReferralAt)}
-              </p>
-              <div className="mt-3 rounded-card bg-canvas p-3">
-                <p className="mb-1 text-xs font-bold text-brand">Cuenta / celular de pago</p>
-                <PaymentDetails row={row} />
-              </div>
-              <div className="mt-3 border-t border-edge pt-3">
-                <MemberActions id={row.id} name={row.name} onUpdated={load} />
-              </div>
-            </article>
-          ))
-        )}
-      </section>
-
-      <section className="hidden overflow-hidden rounded-card border border-edge bg-surface shadow-[var(--shadow-card)] md:block">
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[56rem] text-left text-sm">
-            <thead className="bg-surface-muted text-[11px] font-black uppercase tracking-[0.12em] text-muted">
-              <tr>
-                <th className="px-4 py-3">Puesto</th>
-                <th className="px-4 py-3">Miembro</th>
-                <th className="px-4 py-3">Contacto</th>
-                <th className="px-4 py-3">Tipo de pago</th>
-                <th className="px-4 py-3">Cuenta / celular de pago</th>
-                <th className="px-4 py-3 text-right">Referidos</th>
-                <th className="px-4 py-3 text-right">Concretados</th>
-                <th className="px-4 py-3 text-right">Puntos</th>
-                <th className="px-4 py-3">Último referido</th>
-                <th className="px-4 py-3">Acciones</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-edge">
-              {loading && !data ? (
-                <tr>
-                  <td colSpan={10} className="px-4 py-10 text-center text-muted">
-                    Cargando ranking...
-                  </td>
-                </tr>
-              ) : data && data.items.length === 0 ? (
-                <tr>
-                  <td colSpan={10} className="px-4 py-10 text-center text-muted">
-                    No hay miembros con ese filtro.
-                  </td>
-                </tr>
-              ) : (
-                visibleRows?.map((row) => (
-                  <tr key={row.id} className="hover:bg-surface-muted/60">
-                    <td className="px-4 py-3">
-                      <span
-                        className={`inline-flex size-8 items-center justify-center rounded-full text-xs font-black ${
-                          row.rank <= 3 ? "bg-accent text-on-accent" : "bg-brand-soft text-brand"
-                        }`}
-                      >
-                        {row.rank <= 3 ? <Trophy className="size-4" aria-hidden="true" /> : row.rank}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <p className="font-bold text-brand">{row.name}</p>
-                      <p className="text-xs text-muted">{row.code}</p>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex flex-col gap-1 text-xs">
-                        <a href={`tel:${row.phone.replace(/\s/g, "")}`} className="inline-flex items-center gap-1.5 font-semibold text-ink hover:text-brand">
-                          <Phone className="size-3.5 text-accent" aria-hidden="true" />
-                          {row.phone}
-                        </a>
-                        <a
-                          href={`https://wa.me/${row.phone.replace(/\D/g, "")}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-1.5 font-semibold text-ink hover:text-brand"
-                        >
-                          <MessageCircle className="size-3.5 text-accent" aria-hidden="true" />
-                          WhatsApp
-                        </a>
-                        <a href={`mailto:${row.email}`} className="inline-flex items-center gap-1.5 break-all font-semibold text-ink hover:text-brand">
-                          <Mail className="size-3.5 shrink-0 text-accent" aria-hidden="true" />
-                          {row.email}
-                        </a>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-xs font-semibold text-ink">{row.paymentType}</td>
-                    <td className="px-4 py-3"><PaymentDetails row={row} /></td>
-                    <td className="px-4 py-3 text-right text-base font-black text-brand">{row.referralsCount}</td>
-                    <td className="px-4 py-3 text-right font-bold text-ink">{row.completedCount}</td>
-                    <td className="px-4 py-3 text-right font-bold text-ink">{row.points.toLocaleString("es-PE")}</td>
-                    <td className="px-4 py-3 text-xs text-muted">{formatDate(row.lastReferralAt)}</td>
-                    <td className="px-4 py-3"><MemberActions id={row.id} name={row.name} onUpdated={load} /></td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </section>
+      <RankingTable rows={visibleRows ?? []} loading={loading && !data} onUpdated={load} />
       {data && (
         <div className="flex flex-col items-center gap-3">
-          <p className="text-xs text-muted">{count === 0 ? 0 : offset + 1}?{Math.min(offset + PAGE_SIZE, count)} de {count} miembros</p>
+          <p className="text-xs text-muted">{count === 0 ? 0 : offset + 1} al {Math.min(offset + PAGE_SIZE, count)} de {count} miembros</p>
           {totalPages > 1 && (
-            <nav aria-label="Paginaci?n del ranking" className="flex flex-wrap items-center justify-center gap-1.5">
+            <nav aria-label="Paginación del ranking" className="flex flex-wrap items-center justify-center gap-1.5">
               <button type="button" disabled={currentPage === 1} onClick={() => setPage(currentPage - 1)} className="h-9 rounded-card border border-edge px-3 text-sm text-brand disabled:opacity-40">Anterior</button>
               {pageNumbers.map((p, i) => (
                 <span key={p} className="contents">
-                  {i > 0 && p - pageNumbers[i - 1] > 1 && <span className="px-1 text-muted">?</span>}
+                  {i > 0 && p - pageNumbers[i - 1] > 1 && <span className="px-1 text-muted">…</span>}
                   <button type="button" aria-current={p === currentPage ? "page" : undefined} onClick={() => setPage(p)} className={`h-9 min-w-9 rounded-card border px-3 text-sm ${p === currentPage ? "border-brand bg-brand-soft text-brand" : "border-edge text-ink"}`}>{p}</button>
                 </span>
               ))}
@@ -428,26 +278,5 @@ function Kpi({ label, value }: { label: string; value: number | undefined }) {
         {value === undefined ? "–" : value.toLocaleString("es-PE")}
       </p>
     </div>
-  );
-}
-
-function PaymentDetails({ row }: { row: RankingRow }) {
-  const methods = [
-    { label: "Cuenta bancaria", value: row.bankAccount },
-    { label: "Yape", value: row.yape },
-    { label: "Plin", value: row.plin },
-  ].filter((method) => method.value?.trim());
-
-  if (methods.length === 0) return <p className="text-xs text-muted">Sin datos de pago registrados</p>;
-
-  return (
-    <dl className="space-y-2 text-xs">
-      {methods.map(({ label, value }) => (
-        <div key={label}>
-          <dt className="font-semibold text-muted">{label}</dt>
-          <dd className="select-all whitespace-nowrap font-mono text-ink">{value}</dd>
-        </div>
-      ))}
-    </dl>
   );
 }

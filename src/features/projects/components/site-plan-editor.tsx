@@ -49,10 +49,10 @@ const fileUrl = (path: string) => `${env.apiUrl}${path}`;
 const lotKey = (lot: PlanLot) =>
   `${lot.block.trim().toLowerCase()}|${lot.code.trim().toLowerCase()}`;
 
-export function SitePlanEditor({ initial }: { initial: PlanSession }) {
+export function SitePlanEditor({ initial, initialShowLots = false }: { initial: PlanSession; initialShowLots?: boolean }) {
   const [plan, setPlan] = useState(initial.plan);
   const [pdfFile, setPdfFile] = useState<File>();
-  const [showLotTable, setShowLotTable] = useState(false);
+  const [showLotTable, setShowLotTable] = useState(initialShowLots);
   const [moveAll, setMoveAll] = useState(false);
   const [blockFixed, setBlockFixed] = useState(false);
   const [focusPlanRequest, setFocusPlanRequest] = useState(0);
@@ -1418,7 +1418,7 @@ export function SitePlanEditor({ initial }: { initial: PlanSession }) {
                     onChange={(e) => setLot({ ...lot, notes: e.target.value })}
                   />
                 </label>
-                <div className={s.actions}>
+                <div className={`${s.actions} ${s.lotFormActions}`}>
                   <button type="submit" className={s.primary}>
                     Guardar lote
                   </button>

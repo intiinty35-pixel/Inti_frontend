@@ -1,6 +1,5 @@
 import { Megaphone } from "lucide-react";
 import { Card, CardContent } from "@/shared/ui";
-import { AdminPageHeader } from "@/app/(panel)/panel/admin/admin-shell";
 import { listAdminPromotionsServer } from "@/features/promotions/api/server";
 import { PromotionForm } from "@/features/promotions/components/promotion-form";
 import { PromotionRowActions } from "@/features/promotions/components/promotion-row-actions";
@@ -26,11 +25,14 @@ export default async function AdminPromotionsPage() {
 
   return (
     <div className="flex min-w-0 max-w-full flex-col gap-7">
-      <AdminPageHeader
-        eyebrow="Operación"
-        title="Promociones"
-        description="Imágenes temporales que reemplazan la foto de la familia en el Home mientras estén vigentes."
-      />
+      <header className="relative w-full overflow-hidden rounded-card border border-edge bg-surface p-5 text-center shadow-[var(--shadow-card)] sm:p-6">
+        <div className="absolute inset-x-0 top-0 h-1.5 bg-brand" aria-hidden="true" />
+        <p className="text-sm font-black uppercase tracking-[0.22em] text-accent">Operación</p>
+        <h1 className="mt-2 font-display text-4xl font-black tracking-tight text-brand sm:text-5xl">Promociones</h1>
+        <p className="mx-auto mt-3 max-w-2xl text-sm font-semibold leading-6 text-muted sm:text-base">
+          Imágenes temporales que reemplazan la foto de la familia en el Home mientras estén vigentes.
+        </p>
+      </header>
 
       <PromotionForm />
 

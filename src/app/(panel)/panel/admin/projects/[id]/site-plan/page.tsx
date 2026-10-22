@@ -5,8 +5,10 @@ import type { PlanSession } from "@/features/projects/types/site-plan";
 
 export default async function SitePlanPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ view?: string }>;
 }) {
   const { id } = await params;
   const response = await backendFetch(
@@ -14,5 +16,6 @@ export default async function SitePlanPage({
   );
   if (response.status === 404) notFound();
   if (!response.ok) throw new Error("No se pudo cargar el editor del plano.");
-  return <SitePlanEditor initial={(await response.json()) as PlanSession} />;
+  const query = await searchParams;
+  return <SitePlanEditor initial={(await response.json()) as PlanSession} initialShowLots={query.view === 'lots'} />;
 }

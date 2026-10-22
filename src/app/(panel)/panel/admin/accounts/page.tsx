@@ -1,3 +1,4 @@
+import styles from "./accounts.module.css";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import { Card, CardContent, Pagination } from "@/shared/ui";
@@ -99,8 +100,12 @@ export default async function AdminAccountsPage({ searchParams }: AdminAccountsP
     await Promise.all([
       listProfessionals(activeView === "publications" ? 1 : page, PAGE_LIMIT),
       listProfessionals(1, 200),
-      getPublicListingsServer(PAGE_LIMIT, 1).catch(() => ({ items: [], total: 0, page: 1, pageSize: PAGE_LIMIT, hasMore: false })),
-      getPublicProjectsServer(PAGE_LIMIT).catch(() => ({ items: [], total: 0, page: 1, pageSize: PAGE_LIMIT, hasMore: false })),
+      activeView === "publications" && filter !== "projects"
+        ? getPublicListingsServer(PAGE_LIMIT, 1).catch(() => ({ items: [], total: 0, page: 1, pageSize: PAGE_LIMIT, hasMore: false }))
+        : Promise.resolve({ items: [], total: 0, page: 1, pageSize: PAGE_LIMIT, hasMore: false }),
+      activeView === "publications" && filter !== "properties"
+        ? getPublicProjectsServer(PAGE_LIMIT).catch(() => ({ items: [], total: 0, page: 1, pageSize: PAGE_LIMIT, hasMore: false }))
+        : Promise.resolve({ items: [], total: 0, page: 1, pageSize: PAGE_LIMIT, hasMore: false }),
     ]);
 
   const { total, pageSize } = professionalsResult;
@@ -154,51 +159,22 @@ export default async function AdminAccountsPage({ searchParams }: AdminAccountsP
 
   return (
     <div className="flex flex-col gap-7">
-      <AdminPageHeader
-        align="center"
-        eyebrow="Cuentas"
-        title="Cuentas profesionales"
-        description={`${pending} pendientes de validacion en esta pagina · ${total} en total`}
-      />
+      <header className={styles.pageHeading}>
+        <h1>Cuentas profesionales</h1>
+        <p>{pending} pendientes de validación en esta página · {total} en total</p>
+      </header>
+
+      <nav className={styles.ribbon} aria-label="Secciones de cuentas">
+        <Link href={ROUTES.panel.admin.accounts} aria-current={!activeView ? 'page' : undefined}>Cuentas profesionales <span>{total}</span></Link>
+        <Link href={`${ROUTES.panel.admin.accounts}?vista=publications`} aria-current={activeView === 'publications' ? 'page' : undefined}>Publicaciones del sistema</Link>
+        <Link href={`${ROUTES.panel.admin.accounts}?vista=users`} aria-current={activeView === 'users' ? 'page' : undefined}>Usuarios registrados</Link>
+      </nav>
 
       <div className="grid gap-3 md:grid-cols-4">
         <StatBox label="Pendientes" value={pending} />
         <StatBox label="Aprobadas" value={approved} />
         <StatBox label="Inmobiliarias" value={agencies} />
         <StatBox label="Agentes" value={agents} />
-      </div>
-
-      <div className="grid gap-3 md:grid-cols-3">
-        <Link
-          href={ROUTES.panel.admin.accounts}
-          className={`rounded-card border p-5 transition-colors ${
-            !activeView ? "border-brand bg-brand text-on-brand" : "border-edge bg-surface text-ink hover:border-brand"
-          }`}
-        >
-          <p className="text-xs font-black tracking-wide uppercase opacity-75">Cuentas</p>
-          <p className="mt-1 text-xl font-black">Cuentas profesionales</p>
-          <p className="mt-2 text-sm opacity-80">{pending} pendientes de validacion en esta pagina · {total} en total.</p>
-        </Link>
-        <Link
-          href={`${ROUTES.panel.admin.accounts}?vista=publications`}
-          className={`rounded-card border p-5 transition-colors ${
-            activeView === "publications" ? "border-brand bg-brand text-on-brand" : "border-edge bg-surface text-ink hover:border-brand"
-          }`}
-        >
-          <p className="text-xs font-black tracking-wide uppercase opacity-75">Control</p>
-          <p className="mt-1 text-xl font-black">Publicaciones del sistema</p>
-          <p className="mt-2 text-sm opacity-80">Vista tipo tabla para revisar propiedades y proyectos publicados.</p>
-        </Link>
-        <Link
-          href={`${ROUTES.panel.admin.accounts}?vista=users`}
-          className={`rounded-card border p-5 transition-colors ${
-            activeView === "users" ? "border-brand bg-brand text-on-brand" : "border-edge bg-surface text-ink hover:border-brand"
-          }`}
-        >
-          <p className="text-xs font-black tracking-wide uppercase opacity-75">Usuarios</p>
-          <p className="mt-1 text-xl font-black">Usuarios registrados</p>
-          <p className="mt-2 text-sm opacity-80">Listado administrativo con datos disponibles de las cuentas registradas.</p>
-        </Link>
       </div>
 
       {!activeView ? (
@@ -211,56 +187,19 @@ export default async function AdminAccountsPage({ searchParams }: AdminAccountsP
         </Card>
       ) : (
         <>
-          <Card className="overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[1680px] table-fixed border-collapse text-sm">
-                <colgroup>
-                  <col className="w-[18%]" />
-                  <col className="w-[9%]" />
-                  <col className="w-[9%]" />
-                  <col className="w-[18%]" />
-                  <col className="w-[10%]" />
-                  <col className="w-[16%]" />
-                  <col className="w-[20%]" />
-                </colgroup>
-                <thead className="bg-surface-muted text-left text-[11px] font-black tracking-wide text-muted uppercase">
-                  <tr>
-                    <th className="border-b border-edge px-4 py-3">Cuenta</th>
-                    <th className="border-b border-edge px-4 py-3">Perfil</th>
-                    <th className="border-b border-edge px-4 py-3">Documento</th>
-                    <th className="border-b border-edge px-4 py-3">Contacto</th>
-                    <th className="border-b border-edge px-4 py-3">Estado</th>
-                    <th className="border-b border-edge px-4 py-3">Validacion</th>
-                    <th className="border-b border-edge px-4 py-3">Prueba</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {professionals.map((item) => {
+          <div className={styles.tableWrap}><table className={styles.accountsTable}><thead><tr><th scope="col">N.º</th><th scope="col">Cuenta</th><th scope="col">Ciudad</th><th scope="col">Perfil</th><th scope="col">Documento</th><th scope="col">Correo</th><th scope="col">WhatsApp</th><th scope="col">Estado</th><th scope="col">Validación</th><th scope="col">Acciones</th></tr></thead><tbody>{professionals.map((item, index) => {
                     const name = (item.businessName ?? `${item.user.firstName} ${item.user.lastName ?? ""}`).trim();
-                    const initial = name.charAt(0).toUpperCase() || "A";
+
 
                     return (
-                      <tr key={item.id} className="hover:bg-surface-muted/60">
-                        <td className="border-b border-edge px-4 py-3">
-                          <div className="flex items-center gap-3">
-                            <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand text-sm font-black text-on-brand">
-                              {initial}
-                            </span>
-                            <div className="min-w-0">
-                              <p className="truncate font-black text-ink">{name}</p>
-                              <p className="truncate text-xs text-muted">{item.city}</p>
-                            </div>
-                          </div>
+                      <tr key={item.id}><td className={styles.rowNumber}>{accountsOffset + index + 1}</td>
+<td><span className={styles.accountName} title={name}>{name}</span></td><td><span className={styles.singleLine} title={item.city}>{item.city || "—"}</span></td>
+                        <td>
+                          <span className="block truncate">{TYPE_LABELS[item.type]}</span>
                         </td>
-                        <td className="border-b border-edge px-4 py-3 text-muted">
-                          <span className="block max-w-[120px]">{TYPE_LABELS[item.type]}</span>
-                        </td>
-                        <td className="border-b border-edge px-4 py-3 text-muted">{item.ruc ? `RUC ${item.ruc}` : `DNI ${item.dni ?? "-"}`}</td>
-                        <td className="border-b border-edge px-4 py-3">
-                          <p className="break-all font-semibold text-ink">{item.user.email}</p>
-                          <p className="text-xs text-muted">WhatsApp {item.whatsapp ?? "-"}</p>
-                        </td>
-                        <td className="border-b border-edge px-4 py-3">
+                        <td>{item.ruc ? `RUC ${item.ruc}` : `DNI ${item.dni ?? "-"}`}</td>
+                        <td><span className={styles.email} title={item.user.email}>{item.user.email}</span></td><td>{item.whatsapp ?? "—"}</td>
+                        <td>
                           <div className="flex flex-wrap gap-2">
                             <span className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${STATUS_STYLES[item.status]}`}>
                               {STATUS_LABELS[item.status]}
@@ -272,7 +211,7 @@ export default async function AdminAccountsPage({ searchParams }: AdminAccountsP
                             ) : null}
                           </div>
                         </td>
-                        <td className="border-b border-edge px-4 py-3">
+                        <td>
                           <div className="flex min-w-max items-center gap-3 whitespace-nowrap">
                             <form action={updateStatus} className="flex min-w-max items-center gap-3 whitespace-nowrap">
                               <input type="hidden" name="id" value={item.id} />
@@ -292,7 +231,7 @@ export default async function AdminAccountsPage({ searchParams }: AdminAccountsP
                             ) : null}
                           </div>
                         </td>
-                        <td className="border-b border-edge px-4 py-3">
+                        <td>
                           <AdminTestActions
                             label={name}
                             notifyId={item.id}
@@ -301,11 +240,7 @@ export default async function AdminAccountsPage({ searchParams }: AdminAccountsP
                         </td>
                       </tr>
                     );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </Card>
+                  })}</tbody></table></div>
           <p className="text-center text-xs text-muted">{accountsRange} cuentas</p>
           <Pagination page={accountsPage} pageSize={pageSize} total={total} buildHref={(p) => `${ROUTES.panel.admin.accounts}?page=${p}`} />
         </>
@@ -337,38 +272,31 @@ export default async function AdminAccountsPage({ searchParams }: AdminAccountsP
         </div>
 
         <Card className="overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[1180px] table-fixed border-collapse text-sm">
-              <colgroup>
-                <col className="w-[10%]" />
-                <col className="w-[29%]" />
-                <col className="w-[17%]" />
-                <col className="w-[12%]" />
-                <col className="w-[13%]" />
-                <col className="w-[19%]" />
-              </colgroup>
-              <thead className="bg-surface-muted text-left text-[11px] font-black tracking-wide text-muted uppercase">
+          <div className={styles.tableWrap}>
+            <table className={`${styles.accountsTable} ${styles.secondaryTable}`}>
+              <colgroup><col style={{ width: "8%" }} /><col style={{ width: "25%" }} /><col style={{ width: "14%" }} /><col style={{ width: "10%" }} /><col style={{ width: "11%" }} /><col style={{ width: "32%" }} /></colgroup>
+              <thead>
                 <tr>
-                  <th className="border-b border-edge px-4 py-3">Tipo</th>
-                  <th className="border-b border-edge px-4 py-3">Publicacion</th>
-                  <th className="border-b border-edge px-4 py-3">Ubicacion</th>
-                  <th className="border-b border-edge px-4 py-3">Estado</th>
-                  <th className="border-b border-edge px-4 py-3">Fecha</th>
-                  <th className="border-b border-edge px-4 py-3">Acciones</th>
+                  <th scope="col">Tipo</th>
+                  <th scope="col">Publicación</th>
+                  <th scope="col">Ubicación</th>
+                  <th scope="col">Estado</th>
+                  <th scope="col">Fecha</th>
+                  <th scope="col">Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 {publications.length === 0 ? (
-                  <tr><td colSpan={6} className="px-4 py-10 text-center text-muted">No hay publicaciones para este filtro.</td></tr>
+                  <tr><td colSpan={6}>No hay publicaciones para este filtro.</td></tr>
                 ) : null}
                 {publications.map((item) => (
                   <tr key={`${item.kind}-${item.id}`} className="hover:bg-surface-muted/60">
-                    <td className="border-b border-edge px-4 py-3 font-bold text-brand">{item.kind}</td>
-                    <td className="border-b border-edge px-4 py-3 font-semibold text-ink">{item.name}</td>
-                    <td className="border-b border-edge px-4 py-3 text-muted">{item.location}</td>
-                    <td className="border-b border-edge px-4 py-3 text-muted">{item.status}</td>
-                    <td className="border-b border-edge px-4 py-3 text-muted">{formatDate(item.date)}</td>
-                    <td className="border-b border-edge px-4 py-3">
+                    <td>{item.kind}</td>
+                    <td><span className={styles.accountName} title={item.name}>{item.name}</span></td>
+                    <td><span className={styles.singleLine} title={item.location}>{item.location}</span></td>
+                    <td>{item.status}</td>
+                    <td>{formatDate(item.date)}</td>
+                    <td>
                       <AdminTestActions
                         label={item.name}
                         deleteTarget={{ kind: item.kind === "Propiedad" ? "property" : "project", id: item.id }}
@@ -400,47 +328,40 @@ export default async function AdminAccountsPage({ searchParams }: AdminAccountsP
           description="Listado administrativo con datos disponibles de las cuentas registradas."
         />
         <Card className="overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[1180px] table-fixed border-collapse text-sm">
-              <colgroup>
-                <col className="w-[22%]" />
-                <col className="w-[23%]" />
-                <col className="w-[14%]" />
-                <col className="w-[13%]" />
-                <col className="w-[9%]" />
-                <col className="w-[19%]" />
-              </colgroup>
-              <thead className="bg-surface-muted text-left text-[11px] font-black tracking-wide text-muted uppercase">
+          <div className={styles.tableWrap}>
+            <table className={`${styles.accountsTable} ${styles.secondaryTable}`}>
+              <colgroup><col style={{ width: "20%" }} /><col style={{ width: "21%" }} /><col style={{ width: "11%" }} /><col style={{ width: "10%" }} /><col style={{ width: "8%" }} /><col style={{ width: "30%" }} /></colgroup>
+              <thead>
                 <tr>
-                  <th className="border-b border-edge px-4 py-3">Usuario</th>
-                  <th className="border-b border-edge px-4 py-3">Correo</th>
-                  <th className="border-b border-edge px-4 py-3">Documento</th>
-                  <th className="border-b border-edge px-4 py-3">Telefono</th>
-                  <th className="border-b border-edge px-4 py-3">Ciudad</th>
-                  <th className="border-b border-edge px-4 py-3">Acciones</th>
+                  <th scope="col">Usuario</th>
+                  <th scope="col">Correo</th>
+                  <th scope="col">Documento</th>
+                  <th scope="col">Teléfono</th>
+                  <th scope="col">Ciudad</th>
+                  <th scope="col">Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 {visibleUsers.length === 0 ? (
-                  <tr><td colSpan={6} className="px-4 py-10 text-center text-muted">No hay usuarios registrados.</td></tr>
+                  <tr><td colSpan={6}>No hay usuarios registrados.</td></tr>
                 ) : null}
                 {visibleUsers.map((item) => {
                   const name = `${item.user.firstName} ${item.user.lastName ?? ""}`.trim() || item.businessName || "Usuario";
                   return (
                     <tr key={item.user.id} className="hover:bg-surface-muted/60">
-                      <td className="border-b border-edge px-4 py-3">
+                      <td>
                         <div className="flex items-center gap-3">
                           <span className="flex size-9 items-center justify-center rounded-lg bg-brand text-xs font-black text-on-brand">
                             {name.charAt(0).toUpperCase()}
                           </span>
-                          <span className="font-semibold text-ink">{name}</span>
+                          <span className={styles.accountName} title={name}>{name}</span>
                         </div>
                       </td>
-                      <td className="break-all border-b border-edge px-4 py-3 text-muted">{item.user.email}</td>
-                      <td className="border-b border-edge px-4 py-3 text-muted">{item.ruc ? `RUC ${item.ruc}` : `DNI ${item.dni ?? "-"}`}</td>
-                      <td className="border-b border-edge px-4 py-3 text-muted">{item.user.phone ?? item.whatsapp ?? "-"}</td>
-                      <td className="border-b border-edge px-4 py-3 text-muted">{item.city}</td>
-                      <td className="border-b border-edge px-4 py-3">
+                      <td><span className={styles.email} title={item.user.email}>{item.user.email}</span></td>
+                      <td>{item.ruc ? `RUC ${item.ruc}` : `DNI ${item.dni ?? "-"}`}</td>
+                      <td>{item.user.phone ?? item.whatsapp ?? "-"}</td>
+                      <td>{item.city}</td>
+                      <td>
                         <AdminTestActions
                           label={name}
                           notifyId={item.id}
