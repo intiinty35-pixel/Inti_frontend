@@ -17,6 +17,7 @@ import {
   HandCoins,
   Landmark,
   LayoutDashboard,
+  KeyRound,
   House,
   Megaphone,
   MessageSquareText,
@@ -163,6 +164,13 @@ const NAV_ITEMS: readonly AdminNavItem[] = [
     label: "Todos los proyectos",
     href: ROUTES.panel.admin.allProjects,
     Icon: MapIcon,
+    group: "portafolio",
+  },
+  {
+    key: "project-access-codes",
+    label: "Códigos de acceso",
+    href: ROUTES.panel.admin.projectAccessCodes,
+    Icon: KeyRound,
     group: "portafolio",
   },
   {

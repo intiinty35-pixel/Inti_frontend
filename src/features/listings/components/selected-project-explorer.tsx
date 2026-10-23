@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { ArrowLeft, ArrowUpRight, Building2, Check, ChevronLeft, ChevronRight, Droplets, Image as ImageIcon, Lightbulb, MapPin, Phone, ShieldCheck, Waves, X, Zap } from 'lucide-react';
 import { SitePlanMap } from '@/shared/ui/site-plan-map';
+import { PublicPlanAccess } from '@/shared/ui/public-plan-access';
 import { LotBudgetFinder } from '@/shared/ui/lot-budget-finder';
 import { findBudgetLots, type LotBudgetFilter } from '@/shared/lib/lot-budget';
 import type { SitePlan } from '@/shared/lib/site-plan';
@@ -14,7 +15,6 @@ import { formatPrice } from '@/shared/lib/format';
 import { buildArizWhatsappUrl } from '@/shared/lib/whatsapp';
 import { ROUTES } from '@/shared/config/routes';
 import { SharePropertyButton } from './share-property-button';
-import { ListingImage } from './listing-image';
 import type { Listing } from '../types/listing';
 import s from './selected-project-explorer.module.css';
 
@@ -22,8 +22,11 @@ const EMPTY: SitePlan = { logoUrl: '', zones: [], lots: [] };
 const NO_MARKERS: [] = [];
 const STAGES = { PRE_SALE: 'Preventa', UNDER_CONSTRUCTION: 'En construcción', DELIVERED: 'Entregado' };
 
-export function SelectedProjectExplorer({ project, plan, planError, focusPlanRequest, selectedLot, lotSheet, onSelectLot, onClose, onCloseLot }: {
+export function SelectedProjectExplorer({ project, plan, planError, projectAccessGranted, accessCodeRequired, accessCodeError, accessCodeSkipped, accessCodeBusy, onSubmitAccessCode, onOmitAccessCode, onRequestAccessCode, focusPlanRequest, selectedLot, lotSheet, onSelectLot, onClose, onCloseLot }: {
   project: Listing; plan?: SitePlan | null; planError?: boolean; focusPlanRequest: number; selectedLot?: string; lotSheet?: ReactNode;
+  projectAccessGranted?: boolean;
+  accessCodeRequired?: boolean; accessCodeError?: boolean; accessCodeSkipped?: boolean; accessCodeBusy?: boolean;
+  onSubmitAccessCode: (code: string) => void; onOmitAccessCode: () => void; onRequestAccessCode: () => void;
   onSelectLot: (id: string) => void; onClose: () => void; onCloseLot: () => void;
 }) {
   const [detail, setDetail] = useState<ProjectApiDetail>();
@@ -44,6 +47,16 @@ export function SelectedProjectExplorer({ project, plan, planError, focusPlanReq
   const center = useMemo(() => ({ lat: project.location.lat ?? -9.19, lng: project.location.lng ?? -75.0152 }), [project.location.lat, project.location.lng]);
   const planImageUrl = plan?.image?.url;
   const showPlanImage = Boolean(planImageUrl && planImagePreference?.url === planImageUrl && planImagePreference.visible);
+  const locationMarkers = useMemo(() => [{
+    id: project.id,
+    lat: center.lat,
+    lng: center.lng,
+    title: project.title,
+    priceLabel: formatPrice(project.price.amount, project.price.currency),
+    priceAmount: project.price.amount,
+    priceCurrency: project.price.currency,
+    iconUrl: '/web_v/ubicacion.png',
+  }], [center.lat, center.lng, project.id, project.price.amount, project.price.currency, project.title]);
   useEffect(() => {
     const controller = new AbortController();
     let pending = false;
@@ -84,20 +97,19 @@ export function SelectedProjectExplorer({ project, plan, planError, focusPlanReq
     onSelectLot(id);
     if (window.matchMedia('(max-width: 1023px)').matches) requestAnimationFrame(() => info.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
   }
-  return <section className={s.explorer} aria-label={`Plano e información de ${project.title}`}>
+  return <section className={`${s.explorer} ${projectAccessGranted ? '' : s.locationOnly}`} aria-label={`Plano e información de ${project.title}`}>
     <div className={s.map}>
-      <SitePlanMap matchingLotIds={matchingLotIds} currency={project.price.currency} plan={plan ?? EMPTY} center={center} showImage={showPlanImage} mapType="roadmap" compactMapControl publicView legendStatuses={['SOLD', 'RESERVED', 'AVAILABLE']} legendAction={planImageUrl ? <button type="button" className={s.legendImageButton} aria-pressed={showPlanImage} onClick={() => setPlanImagePreference({ url: planImageUrl, visible: !showPlanImage })}><ImageIcon size={14} />{showPlanImage ? 'Ocultar imagen del plano' : 'Ver imagen del plano'}</button> : undefined} markers={NO_MARKERS} focusPlanRequest={Math.max(1, focusPlanRequest)} focusPlanZoom={17} selected={selectedLot} onSelect={selectLot} className={s.mapSurface} />
+      <SitePlanMap matchingLotIds={matchingLotIds} currency={project.price.currency} plan={plan ?? EMPTY} center={center} showImage={showPlanImage} mapType="roadmap" compactMapControl publicView legendStatuses={['SOLD', 'RESERVED', 'AVAILABLE']} legendAction={planImageUrl ? <button type="button" className={s.legendImageButton} aria-pressed={showPlanImage} onClick={() => setPlanImagePreference({ url: planImageUrl, visible: !showPlanImage })}><ImageIcon size={14} />{showPlanImage ? 'Ocultar imagen del plano' : 'Ver imagen del plano'}</button> : undefined} markers={projectAccessGranted && plan ? NO_MARKERS : locationMarkers} focusPlanRequest={Math.max(1, focusPlanRequest)} focusPlanZoom={17} selected={selectedLot} onSelect={selectLot} className={s.mapSurface} />
       <button type="button" className={s.back} onClick={onClose}><ArrowLeft size={15} />Volver a proyectos</button>
+      {projectAccessGranted && images.length > 0 && <button ref={imageTrigger} type="button" className={s.photoTrigger} onClick={() => setLightbox(true)} aria-label="Ver imágenes del proyecto"><ImageIcon size={16} />Ver imágenes</button>}
+      {accessCodeSkipped && <button type="button" className={s.accessAgain} onClick={onRequestAccessCode}><ImageIcon size={16} />Ingresar código para ver el plano</button>}
+      {accessCodeRequired && <div className={s.accessPrompt}><PublicPlanAccess open onSubmit={onSubmitAccessCode} onOmit={onOmitAccessCode} contactHref={buildArizWhatsappUrl(`Hola, quisiera coordinar con un asesor para obtener el código del proyecto ${project.title}.`)} invalid={accessCodeError} busy={accessCodeBusy} /></div>}
 
-      {plan === undefined && !planError && <p role="status" className={s.mapNotice}>Cargando plano del proyecto…</p>}
-      {(plan === null || planError) && <p role={planError ? 'alert' : 'status'} className={s.mapNotice}>{planError ? 'No se pudo actualizar el plano.' : 'Este proyecto todavía no tiene un plano publicado.'}</p>}
+      {plan === undefined && !planError && !accessCodeRequired && !accessCodeSkipped && <p role="status" className={s.mapNotice}>Cargando plano del proyecto…</p>}
+      {(plan === null || planError) && !accessCodeRequired && !accessCodeSkipped && <p role={planError ? 'alert' : 'status'} className={s.mapNotice}>{planError ? 'No se pudo actualizar el plano.' : 'Este proyecto todavía no tiene un plano publicado.'}</p>}
+      {accessCodeSkipped && <p role="status" className={s.mapNotice}>Se muestra la ubicación del proyecto. El plano permanece oculto.</p>}
     </div>
-    <div className={s.gallery} aria-label="Imágenes del proyecto">
-      <button ref={imageTrigger} type="button" className={s.photo} disabled={!images.length} onClick={() => setLightbox(true)} aria-label="Ampliar imágenes del proyecto"><ListingImage src={images[currentPhoto]} className={s.photoImage} /><span className={s.photoHint}><ImageIcon size={16} />{images.length ? 'Ver imágenes' : 'Sin imágenes publicadas'}</span></button>
-      {images.length > 1 && <div className={s.photoControls}><button type="button" onClick={() => shiftPhoto(-1)} aria-label="Foto anterior"><ChevronLeft size={20} /></button><button type="button" onClick={() => shiftPhoto(1)} aria-label="Foto siguiente"><ChevronRight size={20} /></button></div>}
-      {images.length > 0 && <span className={s.photoCount}>{currentPhoto + 1} / {images.length} fotos</span>}
-    </div>
-    <aside ref={info} className={s.info} aria-label={selectedLot ? 'Ficha del lote seleccionado' : 'Información del proyecto'}>
+    {projectAccessGranted && <aside ref={info} className={s.info} aria-label={selectedLot ? 'Ficha del lote seleccionado' : 'Información del proyecto'}>
       {lotSheet ? <><button type="button" className={s.returnInfo} onClick={onCloseLot}><ArrowLeft size={15} />Información del proyecto</button>{lotSheet}</> : <>
         <div className={s.infoHeader}><span className={s.eyebrow}>Información del proyecto</span><button type="button" onClick={onClose} aria-label="Cerrar proyecto"><X size={19} /></button></div>
         {detail?.agent.name && <section className={s.developer}><span className={s.publisherInitial}>{detail.agent.name.charAt(0)}</span><div><span>Publicado por</span><strong>{detail.agent.name}</strong></div></section>}
@@ -117,7 +129,7 @@ export function SelectedProjectExplorer({ project, plan, planError, focusPlanReq
         {detailError && <p role="status" className={s.error}>No se pudo actualizar la información. Se reintentará automáticamente.</p>}
         <Link className={s.fullProject} href={ROUTES.project(project.slug)}>Ver proyecto completo<ArrowUpRight size={16} /></Link>
       </>}
-    </aside>
+    </aside>}
     <dialog ref={dialog} className={s.lightbox} aria-label="Galería del proyecto" onKeyDown={event => { if (event.key === 'ArrowLeft') { event.preventDefault(); shiftPhoto(-1); } if (event.key === 'ArrowRight') { event.preventDefault(); shiftPhoto(1); } }} onCancel={() => setLightbox(false)} onClose={() => { setLightbox(false); imageTrigger.current?.focus(); }}>
       <button type="button" className={s.closeGallery} aria-label="Cerrar galería" onClick={() => setLightbox(false)}><X size={22} /></button>
       {images.length > 0 && <img src={images[currentPhoto]} alt={`${project.title}, foto ${currentPhoto + 1}`} />}

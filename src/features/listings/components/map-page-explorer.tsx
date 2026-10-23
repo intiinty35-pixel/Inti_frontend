@@ -2,11 +2,12 @@
 
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { List, Eye, EyeOff, X, FileDown, MapPin, ArrowRight, Columns2, Map as MapIcon } from 'lucide-react';
+import { List, Eye, EyeOff, X, MapPin, ArrowRight, Columns2, Map as MapIcon } from 'lucide-react';
 import { SitePlanMap } from '@/shared/ui/site-plan-map';
 import { LOT_LABELS, LOT_COLORS, type SitePlan, type PlanLot } from '@/shared/lib/site-plan';
 import { apiClient } from '@/shared/lib/api/client';
-import { env } from '@/shared/lib/env';
+import { ApiError } from '@/shared/lib/api/client';
+import { ProtectedLotPdfDownload } from '@/shared/ui/protected-lot-pdf-download';
 import { formatPrice } from '@/shared/lib/format';
 import { buildArizWhatsappUrl } from '@/shared/lib/whatsapp';
 import { ROUTES } from '@/shared/config/routes';
@@ -24,7 +25,7 @@ const EMPTY: SitePlan = { logoUrl: '', zones: [], lots: [] };
 const CENTER = { lat: -9.19, lng: -75.0152 };
 const PERU_BOUNDS = [{ lat: -18.35, lng: -81.4 }, { lat: 0.05, lng: -68.65 }];
 
-function LotSheet({ lot, project, onClose }: { lot: PlanLot; project: Listing; onClose: () => void }) {
+function LotSheet({ lot, project, code, onClose }: { lot: PlanLot; project: Listing; code: string; onClose: () => void }) {
   const money = (amount: number) => formatPrice(amount, project.price.currency);
   const rows = [
     ['N.º de lote', lot.code], ['Manzana', lot.block || '—'], ['Dirección', lot.address || lot.street || project.location.address || project.location.district],
@@ -36,7 +37,7 @@ function LotSheet({ lot, project, onClose }: { lot: PlanLot; project: Listing; o
     <span className={styles.status} style={{ color: LOT_COLORS[lot.status] }}>{LOT_LABELS[lot.status]}</span>
     <table><tbody>{rows.map(([label, value]) => <tr key={label}><th>{label}</th><td>{value}</td></tr>)}</tbody></table>
     {lot.financingAllowed && <section className={styles.finance}><h3>Financiamiento</h3><p>Inicial: {money(lot.downPayment)}</p><p>{lot.installments} cuotas de {money(lot.monthlyPayment)}</p>{!!lot.interestRateMonthly && <p>Tasa mensual: {lot.interestRateMonthly}%</p>}<strong>Total: {money(lot.interestRateMonthly ? lot.downPayment + lot.installments * lot.monthlyPayment : lot.financedPrice)}</strong></section>}
-    <a className={styles.primary} href={`${env.apiUrl}/projects/${encodeURIComponent(project.slug)}/site-plan/lots/${lot.id}/pdf`}><FileDown size={17} /> Descargar ficha PDF</a>
+    <ProtectedLotPdfDownload className={styles.primary} slug={project.slug} lotId={lot.id} code={code} />
     <section className={styles.lotInquiry} aria-label={`Consulta por el lote ${lot.code}`}>
       <div>
         <span>¿Te interesa este lote?</span>
@@ -91,8 +92,10 @@ export function MapPageExplorer({ listings, loadError = false, mapToolbarHref }:
   const [selectedLot, setSelectedLot] = useState<string>();
   const [showPlanImage, setShowPlanImage] = useState(false);
   const [focusPlanRequest, setFocusPlanRequest] = useState(0);
-  const [result, setResult] = useState<{ id: string; plan: PublishedPlan | null; error?: boolean }>();
-  const cache = useRef(new globalThis.Map<string, PublishedPlan | null>());
+  const [result, setResult] = useState<{ id: string; plan: PublishedPlan | null; error?: boolean; accessRequired?: boolean; invalidCode?: boolean; authorized?: boolean }>();
+  const [accessCodes, setAccessCodes] = useState<Record<string, string>>({});
+  const [accessDismissed, setAccessDismissed] = useState<Record<string, boolean>>({});
+  const [validatingProjectId, setValidatingProjectId] = useState<string>();
   const active = projects.find(p => p.id === activeId);
   const plan = result?.id === activeId ? result?.plan : undefined;
   const error = result?.id === activeId && result?.error;
@@ -114,39 +117,44 @@ export function MapPageExplorer({ listings, loadError = false, mapToolbarHref }:
     if (!active) return;
     const controller = new AbortController();
     const project = active;
+    const accessCode = accessCodes[project.id];
+    if (!accessCode) return () => controller.abort();
     let pending = false;
     let focused = false;
     let loaded = false;
-    const cached = cache.current.get(project.id);
-    if (cached) { setResult({ id: project.id, plan: cached }); setFocusPlanRequest(value => value + 1); focused = true; loaded = true; }
     async function refresh() {
       if (pending || document.hidden) return;
       pending = true;
       try {
-        const data = await apiClient.get<PublishedPlan | null>(`/projects/${encodeURIComponent(project.slug)}/site-plan`, { cache: 'no-store', signal: controller.signal });
+        const data = await apiClient.get<PublishedPlan | null>(`/projects/${encodeURIComponent(project.slug)}/site-plan`, { cache: 'no-store', signal: controller.signal, headers: accessCode ? { 'X-Site-Plan-Code': accessCode } : undefined });
         if (controller.signal.aborted) return;
         if (data === undefined) throw new Error('La respuesta del plano está vacía.');
-        cache.current.set(project.id, data);
-        setResult({ id: project.id, plan: data });
+        setResult({ id: project.id, plan: data, authorized: true });
+        setValidatingProjectId(undefined);
         loaded = true;
         if (data && !focused) { setFocusPlanRequest(value => value + 1); focused = true; }
-      } catch {
-        if (!controller.signal.aborted && !loaded) setResult({ id: project.id, plan: null, error: true });
+      } catch (cause) {
+        if (!controller.signal.aborted && !loaded) {
+          if (cause instanceof ApiError && cause.status === 403)
+            setResult({ id: project.id, plan: null, accessRequired: true, invalidCode: Boolean(accessCode) });
+          else setResult({ id: project.id, plan: null, error: true });
+          setValidatingProjectId(undefined);
+        }
       } finally { pending = false; }
     }
     void refresh();
-    const timer = window.setInterval(() => void refresh(), 15000);
-    const visible = () => { if (!document.hidden) void refresh(); };
+    const timer = accessCode ? window.setInterval(() => void refresh(), 15000) : undefined;
+    const visible = () => { if (!document.hidden && accessCode) void refresh(); };
     document.addEventListener('visibilitychange', visible);
-    return () => { controller.abort(); clearInterval(timer); document.removeEventListener('visibilitychange', visible); };
-  }, [active]);
+    return () => { controller.abort(); if (timer) clearInterval(timer); document.removeEventListener('visibilitychange', visible); };
+  }, [active, accessCodes]);
   function selectProject(id: string) {
     setView('both');
-    if (id === activeId && plan) setFocusPlanRequest(value => value + 1);
     setActiveId(id);
     setSelectedLot(undefined);
     setShowPlanImage(false);
     setPanel('PROJECT');
+    setAccessDismissed(previous => ({ ...previous, [id]: false }));
   }
   function selectLot(id: string) { if (!plan?.lots.some(l => l.id === id)) return; setSelectedLot(id); setPanel('LOT'); }
   function resetSelection() { setResultsPage(1); sidebarRef.current?.scrollTo({ top: 0 }); setActiveId(undefined); setSelectedLot(undefined); setPanel(view === 'map' ? null : 'PROJECTS'); }
@@ -179,17 +187,17 @@ export function MapPageExplorer({ listings, loadError = false, mapToolbarHref }:
 
     {loadError && <p role="alert" className={styles.notice}>No se pudieron cargar todos los proyectos. Vuelve a intentarlo en unos minutos.</p>}
     {!projects.length && !loadError && <p className={styles.emptyNotice} role="status">No hay proyectos con esos filtros.</p>}
-    {active && (panel === 'PROJECT' || panel === 'LOT') ? <SelectedProjectExplorer key={active.id} project={active} plan={plan} planError={!!error} focusPlanRequest={focusPlanRequest} selectedLot={selectedLot} onSelectLot={selectLot}
+    {active && (panel === 'PROJECT' || panel === 'LOT') ? <SelectedProjectExplorer key={active.id} project={active} plan={plan} planError={!!error} projectAccessGranted={result?.id === active.id && !!result.authorized} accessCodeRequired={!accessDismissed[active.id] && (!!(result?.id === active.id && result.accessRequired) || !accessCodes[active.id] || validatingProjectId === active.id)} accessCodeError={!!(result?.id === active.id && result.invalidCode)} accessCodeSkipped={!!accessDismissed[active.id]} accessCodeBusy={validatingProjectId === active.id} onSubmitAccessCode={code => { setResult(undefined); setValidatingProjectId(active.id); setAccessCodes(previous => ({ ...previous, [active.id]: code })); }} onOmitAccessCode={() => { setValidatingProjectId(undefined); setAccessCodes(previous => ({ ...previous, [active.id]: '' })); setResult({ id: active.id, plan: null }); setAccessDismissed(previous => ({ ...previous, [active.id]: true })); }} onRequestAccessCode={() => { setValidatingProjectId(undefined); setAccessDismissed(previous => ({ ...previous, [active.id]: false })); }} focusPlanRequest={focusPlanRequest} selectedLot={selectedLot} onSelectLot={selectLot}
       onClose={() => { setSelectedLot(undefined); setActiveId(undefined); setPanel('PROJECTS'); setView('both'); }}
       onCloseLot={() => { setSelectedLot(undefined); setPanel('PROJECT'); }}
-      lotSheet={panel === 'LOT' && lot ? <LotSheet lot={lot} project={active} onClose={() => { setSelectedLot(undefined); setPanel('PROJECT'); }} /> : undefined} /> : <div className={`${styles.layout} ${panel && view !== 'list' ? styles.withPanel : ''} ${view === 'list' ? styles.listOnly : ''}`}>
+      lotSheet={panel === 'LOT' && lot ? <LotSheet lot={lot} project={active} code={accessCodes[active.id] ?? ''} onClose={() => { setSelectedLot(undefined); setPanel('PROJECT'); }} /> : undefined} /> : <div className={`${styles.layout} ${panel && view !== 'list' ? styles.withPanel : ''} ${view === 'list' ? styles.listOnly : ''}`}>
     <header className={styles.header}><h1 className="sr-only">Proyectos en el mapa</h1>{view === 'both' && <div className={styles.desktopSort}>{sortControl}</div>}<nav className={styles.viewControls} aria-label="Vista de resultados">{([['list', 'Lista', List], ['both', 'Ambos', Columns2], ['map', 'Mapa', MapIcon]] as const).map(([value, label, Icon]) => <button key={value} type="button" aria-pressed={view === value} className={view === value ? styles.filterActive : ''} onClick={() => changeView(value)}><Icon size={17} />{label}</button>)}</nav>{view === 'list' && <section className={`${styles.listHeader} ${styles.listToolbarResults}`} aria-label="Resultados">{listSummary}</section>}</header>
       <div className={styles.map}>
         <SitePlanMap currency={active?.price.currency} plan={plan ?? EMPTY} center={CENTER} overviewBounds={PERU_BOUNDS} mapType="roadmap" compactMapControl hideLegendOnMobile showImage={showPlanImage} publicView clusterMarkers={false} markers={markers} markerFocusId={activeId} hideFocusedMarker={!!plan} focusPlanRequest={focusPlanRequest} onMarkerSelect={selectProject} onSelect={selectLot} selected={selectedLot} className={styles.mapSurface} />
 
       </div>
       {panel && <aside ref={sidebarRef} className={styles.sidebar} aria-label={panel === 'LOT' ? 'Ficha del lote' : panel === 'PROJECT' ? 'Proyecto seleccionado' : 'Listado de proyectos'}>
-        {panel === 'LOT' && lot && active ? <LotSheet lot={lot} project={active} onClose={() => { setSelectedLot(undefined); setPanel('PROJECT'); }} /> : <>
+        {panel === 'LOT' && lot && active ? <LotSheet lot={lot} project={active} code={accessCodes[active.id] ?? ''} onClose={() => { setSelectedLot(undefined); setPanel('PROJECT'); }} /> : <>
           {view !== 'list' && <header className={`${styles.listHeader} ${view === 'both' && panel === 'PROJECTS' ? styles.bothSummary : ''}`}>{panel === 'PROJECT' ? <><h2>Proyecto seleccionado</h2><button type="button" onClick={() => { setPanel('PROJECTS'); setActiveId(undefined); }} aria-label="Volver a todos los proyectos"><X size={19} /></button></> : listSummary}</header>}
           {panel === 'PROJECT' && plan === undefined && !error && <p className={styles.notice} role="status">Cargando plano…</p>}
           {panel === 'PROJECT' && plan === null && <p className={styles.notice} role={error ? "alert" : "status"}>{error ? 'No se pudo cargar el plano.' : 'Plano aún no publicado.'}</p>}

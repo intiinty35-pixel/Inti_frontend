@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-import { LayoutGrid, List, MapPin, Layers, PenLine, ArrowUpRight } from 'lucide-react';
+import { LayoutGrid, List, MapPin, Layers, PenLine, ArrowUpRight, KeyRound } from 'lucide-react';
 import { apiClient } from '@/shared/lib/api/client';
 import type { PlanSession } from '@/shared/lib/site-plan';
 import { PROJECT_STATUS_LABELS, type ProjectApiSummary } from '../types/api';
@@ -47,6 +47,7 @@ function PlanPreview({ id }: { id: string }) {
 export function AdminProjectCatalog({ projects }: { projects: ProjectApiSummary[] }) {
   const [view, setView] = useState<'list' | 'cards'>('list');
   const actions = (project: ProjectApiSummary) => <div className={s.actions}>
+    <Link href={`/panel/admin/project-access-codes?project=${encodeURIComponent(project.id)}`}><KeyRound size={15} />Administrar código</Link>
     <Link className={s.primary} href={`/panel/admin/projects/${project.id}/site-plan?view=lots`}><Layers size={15} />Ver lotes</Link>
     <Link href={`/panel/admin/projects/${project.id}/site-plan`}><PenLine size={15} />Editar plano y lotes</Link>
     <Link href={`/panel/admin/projects/${project.id}/edit`}>Editar proyecto<ArrowUpRight size={15} /></Link>

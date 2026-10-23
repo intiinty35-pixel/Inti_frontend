@@ -4,6 +4,7 @@ import { ROUTES } from "@/shared/config/routes";
 import { formatNumber, formatPrice } from "@/shared/lib/format";
 import { formatPublishedDate } from "@/shared/lib/published-date";
 import { PinIcon, BuildingIcon, MapIcon } from "@/shared/ui/icons";
+import { KeyRound } from "lucide-react";
 import { ListingImage } from "@/features/listings/components/listing-image";
 import {
   PROJECT_STATUS_LABELS,
@@ -118,6 +119,13 @@ export function AdminAllProjectCard({ project }: { project: ProjectApiSummary })
         </div>
 
         <div className="mt-auto grid grid-cols-2 gap-2 pt-4">
+          <Link
+            href={`${ROUTES.panel.admin.projectAccessCodes}?project=${encodeURIComponent(project.id)}`}
+            className="col-span-2 flex h-10 items-center justify-center gap-2 rounded-card border border-brand px-3 text-center text-xs font-bold text-brand transition-colors hover:bg-brand hover:text-on-brand"
+          >
+            <KeyRound className="size-3.5" aria-hidden="true" />
+            Administrar código de acceso
+          </Link>
           <Link
             href={`/panel/admin/projects/${project.id}/site-plan`}
             className="col-span-2 flex h-10 items-center justify-center rounded-card bg-accent px-3 text-center text-xs font-black text-on-accent transition-colors hover:bg-accent-hover"

@@ -5,7 +5,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { SitePlanMap } from "@/shared/ui/site-plan-map";
 import { LOT_LABELS, type SitePlan, type Point } from "@/shared/lib/site-plan";
 import { apiClient } from "@/shared/lib/api/client";
-import { env } from "@/shared/lib/env";
+import { PublicPlanAccess } from "@/shared/ui/public-plan-access";
+import { ProtectedLotPdfDownload } from "@/shared/ui/protected-lot-pdf-download";
+import { buildArizWhatsappUrl } from "@/shared/lib/whatsapp";
 type MapPoint = Point & {
   id: string;
   title: string;
@@ -44,6 +46,9 @@ export function GoogleListingsMap({
   const [selectedLot, setSelectedLot] = useState<string>();
   const [showImage, setShowImage] = useState(false);
   const [loadError, setLoadError] = useState(false);
+  const [accessCodes, setAccessCodes] = useState<Record<string, string>>({});
+  const [invalidCodes, setInvalidCodes] = useState<Record<string, boolean>>({});
+  const [omittedCodes, setOmittedCodes] = useState<Record<string, boolean>>({});
   const cache = useRef(new Map<string, Promise<LoadedPlan | null>>());
   const [centerLat, centerLng] = center;
   const centerPoint = useMemo(
@@ -77,21 +82,31 @@ export function GoogleListingsMap({
           Math.hypot(b.lat - view.center.lat, b.lng - view.center.lng),
       )
       .slice(0, 4);
-    const requests = candidates.map((point) => {
+    const unlockedCandidates = candidates.filter(point => {
+      const slug = decodeURIComponent(point.href.split("/project/")[1].split(/[?#]/)[0]);
+      return Boolean(accessCodes[point.id] || accessCodes[slug]);
+    });
+    const requests = unlockedCandidates.map((point) => {
       const slug = decodeURIComponent(
         point.href.split("/project/")[1].split(/[?#]/)[0],
       );
+      const code = accessCodes[point.id] ?? accessCodes[slug];
       if (!cache.current.has(slug))
         cache.current.set(
           slug,
           apiClient
             .get<LoadedPlan["plan"] | null>(
               `/projects/${encodeURIComponent(slug)}/site-plan`,
-              { cache: "no-store" },
+              { cache: "no-store", headers: code ? { "X-Site-Plan-Code": code } : undefined },
             )
-            .then((plan) => (plan ? { plan, point, slug } : null))
+            .then((plan) => {
+              if (plan) setInvalidCodes(previous => ({ ...previous, [point.id]: false }));
+              return plan ? { plan, point, slug } : null;
+            })
             .catch((error) => {
               cache.current.delete(slug);
+              if (error instanceof Error && "status" in error && error.status === 403)
+                setInvalidCodes(previous => ({ ...previous, [point.id]: true }));
               throw error;
             }),
         );
@@ -110,7 +125,7 @@ export function GoogleListingsMap({
     return () => {
       alive = false;
     };
-  }, [points, view]);
+  }, [points, view, accessCodes]);
   const visible = view.zoom >= 15 ? loaded : [];
   const combined = useMemo<SitePlan>(
     () => ({
@@ -211,18 +226,43 @@ export function GoogleListingsMap({
               </p>
             </div>
           )}
-          <a
-            className="mt-4 block rounded-xl bg-blue-600 px-3 py-2 text-center font-bold text-white"
-            href={`${env.apiUrl}/projects/${encodeURIComponent(owner.slug)}/site-plan/lots/${lot.id}/pdf`}
-          >
-            Descargar ficha PDF
-          </a>
+          <ProtectedLotPdfDownload
+            className="mt-4 flex w-full justify-center rounded-xl bg-blue-600 px-3 py-2 text-center font-bold text-white"
+            slug={owner.slug}
+            lotId={lot.id}
+            code={accessCodes[owner.point.id] ?? accessCodes[owner.slug] ?? ""}
+          />
           <Link
             className="mt-3 block text-center text-xs font-bold text-blue-700"
             href={owner.point.href}
           >
             Ver proyecto completo
           </Link>
+          {active && active.href.startsWith("/project/") && !loaded.some(item => item.point.id === active.id) && !omittedCodes[active.id] && (
+            <div className="mt-3">
+              <PublicPlanAccess
+                invalid={!!invalidCodes[active.id]}
+                onSubmit={code => {
+                  setInvalidCodes(previous => ({ ...previous, [active.id]: false }));
+                  setAccessCodes(previous => ({ ...previous, [active.id]: code }));
+                }}
+                onOmit={() => setOmittedCodes(previous => ({ ...previous, [active.id]: true }))}
+                contactHref={buildArizWhatsappUrl(`Hola, quisiera coordinar con un asesor para obtener el código del proyecto ${active.title}.`)}
+              />
+            </div>
+          )}
+          {active && active.href.startsWith("/project/") && omittedCodes[active.id] && !loaded.some(item => item.point.id === active.id) && (
+            <div className="mt-3 grid gap-2">
+              <p className="text-xs text-slate-500">Se muestra la ubicación del proyecto. Se omitió el código y el plano permanece oculto.</p>
+              <button
+                type="button"
+                className="text-left text-xs font-bold text-blue-700"
+                onClick={() => setOmittedCodes(previous => ({ ...previous, [active.id]: false }))}
+              >
+                Ingresar código para ver el plano
+              </button>
+            </div>
+          )}
         </article>
       ) : (
         active && (

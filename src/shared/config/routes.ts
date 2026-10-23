@@ -32,6 +32,7 @@ export const ROUTES = {
       editProperty: (id: string): string => `/panel/admin/properties/${id}/edit`,
       projects: "/panel/admin/projects",
       allProjects: "/panel/admin/projects/all",
+      projectAccessCodes: "/panel/admin/project-access-codes",
       newProject: "/panel/admin/projects/new",
       editProject: (id: string): string => `/panel/admin/projects/${id}/edit`,
       investmentOpportunities: "/panel/admin/investment-opportunities",

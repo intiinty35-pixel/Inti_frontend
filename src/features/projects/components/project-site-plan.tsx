@@ -3,9 +3,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { LotBudgetFinder } from "@/shared/ui/lot-budget-finder";
 import { findBudgetLots, type LotBudgetFilter } from "@/shared/lib/lot-budget";
-import { Eye, EyeOff, FileDown, X } from "lucide-react";
+import { Eye, EyeOff, X } from "lucide-react";
 import { apiClient } from "@/shared/lib/api/client";
-import { env } from "@/shared/lib/env";
+import { ApiError } from "@/shared/lib/api/client";
+import { PublicPlanAccess } from "@/shared/ui/public-plan-access";
+import { ProtectedLotPdfDownload } from "@/shared/ui/protected-lot-pdf-download";
+import { buildArizWhatsappUrl } from "@/shared/lib/whatsapp";
 import { SitePlanMap } from "@/shared/ui/site-plan-map";
 import {
   LOT_LABELS,
@@ -28,6 +31,11 @@ export function ProjectSitePlan({
   const [error, setError] = useState(false);
   const [retry, setRetry] = useState(0);
   const [showImage, setShowImage] = useState(false);
+  const [accessCode, setAccessCode] = useState("");
+  const [accessRequired, setAccessRequired] = useState(true);
+  const [invalidCode, setInvalidCode] = useState(false);
+  const [accessCodeBusy, setAccessCodeBusy] = useState(false);
+  const [accessSkipped, setAccessSkipped] = useState(false);
   const [selected, setSelected] = useState<string>();
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("ALL");
@@ -36,23 +44,37 @@ export function ProjectSitePlan({
   const matchingLotIds = useMemo(() => budgetResults ? [...budgetResults.matches, ...budgetResults.nearby].map(lot => lot.id) : undefined, [budgetResults]);
   useEffect(() => {
     let alive = true;
+    if (!accessCode) return () => { alive = false; };
     apiClient
       .get<SitePlan | null>(`/projects/${encodeURIComponent(slug)}/site-plan`, {
         cache: "no-store",
+        headers: accessCode ? { "X-Site-Plan-Code": accessCode } : undefined,
       })
       .then((result) => {
         if (alive) {
           setPlan(result);
           setError(false);
+          setAccessRequired(false);
+          setInvalidCode(false);
+          setAccessSkipped(false);
+          setAccessCodeBusy(false);
         }
       })
-      .catch(() => {
-        if (alive) setError(true);
+      .catch((cause: unknown) => {
+        if (!alive) return;
+        if (cause instanceof ApiError && cause.status === 403) {
+          setAccessRequired(true);
+          setInvalidCode(Boolean(accessCode));
+          setAccessCodeBusy(false);
+        } else {
+          setError(true);
+          setAccessCodeBusy(false);
+        }
       });
     return () => {
       alive = false;
     };
-  }, [slug, retry]);
+  }, [slug, retry, accessCode]);
   const lot = plan?.lots.find((item) => item.id === selected);
   const money = (value: number) =>
     new Intl.NumberFormat("es-PE", { style: "currency", currency }).format(
@@ -64,6 +86,38 @@ export function ProjectSitePlan({
         <div className={s.card}>
           <p>No se pudo cargar el plano interactivo.</p>
           <button onClick={() => setRetry((n) => n + 1)}>Reintentar</button>
+        </div>
+      </section>
+    );
+  if (accessRequired)
+    return (
+      <section className={`${s.editor} my-8`}>
+        <PublicPlanAccess
+          busy={accessCodeBusy}
+          invalid={invalidCode}
+          onSubmit={code => {
+            setInvalidCode(false);
+            setAccessCodeBusy(true);
+            setAccessCode(code);
+          }}
+          onOmit={() => {
+            setAccessCode("");
+            setAccessCodeBusy(false);
+            setAccessRequired(false);
+            setAccessSkipped(true);
+          }}
+          contactHref={buildArizWhatsappUrl(`Hola, quisiera coordinar con un asesor para obtener el código del proyecto ${slug}.`)}
+        />
+      </section>
+    );
+  if (!plan && accessSkipped)
+    return (
+      <section className={`${s.editor} my-8`}>
+        <div className={s.card}>
+          <p>Se omitió el código. Puedes seguir viendo la ubicación del proyecto sin mostrar el plano.</p>
+          <button type="button" onClick={() => { setAccessSkipped(false); setAccessRequired(true); }}>
+            Ingresar código para ver el plano
+          </button>
         </div>
       </section>
     );
@@ -165,13 +219,12 @@ export function ProjectSitePlan({
                 </div>
               )}
               {lot.notes && <p>{lot.notes}</p>}
-              <a
+              <ProtectedLotPdfDownload
                 className={s.button}
-                href={`${env.apiUrl}/projects/${encodeURIComponent(slug)}/site-plan/lots/${lot.id}/pdf`}
-              >
-                <FileDown size={16} />
-                Descargar ficha PDF
-              </a>
+                slug={slug}
+                lotId={lot.id}
+                code={accessCode}
+              />
               <p className={s.muted}>
                 Disponibilidad y condiciones sujetas a confirmación.
               </p>

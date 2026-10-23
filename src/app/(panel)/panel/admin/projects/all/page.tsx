@@ -8,6 +8,7 @@ import { ROUTES } from "@/shared/config/routes";
 
 import { Pagination } from "@/shared/ui/pagination";
 import { AdminPortfolioSummary } from "@/features/projects/components/admin-portfolio-summary";
+import { KeyRound } from "lucide-react";
 
 async function PortfolioOverview({ data, filtered }: { data: ProjectApiPaged; filtered: boolean }) {
   const summary = await (async () => {
@@ -48,6 +49,12 @@ export default async function AllProjectsPage({
           </Link>
         ))}
       </nav>
+      <Link
+        href={ROUTES.panel.admin.projectAccessCodes}
+        className="inline-flex min-h-10 w-fit items-center gap-2 rounded-card border border-edge bg-surface px-4 py-2 text-sm font-bold text-brand hover:bg-surface-muted"
+      >
+        <KeyRound size={16} /> Administrar códigos de acceso
+      </Link>
       <AdminProjectCatalog projects={data.items} />
       <Pagination
         page={data.page}
