@@ -165,7 +165,7 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
   return (
     <div className="w-full max-w-full overflow-x-hidden">
       <Container size="full" className="flex flex-1 flex-col gap-6 py-8">
-        <div className="w-full min-w-0 overflow-x-auto">
+        <div className="w-full min-w-0">
           <PropertyFiltersBar basePath="/propiedades" value={filterBarValue} />
         </div>
 
