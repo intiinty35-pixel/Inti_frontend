@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { LotBudgetFinder } from "@/shared/ui/lot-budget-finder";
+import { findBudgetLots, type LotBudgetFilter } from "@/shared/lib/lot-budget";
 import { Eye, EyeOff, FileDown, X } from "lucide-react";
 import { apiClient } from "@/shared/lib/api/client";
 import { env } from "@/shared/lib/env";
@@ -29,6 +31,9 @@ export function ProjectSitePlan({
   const [selected, setSelected] = useState<string>();
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("ALL");
+  const [budgetFilter, setBudgetFilter] = useState<LotBudgetFilter | null>(null);
+  const budgetResults = useMemo(() => plan && budgetFilter ? findBudgetLots(plan.lots, budgetFilter) : null, [plan, budgetFilter]);
+  const matchingLotIds = useMemo(() => budgetResults ? [...budgetResults.matches, ...budgetResults.nearby].map(lot => lot.id) : undefined, [budgetResults]);
   useEffect(() => {
     let alive = true;
     apiClient
@@ -66,6 +71,7 @@ export function ProjectSitePlan({
   const filtered = plan.lots.filter(
     (item) =>
       (filter === "ALL" || item.status === filter) &&
+      (!matchingLotIds || matchingLotIds.includes(item.id)) &&
       `${item.code} ${item.block} ${item.street}`
         .toLowerCase()
         .includes(query.toLowerCase()),
@@ -90,6 +96,10 @@ export function ProjectSitePlan({
       </div>
       <div className={s.layout}>
         <SitePlanMap
+          focusPlanRequest={1}
+          focusPlanZoom={17}
+          matchingLotIds={matchingLotIds}
+          currency={currency}
           plan={plan}
           center={center}
           showImage={showImage}
@@ -98,6 +108,7 @@ export function ProjectSitePlan({
           publicView
         />
         <aside className={s.sidebar}>
+          <LotBudgetFinder lots={plan.lots} currency={currency} filter={budgetFilter} onChange={setBudgetFilter} onSelect={setSelected} />
           {lot && (
             <article
               className={`${s.card} ${s.fields}`}

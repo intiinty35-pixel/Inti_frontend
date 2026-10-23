@@ -1,6 +1,25 @@
 .compactControls :global(.gm-style-mtc) {
   display: none !important;
 }
+.lotTooltip {
+  position: absolute;
+  z-index: 100;
+  transform: translate(-50%, -100%);
+  width: max-content;
+  max-width: 210px;
+  padding: 8px 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #334155;
+  box-shadow: 0 6px 20px #0f172a26;
+  font: 600 11px/1.4 sans-serif;
+  pointer-events: none;
+}
+.lotTooltip::after { content: ""; position: absolute; left: 50%; bottom: -5px; width: 9px; height: 9px; background: white; transform: translateX(-50%) rotate(45deg); }
+.lotTooltip strong, .lotTooltip span { display: block; }
+.lotTooltip span { color: #64748b; font-size: 10px; }
+.lotTooltip .lotTooltipPrice { color: #15803d; font-size: 13px; font-weight: 750; }
 @media (max-width: 767px) {
   .hideLegendOnMobile { display: none; }
 }

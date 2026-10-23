@@ -10,6 +10,12 @@ import {
   Save,
   Upload,
   Undo2,
+  MousePointer2,
+  Grid2X2,
+  Route,
+  Trees,
+  Scan,
+  SquareDashed,
 } from "lucide-react";
 import { env } from "@/shared/lib/env";
 import { ROUTES } from "@/shared/config/routes";
@@ -23,6 +29,9 @@ import { SitePlanCanvas } from "@/shared/ui/site-plan-canvas";
 import { AdminLotDetail } from "./admin-lot-detail";
 import { PdfPlanImport } from "./pdf-plan-import";
 import { LotTable } from "./lot-table";
+import { DrawingToolSelect } from "./drawing-tool-select";
+import { DiscardDrawingDialog } from "./discard-drawing-dialog";
+import { ZoneList } from "./zone-list";
 import { geoToImage, imageToGeo, placeImageAnchor } from "@/shared/lib/plan-coordinates";
 import { rectangularSides, rectangularMetrics } from "@/shared/lib/lot-measurements";
 import { monthlyInstallment } from "@/shared/lib/lot-financing";
@@ -49,12 +58,22 @@ const toolLabels: Partial<Record<PlanTool, string>> = {
   CONTOUR: "Contorno",
   LOT: "Lote",
 };
+const toolIcons = {
+  SELECT: MousePointer2,
+  BLOCK: Grid2X2,
+  STREET: Route,
+  PARK: Trees,
+  CONTOUR: Scan,
+  LOT: SquareDashed,
+  GROUP: Grid2X2,
+};
 const fileUrl = (path: string) => `${env.apiUrl}${path}`;
 const lotKey = (lot: PlanLot) =>
   `${lot.block.trim().toLowerCase()}|${lot.code.trim().toLowerCase()}`;
 
 export function SitePlanEditor({ initial, initialShowLots = false }: { initial: PlanSession; initialShowLots?: boolean }) {
   const [plan, setPlan] = useState(initial.plan);
+  const [discardDecision, setDiscardDecision] = useState<((discard: boolean) => void) | null>(null);
   const [pdfFile, setPdfFile] = useState<File>();
   const [showLotTable, setShowLotTable] = useState(initialShowLots);
   const [moveAll, setMoveAll] = useState(false);
@@ -248,13 +267,9 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
     setPanel("BASE");
     setBlockName("");
   }
-  function confirmDiscard() {
-    return (
-      !formPending ||
-      window.confirm(
-        "Hay una forma abierta. ¿Descartar los cambios de esa forma?",
-      )
-    );
+  async function confirmDiscard() {
+    if (!formPending) return true;
+    return new Promise<boolean>(resolve => setDiscardDecision(() => resolve));
   }
   function clearDrawing() {
     const nextTool = zone?.kind === "BLOCK" ? "BLOCK" : lot ? "LOT" : tool;
@@ -262,10 +277,10 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
     setTool(nextTool);
     setError("");
   }
-  function select(id: string) {
-    if (busy) return;
-    if (id === selected) return;
-    if (!confirmDiscard()) return;
+  async function select(id: string) {
+    if (busy) return false;
+    if (id === selected) return true;
+    if (!await confirmDiscard()) return false;
     closeForm();
     setTool("SELECT");
     setSelected(id);
@@ -280,13 +295,14 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
         if (foundZone.kind === "BLOCK") setGroupBlock(foundZone.name);
       }
     }
+    return true;
   }
-  function chooseTool(next: PlanTool) {
+  async function chooseTool(next: PlanTool) {
     if (next !== "SELECT" && !plan.image) {
       setError("Primero sube el plano del proyecto para dibujar sobre él.");
       return;
     }
-    if (!confirmDiscard()) return;
+    if (!await confirmDiscard()) return;
     closeForm();
     setTool(next);
     if (next !== "SELECT") {
@@ -870,15 +886,21 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
     </label>
   );
 
+  const discardDialog = discardDecision && <DiscardDrawingDialog onDecision={discard => {
+    setDiscardDecision(null);
+    discardDecision(discard);
+  }} />;
+
   if (showLotTable) {
     return <fieldset disabled={busy} aria-busy={busy} className={`${s.editor} ${s.bookView}`}>
-      <LotTable plan={plan} project={initial.project} exportUrl={fileUrl(`${basePath}/export`)} onClose={() => setShowLotTable(false)} onEdit={id => { select(id); setEditingLot(true); }} onDelete={id => change({ ...plan, lots: plan.lots.filter(l => l.id !== id) })} />
+      {discardDialog}
+      <LotTable plan={plan} project={initial.project} exportUrl={fileUrl(`${basePath}/export`)} onClose={() => setShowLotTable(false)} onEdit={async id => { if (await select(id)) setEditingLot(true); }} onDelete={id => change({ ...plan, lots: plan.lots.filter(l => l.id !== id) })} />
     </fieldset>;
   }
 
   return (
     <fieldset disabled={busy} aria-busy={busy} className={s.editor}>
-
+      {discardDialog}
       {pdfFile && <PdfPlanImport file={pdfFile} onImport={(image, source) => upload(image, false, source)} onClose={() => setPdfFile(undefined)} />}
       <div className={s.toolbar}>
         <div>
@@ -931,13 +953,27 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
           «Editar proyecto» antes de publicar el plano.
         </div>
       )}
-      <div className={s.toolbar}>
-        <div className={s.actions}>
-          <label className={s.drawingSelect}>
-            <span>Qué quieres diseñar</span>
-            <select value={tool} disabled={busy} onChange={event => chooseTool(event.target.value as PlanTool)}>
-              {Object.entries(toolLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-            </select>
+      <div className={`${s.toolbar} ${s.drawingToolbar}`}>
+        <div className={`${s.actions} ${s.drawingActions}`}>
+          <DrawingToolSelect value={tool} disabled={busy} onChange={chooseTool}
+            options={Object.entries(toolLabels).map(([value, label]) => ({ value: value as PlanTool, label, icon: toolIcons[value as PlanTool] }))} />
+          <button onClick={() => { setShowImage(!showImage); setMoveAll(false); setBlockFixed(false); }}>
+            {showImage ? <EyeOff size={15} /> : <Eye size={15} />}
+            {showImage ? "Ocultar imagen" : "Mostrar imagen"}
+          </button>
+          <label className={s.button}>
+            <Upload size={15} />
+            {plan.image ? "Reemplazar plano" : "Subir plano"}
+            <input
+              hidden
+              type="file"
+              accept="application/pdf,.pdf,image/png,image/jpeg,image/webp"
+              disabled={busy}
+              onChange={(event) => {
+                void upload(event.target.files?.[0]);
+                event.target.value = "";
+              }}
+            />
           </label>
           <button
             disabled={busy || points.length === 0}
@@ -985,24 +1021,6 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
           </button>
         </div>
         <div className={`${s.actions} ${s.planControls}`}>
-          <button onClick={() => { setShowImage(!showImage); setMoveAll(false); setBlockFixed(false); }}>
-            {showImage ? <EyeOff size={15} /> : <Eye size={15} />}
-            {showImage ? "Ocultar imagen" : "Mostrar imagen"}
-          </button>
-          <label className={s.button}>
-            <Upload size={15} />
-            {plan.image ? "Reemplazar plano" : "Subir plano"}
-            <input
-              hidden
-              type="file"
-              accept="application/pdf,.pdf,image/png,image/jpeg,image/webp"
-              disabled={busy}
-              onChange={(event) => {
-                void upload(event.target.files?.[0]);
-                event.target.value = "";
-              }}
-            />
-          </label>
           <button
             className={view === "PLAN" ? s.active : ""}
             onClick={() => setView("PLAN")}
@@ -1024,8 +1042,8 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
           >
             Alinear en Google Maps
           </button>
-          {!showImage && <button type="button" className={movingWholeBlock ? s.active : ""} disabled={busy} onClick={() => {
-            if (!confirmDiscard()) return;
+          {!showImage && <button type="button" className={movingWholeBlock ? s.active : ""} disabled={busy} onClick={async () => {
+            if (!await confirmDiscard()) return;
             const next = !movingWholeBlock;
             closeForm();
             setTool("SELECT");
@@ -1066,6 +1084,7 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
       <div className={s.layout}>
         {view === "PLAN" ? (
           <SitePlanCanvas
+            currency={initial.project.currency}
             previewPaths={groupPreview}
             onComplete={(path) => {
               if (busy || lot || zone) return;
@@ -1090,6 +1109,7 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
           />
         ) : (
           <SitePlanMap
+            currency={initial.project.currency}
             focusPlanRequest={focusPlanRequest}
             moveAll={movingWholeBlock}
             focusProject={hasLocation}
@@ -1131,8 +1151,8 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
                 type="button"
                 key={key}
                 className={activePanel === key ? s.active : ""}
-                onClick={() => {
-                  if (!confirmDiscard()) return;
+                onClick={async () => {
+                  if (!await confirmDiscard()) return;
                   closeForm();
                   setPanel(key);
                 }}
@@ -1657,8 +1677,8 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
                 </label>
                 <button
                   disabled={busy}
-                  onClick={() => {
-                    if (!confirmDiscard()) return;
+                  onClick={async () => {
+                    if (!await confirmDiscard()) return;
                     closeForm();
                     setTool("SELECT");
                     setLot(newLot());
@@ -1858,51 +1878,12 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
           )}
           {(activePanel === "ZONES" || activePanel === "ZONE") && (
             <section className={s.card}>
-              <h2>Calles ({plan.zones.filter(z => z.kind === "STREET").length})</h2>
-              <div className={s.list}>
-                {plan.zones.filter(z => z.kind === "STREET").map(z => <button type="button" key={z.id} className={s.row} onClick={() => select(z.id)}>
-                  <span>{z.name}<small>{z.path.length} vértices guardados</small></span><Pencil size={15} />
-                </button>)}
-                {!plan.zones.some(z => z.kind === "STREET") && <p className={s.muted}>No hay calles guardadas en este borrador.</p>}
-              </div>
-              <h2>Parques ({plan.zones.filter(z => z.kind === "PARK").length})</h2>
-              {plan.zones.filter(z => z.kind === "PARK").map(z => <button type="button" key={z.id} className={s.row} onClick={() => select(z.id)}>{z.name}<Pencil size={15} /></button>)}
-              {plan.zones.some(z => z.kind === "CONTOUR") && <>
-                <h2>Contornos</h2>
-                <div className={s.list}>
-                  {plan.zones.filter(z => z.kind === "CONTOUR").map(z => <button type="button" key={z.id} className={s.row} onClick={() => select(z.id)}>{z.name}<Pencil size={15} /></button>)}
-                </div>
-              </>}
-              <h2>
-                Manzanas ({plan.zones.filter((z) => z.kind === "BLOCK").length})
-              </h2>
-              <div className={s.list}>
-                {plan.zones
-                  .filter((z) => z.kind === "BLOCK")
-                  .map((z) => (
-                    <button
-                      className={s.row}
-                      key={z.id}
-                      onClick={() => select(z.id)}
-                    >
-                      <span>
-                        {z.name}
-                        <small>
-                          {z.kind === "BLOCK" ? "Manzana" : "Calle"} ·{" "}
-                          {
-                            plan.lots.filter((l) =>
-                              z.kind === "BLOCK"
-                                ? l.block === z.name
-                                : l.street === z.name,
-                            ).length
-                          }{" "}
-                          lotes
-                        </small>
-                      </span>
-                      <Pencil size={15} />
-                    </button>
-                  ))}
-              </div>
+              <ZoneList kind="STREET" zones={plan.zones} selected={selected} onSelect={select} />
+              <ZoneList kind="PARK" zones={plan.zones} selected={selected} onSelect={select} />
+              {plan.zones.some(zone => zone.kind === "CONTOUR") && (
+                <ZoneList kind="CONTOUR" zones={plan.zones} selected={selected} onSelect={select} />
+              )}
+              <ZoneList kind="BLOCK" zones={plan.zones} lots={plan.lots} selected={selected} onSelect={select} />
             </section>
           )}
         </aside>

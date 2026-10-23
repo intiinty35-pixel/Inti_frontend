@@ -67,6 +67,7 @@ export type PlanSession = {
   revision: number;
   publishedAt?: string | null;
 };
+export const AVAILABLE_LOT_BORDER = "#008a3b";
 export const LOT_COLORS = {
   AVAILABLE: "#10b981",
   RESERVED: "#f59e0b",

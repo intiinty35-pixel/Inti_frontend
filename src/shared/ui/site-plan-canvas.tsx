@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { geoToImage, imageToGeo } from "@/shared/lib/plan-coordinates";
-import { LOT_COLORS, type Point, type SitePlan } from "@/shared/lib/site-plan";
+import { AVAILABLE_LOT_BORDER, LOT_COLORS, type Point, type SitePlan } from "@/shared/lib/site-plan";
 import type { PlanTool } from "./site-plan-map";
 import {
   LockKeyhole,
@@ -12,7 +12,11 @@ import {
   RotateCcw,
 } from "lucide-react";
 import styles from "./site-plan-canvas.module.css";
+import hoverStyles from "./site-plan-map.module.css";
+import { lotHoverSummary } from "@/shared/lib/lot-hover-summary";
+import { blockBadge, BLOCK_BADGE_SIZE } from "@/shared/lib/block-badge";
 import { lotAnnotations } from "@/shared/lib/lot-annotations";
+import { STREET_COLOR, STREET_MARKING, STREET_VERGE_COLOR, STREET_VERGE_WIDTH_M, streetCenterLine } from "@/shared/lib/street-design";
 import { snapPlanPoint } from "@/shared/lib/snap-plan-point";
 import { polygonLabel, fitPolygonText } from "@/shared/lib/polygon-label";
 
@@ -27,6 +31,7 @@ export function SitePlanCanvas({
   onPath,
   onComplete,
   previewPaths = [],
+  currency,
 }: {
   plan: SitePlan;
   tool: PlanTool;
@@ -38,9 +43,16 @@ export function SitePlanCanvas({
   onPath: (id: string, path: Point[]) => void;
   onComplete?: (path: Point[]) => void;
   previewPaths?: Point[][];
+  currency?: string;
 }) {
+  const [hovered, setHovered] = useState<{ id: string; x: number; y: number }>();
+  const hoveredLot = hovered && plan.lots.find(lot => lot.id === hovered.id);
+  const hoverSummary = hoveredLot && lotHoverSummary(hoveredLot, currency);
   const [labelsReady, setLabelsReady] = useState(false);
-  useEffect(() => { setLabelsReady(true); }, []);
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setLabelsReady(true));
+    return () => cancelAnimationFrame(frame);
+  }, []);
   const svg = useRef<SVGSVGElement>(null);
   const viewport = useRef<HTMLDivElement>(null);
   const pan = useRef<{
@@ -231,6 +243,13 @@ export function SitePlanCanvas({
   };
   return (
     <div className="relative rounded-2xl border border-edge bg-slate-100">
+      {hovered && hoverSummary && tool === "SELECT" && <div className={hoverStyles.lotTooltip}
+        style={{ position: "fixed", left: Math.max(125, Math.min(window.innerWidth - 125, hovered.x)), top: Math.max(110, hovered.y - 16) }}>
+        <strong>{hoverSummary.title}</strong>
+        {hoverSummary.price && <span className={hoverStyles.lotTooltipPrice}>{hoverSummary.price}</span>}
+        {hoverSummary.priceM2 && <span>{hoverSummary.priceM2}</span>}
+        <span>{hoverSummary.detail}</span>
+      </div>}
       <div className={styles.controls} aria-label="Controles del plano">
         <button
           type="button"
@@ -448,6 +467,25 @@ export function SitePlanCanvas({
             onError={() => setFailed(true)}
             pointerEvents="none"
           />
+          <g fill={STREET_VERGE_COLOR} stroke={STREET_VERGE_COLOR} strokeWidth={2 * STREET_VERGE_WIDTH_M * 1000 / image.widthM} strokeLinejoin="round" pointerEvents="none">
+            {plan.zones.filter(zone => zone.kind === "STREET").map(zone => (
+              <polygon key={zone.id} points={zone.path.map(position).join(" ")} />
+            ))}
+          </g>
+          <g fill={STREET_COLOR} pointerEvents="none">
+            {plan.zones.filter(zone => zone.kind === "STREET").map(zone => (
+              <polygon key={zone.id} points={zone.path.map(position).join(" ")} />
+            ))}
+          </g>
+          <g pointerEvents="none" stroke={STREET_MARKING} strokeWidth={1.5} strokeDasharray="9 10" strokeLinecap="round" opacity={0.8}>
+            {plan.zones.filter(zone => zone.kind === "STREET").map(zone => {
+              const line = streetCenterLine(zone.path.map(point => {
+                const uv = geoToImage(point, image);
+                return { x: uv.x * 1000, y: uv.y * 1000 };
+              }));
+              return line ? <line key={zone.id} x1={line[0].x} y1={line[0].y} x2={line[1].x} y2={line[1].y} vectorEffect="non-scaling-stroke" /> : null;
+            })}
+          </g>
           {shapes.map((shape) => {
             const coords = shape.path.map((p) => geoToImage(p, image));
             const aspect = image.heightM / image.widthM;
@@ -480,6 +518,9 @@ export function SitePlanCanvas({
               <g
                 data-plan-shape
                 key={shape.id}
+                onPointerEnter={event => { if (shape.lot && tool === "SELECT" && event.pointerType === "mouse") setHovered({ id: shape.id, x: event.clientX, y: event.clientY }); }}
+                onPointerLeave={() => { if (shape.lot) setHovered(undefined); }}
+                onPointerDown={() => setHovered(undefined)}
                 onClick={(event) => {
                   if (ignoreClick.current) {
                     ignoreClick.current = false;
@@ -497,9 +538,9 @@ export function SitePlanCanvas({
                 <polygon
                   points={shape.path.map(position).join(" ")}
                   fill={shape.color}
-                  fillOpacity={shape.contour ? 0 : "kind" in shape && shape.kind === "PARK" ? 0.35 : "kind" in shape && shape.kind === "STREET" ? 0.3 : shape.zone ? 0.08 : 0.3}
-                  stroke={shape.id === selected ? "#2563eb" : shape.color}
-                  strokeWidth={shape.contour ? (shape.id === selected ? 5 : 4) : shape.id === selected ? 3 : !showImage ? 2.5 : 1.5}
+                  fillOpacity={shape.contour || ("kind" in shape && shape.kind === "STREET") ? 0 : "kind" in shape && shape.kind === "PARK" ? 0.35 : shape.zone ? 0.08 : hovered?.id === shape.id ? 0.5 : 0.3}
+                  stroke={shape.id === selected ? "#2563eb" : shape.lot?.status === "AVAILABLE" ? AVAILABLE_LOT_BORDER : shape.color}
+                  strokeWidth={"kind" in shape && shape.kind === "STREET" ? (shape.id === selected ? 3 : 0) : shape.contour ? (shape.id === selected ? 5 : 4) : shape.id === selected ? 3 : !showImage ? 2.5 : 1.5}
                   strokeLinejoin="round"
                   vectorEffect="non-scaling-stroke"
                 />
@@ -515,7 +556,7 @@ export function SitePlanCanvas({
                     shape.zone ? `url(#zone-label-${shape.id})` : undefined
                   }
                 >
-                  {!labelsReady ? null : shape.lot ? <g transform={`scale(${1000 / renderedWidth} ${1000 / (renderedWidth * aspect)})`} pointerEvents="none">
+                  {!labelsReady || ("kind" in shape && shape.kind === "BLOCK") ? null : shape.lot ? <g transform={`scale(${1000 / renderedWidth} ${1000 / (renderedWidth * aspect)})`} pointerEvents="none">
                     {lotAnnotations(shape.lot, coords.map(p => ({ x: p.x * renderedWidth, y: p.y * renderedWidth * aspect }))).map((item, index) => <text key={index} x={item.x} y={item.y} transform={`rotate(${item.angle} ${item.x} ${item.y})`} fontSize={item.size} fill={item.color} stroke="rgba(255,255,255,0.8)" strokeWidth={1.2} paintOrder="stroke" fontWeight={700} textAnchor="middle" dominantBaseline="middle">{item.text}</text>)}
                   </g> : <text
                     x={anchor ? 0 : cx}
@@ -529,8 +570,8 @@ export function SitePlanCanvas({
                     fontWeight={shape.zone ? 700 : 600}
                     textAnchor="middle"
                     dominantBaseline="middle"
-                    fill="#102a43"
-                    stroke={shape.zone ? "white" : "none"}
+                    fill={"kind" in shape && (shape.kind === "STREET" || shape.kind === "BLOCK") ? "#ffffff" : "#102a43"}
+                    stroke={"kind" in shape && shape.kind === "BLOCK" ? "none" : "kind" in shape && shape.kind === "STREET" ? STREET_COLOR : shape.zone ? "white" : "none"}
                     strokeWidth={shape.zone ? 0.6 : 0}
                     paintOrder="stroke"
                     pointerEvents="none"
@@ -565,6 +606,20 @@ export function SitePlanCanvas({
               pointerEvents="none"
             />
           )}
+          {labelsReady && plan.zones.filter(zone => zone.kind === "BLOCK" && zone.path.length >= 3).map(zone => {
+            const aspect = image.heightM / image.widthM;
+            const anchor = polygonLabel(zone.path.map(point => {
+              const uv = geoToImage(point, image);
+              return { x: uv.x * renderedWidth, y: uv.y * renderedWidth * aspect };
+            }));
+            const badge = blockBadge(zone, plan.zones);
+            return <g key={`badge-${zone.id}`} pointerEvents="none"
+              transform={`translate(${anchor.x * 1000 / renderedWidth} ${anchor.y * 1000 / (renderedWidth * aspect)}) scale(${1000 / renderedWidth} ${1000 / (renderedWidth * aspect)})`}>
+              <title>{`Manzana ${zone.name}`}</title>
+              <circle r={BLOCK_BADGE_SIZE / 2} fill={badge.color} stroke="#ffffff" strokeWidth={1.5} />
+              <text textAnchor="middle" dominantBaseline="central" fontSize={12} fontWeight={750} fill="#ffffff">{badge.letter}</text>
+            </g>;
+          })}
           {plan.zones.filter(z => z.kind === "CONTOUR").map(z => <polygon key={`outline-${z.id}`} points={z.path.map(position).join(" ")} fill="none" stroke="#0ea5e9" strokeWidth={4} strokeLinejoin="round" vectorEffect="non-scaling-stroke" pointerEvents="none" />)}
           {previewPaths.map((path, index) => <polygon key={`preview-${index}`} points={path.map(position).join(" ")} fill="#2563eb" fillOpacity={0.12} stroke="#2563eb" strokeWidth={2} strokeDasharray="5 3" vectorEffect="non-scaling-stroke" pointerEvents="none" />)}
           {snapMarker && (tool === "LOT" || tool === "GROUP" || tool === "STREET" || tool === "BLOCK" || selected) && <circle

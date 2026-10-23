@@ -1,0 +1,39 @@
+.finder { margin-top:18px; padding:18px; min-width:0; border:1px solid #cfe3dc; border-left:3px solid #059669; border-radius:18px; background:linear-gradient(145deg,#fff 65%,#f0fdf8); box-shadow:0 8px 24px #065f4609; color:#172a3a; }
+.eyebrow { display:flex; align-items:center; gap:6px; color:#047857; font-size:9px; font-weight:750; letter-spacing:.07em; text-transform:uppercase; }
+.finder h2 { margin:8px 0 5px; font-size:19px; font-weight:750; line-height:1.25; letter-spacing:-.03em; }
+.description { margin:0 0 15px; padding-bottom:14px; border-bottom:1px solid #e1ebe7; font-size:11px; color:#718096; line-height:1.6; }
+.modes { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:5px; padding:4px; border:1px solid #e0eae5; border-radius:11px; background:#f6f9f7; margin-bottom:16px; }
+.finder .modes button { display:flex; justify-content:center; align-items:center; gap:5px; min-height:34px; padding:7px 5px; border:1px solid transparent; border-radius:8px; background:transparent; color:#64748b; font-size:11px; font-weight:650; cursor:pointer; }
+.finder .modes button[aria-pressed="true"] { background:white; border-color:#bbdfce; color:#047857; box-shadow:0 2px 5px #065f460a; }
+.amountLabel { display:block; margin-bottom:7px; font-size:11px; font-weight:700; }
+.amount { display:flex; align-items:center; gap:8px; border:1px solid #9ad9c1; border-radius:12px; padding:0 12px; background:#fff; min-height:48px; }
+.amount:focus-within { border-color:#059669; box-shadow:0 0 0 3px #d1fae5; }
+.amount > span { color:#047857; font-size:14px; font-weight:750; }
+.finder .amount input { width:100%; min-width:0; padding:12px 0; border:0; background:transparent; color:#134e4a; font:inherit; font-size:18px; font-weight:700; outline:none; box-shadow:none; }
+.finder .amount input:focus { outline:none; }
+.amount input::placeholder { color:#94a3b8; font-size:16px; font-weight:600; }
+.finder .amount button { display:grid; place-items:center; flex-shrink:0; border:0; background:transparent; padding:4px; color:#64748b; cursor:pointer; }
+.help { margin:8px 0 12px; font-size:10px; color:#718096; line-height:1.6; }
+.finder .cheapest { display:flex; align-items:center; gap:9px; width:100%; padding:11px; text-align:left; border:1px solid #cfe3d8; border-radius:12px; background:#f2faf6; cursor:pointer; color:#145c44; }
+.cheapest > span:nth-child(2) { flex:1; min-width:0; }
+.cheapest small { display:block; margin-bottom:4px; font-size:8px; font-weight:650; text-transform:uppercase; color:#6c8176; letter-spacing:.03em; }
+.cheapest strong { display:block; font-size:13px; font-weight:750; }
+.spark { display:grid; place-items:center; width:30px; height:34px; flex-shrink:0; border-radius:9px; background:#dff1e7; color:#047857; }
+.resultsHeading, .nearbyHeading { display:flex; align-items:center; justify-content:space-between; gap:6px; margin:17px 0 8px; font-size:11px; }
+.resultsHeading > span { color:#64748b; font-size:10px; white-space:nowrap; }
+.finder .result { display:flex; align-items:center; justify-content:space-between; gap:8px; width:100%; margin-top:6px; padding:10px; border:1px solid #e1eae6; border-radius:10px; background:#fff; text-align:left; cursor:pointer; }
+.result > span { min-width:0; }
+.result strong { display:block; font-size:11px; font-weight:650; color:#334155; overflow-wrap:anywhere; }
+.result small { display:block; margin-top:3px; font-size:9px; color:#718096; line-height:1.5; }
+.result .resultPrice { flex-shrink:0; color:#047857; font-size:12px; font-weight:750; text-align:right; }
+.resultPrice svg { display:inline; margin-left:3px; }
+.finder .result:hover, .finder .cheapest:hover { border-color:#6fc6a3; background:#f0fdf6; }
+.nearbyHeading { color:#92400e; font-weight:650; }
+.nearbyHeading span { border-radius:5px; padding:3px 5px; background:#fffbeb; font-size:9px; }
+.empty { font-size:11px; color:#718096; line-height:1.6; padding:6px 0; }
+.pagination, .pagination > div { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.pagination { margin-top:13px; padding-top:11px; border-top:1px solid #e1ebe7; font-size:10px; color:#64748b; }
+.finder .pagination button { display:grid; place-items:center; min-width:30px; min-height:30px; padding:5px; border:1px solid #d7e7df; border-radius:8px; background:#fff; color:#047857; cursor:pointer; }
+.finder .pagination button:hover:not(:disabled) { background:#ecfdf5; }
+.finder .pagination button:disabled { opacity:.35; cursor:default; }
+.finder button:focus-visible { outline:2px solid #059669; outline-offset:3px; }

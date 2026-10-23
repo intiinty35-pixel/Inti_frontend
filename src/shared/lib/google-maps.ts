@@ -20,7 +20,7 @@ export interface GoogleMap {
   addListener(name: string, cb: (event: MapEvent) => void): MapListener;
   panTo(point: Point): void;
   getCenter(): LatLng | undefined;
-  fitBounds(bounds: MapBounds): void;
+  fitBounds(bounds: MapBounds, padding?: number): void;
   getZoom(): number | undefined;
   setZoom(zoom: number): void;
 }
@@ -28,6 +28,7 @@ interface MapBounds {
   extend(point: Point): void;
 }
 export interface MapPolygon {
+  setOptions(options: Record<string, unknown>): void;
   setMap(map: GoogleMap | null): void;
   getPath(): MapPath;
   addListener(name: string, cb: (e: MapEvent) => void): MapListener;
