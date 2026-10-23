@@ -30,7 +30,7 @@ export function SelectedProjectExplorer({ project, plan, planError, focusPlanReq
   const [detailError, setDetailError] = useState(false);
   const [photo, setPhoto] = useState(0);
   const [lightbox, setLightbox] = useState(false);
-  const [showPlanImage, setShowPlanImage] = useState(false);
+  const [planImagePreference, setPlanImagePreference] = useState<{ url: string; visible: boolean }>();
   const [expandedDescription, setExpandedDescription] = useState(false);
   const [budgetFilter, setBudgetFilter] = useState<LotBudgetFilter | null>(null);
   const matchingLotIds = useMemo(() => {
@@ -42,6 +42,8 @@ export function SelectedProjectExplorer({ project, plan, planError, focusPlanReq
   const dialog = useRef<HTMLDialogElement>(null);
   const imageTrigger = useRef<HTMLButtonElement>(null);
   const center = useMemo(() => ({ lat: project.location.lat ?? -9.19, lng: project.location.lng ?? -75.0152 }), [project.location.lat, project.location.lng]);
+  const planImageUrl = plan?.image?.url;
+  const showPlanImage = Boolean(planImageUrl && planImagePreference?.url === planImageUrl && planImagePreference.visible);
   useEffect(() => {
     const controller = new AbortController();
     let pending = false;
@@ -84,7 +86,7 @@ export function SelectedProjectExplorer({ project, plan, planError, focusPlanReq
   }
   return <section className={s.explorer} aria-label={`Plano e información de ${project.title}`}>
     <div className={s.map}>
-      <SitePlanMap matchingLotIds={matchingLotIds} currency={project.price.currency} plan={plan ?? EMPTY} center={center} showImage={showPlanImage} mapType="roadmap" compactMapControl publicView legendStatuses={['SOLD', 'RESERVED', 'AVAILABLE']} legendAction={plan?.image ? <button type="button" className={s.legendImageButton} aria-pressed={showPlanImage} onClick={() => setShowPlanImage(value => !value)}><ImageIcon size={14} />{showPlanImage ? 'Ocultar imagen del plano' : 'Ver imagen del plano'}</button> : undefined} markers={NO_MARKERS} focusPlanRequest={Math.max(1, focusPlanRequest)} focusPlanZoom={17} selected={selectedLot} onSelect={selectLot} className={s.mapSurface} />
+      <SitePlanMap matchingLotIds={matchingLotIds} currency={project.price.currency} plan={plan ?? EMPTY} center={center} showImage={showPlanImage} mapType="roadmap" compactMapControl publicView legendStatuses={['SOLD', 'RESERVED', 'AVAILABLE']} legendAction={planImageUrl ? <button type="button" className={s.legendImageButton} aria-pressed={showPlanImage} onClick={() => setPlanImagePreference({ url: planImageUrl, visible: !showPlanImage })}><ImageIcon size={14} />{showPlanImage ? 'Ocultar imagen del plano' : 'Ver imagen del plano'}</button> : undefined} markers={NO_MARKERS} focusPlanRequest={Math.max(1, focusPlanRequest)} focusPlanZoom={17} selected={selectedLot} onSelect={selectLot} className={s.mapSurface} />
       <button type="button" className={s.back} onClick={onClose}><ArrowLeft size={15} />Volver a proyectos</button>
 
       {plan === undefined && !planError && <p role="status" className={s.mapNotice}>Cargando plano del proyecto…</p>}

@@ -77,22 +77,73 @@ function imageOverlay(
   image: PlanImage,
 ): MapOverlay {
   const overlay = new sdk.OverlayView();
-  let node: HTMLImageElement | undefined;
-  overlay.onAdd = () => {
-    node = document.createElement("img");
-    node.src = image.url;
-    node.alt = "Plano del proyecto";
-    Object.assign(node.style, {
+  let node: HTMLElement | undefined;
+  let canvas: HTMLCanvasElement | undefined;
+  let source: HTMLImageElement | undefined;
+  let mounted = false;
+  const size = 1000;
+  const styleNode = (element: HTMLElement) => {
+    Object.assign(element.style, {
       position: "absolute",
-      width: "1000px",
-      height: "1000px",
+      width: `${size}px`,
+      height: `${size}px`,
       maxWidth: "none",
       transformOrigin: "0 0",
       pointerEvents: "none",
       opacity: String(image.opacity),
       zIndex: "0",
     });
-    overlay.getPanes()?.overlayLayer.append(node);
+  };
+  overlay.onAdd = () => {
+    mounted = true;
+    canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+    node = canvas;
+    styleNode(canvas);
+    overlay.getPanes()?.overlayLayer.append(canvas);
+    source = new Image();
+    source.crossOrigin = "anonymous";
+    let corsFallback = false;
+    source.onload = () => {
+      if (!mounted || !canvas) return;
+      const loadedImage = source;
+      const context = canvas.getContext("2d", { willReadFrequently: true });
+      if (!context) {
+        console.error("No se pudo preparar la transparencia del plano.");
+        return;
+      }
+      if (!loadedImage) return;
+      context.drawImage(loadedImage, 0, 0, size, size);
+      try {
+        const pixels = context.getImageData(0, 0, size, size);
+        for (let i = 0; i < pixels.data.length; i += 4) {
+          const lightestShadow = Math.min(pixels.data[i], pixels.data[i + 1], pixels.data[i + 2]);
+          const opacity = Math.max(0, Math.min(1, (245 - lightestShadow) / 45));
+          pixels.data[i + 3] *= opacity;
+        }
+        context.putImageData(pixels, 0, 0);
+      } catch (cause) {
+        console.error("No se pudo quitar el fondo blanco del plano.", cause);
+        const fallback = loadedImage;
+        fallback.alt = "Plano del proyecto";
+        styleNode(fallback);
+        canvas.replaceWith(fallback);
+        node = fallback;
+        canvas = undefined;
+      }
+    };
+    source.onerror = () => {
+      if (!mounted || !source) return;
+      if (!corsFallback) {
+        corsFallback = true;
+        source.crossOrigin = null;
+        source.src = image.url;
+        return;
+      }
+      console.error("No se pudo cargar la imagen del plano.");
+    };
+    source.src = image.url;
   };
   overlay.draw = () => {
     if (!node) return;
@@ -116,7 +167,14 @@ function imageOverlay(
     if (a && b && c)
       node.style.transform = `matrix(${(b.x - a.x) / 1000},${(b.y - a.y) / 1000},${(c.x - a.x) / 1000},${(c.y - a.y) / 1000},${a.x},${a.y})`;
   };
-  overlay.onRemove = () => node?.remove();
+  overlay.onRemove = () => {
+    mounted = false;
+    source?.removeAttribute("src");
+    source = undefined;
+    node?.remove();
+    node = undefined;
+    canvas = undefined;
+  };
   overlay.setMap(map);
   return overlay;
 }
@@ -950,7 +1008,23 @@ export function SitePlanMap(props: Props) {
     }
     const points = [...plan.lots.flatMap(l => l.path), ...plan.zones.flatMap(z => z.path)];
     if (!points.length && plan.image) {
-      points.push(plan.image.center);
+      const image = plan.image;
+      const angle = (image.rotation * Math.PI) / 180;
+      const imageCorner = (x: number, y: number): Point => {
+        const east = x * Math.cos(angle) + y * Math.sin(angle);
+        const north = -x * Math.sin(angle) + y * Math.cos(angle);
+        return {
+          lat: image.center.lat + north / 111320,
+          lng: image.center.lng +
+            east / (111320 * Math.cos((image.center.lat * Math.PI) / 180)),
+        };
+      };
+      points.push(
+        imageCorner(-image.widthM / 2, image.heightM / 2),
+        imageCorner(image.widthM / 2, image.heightM / 2),
+        imageCorner(-image.widthM / 2, -image.heightM / 2),
+        imageCorner(image.widthM / 2, -image.heightM / 2),
+      );
     }
     if (!points.length) return;
     const bounds = new sdk.LatLngBounds();

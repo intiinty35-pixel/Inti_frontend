@@ -87,6 +87,11 @@
 .contactButton { display: flex; height: 36px; align-items: center; justify-content: center; gap: 6px; border-radius: 10px; background: #25d366; color: #ffffff; font-size: 12px; font-weight: 700; transition: background-color .15s ease; }
 .contactButton:hover { background: #1fb857; }
 .contactIcon { width: 14px; height: 14px; flex-shrink: 0; }
+.lotInquiry { display: grid; gap: 10px; margin-top: 12px; padding: 14px; border: 1px solid #ccebd8; border-radius: 14px; background: linear-gradient(135deg, #f0fbf4, #f4faff); }
+.lotInquiry > div { display: grid; gap: 4px; }
+.lotInquiry > div span { color: #64748b; font-size: 11px; }
+.lotInquiry > div strong { color: #16324c; font-size: 13px; }
+.lotInquiry .contactButton { min-height: 40px; }
 .lotSheet { padding: 20px; background: white; min-height: 100%; }.lotSheet header { align-items: flex-start; }.lotSheet h2 { font-size: 24px; font-weight: 800; }.lotSheet header p { font-size: 13px; color: #64748b; }.lotSheet .eyebrow { text-transform: uppercase; font-size: 10px; letter-spacing: .1em; font-weight: 700; margin-bottom: 4px; }
 .status { display: inline-block; font-size: 12px; font-weight: 800; padding: 8px 0; margin: 8px 0; }
 .lotSheet table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 18px; }.lotSheet th, .lotSheet td { border: 1px solid #e1e7ee; padding: 10px; text-align: left; }.lotSheet th { color: #64748b; font-weight: 500; background: #f8fafc; width: 43%; }.lotSheet td { font-weight: 650; }.lotSheet .primary { width: 100%; }.projectLink { margin-top: 14px; justify-content: center; }
