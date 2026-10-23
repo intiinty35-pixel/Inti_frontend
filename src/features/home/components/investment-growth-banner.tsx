@@ -27,7 +27,7 @@ export function InvestmentGrowthBanner() {
         />
         <div
           aria-hidden
-          className="absolute inset-x-0 bottom-0 h-24 bg-[linear-gradient(180deg,rgb(7_26_90_/_0)_0%,#273E84_58%,var(--brand-soft)_100%)]"
+          className="absolute inset-x-0 bottom-0 h-24 bg-[linear-gradient(180deg,rgb(7_26_90_/_0)_0%,#273E84_42%,var(--brand-soft)_100%)]"
         />
 
         <div className="relative z-10 mx-auto grid min-h-[250px] w-full max-w-[105rem] gap-6 px-4 py-7 text-white sm:min-h-[230px] sm:px-6 lg:min-h-[210px] lg:grid-cols-[1fr_auto] lg:items-center lg:px-8 xl:px-10">
@@ -84,7 +84,7 @@ export function InvestmentGrowthBanner() {
           </div>
         </div>
       </div>
-      <div aria-hidden className="h-12 bg-[linear-gradient(180deg,var(--brand-soft)_0%,var(--brand-soft)_100%)]" />
+      <div aria-hidden className="h-12 bg-brand-soft" />
     </section>
   );
 }

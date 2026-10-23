@@ -15,6 +15,7 @@ export interface MapPath {
   addListener(name: string, cb: () => void): MapListener;
 }
 export interface GoogleMap {
+  getDiv(): HTMLElement;
   setOptions(options: Record<string, unknown>): void;
   setMapTypeId(type: string): void;
   addListener(name: string, cb: (event: MapEvent) => void): MapListener;
