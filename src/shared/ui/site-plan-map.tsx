@@ -70,22 +70,73 @@ function imageOverlay(
   image: PlanImage,
 ): MapOverlay {
   const overlay = new sdk.OverlayView();
-  let node: HTMLImageElement | undefined;
-  overlay.onAdd = () => {
-    node = document.createElement("img");
-    node.src = image.url;
-    node.alt = "Plano del proyecto";
-    Object.assign(node.style, {
+  let node: HTMLElement | undefined;
+  let canvas: HTMLCanvasElement | undefined;
+  let source: HTMLImageElement | undefined;
+  let mounted = false;
+  const size = 1000;
+  const styleNode = (element: HTMLElement) => {
+    Object.assign(element.style, {
       position: "absolute",
-      width: "1000px",
-      height: "1000px",
+      width: `${size}px`,
+      height: `${size}px`,
       maxWidth: "none",
       transformOrigin: "0 0",
       pointerEvents: "none",
       opacity: String(image.opacity),
       zIndex: "0",
     });
-    overlay.getPanes()?.overlayLayer.append(node);
+  };
+  overlay.onAdd = () => {
+    mounted = true;
+    canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+    node = canvas;
+    styleNode(canvas);
+    overlay.getPanes()?.overlayLayer.append(canvas);
+    source = new Image();
+    source.crossOrigin = "anonymous";
+    let corsFallback = false;
+    source.onload = () => {
+      if (!mounted || !canvas) return;
+      const loadedImage = source;
+      const context = canvas.getContext("2d", { willReadFrequently: true });
+      if (!context) {
+        console.error("No se pudo preparar la transparencia del plano.");
+        return;
+      }
+      if (!loadedImage) return;
+      context.drawImage(loadedImage, 0, 0, size, size);
+      try {
+        const pixels = context.getImageData(0, 0, size, size);
+        for (let i = 0; i < pixels.data.length; i += 4) {
+          const lightestShadow = Math.min(pixels.data[i], pixels.data[i + 1], pixels.data[i + 2]);
+          const opacity = Math.max(0, Math.min(1, (245 - lightestShadow) / 45));
+          pixels.data[i + 3] *= opacity;
+        }
+        context.putImageData(pixels, 0, 0);
+      } catch (cause) {
+        console.error("No se pudo quitar el fondo blanco del plano.", cause);
+        const fallback = loadedImage;
+        fallback.alt = "Plano del proyecto";
+        styleNode(fallback);
+        canvas.replaceWith(fallback);
+        node = fallback;
+        canvas = undefined;
+      }
+    };
+    source.onerror = () => {
+      if (!mounted || !source) return;
+      if (!corsFallback) {
+        corsFallback = true;
+        source.crossOrigin = null;
+        source.src = image.url;
+        return;
+      }
+      console.error("No se pudo cargar la imagen del plano.");
+    };
+    source.src = image.url;
   };
   overlay.draw = () => {
     if (!node) return;
@@ -109,7 +160,14 @@ function imageOverlay(
     if (a && b && c)
       node.style.transform = `matrix(${(b.x - a.x) / 1000},${(b.y - a.y) / 1000},${(c.x - a.x) / 1000},${(c.y - a.y) / 1000},${a.x},${a.y})`;
   };
-  overlay.onRemove = () => node?.remove();
+  overlay.onRemove = () => {
+    mounted = false;
+    source?.removeAttribute("src");
+    source = undefined;
+    node?.remove();
+    node = undefined;
+    canvas = undefined;
+  };
   overlay.setMap(map);
   return overlay;
 }
@@ -147,6 +205,129 @@ function pixelDistance(a: Point, b: Point, zoom: number) {
   const pa = mercatorPixel(a, zoom);
   const pb = mercatorPixel(b, zoom);
   return Math.hypot(pa.x - pb.x, pa.y - pb.y);
+}
+
+function polygonCenter(path: Point[]): Point | undefined {
+  if (path.length < 3) return undefined;
+  const latitude = path.reduce((sum, point) => sum + point.lat, 0) / path.length;
+  const points = path.map(point => ({
+    x: (point.lng - path[0].lng) * 111320 * Math.cos((latitude * Math.PI) / 180),
+    y: (point.lat - path[0].lat) * 111320,
+  }));
+  const bounds = points.reduce((result, point) => ({
+    minX: Math.min(result.minX, point.x),
+    maxX: Math.max(result.maxX, point.x),
+    minY: Math.min(result.minY, point.y),
+    maxY: Math.max(result.maxY, point.y),
+  }), { minX: Infinity, maxX: -Infinity, minY: Infinity, maxY: -Infinity });
+  const contains = (x: number, y: number) => {
+    let inside = false;
+    for (let i = 0, j = points.length - 1; i < points.length; j = i, i += 1) {
+      const a = points[i];
+      const b = points[j];
+      if ((a.y > y) !== (b.y > y) && x < ((b.x - a.x) * (y - a.y)) / (b.y - a.y) + a.x) {
+        inside = !inside;
+      }
+    }
+    return inside;
+  };
+  const clearance = (x: number, y: number) => {
+    let minDistance = Infinity;
+    for (let i = 0; i < points.length; i += 1) {
+      const a = points[i];
+      const b = points[(i + 1) % points.length];
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      const lengthSquared = dx * dx + dy * dy;
+      const t = lengthSquared ? Math.max(0, Math.min(1, ((x - a.x) * dx + (y - a.y) * dy) / lengthSquared)) : 0;
+      minDistance = Math.min(minDistance, Math.hypot(x - a.x - t * dx, y - a.y - t * dy));
+    }
+    return contains(x, y) ? minDistance : -minDistance;
+  };
+  let best = { x: 0, y: 0, distance: -Infinity };
+  const width = bounds.maxX - bounds.minX;
+  const height = bounds.maxY - bounds.minY;
+  let step = Math.min(width, height) / 8;
+  if (!Number.isFinite(step) || step <= 0) return undefined;
+  for (let y = bounds.minY + step / 2; y < bounds.maxY; y += step) {
+    for (let x = bounds.minX + step / 2; x < bounds.maxX; x += step) {
+      const distance = clearance(x, y);
+      if (distance > best.distance) best = { x, y, distance };
+    }
+  }
+  while (step > 0.1) {
+    let improved = false;
+    for (const dx of [-step, 0, step]) {
+      for (const dy of [-step, 0, step]) {
+        const x = best.x + dx;
+        const y = best.y + dy;
+        const distance = clearance(x, y);
+        if (distance > best.distance) {
+          best = { x, y, distance };
+          improved = true;
+        }
+      }
+    }
+    if (!improved) step /= 2;
+  }
+  if (best.distance <= 0) return undefined;
+  const markerCandidates = points
+    .map(point => ({
+      x: best.x + (point.x - best.x) * 0.48,
+      y: best.y + (point.y - best.y) * 0.48,
+    }))
+    .map(point => ({ ...point, distance: clearance(point.x, point.y) }))
+    .filter(point => point.distance >= Math.max(2, best.distance * 0.2))
+    .sort((a, b) => Math.hypot(b.x - best.x, b.y - best.y) - Math.hypot(a.x - best.x, a.y - best.y));
+  const markerPoint = markerCandidates[0] ?? best;
+  return {
+    lat: path[0].lat + markerPoint.y / 111320,
+    lng: path[0].lng + markerPoint.x / (111320 * Math.cos((latitude * Math.PI) / 180)),
+  };
+}
+
+function selectedLotElevation(sdk: MapsSdk, path: Point[]): MapOverlay {
+  const overlay = new sdk.OverlayView();
+  const node = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  node.classList.add(styles.selectedLotElevation);
+  node.setAttribute("aria-hidden", "true");
+
+  overlay.onAdd = () => {
+    overlay.getPanes()?.overlayLayer.append(node);
+  };
+  overlay.draw = () => {
+    const projection = overlay.getProjection();
+    const pixels = path.map(point =>
+      projection.fromLatLngToDivPixel(new sdk.LatLng(point.lat, point.lng)),
+    );
+    if (pixels.some(point => !point)) return;
+    const points = pixels as { x: number; y: number }[];
+    const padding = 20;
+    const minX = Math.min(...points.map(point => point.x)) - padding;
+    const minY = Math.min(...points.map(point => point.y)) - padding;
+    const width = Math.max(...points.map(point => point.x)) - minX + padding;
+    const height = Math.max(...points.map(point => point.y)) - minY + padding;
+    const pathPoints = points.map(point => `${point.x - minX},${point.y - minY}`);
+    const shadowPoints = points.map(point => `${point.x - minX},${point.y - minY + 10}`);
+
+    node.setAttribute("width", String(width));
+    node.setAttribute("height", String(height));
+    node.setAttribute("viewBox", `0 0 ${width} ${height}`);
+    Object.assign(node.style, { left: `${minX}px`, top: `${minY}px` });
+    node.replaceChildren();
+
+    const shadow = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+    shadow.setAttribute("points", shadowPoints.join(" "));
+    shadow.setAttribute("class", styles.selectedLotShadow);
+    node.append(shadow);
+
+    const top = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+    top.setAttribute("points", pathPoints.join(" "));
+    top.setAttribute("class", styles.selectedLotTop);
+    node.append(top);
+  };
+  overlay.onRemove = () => node.remove();
+  return overlay;
 }
 
 /**
@@ -353,19 +534,44 @@ export function SitePlanMap(props: Props) {
     ];
     for (const shape of shapes) {
       const active = shape.id === props.selected;
+      const fillOpacity = shape.contour ? 0 : shape.park ? (props.publicView ? 0.25 : 0.35) : shape.street ? (props.publicView ? 0.15 : 0.3) : shape.zone ? (props.publicView ? 0.025 : 0.08) : active ? 0.32 : props.publicView ? 0.13 : 0.36;
+      const strokeWeight = props.publicView ? (shape.contour ? 1.5 : active ? 2.5 : 1.6) : shape.contour ? (active ? 5 : 4) : active ? 3 : !props.showImage ? 2.5 : 1.5;
       const polygon = new sdk.Polygon({
         map: current,
         paths: shape.path,
         fillColor: shape.color,
-        fillOpacity: shape.contour ? 0 : shape.park ? (props.publicView ? 0.25 : 0.35) : shape.street ? (props.publicView ? 0.15 : 0.3) : shape.zone ? (props.publicView ? 0.025 : 0.08) : active ? 0.32 : props.publicView ? 0.13 : 0.36,
+        fillOpacity,
         strokeColor: active && !props.publicView ? "#ffffff" : shape.color,
-        strokeWeight: props.publicView ? (shape.contour ? 1.5 : active ? 2.5 : 1.6) : shape.contour ? (active ? 5 : 4) : active ? 3 : !props.showImage ? 2.5 : 1.5,
+        strokeWeight,
         editable: editing && active && !props.moveAll,
         draggable: editing && (!!props.moveAll || (active && !shape.contour)),
         clickable: !props.placementMode && (!props.tool || editing),
         zIndex: shape.contour ? 2 : shape.zone ? 1 : active ? 4 : 3,
       });
       objects.push(polygon);
+      if (props.publicView && active && !shape.zone) {
+        objects.push(new sdk.Polyline({
+          map: current,
+          path: [...shape.path, shape.path[0]],
+          strokeColor: "#ffffff",
+          strokeOpacity: 0.95,
+          strokeWeight: 6,
+          zIndex: 30,
+          clickable: false,
+        }));
+        objects.push(new sdk.Polyline({
+          map: current,
+          path: [...shape.path, shape.path[0]],
+          strokeColor: "#075985",
+          strokeOpacity: 1,
+          strokeWeight: 2.5,
+          zIndex: 31,
+          clickable: false,
+        }));
+        const elevation = selectedLotElevation(sdk, shape.path);
+        elevation.setMap(current);
+        objects.push(elevation);
+      }
       if (shape.contour && shape.path.length >= 3) {
         objects.push(new sdk.Polyline({
           map: current,
@@ -382,6 +588,18 @@ export function SitePlanMap(props: Props) {
           callbacks.current.onSelect?.(shape.id),
         ),
       );
+      if (props.publicView && shape.lot) {
+        listeners.push(polygon.addListener("mouseover", () => {
+          polygon.setOptions({
+            fillOpacity: Math.min(0.48, fillOpacity + 0.16),
+            strokeWeight: strokeWeight + 1.2,
+            zIndex: 40,
+          });
+        }));
+        listeners.push(polygon.addListener("mouseout", () => {
+          polygon.setOptions({ fillOpacity, strokeWeight, zIndex: active ? 4 : 3 });
+        }));
+      }
       const persist = () =>
         callbacks.current.onPath?.(
           shape.id,
@@ -533,13 +751,7 @@ export function SitePlanMap(props: Props) {
   ]);
 
   useEffect(() => {
-    if (
-      !sdk ||
-      !map.current ||
-      !props.showImage ||
-      (props.publicView && zoom < 15)
-    )
-      return;
+    if (!sdk || !map.current || !props.showImage) return;
     const images = [
       ...(props.plan.image ? [props.plan.image] : []),
       ...(props.images ?? []),
@@ -553,8 +765,6 @@ export function SitePlanMap(props: Props) {
     props.plan.image,
     props.images,
     props.showImage,
-    props.publicView,
-    zoom,
   ]);
 
   useEffect(() => {
@@ -817,6 +1027,42 @@ export function SitePlanMap(props: Props) {
   }, [props.selected, sdk]);
 
   useEffect(() => {
+    const lot = props.publicView
+      ? props.plan.lots.find(item => item.id === props.selected)
+      : undefined;
+    const center = lot ? polygonCenter(lot.path) : undefined;
+    if (!sdk || !map.current || !lot || !center) return;
+
+    const marker = new sdk.OverlayView();
+    const node = document.createElement("div");
+    node.className = styles.selectedLotMarker;
+    node.setAttribute("role", "img");
+    node.setAttribute("aria-label", `Lote ${lot.code} seleccionado`);
+    const icon = document.createElement("img");
+    icon.src = "/web_v/ubicacion.png";
+    icon.alt = "";
+    icon.width = 30;
+    icon.height = 30;
+    node.append(icon);
+
+    marker.onAdd = () => {
+      marker.getPanes()?.overlayMouseTarget.append(node);
+    };
+    marker.draw = () => {
+      const pixel = marker
+        .getProjection()
+        .fromLatLngToDivPixel(new sdk.LatLng(center.lat, center.lng));
+      if (pixel) {
+        node.style.left = `${pixel.x}px`;
+        node.style.top = `${pixel.y}px`;
+      }
+    };
+    marker.onRemove = () => node.remove();
+    marker.setMap(map.current);
+    return () => marker.setMap(null);
+  }, [sdk, props.publicView, props.selected, props.plan.lots]);
+
+  useEffect(() => {
     if (props.mapCenterRequest && map.current) {
       map.current.panTo(props.center);
       map.current.setZoom(18);
@@ -827,7 +1073,23 @@ export function SitePlanMap(props: Props) {
     const plan = callbacks.current.plan;
     const points = [...plan.lots.flatMap(l => l.path), ...plan.zones.flatMap(z => z.path)];
     if (!points.length && plan.image) {
-      points.push(plan.image.center);
+      const image = plan.image;
+      const angle = (image.rotation * Math.PI) / 180;
+      const imageCorner = (x: number, y: number): Point => {
+        const east = x * Math.cos(angle) + y * Math.sin(angle);
+        const north = -x * Math.sin(angle) + y * Math.cos(angle);
+        return {
+          lat: image.center.lat + north / 111320,
+          lng: image.center.lng +
+            east / (111320 * Math.cos((image.center.lat * Math.PI) / 180)),
+        };
+      };
+      points.push(
+        imageCorner(-image.widthM / 2, image.heightM / 2),
+        imageCorner(image.widthM / 2, image.heightM / 2),
+        imageCorner(-image.widthM / 2, -image.heightM / 2),
+        imageCorner(image.widthM / 2, -image.heightM / 2),
+      );
     }
     if (!points.length) return;
     const bounds = new sdk.LatLngBounds();

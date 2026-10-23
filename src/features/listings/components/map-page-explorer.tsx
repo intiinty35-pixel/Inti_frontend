@@ -37,6 +37,21 @@ function LotSheet({ lot, project, onClose }: { lot: PlanLot; project: Listing; o
     <table><tbody>{rows.map(([label, value]) => <tr key={label}><th>{label}</th><td>{value}</td></tr>)}</tbody></table>
     {lot.financingAllowed && <section className={styles.finance}><h3>Financiamiento</h3><p>Inicial: {money(lot.downPayment)}</p><p>{lot.installments} cuotas de {money(lot.monthlyPayment)}</p>{!!lot.interestRateMonthly && <p>Tasa mensual: {lot.interestRateMonthly}%</p>}<strong>Total: {money(lot.interestRateMonthly ? lot.downPayment + lot.installments * lot.monthlyPayment : lot.financedPrice)}</strong></section>}
     <a className={styles.primary} href={`${env.apiUrl}/projects/${encodeURIComponent(project.slug)}/site-plan/lots/${lot.id}/pdf`}><FileDown size={17} /> Descargar ficha PDF</a>
+    <section className={styles.lotInquiry} aria-label={`Consulta por el lote ${lot.code}`}>
+      <div>
+        <span>¿Te interesa este lote?</span>
+        <strong>Lote {lot.code} · {LOT_LABELS[lot.status]}</strong>
+      </div>
+      <a
+        className={styles.contactButton}
+        href={buildArizWhatsappUrl(`Hola ARIZ, me interesa el lote ${lot.code}${lot.block ? ` de la manzana ${lot.block}` : ''} del proyecto "${project.title}". ¿Me brindan más información?`)}
+        target="_blank"
+        rel="noreferrer"
+      >
+        <WhatsappIcon className={styles.contactIcon} />
+        Consultar por WhatsApp
+      </a>
+    </section>
     <Link className={styles.projectLink} href={ROUTES.project(project.slug)}>Ver proyecto completo <ArrowRight size={15} /></Link>
   </article>;
 }
@@ -110,6 +125,7 @@ export function MapPageExplorer({ listings, loadError = false, mapToolbarHref }:
       try {
         const data = await apiClient.get<PublishedPlan | null>(`/projects/${encodeURIComponent(project.slug)}/site-plan`, { cache: 'no-store', signal: controller.signal });
         if (controller.signal.aborted) return;
+        if (data === undefined) throw new Error('La respuesta del plano está vacía.');
         cache.current.set(project.id, data);
         setResult({ id: project.id, plan: data });
         loaded = true;

@@ -4,3 +4,52 @@
 @media (max-width: 767px) {
   .hideLegendOnMobile { display: none; }
 }
+.selectedLotMarker {
+  position: absolute;
+  z-index: 100;
+  width: 30px;
+  height: 30px;
+  transform: translate(-50%, -100%);
+  pointer-events: none;
+}
+.selectedLotMarker img {
+  display: block;
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  filter: drop-shadow(0 3px 5px #00124f80);
+  animation: selectedLotBounce 1s ease-in-out infinite;
+}
+.selectedLotElevation {
+  position: absolute;
+  overflow: visible;
+  pointer-events: none;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: selectedLotRise 500ms cubic-bezier(.2,.8,.2,1) both;
+}
+.selectedLotShadow {
+  fill: #082f49;
+  fill-opacity: 0.34;
+  filter: blur(5px);
+  vector-effect: non-scaling-stroke;
+}
+.selectedLotTop {
+  fill: #34d399;
+  fill-opacity: 0.15;
+  stroke: #ffffff;
+  stroke-width: 2.5;
+  vector-effect: non-scaling-stroke;
+}
+@keyframes selectedLotRise {
+  from { opacity: .65; transform: translateY(7px) scale(.99); filter: drop-shadow(0 1px 1px rgb(8 47 73 / 20%)); }
+  to { opacity: 1; transform: translateY(-4px) scale(1.025); filter: drop-shadow(0 12px 9px rgb(8 47 73 / 40%)); }
+}
+@keyframes selectedLotBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .selectedLotMarker img { animation: none; }
+  .selectedLotElevation { animation: none; transform: translateY(-4px) scale(1.025); filter: drop-shadow(0 12px 9px rgb(8 47 73 / 40%)); }
+}

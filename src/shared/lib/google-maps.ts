@@ -29,6 +29,7 @@ interface MapBounds {
 }
 export interface MapPolygon {
   setMap(map: GoogleMap | null): void;
+  setOptions(options: Record<string, unknown>): void;
   getPath(): MapPath;
   addListener(name: string, cb: (e: MapEvent) => void): MapListener;
 }
