@@ -193,7 +193,7 @@ export function buildProjectPayload(draft: ProjectDraft): CreateProjectPayload {
     },
 
     lotMode: draft.lotMode,
-    lots: draft.lots
+    lots: (draft.category === "departamentos" ? [] : draft.lots)
       .filter(isLotComplete)
       .map((lot) => toLotPayload(lot, draft.lotMode === "grupo")),
     milestones: draft.milestones.filter((row) => !isMilestoneRowBlank(row)).map(toMilestonePayload),
@@ -264,7 +264,7 @@ export interface CreateProjectMilestoneInput {
 }
 
 export interface CreateProjectInput {
-  category: "LOTIZACION";
+  category: "LOTIZACION" | "DEPARTAMENTOS";
   stage: ApiProjectStage;
   name: string;
   description: string;
@@ -316,7 +316,7 @@ export function toProjectInput(
   media: ProjectMediaInput[],
 ): CreateProjectInput {
   return {
-    category: "LOTIZACION",
+    category: payload.category === "departamentos" ? "DEPARTAMENTOS" : "LOTIZACION",
     stage: STAGE_TO_API[payload.stage],
     name: payload.name,
     description: payload.description,
@@ -350,7 +350,7 @@ export function toProjectInput(
     },
 
     lotMode: LOT_MODE_TO_API[payload.lotMode],
-    lots: payload.lots.map((lot) => ({
+    lots: (payload.category === "departamentos" ? [] : payload.lots).map((lot) => ({
       lotNumber: lot.lotNumber,
       block: lot.block,
       areaM2: lot.areaM2,

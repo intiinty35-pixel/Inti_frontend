@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { geoToImage, imageToGeo } from "@/shared/lib/plan-coordinates";
-import { AVAILABLE_LOT_BORDER, LOT_COLORS, type Point, type SitePlan } from "@/shared/lib/site-plan";
+import { AVAILABLE_LOT_BORDER, LOT_COLORS, type PlanCrop, type Point, type SitePlan } from "@/shared/lib/site-plan";
 import type { PlanTool } from "./site-plan-map";
 import {
   LockKeyhole,
@@ -30,7 +30,9 @@ export function SitePlanCanvas({
   onSelect,
   onPath,
   onComplete,
+  onCrop,
   previewPaths = [],
+  previewLabels = [],
   currency,
 }: {
   plan: SitePlan;
@@ -42,7 +44,9 @@ export function SitePlanCanvas({
   onSelect: (id: string) => void;
   onPath: (id: string, path: Point[]) => void;
   onComplete?: (path: Point[]) => void;
+  onCrop?: (selection: PlanCrop) => void;
   previewPaths?: Point[][];
+  previewLabels?: string[];
   currency?: string;
 }) {
   const [hovered, setHovered] = useState<{ id: string; x: number; y: number }>();
@@ -67,6 +71,8 @@ export function SitePlanCanvas({
   const drawStart = useRef<{ x: number; y: number; point: Point } | null>(null);
   const ignoreClick = useRef(false);
   const [rectangle, setRectangle] = useState<Point[]>([]);
+  const [cropDraft, setCropDraft] = useState<PlanCrop | null>(null);
+  const cropDrag = useRef<{ x: number; y: number; pointerId: number; selection: PlanCrop } | null>(null);
   const resizing = useRef<{
     x: number;
     y: number;
@@ -149,6 +155,56 @@ export function SitePlanCanvas({
   const renderedWidth =
     Math.min(frame.width, (frame.height * image.widthM) / image.heightM) * zoom;
   const renderedHeight = (renderedWidth * image.heightM) / image.widthM;
+  const canCrop = Boolean(onCrop && showImage && !failed && loadedUrl === image.url && tool === "SELECT" && !points.length);
+  const cropBounds = cropDraft ?? { left: 0, top: 0, right: 1, bottom: 1 };
+  const cropHandles = [
+    { x: -1, y: -1, label: "Esquina superior izquierda", cursor: "nwse-resize" },
+    { x: 0, y: -1, label: "Borde superior", cursor: "ns-resize" },
+    { x: 1, y: -1, label: "Esquina superior derecha", cursor: "nesw-resize" },
+    { x: 1, y: 0, label: "Borde derecho", cursor: "ew-resize" },
+    { x: 1, y: 1, label: "Esquina inferior derecha", cursor: "nwse-resize" },
+    { x: 0, y: 1, label: "Borde inferior", cursor: "ns-resize" },
+    { x: -1, y: 1, label: "Esquina inferior izquierda", cursor: "nesw-resize" },
+    { x: -1, y: 0, label: "Borde izquierdo", cursor: "ew-resize" },
+  ];
+  function beginCrop(event: React.PointerEvent<HTMLButtonElement>) {
+    event.preventDefault(); event.stopPropagation(); event.currentTarget.focus();
+    cropDrag.current = { x: Number(event.currentTarget.dataset.cropX), y: Number(event.currentTarget.dataset.cropY), pointerId: event.pointerId, selection: { left: 0, top: 0, right: 1, bottom: 1 } };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  }
+  function dragCrop(event: React.PointerEvent<HTMLButtonElement>) {
+    const drag = cropDrag.current, rect = svg.current?.getBoundingClientRect();
+    if (!drag || !rect) return;
+    event.stopPropagation();
+    const x = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+    const y = Math.max(0, Math.min(1, (event.clientY - rect.top) / rect.height));
+    const selection = { ...drag.selection };
+    if (drag.x < 0) selection.left = Math.min(x, selection.right - 1 / image!.widthM);
+    if (drag.x > 0) selection.right = Math.max(x, selection.left + 1 / image!.widthM);
+    if (drag.y < 0) selection.top = Math.min(y, selection.bottom - 1 / image!.heightM);
+    if (drag.y > 0) selection.bottom = Math.max(y, selection.top + 1 / image!.heightM);
+    drag.selection = selection; setCropDraft(selection);
+  }
+  function endCrop(event: React.PointerEvent<HTMLButtonElement>) {
+    event.stopPropagation(); const drag = cropDrag.current; cropDrag.current = null; setCropDraft(null);
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+    if (drag && (drag.selection.left > 0 || drag.selection.top > 0 || drag.selection.right < 1 || drag.selection.bottom < 1)) onCrop?.(drag.selection);
+  }
+  function cancelCrop() { cropDrag.current = null; setCropDraft(null); }
+  function cropKey(event: React.KeyboardEvent<HTMLButtonElement>) {
+    if (event.key === "Escape") { cancelCrop(); return; }
+    const selection = { left: 0, top: 0, right: 1, bottom: 1 };
+    const dx = event.key === "ArrowRight" ? .01 : event.key === "ArrowLeft" ? -.01 : 0;
+    const dy = event.key === "ArrowDown" ? .01 : event.key === "ArrowUp" ? -.01 : 0;
+    if (!dx && !dy) return;
+    event.preventDefault();
+    const x = Number(event.currentTarget.dataset.cropX), y = Number(event.currentTarget.dataset.cropY);
+    if (x < 0 && dx > 0) selection.left = dx;
+    if (x > 0 && dx < 0) selection.right += dx;
+    if (y < 0 && dy > 0) selection.top = dy;
+    if (y > 0 && dy < 0) selection.bottom += dy;
+    if (selection.left || selection.top || selection.right < 1 || selection.bottom < 1) onCrop?.(selection);
+  }
   function beginResize(event: React.PointerEvent<HTMLButtonElement>) {
     event.preventDefault();
     event.stopPropagation();
@@ -453,6 +509,7 @@ export function SitePlanCanvas({
             setRectangle([]);
           }}
         >
+          <svg width="1000" height="1000" viewBox={image.crop ? `${image.crop.left * 1000} ${image.crop.top * 1000} ${(image.crop.right - image.crop.left) * 1000} ${(image.crop.bottom - image.crop.top) * 1000}` : "0 0 1000 1000"} preserveAspectRatio="none" pointerEvents="none">
           <image
             key={image.url}
             href={image.url}
@@ -467,6 +524,7 @@ export function SitePlanCanvas({
             onError={() => setFailed(true)}
             pointerEvents="none"
           />
+          </svg>
           <g fill={STREET_VERGE_COLOR} stroke={STREET_VERGE_COLOR} strokeWidth={2 * STREET_VERGE_WIDTH_M * 1000 / image.widthM} strokeLinejoin="round" pointerEvents="none">
             {plan.zones.filter(zone => zone.kind === "STREET").map(zone => (
               <polygon key={zone.id} points={zone.path.map(position).join(" ")} />
@@ -540,7 +598,7 @@ export function SitePlanCanvas({
                   fill={shape.color}
                   fillOpacity={shape.contour || ("kind" in shape && shape.kind === "STREET") ? 0 : "kind" in shape && shape.kind === "PARK" ? 0.35 : shape.zone ? 0.08 : hovered?.id === shape.id ? 0.5 : 0.3}
                   stroke={shape.id === selected ? "#2563eb" : shape.lot?.status === "AVAILABLE" ? AVAILABLE_LOT_BORDER : shape.color}
-                  strokeWidth={"kind" in shape && shape.kind === "STREET" ? (shape.id === selected ? 3 : 0) : shape.contour ? (shape.id === selected ? 5 : 4) : shape.id === selected ? 3 : !showImage ? 2.5 : 1.5}
+                  strokeWidth={shape.id === "drawing-group-area" ? 1.5 : "kind" in shape && shape.kind === "STREET" ? (shape.id === selected ? 3 : 0) : shape.contour ? (shape.id === selected ? 5 : 4) : shape.id === selected ? 3 : !showImage ? 2.5 : 1.5}
                   strokeLinejoin="round"
                   vectorEffect="non-scaling-stroke"
                 />
@@ -601,7 +659,7 @@ export function SitePlanCanvas({
               points={points.map(position).join(" ")}
               fill={points.length >= 3 ? "#2563eb33" : "none"}
               stroke="#2563eb"
-              strokeWidth="2"
+              strokeWidth={tool === "GROUP" ? 1.5 : 2}
               vectorEffect="non-scaling-stroke"
               pointerEvents="none"
             />
@@ -620,8 +678,24 @@ export function SitePlanCanvas({
               <text textAnchor="middle" dominantBaseline="central" fontSize={12} fontWeight={750} fill="#ffffff">{badge.letter}</text>
             </g>;
           })}
-          {plan.zones.filter(z => z.kind === "CONTOUR").map(z => <polygon key={`outline-${z.id}`} points={z.path.map(position).join(" ")} fill="none" stroke="#0ea5e9" strokeWidth={4} strokeLinejoin="round" vectorEffect="non-scaling-stroke" pointerEvents="none" />)}
-          {previewPaths.map((path, index) => <polygon key={`preview-${index}`} points={path.map(position).join(" ")} fill="#2563eb" fillOpacity={0.12} stroke="#2563eb" strokeWidth={2} strokeDasharray="5 3" vectorEffect="non-scaling-stroke" pointerEvents="none" />)}
+          {plan.zones.filter(z => z.kind === "CONTOUR").map(z => <polygon key={`outline-${z.id}`} points={z.path.map(position).join(" ")} fill="none" stroke="#0ea5e9" strokeWidth={z.id === "drawing-group-area" ? 1.5 : 4} strokeLinejoin="round" vectorEffect="non-scaling-stroke" pointerEvents="none" />)}
+          {previewPaths.map((path, index) => {
+            const aspect = image.heightM / image.widthM;
+            const anchor = polygonLabel(path.map(p => {
+              const uv = geoToImage(p, image);
+              return { x: uv.x * renderedWidth, y: uv.y * renderedWidth * aspect };
+            }));
+            const label = previewLabels[index] ?? String(index + 1);
+            const fitted = fitPolygonText(label, anchor.radius, 12);
+            return <g key={`preview-${index}`} pointerEvents="none">
+              <polygon points={path.map(position).join(" ")} fill="#2563eb" fillOpacity={0.16} stroke="#2563eb" strokeWidth={1.5} strokeDasharray="5 3" vectorEffect="non-scaling-stroke" />
+              <g transform={`translate(${anchor.x * 1000 / renderedWidth} ${anchor.y * 1000 / (renderedWidth * aspect)}) scale(${1000 / renderedWidth} ${1000 / (renderedWidth * aspect)})`}>
+                <text textAnchor="middle" dominantBaseline="central" fontSize={fitted.size} fontWeight={750} fill="#1e40af" stroke="white" strokeWidth={3} paintOrder="stroke">
+                  {fitted.lines.map((line, lineIndex) => <tspan key={lineIndex} x={0} dy={lineIndex === 0 ? -(fitted.lines.length - 1) * fitted.size * 0.6 : fitted.size * 1.2}>{line}</tspan>)}
+                </text>
+              </g>
+            </g>;
+          })}
           {snapMarker && (tool === "LOT" || tool === "GROUP" || tool === "STREET" || tool === "BLOCK" || selected) && <circle
             cx={geoToImage(snapMarker, image).x * 1000}
             cy={geoToImage(snapMarker, image).y * 1000}
@@ -633,7 +707,7 @@ export function SitePlanCanvas({
               points={rectangle.map(position).join(" ")}
               fill="#2563eb33"
               stroke="#2563eb"
-              strokeWidth="2"
+              strokeWidth={tool === "GROUP" ? 1.5 : 2}
               vectorEffect="non-scaling-stroke"
               pointerEvents="none"
             />
@@ -693,7 +767,23 @@ export function SitePlanCanvas({
                 />
               );
             })}
+          {canCrop && <g pointerEvents="none">
+            {cropDraft && <g fill="rgba(15,23,42,.5)">
+              <rect width={1000} height={cropBounds.top * 1000} />
+              <rect y={cropBounds.bottom * 1000} width={1000} height={(1 - cropBounds.bottom) * 1000} />
+              <rect y={cropBounds.top * 1000} width={cropBounds.left * 1000} height={(cropBounds.bottom - cropBounds.top) * 1000} />
+              <rect x={cropBounds.right * 1000} y={cropBounds.top * 1000} width={(1 - cropBounds.right) * 1000} height={(cropBounds.bottom - cropBounds.top) * 1000} />
+            </g>}
+            <rect x={cropBounds.left * 1000} y={cropBounds.top * 1000} width={(cropBounds.right - cropBounds.left) * 1000} height={(cropBounds.bottom - cropBounds.top) * 1000} fill="none" stroke="#1974f4" strokeWidth={1.5} strokeDasharray="6 4" vectorEffect="non-scaling-stroke" />
+          </g>}
         </svg>
+        {canCrop && cropHandles.map(handle => <button key={`crop-${handle.label}`} type="button" className={styles.resizeHandle} aria-label={`Recortar: ${handle.label}`} title={`${handle.label}: arrastra para recortar el plano`}
+          style={{ opacity: 1, cursor: handle.cursor, left: `calc(50% + ${offset.x + ((handle.x < 0 ? cropBounds.left : handle.x > 0 ? cropBounds.right : (cropBounds.left + cropBounds.right) / 2) - .5) * renderedWidth}px)`, top: `calc(50% + ${offset.y + ((handle.y < 0 ? cropBounds.top : handle.y > 0 ? cropBounds.bottom : (cropBounds.top + cropBounds.bottom) / 2) - .5) * renderedHeight}px)` }}
+          onClick={event => event.stopPropagation()}
+          data-crop-x={handle.x} data-crop-y={handle.y}
+          onPointerDown={beginCrop} onPointerMove={dragCrop} onPointerUp={endCrop}
+          onPointerCancel={cancelCrop} onLostPointerCapture={cancelCrop} onKeyDown={cropKey} />)}
+        {canCrop && <p className={styles.hint}>Arrastra los bordes o las esquinas azules para recortar la hoja. Suelta para aplicar; Esc para cancelar.</p>}
         {transforming && !locked && tool === "SELECT" && (
           <div
             className={styles.selectionFrame}
@@ -707,6 +797,7 @@ export function SitePlanCanvas({
         )}
         {!locked &&
           tool === "SELECT" &&
+          !onCrop &&
           [
             {
               x: -1,

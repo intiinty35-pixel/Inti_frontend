@@ -27,7 +27,7 @@ export async function loadPortfolioSummary(currentPage: ProjectApiPaged): Promis
   for (let offset = 0; offset < uniqueProjects.length; offset += 4) {
     const inventory = await Promise.all(uniqueProjects.slice(offset, offset + 4).map(async project => {
       const session = await read<PlanSession>(`/admin/projects/${encodeURIComponent(project.id)}/site-plan`);
-      const lots = session.revision > 0 || session.plan.lots.length ? session.plan.lots : (await read<ProjectApiDetail>(`/admin/projects/${encodeURIComponent(project.id)}`)).lots;
+      const lots = session.plan.mode === 'APARTMENTS' ? (session.plan.buildings ?? []).flatMap(b => b.floors.flatMap(f => f.apartments)) : session.revision > 0 || session.plan.lots.length ? session.plan.lots : (await read<ProjectApiDetail>(`/admin/projects/${encodeURIComponent(project.id)}`)).lots;
       return { project, lots };
     }));
     for (const { project, lots } of inventory) {
@@ -36,6 +36,7 @@ export async function loadPortfolioSummary(currentPage: ProjectApiPaged): Promis
       summary.available += statuses.filter(status => status === 'AVAILABLE').length;
       summary.reserved += statuses.filter(status => status === 'RESERVED').length;
       summary.sold += statuses.filter(status => status === 'SOLD').length;
+      summary.rented = (summary.rented ?? 0) + statuses.filter(status => status === 'RENTED').length;
       summary.blocked += statuses.filter(status => status === 'BLOCKED').length;
       if (statuses.includes('AVAILABLE')) summary.availableProjects++;
       if (statuses.includes('RESERVED')) summary.reservedProjects++;

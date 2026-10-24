@@ -145,12 +145,17 @@ function LotRow({ index, mode, currency, canRemove, onRemove }: LotRowProps) {
 export function StepLots() {
   const { append, remove, fields } = useFieldArray({ name: "lots" });
   const lots = useWatch({ name: "lots" });
+  const apartments = useWatch({ name: "category" }) === "departamentos";
   const lotMode = useWatch({ name: "lotMode" }) ?? "individual";
   const currency = (useWatch({ name: "currency" }) ?? "PEN") as ProjectCurrency;
   const lotModeError = useFieldError<ProjectDraft>("lotMode");
   const lotsError = useFieldError<ProjectDraft>("lots");
   const totals = summarizeLots(lots ?? [], lotMode);
   const isGroup = lotMode === "grupo";
+
+  if (apartments) return <FieldSet legend="Edificios, pisos y departamentos" description="La distribución de departamentos se administra por edificio y piso en el editor del plano.">
+    <p className="text-sm leading-7 text-muted">Guarda el proyecto y abre su editor del plano. Allí podrás dibujar los edificios sobre Google Maps, crear los pisos, cargar sus planos y registrar cada departamento con su metraje, precio de venta o alquiler y mantenimiento mensual.</p>
+  </FieldSet>;
 
   return (
     <div className="flex flex-col gap-6">

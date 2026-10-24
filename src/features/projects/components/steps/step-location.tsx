@@ -50,7 +50,8 @@ export function StepLocation() {
       ? { latitude: lat, longitude: lng }
       : FALLBACK_CENTER;
 
-  const hasPoint = typeof lat === "number" && typeof lng === "number";
+  const hasPoint = typeof lat === "number" && Number.isFinite(lat) && Math.abs(lat) <= 90
+    && typeof lng === "number" && Number.isFinite(lng) && Math.abs(lng) <= 180;
 
   function applyRegion(next: Partial<Pick<ProjectDraft, "department" | "province" | "district">>) {
     const patch: Array<[keyof ProjectDraft, string]> = [];

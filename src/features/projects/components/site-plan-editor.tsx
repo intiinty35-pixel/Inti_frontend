@@ -6,7 +6,6 @@ import {
   Eye,
   EyeOff,
   FileSpreadsheet,
-  Pencil,
   Save,
   Upload,
   Undo2,
@@ -28,6 +27,7 @@ import { SitePlanMap, type PlanTool } from "@/shared/ui/site-plan-map";
 import { SitePlanCanvas } from "@/shared/ui/site-plan-canvas";
 import { AdminLotDetail } from "./admin-lot-detail";
 import { PdfPlanImport } from "./pdf-plan-import";
+import { cropPlan, restorePlanCrop } from "@/shared/lib/plan-coordinates";
 import { LotTable } from "./lot-table";
 import { DrawingToolSelect } from "./drawing-tool-select";
 import { DiscardDrawingDialog } from "./discard-drawing-dialog";
@@ -41,6 +41,8 @@ import {
   newLot,
   polygonMetrics,
   measuredLotGroup,
+  blockLotGroup,
+  lotNumberRange,
   type PlanLot,
   type PlanSession,
   type PlanZone,
@@ -57,6 +59,7 @@ const toolLabels: Partial<Record<PlanTool, string>> = {
   PARK: "Parque",
   CONTOUR: "Contorno",
   LOT: "Lote",
+  GROUP: "Grupo de lotes iguales",
 };
 const toolIcons = {
   SELECT: MousePointer2,
@@ -71,7 +74,7 @@ const fileUrl = (path: string) => `${env.apiUrl}${path}`;
 const lotKey = (lot: PlanLot) =>
   `${lot.block.trim().toLowerCase()}|${lot.code.trim().toLowerCase()}`;
 
-export function SitePlanEditor({ initial, initialShowLots = false }: { initial: PlanSession; initialShowLots?: boolean }) {
+export function SitePlanEditor({ initial, initialShowLots = false, environmentOnly = false }: { initial: PlanSession; initialShowLots?: boolean; environmentOnly?: boolean }) {
   const [plan, setPlan] = useState(initial.plan);
   const [discardDecision, setDiscardDecision] = useState<((discard: boolean) => void) | null>(null);
   const [pdfFile, setPdfFile] = useState<File>();
@@ -92,23 +95,39 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
   const sidebar = useRef<HTMLElement>(null);
   const [showImage, setShowImage] = useState(true);
   const [panel, setPanel] = useState<"BASE" | "IMAGE" | "SUMMARY" | "ZONES">(
-    "BASE",
+    environmentOnly ? "IMAGE" : "BASE",
   );
   const [view, setView] = useState<"PLAN" | "MAP">("PLAN");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
-  const [groupCount, setGroupCount] = useState(10);
+  const [groupMode, setGroupMode] = useState<"AREA" | "SPLIT">("AREA");
+  const [groupBoundary, setGroupBoundary] = useState<Point[]>([]);
+  const [groupBlock, setGroupBlock] = useState("");
+  const [groupStart, setGroupStart] = useState(1);
+  const [groupEnd, setGroupEnd] = useState(10);
+  const groupNumbers = useMemo(() => {
+    try { return lotNumberRange(groupStart, groupEnd); }
+    catch { return []; }
+  }, [groupStart, groupEnd]);
+  const groupCount = groupNumbers.length;
   const [groupFront, setGroupFront] = useState(8);
   const [groupDepth, setGroupDepth] = useState(18);
   const [groupDirection, setGroupDirection] = useState(false);
-  const groupPreview = useMemo(() => {
-    if (tool !== "GROUP" || points.length !== 4) return [];
-    try { return measuredLotGroup(points, groupCount, groupFront, groupDepth, groupDirection).map(l => l.path); }
-    catch { return []; }
-  }, [tool, points, groupCount, groupFront, groupDepth, groupDirection]);
+  const [groupReverse, setGroupReverse] = useState(false);
+  const groupGeometry = useMemo(() => {
+    if (tool !== "GROUP" || points.length !== 4 || !plan.image || (groupMode === "AREA" && groupBoundary.length < 3)) return { lots: [], error: "" };
+    try {
+      if (!groupCount) throw new Error("Revisa Desde y Hasta: usa números positivos y un máximo de 100 lotes.");
+      if (groupMode === "SPLIT") return { lots: measuredLotGroup(points, groupCount, groupFront, groupDepth, groupDirection, groupReverse), error: "" };
+      return { lots: blockLotGroup(groupBoundary, points, groupCount, groupFront, groupDepth, groupReverse), error: "" };
+    } catch (cause) {
+      return { lots: [], error: cause instanceof Error ? cause.message : "Revisa el dibujo del grupo." };
+    }
+  }, [tool, points, plan.image, groupBoundary, groupMode, groupCount, groupFront, groupDepth, groupDirection, groupReverse]);
+  const groupPreview = groupGeometry.lots.map(l => l.path);
   const groupProportionMismatch = (() => {
-    if (tool !== "GROUP" || points.length !== 4 || !plan.image || !groupPreview.length) return false;
+    if (tool !== "GROUP" || groupMode !== "SPLIT" || points.length !== 4 || !plan.image || !groupPreview.length) return false;
     const image = plan.image;
     const ordered = groupDirection ? [points[1], points[2], points[3], points[0]] : points;
     const xy = ordered.map(p => geoToImage(p, image));
@@ -117,8 +136,6 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
     const depth = (distance(xy[0], xy[3]) + distance(xy[1], xy[2])) / 2;
     return depth > 0 && Math.abs(width / depth / (groupCount * groupFront / groupDepth) - 1) > 0.25;
   })();
-  const [groupStart, setGroupStart] = useState(1);
-  const [groupBlock, setGroupBlock] = useState("");
   const [groupStreet, setGroupStreet] = useState("");
   const [groupTerms, setGroupTerms] = useState({
     areaM2: 0,
@@ -175,7 +192,7 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
             ? "ZONE"
             : panel;
   const duplicateLot = lot ? plan.lots.find(existing => existing.id !== lot.id && lotKey(existing) === lotKey(lot)) : undefined;
-  const formPending = Boolean(lot || zone || points.length || blockName.trim());
+  const formPending = Boolean(lot || zone || points.length || groupBoundary.length || blockName.trim());
   const movingWholeBlock = !formPending && !busy && (moveAll || (view === "MAP" && !showImage && !blockFixed));
   const unsaved = dirty || formPending;
   const previewZone =
@@ -188,7 +205,7 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
           path: points,
         }
       : undefined);
-  const previewZonesPlan = previewZone
+  const basePreviewZonesPlan = previewZone
     ? {
         ...plan,
         zones: [
@@ -197,6 +214,9 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
         ],
       }
     : plan;
+  const previewZonesPlan = tool === "GROUP" && groupBoundary.length >= 3
+    ? { ...basePreviewZonesPlan, zones: [...basePreviewZonesPlan.zones, { id: "drawing-group-area", kind: "CONTOUR" as const, name: "Contorno del grupo", path: groupBoundary }] }
+    : basePreviewZonesPlan;
   const drawingLot = lot && duplicateLot && (!duplicateLot.path.length || samePlanPath(duplicateLot.path, lot.path)) ? { ...duplicateLot, id: lot.id, path: lot.path } : lot;
   const previewPlan = drawingLot && drawingLot.path.length >= 3
     ? { ...previewZonesPlan, lots: [...previewZonesPlan.lots.filter(l => l.id !== drawingLot.id), drawingLot] }
@@ -234,7 +254,8 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
       plan.image &&
       next.image &&
       plan.image !== next.image &&
-      plan.image.url === next.image.url
+      plan.image.url === next.image.url &&
+      JSON.stringify(plan.image.crop) === JSON.stringify(next.image.crop)
     ) {
       if (formPending) {
         setError(
@@ -250,6 +271,7 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
         ...next,
         lots: next.lots.map((l) => ({ ...l, path: l.path.map(transform) })),
         zones: next.zones.map((z) => ({ ...z, path: z.path.map(transform) })),
+        ...(next.buildings ? { buildings: next.buildings.map(building => ({ ...building, path: building.path.map(transform) })) } : {}),
       };
     }
     setHistory((previous) => [...previous.slice(-29), plan]);
@@ -263,8 +285,9 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
     setZone(undefined);
     setSelected(undefined);
     setPoints([]);
+    setGroupBoundary([]);
     setTool("SELECT");
-    setPanel("BASE");
+    setPanel(environmentOnly ? "IMAGE" : "BASE");
     setBlockName("");
   }
   async function confirmDiscard() {
@@ -334,25 +357,36 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
       });
     else if (tool === "LOT") setLot({ ...newLot(points), block: groupBlock });
     else if (tool === "GROUP") {
+      if (groupMode === "AREA" && groupBoundary.length < 3) {
+        setGroupBoundary(points);
+        setPoints([]);
+        setMessage("Contorno del grupo definido. Ahora dibuja el primer lote dentro de ese contorno.");
+        return;
+      }
       try {
-        const measured = measuredLotGroup(points, groupCount, groupFront, groupDepth, groupDirection);
+        if (groupGeometry.error) throw new Error(groupGeometry.error);
+        const measured = groupGeometry.lots;
+        if (!measured.length) throw new Error("Completa el dibujo y la numeración del grupo.");
         const parts = measured.map(l => l.path);
         if (!groupBlock.trim())
           throw new Error("Escribe la manzana del grupo.");
-        if (!Number.isInteger(groupStart) || groupStart < 1)
-          throw new Error("La numeración inicial debe ser un entero positivo.");
-        const availableBase = plan.lots.filter(
-          (l) =>
-            l.block.trim().toLowerCase() === groupBlock.trim().toLowerCase() &&
-            l.fromExcel &&
-            !l.path.length,
-        );
-        if (availableBase.length && availableBase.length < groupCount)
-          throw new Error(
-            `La manzana tiene ${availableBase.length} lotes sin dibujar. Ajusta la cantidad o asígnalos uno por uno.`,
-          );
+        const availableBase = groupNumbers.map(number => plan.lots.find(l =>
+          l.block.trim().toLowerCase() === groupBlock.trim().toLowerCase()
+          && l.fromExcel && !l.path.length
+          && /^(?:L-)?\d+$/i.test(l.code.trim())
+          && Number(l.code.trim().replace(/^L-/i, "")) === number,
+        ));
+        if (availableBase.some(l => !l)) {
+          if (!groupTerms.cashAllowed && !groupTerms.financingAllowed)
+            throw new Error("Elige al contado o financiado para los lotes.");
+          if (Object.values(groupTerms).some(value => typeof value === "number" && (!Number.isFinite(value) || value < 0)))
+            throw new Error("Revisa los precios y condiciones del grupo.");
+          if (groupTerms.financingAllowed && (!Number.isInteger(groupTerms.installments) || groupTerms.installments < 1 || groupTerms.downPayment > groupTerms.financedPrice))
+            throw new Error("Revisa la cuota inicial, el total financiado y el número de cuotas.");
+        }
         const generated = parts.map((path, i) => {
-          if (availableBase.length) return { ...availableBase[i], path };
+          const existing = availableBase[i];
+          if (existing) return { ...existing, path };
           const created = newLot(path);
           const areaM2 = measured[i].areaM2;
           return {
@@ -369,7 +403,7 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
                       100,
                   ) / 100
                 : 0,
-            code: `L-${String(groupStart + i).padStart(2, "0")}`,
+            code: `L-${String(groupNumbers[i]).padStart(2, "0")}`,
             block: groupBlock.trim(),
             street: groupStreet,
           };
@@ -395,6 +429,7 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
         };
         change(nextPlan);
         setPoints([]);
+        setGroupBoundary([]);
         setTool("SELECT");
         setMessage(
           `${generated.length} lotes individuales creados. Selecciona cada uno para revisar sus condiciones.`,
@@ -552,7 +587,7 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
     if (zone?.id === id) setZone({ ...zone, path });
   }
   function rotateAll(degrees: number) {
-    if (!plan.image || formPending || !Number.isFinite(degrees)) return;
+    if (!plan.image || busy || formPending || !Number.isFinite(degrees)) return;
     setView("MAP");
     change({ ...plan, image: { ...plan.image, rotation: Math.max(-360, Math.min(360, degrees)) } });
   }
@@ -821,6 +856,18 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
     });
     closeForm();
   }
+  function clearLots() {
+    if (busy || !plan.lots.length) return;
+    if (!window.confirm(
+      `¿Vaciar los ${plan.lots.length} lotes del borrador? Se eliminarán sus dibujos y datos (códigos, precios y estados). Guarda el borrador para conservar el cambio.`,
+    )) return;
+    change({ ...plan, lots: [] });
+    closeForm();
+    setImported(undefined);
+    setShowLotTable(false);
+    setError("");
+    setMessage("Lotes vaciados. Guarda el borrador para conservar el cambio o pulsa Deshacer para recuperarlos.");
+  }
   const money = (value: number) =>
     new Intl.NumberFormat("es-PE", {
       style: "currency",
@@ -909,7 +956,7 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
           </Link>
           <h1>{initial.project.name}</h1>
           <p className={s.muted}>
-            Editor del plano ·{" "}
+            {environmentOnly ? "Proyecto de departamentos · Entorno y áreas comunes" : "Proyecto de lotes · Editor del plano"} ·{" "}
             <span className={s.badge}>
               {dirty ? "Cambios sin guardar" : "Borrador guardado"}
             </span>
@@ -918,6 +965,7 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
           </p>
         </div>
         <div className={s.actions}>
+          {environmentOnly && <Link href={`/panel/admin/projects/${initial.project.id}/site-plan`} className={s.button} onClick={event => { if (unsaved && !window.confirm("Hay cambios sin guardar. ¿Volver a edificios y departamentos?")) event.preventDefault(); }}>Volver a edificios y departamentos</Link>}
           <Link
             href={`/panel/admin/projects/${initial.project.id}/edit`}
             className={s.button}
@@ -956,11 +1004,12 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
       <div className={`${s.toolbar} ${s.drawingToolbar}`}>
         <div className={`${s.actions} ${s.drawingActions}`}>
           <DrawingToolSelect value={tool} disabled={busy} onChange={chooseTool}
-            options={Object.entries(toolLabels).map(([value, label]) => ({ value: value as PlanTool, label, icon: toolIcons[value as PlanTool] }))} />
+            options={Object.entries(toolLabels).filter(([value]) => !environmentOnly || (value !== "LOT" && value !== "GROUP" && value !== "BLOCK")).map(([value, label]) => ({ value: value as PlanTool, label, icon: toolIcons[value as PlanTool] }))} />
           <button onClick={() => { setShowImage(!showImage); setMoveAll(false); setBlockFixed(false); }}>
             {showImage ? <EyeOff size={15} /> : <Eye size={15} />}
             {showImage ? "Ocultar imagen" : "Mostrar imagen"}
           </button>
+          {plan.image?.crop && <button type="button" disabled={busy || formPending} onClick={() => { try { change(restorePlanCrop(plan)); } catch (cause) { setError(cause instanceof Error ? cause.message : "No se pudo restaurar el plano."); } }}>Restaurar hoja completa</button>}
           <label className={s.button}>
             <Upload size={15} />
             {plan.image ? "Reemplazar plano" : "Subir plano"}
@@ -982,10 +1031,10 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
             Quitar punto
           </button>
           <button
-            disabled={busy || points.length < 3 || Boolean(lot || zone)}
+            disabled={busy || points.length < 3 || Boolean(lot || zone) || (tool === "GROUP" && (groupMode !== "AREA" || groupBoundary.length >= 3))}
             onClick={finish}
           >
-            Terminar dibujo ({points.length})
+            {tool === "GROUP" && groupMode === "AREA" && groupBoundary.length < 3 ? "Usar contorno del grupo" : "Terminar dibujo"} ({points.length})
           </button>
           <button
             type="button"
@@ -1000,10 +1049,11 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
               busy ||
               (!history.length &&
                 !points.length &&
+                !groupBoundary.length &&
                 !(!selected && (lot || zone)))
             }
             onClick={() => {
-              if (points.length > 0 || (!selected && (lot || zone))) {
+              if (points.length > 0 || groupBoundary.length > 0 || (!selected && (lot || zone))) {
                 clearDrawing();
                 return;
               }
@@ -1042,7 +1092,7 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
           >
             Alinear en Google Maps
           </button>
-          {!showImage && <button type="button" className={movingWholeBlock ? s.active : ""} disabled={busy} onClick={async () => {
+          {plan.image && <button type="button" className={movingWholeBlock ? s.active : ""} disabled={busy} onClick={async () => {
             if (!await confirmDiscard()) return;
             const next = !movingWholeBlock;
             closeForm();
@@ -1050,9 +1100,9 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
             setView("MAP");
             setMoveAll(next);
             setBlockFixed(!next);
-          }}>{movingWholeBlock ? "Terminar de mover" : "Mover todo"}</button>}
+          }}>{movingWholeBlock ? "Terminar de mover" : "Mover plano con la mano"}</button>}
           {plan.image && <>
-            <button type="button" disabled={busy} onClick={() => { setView("MAP"); setFocusPlanRequest(n => n + 1); }}>Enfocar lotes</button>
+            <button type="button" disabled={busy} onClick={() => { setView("MAP"); setFocusPlanRequest(n => n + 1); }}>{environmentOnly ? "Enfocar entorno" : "Enfocar lotes"}</button>
             <div className={s.groupRotation}>
               <span>Escala del plano</span>
               <button type="button" disabled={busy || formPending} onClick={() => resizeWholePlan(0.95)}>−5 %</button>
@@ -1066,33 +1116,46 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
             }}>Traer plano al punto del proyecto</button>
             {view === "MAP" && <button type="button" disabled={busy || formPending || !dirty} onClick={() => save(false, undefined, true)}>Fijar ubicación</button>}
           </>}
-          {!showImage && plan.image && <div className={s.groupRotation}>
-            <span>Girar conjunto</span>
+          {plan.image && <div className={s.groupRotation}>
+            <span>Girar plano</span>
             <button type="button" aria-label="Girar todo un grado a la izquierda" disabled={busy || formPending} onClick={() => rotateAll(plan.image!.rotation - 1)}>↶</button>
             <input type="range" aria-label="Rotación de todo el conjunto" min={-360} max={360} step={0.1} value={plan.image.rotation} disabled={busy || formPending} onChange={e => rotateAll(Number(e.target.value))} />
             <input type="number" aria-label="Ángulo del conjunto en grados" min={-360} max={360} step={0.1} value={Math.round(plan.image.rotation * 10) / 10} disabled={busy || formPending} onChange={e => rotateAll(Number(e.target.value))} />
             <span>°</span>
             <button type="button" aria-label="Girar todo un grado a la derecha" disabled={busy || formPending} onClick={() => rotateAll(plan.image!.rotation + 1)}>↷</button>
+            <button type="button" disabled={busy || formPending || plan.image.rotation === 0} onClick={() => rotateAll(0)}>Restablecer giro</button>
           </div>}
         </div>
         <p className={s.muted}>
-          {tool === "SELECT"
+          {view === "MAP" && movingWholeBlock
+            ? "Arrastra la imagen del plano o uno de sus dibujos para mover el conjunto. Al terminar, pulsa Fijar ubicación."
+            : tool === "SELECT"
             ? "Selecciona un elemento. Arrastra sus vértices para ajustar el contorno."
+            : tool === "GROUP" && groupMode === "AREA"
+              ? groupBoundary.length < 3
+                ? "Dibuja el contorno de este grupo dentro de la manzana. Luego dibujarás el primer lote."
+                : "Ahora dibuja las cuatro esquinas del primer lote dentro del contorno azul y revisa la distribución."
             : "Haz clic en los vértices, en orden, y pulsa Terminar dibujo. Para grupos dibuja exactamente cuatro vértices."}
         </p>
       </div>
       <div className={s.layout}>
         {view === "PLAN" ? (
           <SitePlanCanvas
+            onCrop={busy || formPending ? undefined : selection => { try { change(cropPlan(plan, selection)); setMessage("Plano recortado. Guarda el borrador para conservar el cambio."); } catch (cause) { setError(cause instanceof Error ? cause.message : "No se pudo recortar el plano."); } }}
             currency={initial.project.currency}
             previewPaths={groupPreview}
+            previewLabels={groupPreview.map((_, index) => {
+              const number = groupNumbers[index];
+              const base = plan.lots.find(l => l.fromExcel && !l.path.length && l.block.trim().toLowerCase() === groupBlock.trim().toLowerCase() && /^(?:L-)?\d+$/i.test(l.code.trim()) && Number(l.code.trim().replace(/^L-/i, "")) === number);
+              return base?.code ?? `L-${String(number).padStart(2, "0")}`;
+            })}
             onComplete={(path) => {
               if (busy || lot || zone) return;
               setPoints(path);
-              if (tool === "GROUP") return;
+              if (tool === "GROUP" && (groupMode !== "AREA" || groupBoundary.length >= 3)) return;
               completeDrawing(path);
             }}
-            plan={previewPlan}
+            plan={environmentOnly ? { ...previewPlan, lots: [] } : previewPlan}
             tool={tool}
             points={points}
             selected={selected}
@@ -1101,6 +1164,7 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
             onPath={updatePath}
             onPoint={(p) => {
               if (!busy && plan.image && tool !== "SELECT" && !lot && !zone) {
+                if (tool === "GROUP" && (groupMode !== "AREA" || groupBoundary.length >= 3) && points.length >= 4) return;
                 const next = [...points, p];
                 setPoints(next);
                 if (tool === "LOT" && next.length === 4) completeDrawing(next);
@@ -1115,7 +1179,7 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
             focusProject={hasLocation}
             markers={projectMarkers}
             markerFocusId={hasLocation ? "project-location" : undefined}
-            plan={previewPlan}
+            plan={environmentOnly ? { ...previewPlan, lots: [] } : previewPlan}
             center={center}
             showImage={showImage}
             selected={selected}
@@ -1123,6 +1187,10 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
             points={points}
             onSelect={id => { if (!movingWholeBlock) select(id); }}
             onPath={updatePath}
+            onImageMove={(target) => {
+              if (!movingWholeBlock || !plan.image) return;
+              change({ ...plan, image: { ...plan.image, center: target } });
+            }}
             onPoint={(p) => {
               if (!busy && tool !== "SELECT" && !lot && !zone)
                 setPoints((prev) => [...prev, p]);
@@ -1146,7 +1214,7 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
                 ["ZONES", "Zonas y calles"],
                 ["SUMMARY", "Resumen"],
               ] as const
-            ).map(([key, label]) => (
+            ).filter(([key]) => !environmentOnly || key !== "BASE").map(([key, label]) => (
               <button
                 type="button"
                 key={key}
@@ -1528,16 +1596,36 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
           )}
           {tool === "GROUP" && (
             <section className={`${s.card} ${s.fields}`}>
-              <h2>Dividir franja por medidas</h2>
+              <h2>Grupo de lotes iguales</h2>
+              <label>
+                Forma de crear el grupo
+                <select value={groupMode} onChange={e => { setGroupMode(e.target.value as "AREA" | "SPLIT"); setGroupBoundary([]); setPoints([]); }}>
+                  <option value="AREA">Contorno del grupo + primer lote modelo</option>
+                  <option value="SPLIT">Dividir una franja completa</option>
+                </select>
+              </label>
               <p>
-                Marca las cuatro esquinas sobre tu plano. Revisa la división antes de generar los lotes.
+                {groupMode === "AREA"
+                  ? groupBoundary.length < 3
+                    ? "Paso 1: dibuja el contorno de este grupo dentro de la manzana y pulsa Usar contorno del grupo. Puede ser solo una parte de la manzana, por ejemplo el espacio para seis lotes iguales."
+                    : "Paso 2: dibuja el primer lote como guía de orientación y proporción. Indica la cantidad que quieres y el sistema ajustará las medidas para distribuirlos dentro del contorno azul."
+                  : "Marca cuatro esquinas en orden alrededor de toda la franja. Revisa la división y los códigos antes de generar."}
               </p>
-              <div className={s.grid}>
+              {groupMode === "AREA" && (groupBoundary.length < 3
+                ? <button type="button" disabled={busy || points.length < 3} onClick={finish}>Usar contorno del grupo</button>
+                : <button type="button" disabled={busy} onClick={() => { setGroupBoundary([]); setPoints([]); setError(""); setMessage(""); }}>Volver a dibujar el contorno del grupo</button>)}
+              {groupMode === "SPLIT" && <div className={s.grid}>
                 <label>Frente de cada lote (m)<input type="number" min={0.01} step={0.01} value={groupFront} onChange={e => setGroupFront(Number(e.target.value))} /></label>
                 <label>Fondo de cada lote (m)<input type="number" min={0.01} step={0.01} value={groupDepth} onChange={e => setGroupDepth(Number(e.target.value))} /></label>
-              </div>
-              <button type="button" onClick={() => setGroupDirection(v => !v)}>Cambiar sentido de división</button>
-              <div className={s.notice}>{groupCount} lotes · {groupFront * groupDepth} m² cada uno · Frente total: {Math.round(groupCount * groupFront * 100) / 100} m</div>
+              </div>}
+              {groupMode === "SPLIT" && <button type="button" onClick={() => setGroupDirection(v => !v)}>Cambiar sentido de división</button>}
+              <label className={s.check}>
+                <input type="checkbox" checked={groupReverse} onChange={e => setGroupReverse(e.target.checked)} />
+                Numerar desde el extremo opuesto
+              </label>
+              <p className={s.muted}>{groupMode === "AREA" ? "Tú decides la cantidad. El sistema ajusta el tamaño de los lotes al contorno, conservando la orientación y proporción del modelo. Las medidas y áreas se calculan a partir del resultado. " : ""}Los colores por estado se aplican al generar. Revisa la escala del plano.</p>
+              {groupGeometry.error && <p role="alert" className={s.error}>{groupGeometry.error}</p>}
+              <div className={s.notice} aria-live="polite">{groupCount} lotes{groupMode === "SPLIT" ? ` · ${groupFront * groupDepth} m² cada uno` : groupGeometry.lots.length ? ` · ${groupGeometry.lots[0].areaM2} m² aprox. por lote` : " · Tamaño ajustado automáticamente"}{groupCount > 0 ? ` · Del ${groupStart} al ${groupEnd}` : ""}</div>
               {groupProportionMismatch && <p role="status" className={s.error}>La proporción dibujada no coincide con frente y fondo. Revisa la franja, las medidas o cambia el sentido de división.</p>}
               <label>
                 Manzana *
@@ -1557,26 +1645,40 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
               </label>
               <div className={s.grid}>
                 <label>
-                  Cantidad
-                  <input
-                    type="number"
-                    min={2}
-                    max={100}
-                    value={groupCount}
-                    onChange={(e) => setGroupCount(Number(e.target.value))}
-                  />
+                  Cantidad de lotes
+                  <input type="number" min={1} max={100} step={1} value={groupCount || ""} onChange={e => {
+                    const count = Number(e.target.value);
+                    if (!Number.isInteger(count) || count < 1 || count > 100) { setGroupEnd(0); return; }
+                    setGroupEnd(groupStart + count - 1);
+                  }} />
                 </label>
                 <label>
-                  Numeración inicial
+                  Desde el número
                   <input
                     type="number"
                     min={1}
-                    value={groupStart}
-                    onChange={(e) => setGroupStart(Number(e.target.value))}
+                    step={1}
+                    value={groupStart || ""}
+                    onChange={(e) => {
+                      const start = Number(e.target.value);
+                      if (start >= 1 && groupCount) setGroupEnd(start + (groupEnd >= groupStart ? 1 : -1) * (groupCount - 1));
+                      setGroupStart(start);
+                    }}
+                  />
+                </label>
+                <label>
+                  Hasta el número
+                  <input
+                    type="number"
+                    min={1}
+                    step={1}
+                    value={groupEnd || ""}
+                    onChange={(e) => setGroupEnd(Number(e.target.value))}
                   />
                 </label>
               </div>
-              <button type="button" className={s.primary} disabled={groupPreview.length !== groupCount || busy} onClick={finish}>Generar {groupCount} lotes</button>
+              {!groupCount && <p role="alert" className={s.error}>Indica desde qué número hasta qué número crear. Máximo 100 lotes por grupo.</p>}
+              <button type="button" className={s.primary} disabled={!groupCount || groupPreview.length !== groupCount || !groupBlock.trim() || busy} onClick={finish}>Generar {groupCount} lotes</button>
             </section>
           )}
           {tool === "GROUP" && (
@@ -1686,6 +1788,16 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
                 >
                   Crear lote sin dibujo
                 </button>
+                {initial.project.id === "89199a88-7079-45cb-a51b-eea9e2de4266" && (
+                  <button
+                    type="button"
+                    className={s.danger}
+                    disabled={busy || plan.lots.length === 0}
+                    onClick={clearLots}
+                  >
+                    Vaciar lotes (temporal)
+                  </button>
+                )}
               </div>
               <button type="button" className="mt-3" disabled={busy} onClick={() => setShowLotTable(true)}>
                 Ver cuadro de lotes / Descargar Excel o PDF
@@ -1839,7 +1951,8 @@ export function SitePlanEditor({ initial, initialShowLots = false }: { initial: 
               </p>
             </section>
           )}
-          {activePanel === "SUMMARY" && (
+          {activePanel === "SUMMARY" && environmentOnly && <section className={s.card}><h2>Entorno del proyecto</h2><p className={s.muted}>{plan.zones.length} zonas y trazos · {plan.buildings?.length ?? 0} edificios. Los pisos y departamentos se administran en su propio editor.</p></section>}
+          {activePanel === "SUMMARY" && !environmentOnly && (
             <section className={s.card}>
               <h2>Resumen del plano</h2>
               <div className={s.grid}>

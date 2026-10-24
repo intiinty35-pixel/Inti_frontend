@@ -50,7 +50,7 @@ export function toProjectCardModel(project: ProjectApiSummary): Project {
     },
     areaRange: project.areaRange,
     lotsTotal: project.totalLots ?? project.lotsCount,
-    lotsLabel: "lotes",
+    lotsLabel: project.category === "DEPARTAMENTOS" ? "departamentos" : "lotes",
     deliveryAt: project.estimatedDelivery,
     deliveryStage: PROJECT_STAGE_LABELS[stage],
     features: [],

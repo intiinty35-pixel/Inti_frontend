@@ -41,6 +41,7 @@ export interface MapOverlay {
   } | null;
   getProjection(): {
     fromLatLngToDivPixel(point: LatLng): { x: number; y: number } | null;
+    fromDivPixelToLatLng(point: { x: number; y: number }): LatLng | null;
   };
   onAdd(): void;
   draw(): void;

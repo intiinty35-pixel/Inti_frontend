@@ -14,6 +14,11 @@ export interface LocationPickerProps extends MapPoint {
   onChange: (location: MapPoint) => void;
 }
 
+function isValidPoint(latitude: number, longitude: number) {
+  return Number.isFinite(latitude) && Math.abs(latitude) <= 90
+    && Number.isFinite(longitude) && Math.abs(longitude) <= 180;
+}
+
 const markerIcon = new L.DivIcon({
   className: "",
   html: '<span class="block size-6 rounded-full border-[3px] border-white bg-brand shadow-[0_8px_20px_rgb(0_18_79/0.35)] ring-4 ring-brand/20"></span>',
@@ -25,6 +30,7 @@ function MapSync({ latitude, longitude }: MapPoint) {
   const map = useMap();
 
   useEffect(() => {
+    if (!isValidPoint(latitude, longitude)) return;
     map.setView([latitude, longitude], Math.max(map.getZoom(), 17), { animate: true });
   }, [latitude, longitude, map]);
 
@@ -75,7 +81,11 @@ function MapResize({ containerRef }: { containerRef: RefObject<HTMLDivElement | 
 }
 
 export function LeafletLocationPicker({ latitude, longitude, onChange }: LocationPickerProps) {
-  const center = useMemo<[number, number]>(() => [latitude, longitude], [latitude, longitude]);
+  const validPoint = isValidPoint(latitude, longitude);
+  const center = useMemo<[number, number]>(
+    () => validPoint ? [latitude, longitude] : [-12.046374, -77.042793],
+    [latitude, longitude, validPoint],
+  );
   const containerRef = useRef<HTMLDivElement>(null);
 
   return (
@@ -90,7 +100,7 @@ export function LeafletLocationPicker({ latitude, longitude, onChange }: Locatio
         <MapSync latitude={latitude} longitude={longitude} />
         <MapEvents onChange={onChange} />
         <MapResize containerRef={containerRef} />
-        <Marker
+        {validPoint && <Marker
           icon={markerIcon}
           position={center}
           draggable
@@ -104,7 +114,7 @@ export function LeafletLocationPicker({ latitude, longitude, onChange }: Locatio
               });
             },
           }}
-        />
+        />}
       </MapContainer>
     </div>
   );

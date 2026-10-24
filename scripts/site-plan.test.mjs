@@ -1,5 +1,5 @@
 import test from "node:test";
-import { measuredLotGroup } from "../src/shared/lib/site-plan.ts";
+import { measuredLotGroup, repeatedLotGroup, lotNumberRange, blockLotGroup } from "../src/shared/lib/site-plan.ts";
 import assert from "node:assert/strict";
 import {
   polygonLabel,
@@ -234,4 +234,137 @@ test("measured groups preserve supplied dimensions and share every adjoining bou
   }
   assert.throws(() => measuredLotGroup(rectangle, 4, 0, 16));
   assert.throws(() => measuredLotGroup(rectangle, 4, 10, NaN));
+});
+
+test("reversing group numbering preserves the subdivision in both directions", () => {
+  for (const direction of [false, true]) {
+    const forward = measuredLotGroup(rectangle, 10, 8, 18, direction);
+    const reversed = measuredLotGroup(rectangle, 10, 8, 18, direction, true);
+    assert.deepEqual(reversed, [...forward].reverse());
+  }
+});
+
+test("group division rejects crossed, concave, repeated and nonfinite corners", () => {
+  assert.throws(() => splitQuad([rectangle[0], rectangle[2], rectangle[1], rectangle[3]], 10));
+  assert.throws(() => splitQuad([rectangle[0], rectangle[1], { lat: -12.0002, lng: -76.9998 }, rectangle[3]], 10));
+  assert.throws(() => splitQuad([rectangle[0], rectangle[1], rectangle[1], rectangle[3]], 10));
+  assert.throws(() => splitQuad([{ lat: NaN, lng: -77 }, ...rectangle.slice(1)], 10));
+  assert.equal(splitQuad([...rectangle].reverse(), 10).length, 10);
+});
+
+test("manual lot ranges include both endpoints and support descending numbers", () => {
+  assert.deepEqual(lotNumberRange(11, 20), [11, 12, 13, 14, 15, 16, 17, 18, 19, 20]);
+  assert.deepEqual(lotNumberRange(5, 2), [5, 4, 3, 2]);
+  assert.deepEqual(lotNumberRange(8, 8), [8]);
+  assert.equal(lotNumberRange(101, 200).length, 100);
+  for (const [a, b] of [[0, 10], [1, 101], [2.5, 5], [1, NaN], [Infinity, 5]])
+    assert.throws(() => lotNumberRange(a, b));
+});
+
+test("repeating a first lot preserves vertical, horizontal and rotated shapes in all directions", () => {
+  const close = (a, b) => Math.abs(a - b) < 1e-10;
+  for (const angle of [0, 90, 37, -45]) {
+    const radians = angle * Math.PI / 180;
+    const rotate = (x, y) => ({ lat: -12 + (x * Math.sin(radians) + y * Math.cos(radians)) / 111320, lng: -77 + (x * Math.cos(radians) - y * Math.sin(radians)) / (111320 * Math.cos(-12 * Math.PI / 180)) });
+    const seed = [rotate(0, 0), rotate(8, 0), rotate(8, 18), rotate(0, 18)];
+    for (const direction of [{ lat: 0, lng: 1 }, { lat: 0, lng: -1 }, { lat: 1, lng: 0 }, { lat: -1, lng: 0 }]) {
+      const lots = repeatedLotGroup(seed, 10, 8, 18, direction);
+      assert.equal(lots.length, 10);
+      for (let i = 0; i < 4; i++) {
+        assert.ok(close(lots[0].path[i].lat, seed[i].lat));
+        assert.ok(close(lots[0].path[i].lng, seed[i].lng));
+      }
+      for (let i = 0; i < lots.length; i++) {
+        const lot = lots[i];
+        assert.equal(lot.areaM2, 144);
+        assert.ok(Math.abs(polygonMetrics(lot.path).areaM2 - 144) < 0.05);
+        if (i === 0) continue;
+        const previous = lots[i - 1].path;
+        const sharedCorners = lot.path.filter(p => previous.some(q => close(p.lat, q.lat) && close(p.lng, q.lng)));
+        assert.equal(sharedCorners.length, 2, `rotation ${angle}: adjoining lots share exactly one edge`);
+      }
+      assert.deepEqual(repeatedLotGroup(seed, 10, 8, 18, direction, true), [...lots].reverse());
+    }
+  }
+});
+
+test("repetition straightens opposite sides and rejects invalid inputs", () => {
+  const seed = rectangle.map(p => ({ ...p }));
+  seed[2].lng += 0.00001;
+  const lots = repeatedLotGroup(seed, 3, 8, 18, { lat: 0, lng: 1 });
+  const delta = (a, b) => ({ lat: b.lat - a.lat, lng: b.lng - a.lng });
+  const a = delta(lots[0].path[0], lots[0].path[1]);
+  const b = delta(lots[0].path[3], lots[0].path[2]);
+  assert.ok(Math.abs(a.lat - b.lat) < 1e-10 && Math.abs(a.lng - b.lng) < 1e-10);
+  assert.equal(repeatedLotGroup(rectangle, 1, 8, 18, { lat: 0, lng: 1 }).length, 1);
+  assert.throws(() => repeatedLotGroup(rectangle, 0, 8, 18, { lat: 0, lng: 1 }));
+  assert.throws(() => repeatedLotGroup(rectangle, 101, 8, 18, { lat: 0, lng: 1 }));
+  assert.throws(() => repeatedLotGroup(rectangle, 3, 8, 18, { lat: 0, lng: 0 }));
+  assert.throws(() => repeatedLotGroup(rectangle.slice(0, 3), 3, 8, 18, { lat: 0, lng: 1 }));
+});
+
+test("a group contour distributes six model lots in rows for horizontal, vertical and angled drawings", () => {
+  for (const degrees of [0, 90, 37]) {
+    const radians = degrees * Math.PI / 180;
+    const point = (x, y) => ({ lat: -12 + (x * Math.sin(radians) + y * Math.cos(radians)) / 111320, lng: -77 + (x * Math.cos(radians) - y * Math.sin(radians)) / (111320 * Math.cos(-12 * Math.PI / 180)) });
+    const boundary = [point(0, 0), point(24, 0), point(24, 36), point(0, 36)];
+    const seed = [point(0, 0), point(8, 0), point(8, 18), point(0, 18)];
+    const lots = blockLotGroup(boundary, seed, 6, 8, 18);
+    assert.equal(lots.length, 6);
+    assert.equal(new Set(lots.map(l => JSON.stringify(l.path))).size, 6);
+    assert.ok(Math.abs(lots.reduce((n, l) => n + polygonMetrics(l.path).areaM2, 0) - polygonMetrics(boundary).areaM2) < 0.1);
+    lots[0].path.forEach((p, i) => {
+      assert.ok(Math.abs(p.lat - seed[i].lat) < 1e-10 && Math.abs(p.lng - seed[i].lng) < 1e-10);
+    });
+    assert.deepEqual(blockLotGroup(boundary, seed, 6, 8, 18, true), [...lots].reverse());
+    assert.equal(blockLotGroup(boundary, seed, 7, 8, 18).length, 7);
+  }
+});
+
+test("group contours accept the first lot even when it extends outside", () => {
+  const point = (x, y) => ({ lat: -12 + y / 111320, lng: -77 + x / (111320 * Math.cos(-12 * Math.PI / 180)) });
+  const rect = (x, y, w, h) => [point(x, y), point(x + w, y), point(x + w, y + h), point(x, y + h)];
+  const boundary = rect(0, 0, 24, 36), seed = rect(0, 0, 8, 18);
+  assert.equal(blockLotGroup(boundary, seed, 6, 8, 18).length, 6);
+  assert.equal(blockLotGroup(seed, seed, 1, 8, 18).length, 1);
+  assert.equal(blockLotGroup(boundary, rect(16, 18, 8, 18), 1, 8, 18).length, 1);
+  assert.equal(blockLotGroup(boundary, rect(1, 1, 8, 18), 1, 8, 18).length, 1);
+  for (const outside of [rect(-1, 0, 8, 18), rect(17, 18, 8, 18), rect(0, 19, 8, 18)])
+    assert.equal(blockLotGroup(boundary, outside, 1, 8, 18).length, 1);
+  const separateGroup = rect(50, 0, 16, 18);
+  assert.equal(blockLotGroup(separateGroup, rect(50, 0, 8, 18), 2, 8, 18).length, 2);
+});
+
+test("concave group contours do not place lots across a notch", () => {
+  const point = (x, y) => ({ lat: -12 + y / 111320, lng: -77 + x / (111320 * Math.cos(-12 * Math.PI / 180)) });
+  const boundary = [[0,0], [24,0], [24,18], [8,18], [8,36], [0,36]].map(([x,y]) => point(x,y));
+  const seed = [[0,0], [8,0], [8,18], [0,18]].map(([x,y]) => point(x,y));
+  assert.equal(blockLotGroup(boundary, seed, 4, 8, 18).length, 4);
+  assert.equal(blockLotGroup(boundary, seed, 5, 8, 18).length, 5);
+  assert.throws(() => blockLotGroup([boundary[0], boundary[2], boundary[1], boundary[5]], seed, 2, 8, 18), /cruzarse/);
+});
+
+test("the requested count adjusts the model to fill a convex group and recalculates actual measurements", () => {
+  const point = (x, y) => ({ lat: -12 + y / 111320, lng: -77 + x / (111320 * Math.cos(-12 * Math.PI / 180)) });
+  const boundary = [[0,0], [16,0], [16,18], [0,18]].map(([x,y]) => point(x,y));
+  const seed = [[0,0], [8,0], [8,18], [0,18]].map(([x,y]) => point(x,y));
+  for (const count of [1, 4, 7, 100]) {
+    const lots = blockLotGroup(boundary, seed, count, 8, 18);
+    assert.equal(lots.length, count);
+    const expectedArea = polygonMetrics(boundary).areaM2 / count;
+    for (const lot of lots) {
+      const actual = polygonMetrics(lot.path);
+      assert.equal(lot.areaM2, actual.areaM2);
+      assert.equal(lot.perimeterM, actual.perimeterM);
+      assert.ok(Math.abs(lot.areaM2 - expectedArea) <= 0.02);
+      lot.path.forEach(p => {
+        assert.ok(p.lat >= boundary[0].lat - 1e-10 && p.lat <= boundary[2].lat + 1e-10);
+        assert.ok(p.lng >= boundary[0].lng - 1e-10 && p.lng <= boundary[2].lng + 1e-10);
+      });
+    }
+    assert.ok(Math.abs(lots.reduce((n, l) => n + l.areaM2, 0) - polygonMetrics(boundary).areaM2) <= count * 0.01);
+  }
+  const four = blockLotGroup(boundary, seed, 4, 8, 18);
+  assert.equal(four[0].frontM, 8);
+  assert.equal(four[0].dimensions, "8 × 9 m");
 });

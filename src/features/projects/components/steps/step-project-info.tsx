@@ -41,6 +41,7 @@ export function StepProjectInfo() {
   const descriptionError = useFieldError<ProjectDraft>("description");
   const { getValues, setValue } = useFormContext<ProjectDraft>();
   const currency = (useWatch({ name: "currency" }) ?? "PEN") as ProjectCurrency;
+  const apartments = useWatch({ name: "category" }) === "departamentos";
   const currencyPrefix = CURRENCY_PREFIX[currency];
   const [withSocial, setWithSocial] = useState(false);
   const [withMoreFinancing, setWithMoreFinancing] = useState(false);
@@ -51,9 +52,7 @@ export function StepProjectInfo() {
         <div className="grid gap-5 sm:grid-cols-2">
           <div className="grid gap-2">
             <p className="text-[13px] font-semibold text-brand">Tipo de propiedad</p>
-            <p className="flex h-11 items-center rounded-card border border-dashed border-edge bg-surface-muted/60 px-3 text-[13px] font-semibold text-muted">
-              {PROJECT_CATEGORY_LABELS.lotizacion}
-            </p>
+            <SelectField<ProjectDraft> name="category" label="Tipo de proyecto" options={Object.entries(PROJECT_CATEGORY_LABELS).map(([value, label]) => ({ value, label }))} />
           </div>
           <div className="grid gap-2">
             <p className="text-[13px] font-semibold text-brand">Fase actual</p>
@@ -153,14 +152,14 @@ export function StepProjectInfo() {
           />
           <NumericField<ProjectDraft>
             name="totalBlocks"
-            label="Total de manzanas"
+            label={apartments ? "Total de edificios" : "Total de manzanas"}
             step={1}
             placeholder="6"
-            hint="Manzanas o bloques proyectados."
+            hint={apartments ? "Torres o edificios proyectados." : "Manzanas o bloques proyectados."}
           />
           <NumericField<ProjectDraft>
             name="totalLots"
-            label="Total de lotes"
+            label={apartments ? "Total de departamentos" : "Total de lotes"}
             step={1}
             placeholder="48"
             hint="Si aún no lo defines, se completa con el inventario."

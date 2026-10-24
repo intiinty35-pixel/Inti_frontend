@@ -1,6 +1,6 @@
 export type ProjectStage = "preventa" | "en-construccion" | "entregado";
 
-export type ProjectCategory = "lotizacion";
+export type ProjectCategory = "lotizacion" | "departamentos";
 
 export type ProjectCurrency = "PEN" | "USD";
 

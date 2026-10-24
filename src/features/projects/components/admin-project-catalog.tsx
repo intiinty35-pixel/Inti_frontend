@@ -26,7 +26,7 @@ function PlanPreview({ id }: { id: string }) {
     return () => { observer.disconnect(); controller.abort(); };
   }, [id, attempt]);
   const plan = result?.plan;
-  const shapes = [...(plan?.zones ?? []), ...(plan?.lots ?? [])].filter(shape => shape.path.length >= 3);
+  const shapes = [...(plan?.zones ?? []), ...(plan?.mode === 'APARTMENTS' ? plan.buildings ?? [] : plan?.lots ?? [])].filter(shape => shape.path.length >= 3);
   const points = shapes.flatMap(shape => shape.path);
   const minLat = Math.min(...points.map(point => point.lat));
   const maxLat = Math.max(...points.map(point => point.lat));
@@ -48,8 +48,8 @@ export function AdminProjectCatalog({ projects }: { projects: ProjectApiSummary[
   const [view, setView] = useState<'list' | 'cards'>('list');
   const actions = (project: ProjectApiSummary) => <div className={s.actions}>
     <Link href={`/panel/admin/project-access-codes?project=${encodeURIComponent(project.id)}`}><KeyRound size={15} />Administrar código</Link>
-    <Link className={s.primary} href={`/panel/admin/projects/${project.id}/site-plan?view=lots`}><Layers size={15} />Ver lotes</Link>
-    <Link href={`/panel/admin/projects/${project.id}/site-plan`}><PenLine size={15} />Editar plano y lotes</Link>
+    <Link className={s.primary} href={`/panel/admin/projects/${project.id}/site-plan${project.category === 'DEPARTAMENTOS' ? '' : '?view=lots'}`}><Layers size={15} />{project.category === 'DEPARTAMENTOS' ? 'Ver departamentos' : 'Ver lotes'}</Link>
+    <Link href={`/panel/admin/projects/${project.id}/site-plan`}><PenLine size={15} />{project.category === 'DEPARTAMENTOS' ? 'Editar edificios y pisos' : 'Editar plano y lotes'}</Link>
     <Link href={`/panel/admin/projects/${project.id}/edit`}>Editar proyecto<ArrowUpRight size={15} /></Link>
   </div>;
   return <section className={s.catalog}>
@@ -60,14 +60,15 @@ export function AdminProjectCatalog({ projects }: { projects: ProjectApiSummary[
           <div className={s.tableWrap} role="region" aria-label="Lista de proyectos" tabIndex={0}>
             <table className={s.table}>
               <caption className="sr-only">Lista de proyectos</caption>
-              <thead><tr>{['Proyecto', 'Departamento', 'Origen', 'Estado', 'Lotes', 'Acciones'].map(label => <th scope="col" key={label}>{label}</th>)}</tr></thead>
+              <thead><tr>{['Proyecto', 'Tipo de proyecto', 'Departamento', 'Origen', 'Estado', 'Unidades', 'Acciones'].map(label => <th scope="col" key={label}>{label}</th>)}</tr></thead>
               <tbody>{projects.map(project => (
                 <tr key={project.id}>
                   <td data-label="Proyecto" className={s.projectName}><strong>{project.name}</strong></td>
+                  <td data-label="Tipo de proyecto"><span className={s.badge}>{project.category === 'DEPARTAMENTOS' ? 'Departamentos' : 'Lotes'}</span></td>
                   <td data-label="Departamento">{project.location?.department?.trim() || 'Sin departamento'}</td>
                   <td data-label="Origen">{project.origin === 'ADMIN' ? 'ARIZ' : 'Desarrollador'}</td>
                   <td data-label="Estado"><span className={s.badge}>{PROJECT_STATUS_LABELS[project.status]}</span></td>
-                  <td data-label="Lotes">{project.lotsCount}</td>
+                  <td data-label="Unidades">{project.lotsCount}</td>
                   <td data-label="Acciones" className={s.actionCell}>{actions(project)}</td>
                 </tr>
               ))}</tbody>
@@ -80,9 +81,10 @@ export function AdminProjectCatalog({ projects }: { projects: ProjectApiSummary[
               <PlanPreview id={project.id} />
               <div className={s.body}>
                 <span className={s.badge}>{PROJECT_STATUS_LABELS[project.status]}</span>
+                <span className={s.badge}>{project.category === 'DEPARTAMENTOS' ? 'Proyecto de departamentos' : 'Proyecto de lotes'}</span>
                 <h3>{project.name}</h3>
                 <p><MapPin size={14} />{project.location?.district || 'Sin distrito'} · {project.origin === 'ADMIN' ? 'ARIZ' : 'Desarrollador'}</p>
-                <p><Layers size={14} />{project.lotsCount} lotes registrados</p>
+                <p><Layers size={14} />{project.lotsCount} {project.category === 'DEPARTAMENTOS' ? 'departamentos registrados' : 'lotes registrados'}</p>
                 {actions(project)}
               </div>
             </article>

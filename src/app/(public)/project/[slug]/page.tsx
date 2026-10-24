@@ -154,7 +154,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
       ? [
           {
             key: "lots",
-            text: `${project.totalLots} ${project.totalLots === 1 ? "lote" : "lotes"}`,
+            text: `${project.totalLots} ${project.category === "DEPARTAMENTOS" ? (project.totalLots === 1 ? "departamento" : "departamentos") : project.totalLots === 1 ? "lote" : "lotes"}`,
             icon: RulerIcon as typeof AreaIcon,
           },
         ]
@@ -163,7 +163,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
       ? [
           {
             key: "blocks",
-            text: `${project.totalBlocks} ${project.totalBlocks === 1 ? "pavimento" : "pavimentos"}`,
+            text: `${project.totalBlocks} ${project.category === "DEPARTAMENTOS" ? (project.totalBlocks === 1 ? "edificio" : "edificios") : project.totalBlocks === 1 ? "pavimento" : "pavimentos"}`,
             icon: BuildingIcon as typeof AreaIcon,
           },
         ]
@@ -178,8 +178,8 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     { label: "Tipo de proyecto", value: LOT_MODE_LABEL[project.lotMode] ?? humanize(project.lotMode) },
     { label: "Etapa", value: STAGE_LABEL[project.stage] ?? humanize(project.stage) },
     ...(project.developer ? [{ label: "Desarrollador", value: project.developer }] : []),
-    ...(project.totalBlocks ? [{ label: "Pavimentos", value: String(project.totalBlocks) }] : []),
-    ...(project.totalLots ? [{ label: "Lotes totales", value: String(project.totalLots) }] : []),
+    ...(project.totalBlocks ? [{ label: project.category === "DEPARTAMENTOS" ? "Edificios" : "Pavimentos", value: String(project.totalBlocks) }] : []),
+    ...(project.totalLots ? [{ label: project.category === "DEPARTAMENTOS" ? "Departamentos totales" : "Lotes totales", value: String(project.totalLots) }] : []),
     ...(startLabel ? [{ label: "Inicio de obras", value: startLabel }] : []),
     ...(deliveryLabel ? [{ label: "Entrega estimada", value: deliveryLabel }] : []),
     ...(project.downPayment ? [{ label: "Cuota inicial desde", value: formatPrice(project.downPayment, CURRENCY_FALLBACK[project.currency] ?? "PEN") }] : []),

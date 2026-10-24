@@ -53,7 +53,7 @@ export function projectDetailToDraft(project: ProjectApiDetail): ProjectDraft {
 
   return {
     ...PROJECT_DRAFT_DEFAULTS,
-    category: "lotizacion",
+    category: project.category === "DEPARTAMENTOS" ? "departamentos" : "lotizacion",
     stage: STAGE_FROM_API[project.stage],
     name: project.name,
     description: project.description,

@@ -43,6 +43,7 @@ type Props = {
   onPoint?: (point: Point) => void;
   onSelect?: (id: string) => void;
   onPath?: (id: string, path: Point[]) => void;
+  onImageMove?: (center: Point) => void;
   moveAll?: boolean;
   placementMode?: boolean;
   onMapCenter?: (point: Point) => void;
@@ -75,6 +76,7 @@ function imageOverlay(
   sdk: MapsSdk,
   map: GoogleMap,
   image: PlanImage,
+  onMove?: (center: Point) => void,
 ): MapOverlay {
   const overlay = new sdk.OverlayView();
   let node: HTMLElement | undefined;
@@ -82,6 +84,7 @@ function imageOverlay(
   let source: HTMLImageElement | undefined;
   let mounted = false;
   const size = 1000;
+  let drag: { x: number; y: number; center: { x: number; y: number }; transform: DOMMatrix } | undefined;
   const styleNode = (element: HTMLElement) => {
     Object.assign(element.style, {
       position: "absolute",
@@ -89,7 +92,9 @@ function imageOverlay(
       height: `${size}px`,
       maxWidth: "none",
       transformOrigin: "0 0",
-      pointerEvents: "none",
+      pointerEvents: onMove ? "auto" : "none",
+      cursor: onMove ? "grab" : "default",
+      touchAction: onMove ? "none" : "auto",
       opacity: String(image.opacity),
       zIndex: "0",
     });
@@ -99,9 +104,55 @@ function imageOverlay(
     canvas = document.createElement("canvas");
     canvas.width = size;
     canvas.height = size;
-    node = canvas;
-    styleNode(canvas);
-    overlay.getPanes()?.overlayLayer.append(canvas);
+    node = document.createElement("div");
+    styleNode(node);
+    Object.assign(canvas.style, { width: "100%", height: "100%", pointerEvents: "none" });
+    node.append(canvas);
+    const panes = overlay.getPanes();
+    (onMove ? panes?.overlayMouseTarget : panes?.overlayLayer)?.append(node);
+    if (onMove) {
+      node.onpointerdown = event => {
+        if (event.button !== 0 || !node) return;
+        const center = overlay.getProjection().fromLatLngToDivPixel(new sdk.LatLng(image.center.lat, image.center.lng));
+        if (!center) return;
+        event.preventDefault();
+        event.stopPropagation();
+        drag = { x: event.clientX, y: event.clientY, center, transform: new DOMMatrix(node.style.transform) };
+        map.setOptions({ draggable: false });
+        node.style.cursor = "grabbing";
+        node.setPointerCapture(event.pointerId);
+      };
+      node.onpointermove = event => {
+        if (!drag || !node) return;
+        event.preventDefault();
+        event.stopPropagation();
+        const matrix = DOMMatrix.fromMatrix(drag.transform);
+        matrix.e += event.clientX - drag.x;
+        matrix.f += event.clientY - drag.y;
+        node.style.transform = matrix.toString();
+      };
+      const endDrag = (event: PointerEvent, cancel = false) => {
+        if (!drag || !node) return;
+        event.preventDefault();
+        event.stopPropagation();
+        const previous = drag;
+        drag = undefined;
+        node.style.cursor = "grab";
+        map.setOptions({ draggable: true });
+        if (node.hasPointerCapture(event.pointerId)) node.releasePointerCapture(event.pointerId);
+        overlay.draw();
+        if (cancel || Math.hypot(event.clientX - previous.x, event.clientY - previous.y) < 2) return;
+        const target = overlay.getProjection().fromDivPixelToLatLng({
+          x: previous.center.x + event.clientX - previous.x,
+          y: previous.center.y + event.clientY - previous.y,
+        });
+        if (target) onMove({ lat: target.lat(), lng: target.lng() });
+      };
+      node.onpointerup = event => endDrag(event);
+      node.onpointercancel = event => endDrag(event, true);
+      node.onlostpointercapture = event => endDrag(event, true);
+      node.onclick = event => event.stopPropagation();
+    }
     source = new Image();
     source.crossOrigin = "anonymous";
     let corsFallback = false;
@@ -114,7 +165,8 @@ function imageOverlay(
         return;
       }
       if (!loadedImage) return;
-      context.drawImage(loadedImage, 0, 0, size, size);
+      const crop = image.crop ?? { left: 0, top: 0, right: 1, bottom: 1 };
+      context.drawImage(loadedImage, crop.left * loadedImage.naturalWidth, crop.top * loadedImage.naturalHeight, (crop.right - crop.left) * loadedImage.naturalWidth, (crop.bottom - crop.top) * loadedImage.naturalHeight, 0, 0, size, size);
       try {
         const pixels = context.getImageData(0, 0, size, size);
         for (let i = 0; i < pixels.data.length; i += 4) {
@@ -127,9 +179,9 @@ function imageOverlay(
         console.error("No se pudo quitar el fondo blanco del plano.", cause);
         const fallback = loadedImage;
         fallback.alt = "Plano del proyecto";
-        styleNode(fallback);
+        if (node) node.style.overflow = "hidden";
+        Object.assign(fallback.style, { position: "absolute", width: `${100 / (crop.right - crop.left)}%`, height: `${100 / (crop.bottom - crop.top)}%`, maxWidth: "none", left: `${-crop.left * 100 / (crop.right - crop.left)}%`, top: `${-crop.top * 100 / (crop.bottom - crop.top)}%`, pointerEvents: "none" });
         canvas.replaceWith(fallback);
-        node = fallback;
         canvas = undefined;
       }
     };
@@ -146,7 +198,7 @@ function imageOverlay(
     source.src = image.url;
   };
   overlay.draw = () => {
-    if (!node) return;
+    if (!node || drag) return;
     const angle = (image.rotation * Math.PI) / 180;
     const corner = (x: number, y: number) => {
       const east = x * Math.cos(angle) + y * Math.sin(angle);
@@ -168,6 +220,8 @@ function imageOverlay(
       node.style.transform = `matrix(${(b.x - a.x) / 1000},${(b.y - a.y) / 1000},${(c.x - a.x) / 1000},${(c.y - a.y) / 1000},${a.x},${a.y})`;
   };
   overlay.onRemove = () => {
+    if (drag) map.setOptions({ draggable: true });
+    drag = undefined;
     mounted = false;
     source?.removeAttribute("src");
     source = undefined;
@@ -709,7 +763,10 @@ export function SitePlanMap(props: Props) {
       ...(props.images ?? []),
     ];
     const overlays = images.map((image) =>
-      imageOverlay(sdk, map.current!, image),
+      imageOverlay(sdk, map.current!, image,
+        image === props.plan.image && props.moveAll && !props.publicView && props.onImageMove
+          ? center => callbacks.current.onImageMove?.(center)
+          : undefined),
     );
     return () => overlays.forEach((overlay) => overlay.setMap(null));
   }, [
@@ -718,6 +775,8 @@ export function SitePlanMap(props: Props) {
     props.images,
     props.showImage,
     props.publicView,
+    props.moveAll,
+    props.onImageMove,
     zoom,
   ]);
 

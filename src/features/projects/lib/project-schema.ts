@@ -10,7 +10,7 @@ import {
   type ProjectDraft,
 } from "@/features/projects/types/draft";
 
-const CATEGORY_KEYS = ["lotizacion"] as const;
+const CATEGORY_KEYS = ["lotizacion", "departamentos"] as const;
 const STAGE_KEYS = ["preventa", "en-construccion", "entregado"] as const;
 const CURRENCY_KEYS = ["PEN", "USD"] as const;
 const LOT_MODE_KEYS = ["individual", "grupo"] as const;

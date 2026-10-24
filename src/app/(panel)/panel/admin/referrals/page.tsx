@@ -127,13 +127,13 @@ export default async function AdminReferralsPage({
           </CardContent>
         </Card>
       ) : (
-        <section className="grid min-w-0 max-w-full gap-4 overflow-x-hidden md:grid-cols-2 xl:grid-cols-4">
+        <section className="grid min-w-0 max-w-full auto-rows-fr gap-4 overflow-x-hidden md:grid-cols-2 xl:grid-cols-4">
           {data.items.map((referrer) => (
             <div key={referrer.id} className="relative min-w-0">
             <HideReferrerButton id={referrer.id} name={referrer.name} />
             <Link
               href={ROUTES.panel.admin.referrer(referrer.id)}
-              className="block min-w-0"
+              className="block h-full min-w-0"
             >
               <Card className="flex h-full min-w-0 flex-col overflow-hidden transition duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-pop)]">
                 <div className="h-1.5 bg-brand" aria-hidden="true" />
@@ -141,7 +141,7 @@ export default async function AdminReferralsPage({
                   <span className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-brand-soft text-brand">
                     <UserRound className="size-6" aria-hidden="true" />
                   </span>
-                  <h2 className="mt-3 line-clamp-2 break-words font-display text-lg font-black leading-tight text-brand">
+                  <h2 className="mt-3 min-h-[2.5em] line-clamp-2 break-words font-display text-lg font-black leading-tight text-brand">
                     {referrer.name}
                   </h2>
                   <div className="mt-3 grid gap-2 text-xs text-muted">

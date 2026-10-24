@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import { validateProjectVideo } from "@/features/projects/lib/project-video";
 import { uploadToCloudinary, PROJECT_MEDIA_FOLDER } from "@/shared/lib/api/cloudinary";
 import Link from "next/link";
-import { FormProvider, useForm, type FieldErrors } from "react-hook-form";
+import { FormProvider, useForm, useWatch, type FieldErrors } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ROUTES } from "@/shared/config/routes";
 import { Button } from "@/shared/ui/button";
@@ -97,11 +97,13 @@ export function ProjectPublishWizard({
     getValues,
     formState: { errors },
   } = form;
+  const apartments = useWatch({ control: form.control, name: "category" }) === "departamentos";
 
   const [step, setStep] = useState(0);
   const [payload, setPayload] = useState<CreateProjectPayload | null>(null);
   const [reviewedLots, setReviewedLots] = useState<readonly LotDraft[]>([]);
   const [saved, setSaved] = useState(false);
+  const [savedId, setSavedId] = useState(initialProject?.id);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -109,10 +111,10 @@ export function ProjectPublishWizard({
     () =>
       WIZARD_STEPS.map((item, index) => ({
         key: item.key,
-        title: item.title,
-        summary: STEP_SUMMARIES[index],
+        title: apartments && index === 2 ? "Edificios y departamentos" : item.title,
+        summary: apartments && index === 2 ? "Distribución por edificio y piso" : STEP_SUMMARIES[index],
       })),
-    [],
+    [apartments],
   );
 
   const errorCounts = useMemo(
@@ -215,7 +217,8 @@ export function ProjectPublishWizard({
         if (initialProject) {
           await updateProject(initialProject.id, input);
         } else {
-          await (adminMode ? createAdminProject(input) : createProject(input));
+          const created = await (adminMode ? createAdminProject(input) : createProject(input));
+          setSavedId(created.id);
         }
 
         onSave?.(next);
@@ -242,7 +245,7 @@ export function ProjectPublishWizard({
           {payload?.name}
         </h2>
         <p className="max-w-md text-sm text-muted">
-          {editing
+          {apartments ? "Proyecto guardado. Administra los edificios, pisos y departamentos desde el editor del plano." : editing
             ? `El proyecto se actualizó con ${payload?.lots.length ?? 0} lotes.`
             : `El proyecto quedó guardado con ${payload?.lots.length ?? 0} lotes. ${
                 adminMode
@@ -251,6 +254,7 @@ export function ProjectPublishWizard({
               }`}
         </p>
         <div className="mt-2 flex flex-col-reverse gap-3 sm:flex-row">
+          {adminMode && apartments && savedId && <Link href={`/panel/admin/projects/${savedId}/site-plan`}><Button type="button">Configurar edificios y departamentos</Button></Link>}
           {editing ? null : (
             <Button type="button" variant="secondary" onClick={startOver}>
               Crear otro proyecto
@@ -326,13 +330,13 @@ export function ProjectPublishWizard({
                 <section key={item.key} hidden={step !== index} className={step === index ? "grid gap-6" : "hidden"}>
                   <StepHeader
                     current={index + 1}
-                    title={item.title}
-                    detail={STEP_SUMMARIES[index]}
+                    title={apartments && index === 2 ? "Edificios y departamentos" : item.title}
+                    detail={apartments && index === 2 ? "La distribución se configura en el editor del plano" : STEP_SUMMARIES[index]}
                   />
                   {index === 2 && initialProject?.hasSitePlan ? (
                     <div className="rounded-xl border border-edge bg-surface-muted p-5 text-sm">
-                      <p>Este inventario se administra desde el editor del plano. Los cambios generales del proyecto conservan sus lotes y polígonos.</p>
-                      {adminMode && <Link className="mt-3 inline-block font-bold text-brand" href={`/panel/admin/projects/${initialProject.id}/site-plan`}>Abrir editor de plano y lotes →</Link>}
+                      <p>Este inventario se administra desde el editor del plano. Los cambios generales del proyecto conservan sus unidades y dibujos.</p>
+                      {adminMode && <Link className="mt-3 inline-block font-bold text-brand" href={`/panel/admin/projects/${initialProject.id}/site-plan`}>{apartments ? "Abrir edificios, pisos y departamentos →" : "Abrir editor de plano y lotes →"}</Link>}
                     </div>
                   ) : <StepComponent />}
                 </section>

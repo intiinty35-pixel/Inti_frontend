@@ -17,6 +17,7 @@ import {
   type Point,
 } from "../types/site-plan";
 import s from "./site-plan.module.css";
+import { ApartmentProjectViewer } from "./apartment-project-viewer";
 
 export function ProjectSitePlan({
   slug,
@@ -122,6 +123,7 @@ export function ProjectSitePlan({
       </section>
     );
   if (!plan) return null;
+  if (plan.mode === "APARTMENTS") return <ApartmentProjectViewer plan={plan} center={center} currency={currency} />;
   const filtered = plan.lots.filter(
     (item) =>
       (filter === "ALL" || item.status === filter) &&

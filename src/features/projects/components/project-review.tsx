@@ -128,18 +128,18 @@ export function ProjectReview({
         <Row label="Rango de precios" value={`${formatPrice(payload.priceFrom, payload.currency)} – ${formatPrice(payload.priceTo, payload.currency)}`} />
         <Row label="Ubicación" value={location} />
         <Row
-          label={isGroup ? "Grupos completos" : "Lotes completos"}
+          label={payload.category === "departamentos" ? "Departamentos" : isGroup ? "Grupos completos" : "Lotes completos"}
           value={
-            isGroup
+            payload.category === "departamentos" ? "Se configuran por edificio y piso en el editor del plano" : isGroup
               ? `${formatNumber(totals.filledLots)} grupos · ${formatNumber(totals.totalUnits)} lotes`
               : `${formatNumber(payload.lots.length)} de ${totals.filledLots + totals.blankLots} fichas`
           }
         />
-        <Row label="Área total" value={formatArea(totals.totalAreaM2) || "—"} />
-        <Row label="Inventario" value={formatPrice(totals.totalPrice, payload.currency)} />
+        <Row label="Área total" value={payload.category === "departamentos" ? "Según los planos de cada piso" : formatArea(totals.totalAreaM2) || "—"} />
+        <Row label="Inventario" value={payload.category === "departamentos" ? "Precios por departamento en el editor" : formatPrice(totals.totalPrice, payload.currency)} />
         <Row
-          label="Manzanas"
-          value={totals.blocks.length > 0 ? totals.blocks.join(", ") : "—"}
+          label={payload.category === "departamentos" ? "Edificios" : "Manzanas"}
+          value={payload.category === "departamentos" ? String(payload.totalBlocks ?? "Configurar en el editor") : totals.blocks.length > 0 ? totals.blocks.join(", ") : "—"}
         />
         <Row label="Entrega estimada" value={payload.estimatedDelivery} />
         <Row

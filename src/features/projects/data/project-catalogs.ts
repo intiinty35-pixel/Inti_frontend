@@ -9,6 +9,7 @@ import type {
 
 export const PROJECT_CATEGORY_LABELS: Record<ProjectCategory, string> = {
   lotizacion: "Lotización",
+  departamentos: "Edificios y departamentos",
 };
 
 export const PROJECT_STAGES: readonly RadioOption[] = [

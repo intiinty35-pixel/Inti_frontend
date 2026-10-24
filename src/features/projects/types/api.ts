@@ -6,7 +6,7 @@
  * `latitude`/`longitude` en el detalle, por eso se modelan los dos nombres.
  */
 
-export type ApiProjectCategory = "LOTIZACION";
+export type ApiProjectCategory = "LOTIZACION" | "DEPARTAMENTOS";
 
 export type ApiProjectStage = "PRE_SALE" | "UNDER_CONSTRUCTION" | "DELIVERED";
 
