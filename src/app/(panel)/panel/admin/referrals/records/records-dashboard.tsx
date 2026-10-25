@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, CalendarRange, FileSpreadsheet, Loader2, Mail, MessageCircle, Phone, RefreshCw, Search } from "lucide-react";
 import { ROUTES } from "@/shared/config/routes";
+import { Listbox } from "@/shared/ui/listbox";
 import { RecordActions } from "./record-actions";
 import styles from "./records-table.module.css";
 
@@ -128,11 +129,25 @@ export function ReferralRecordsDashboard() {
               <input value={search} maxLength={80} onChange={(event) => { setSearch(event.target.value); setPage(1); }} placeholder="Nombre, correo, teléfono o código" className={`${inputClass} pl-9`} />
             </span>
           </label>
-          <label className="grid min-w-0 gap-1.5 text-xs font-bold text-brand">Estado del referido
-            <select value={status} onChange={(event) => { setStatus(event.target.value); setPage(1); }} className={inputClass}>
+          <div className="grid min-w-0 gap-1.5 text-xs font-bold text-brand">
+            <span>Estado del referido</span>
+            <Listbox
+              name="referral-status"
+              value={status}
+              onValueChange={(value) => { setStatus(value); setPage(1); }}
+              label="Estado del referido"
+              options={[
+                { value: "", label: "Todos los estados" },
+                ...STATUSES.map(([value, label]) => ({ value, label })),
+              ]}
+              className="w-full min-w-0 sm:hidden"
+              triggerClassName={inputClass}
+              listClassName="min-w-0"
+            />
+            <select aria-label="Estado del referido" value={status} onChange={(event) => { setStatus(event.target.value); setPage(1); }} className={`${inputClass} hidden sm:block`}>
               <option value="">Todos los estados</option>{STATUSES.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
             </select>
-          </label>
+          </div>
           <label className="grid min-w-0 gap-1.5 text-xs font-bold text-brand">Desde<input type="date" value={from} max={to || undefined} onChange={(event) => { setFrom(event.target.value); setPage(1); }} className={inputClass} /></label>
           <label className="grid min-w-0 gap-1.5 text-xs font-bold text-brand">Hasta<input type="date" value={to} min={from || undefined} onChange={(event) => { setTo(event.target.value); setPage(1); }} className={inputClass} /></label>
         </div>

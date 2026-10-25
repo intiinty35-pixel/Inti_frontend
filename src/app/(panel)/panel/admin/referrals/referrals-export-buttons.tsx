@@ -53,13 +53,13 @@ export function ReferralsExportButtons({ query = "" }: { query?: string }) {
   }
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex w-full justify-center gap-2 sm:w-auto sm:justify-start">
       <Button
         variant="secondary"
         size="md"
         onClick={handleExportExcel}
         disabled={loadingExcel || loadingPdf}
-        className="border-2 border-green-500 text-green-600 hover:bg-green-50 bg-transparent"
+        className="w-auto border-2 border-green-500 bg-transparent px-3 text-xs text-green-600 hover:bg-green-50 sm:px-4 sm:text-sm"
       >
         {loadingExcel ? (
           <Loader2 className="size-4 animate-spin" />
@@ -73,7 +73,7 @@ export function ReferralsExportButtons({ query = "" }: { query?: string }) {
         size="md"
         onClick={handleExportPdf}
         disabled={loadingExcel || loadingPdf}
-        className="border-2 border-red-400 text-red-400 hover:bg-red-50 bg-transparent"
+        className="w-auto border-2 border-red-400 bg-transparent px-3 text-xs text-red-400 hover:bg-red-50 sm:px-4 sm:text-sm"
       >
         {loadingPdf ? (
           <Loader2 className="size-4 animate-spin" />

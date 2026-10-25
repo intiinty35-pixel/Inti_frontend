@@ -151,7 +151,7 @@ export function RegistrationReferralsDashboard() {
         </div>
       </section>
 
-      <section className="rounded-card border border-edge bg-surface p-4 shadow-[var(--shadow-card)]">
+      <section className="rounded-card border border-edge bg-surface p-3 shadow-[var(--shadow-card)] sm:p-4">
         <div className="grid grid-cols-2 items-end gap-3 xl:grid-cols-[2fr_1fr_1fr]">
           <label className="col-span-2 grid min-w-0 gap-1.5 text-xs font-bold text-brand xl:col-span-1">
             Buscar miembro o invitante
@@ -162,28 +162,28 @@ export function RegistrationReferralsDashboard() {
                 maxLength={80}
                 onChange={(event) => { setSearch(event.target.value); setPage(1); }}
                 placeholder="Nombre, correo o código de miembro"
-                className={`${inputClass} pl-9`}
+                className={`${inputClass} h-11 pl-9 sm:h-10`}
               />
             </span>
           </label>
           <label className="grid min-w-0 gap-1.5 text-xs font-bold text-brand">
             Desde
-            <input type="date" value={from} max={to || undefined} onChange={(event) => { setFrom(event.target.value); setPage(1); }} className={inputClass} />
+            <input type="date" value={from} max={to || undefined} onChange={(event) => { setFrom(event.target.value); setPage(1); }} className={`${inputClass} h-11 px-2 sm:h-10 sm:px-3`} />
           </label>
           <label className="grid min-w-0 gap-1.5 text-xs font-bold text-brand">
             Hasta
-            <input type="date" value={to} min={from || undefined} onChange={(event) => { setTo(event.target.value); setPage(1); }} className={inputClass} />
+            <input type="date" value={to} min={from || undefined} onChange={(event) => { setTo(event.target.value); setPage(1); }} className={`${inputClass} h-11 px-2 sm:h-10 sm:px-3`} />
           </label>
         </div>
         <div className="mt-3 flex flex-wrap items-center gap-2">
-          <div className="flex max-w-full flex-nowrap items-center gap-1 overflow-x-auto sm:gap-2">
+          <div className="flex max-w-full flex-nowrap items-center gap-1 overflow-x-auto pb-1 sm:gap-2 sm:pb-0">
           <CalendarRange className="size-4 shrink-0 text-muted" />
           {([["Todo", null], ["Hoy", 0], ["7 días", 6], ["4 semanas", 27], ["3 meses", 89]] as const).map(([label, days]) => (
             <button
               type="button"
               key={label}
               onClick={() => { setFrom(days === null ? "" : limaDate(days)); setTo(days === null ? "" : limaDate()); setPage(1); }}
-              className="shrink-0 whitespace-nowrap rounded-full border border-edge px-2 py-1 text-xs font-bold text-brand hover:border-brand sm:px-3"
+              className="shrink-0 whitespace-nowrap rounded-full border border-edge px-2 py-1.5 text-xs font-bold text-brand hover:border-brand sm:px-3 sm:py-1"
             >
               {label}
             </button>
@@ -199,7 +199,7 @@ export function RegistrationReferralsDashboard() {
             </button>
           )}
           {data && (
-            <span className="ml-auto text-[11px] font-semibold text-muted">
+            <span className="ml-auto w-full text-right text-[11px] font-semibold text-muted sm:w-auto">
               Actualizado {new Intl.DateTimeFormat("es-PE", { timeStyle: "medium", timeZone: "America/Lima" }).format(new Date(data.generatedAt))}
             </span>
           )}

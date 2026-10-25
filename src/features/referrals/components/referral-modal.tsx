@@ -696,9 +696,9 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
         aria-modal="true"
         aria-labelledby="referral-modal-title"
       >
-        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-edge bg-brand p-6">
-          <div className="flex-1 text-center">
-            <h2 id="referral-modal-title" className="font-display text-2xl font-black text-white">
+        <div className="flex shrink-0 items-start justify-between gap-3 border-b border-edge bg-brand p-4 sm:gap-4 sm:p-6">
+          <div className="min-w-0 flex-1 text-center">
+            <h2 id="referral-modal-title" className="font-display text-lg font-black leading-tight text-white sm:text-2xl">
               Bienvenidos al Ariz Club, Refiere, Gana, Acumula y disfruta.
             </h2>
           </div>
@@ -726,33 +726,33 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
             </div>
           </div>
         ) : choosingProject ? renderProjectPicker() : view === 'initial' ? (
-          <div className="flex flex-col gap-4 p-6">
-            <p className="text-center text-sm text-muted">
+          <div className="flex flex-col gap-3 p-4 sm:gap-4 sm:p-6">
+            <p className="text-center text-xs text-muted sm:text-sm">
               Selecciona una opción
             </p>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3">
               <button
                 type="button"
                 onClick={() => setView('existing-code')}
-                className="group flex flex-col items-center gap-3 rounded-xl border-2 border-edge bg-surface p-5 text-center transition-all hover:border-brand hover:bg-brand-soft"
+                className="group flex items-center gap-3 rounded-xl border-2 border-edge bg-surface p-3 text-left transition-all hover:border-brand hover:bg-brand-soft sm:flex-col sm:gap-3 sm:p-5 sm:text-center"
               >
-                <div className="flex size-12 items-center justify-center rounded-full bg-brand-soft text-brand transition-colors group-hover:bg-brand group-hover:text-on-brand">
-                  <KeyRound className="size-6" aria-hidden />
+                <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand-soft text-brand transition-colors group-hover:bg-brand group-hover:text-on-brand sm:size-12">
+                  <KeyRound className="size-5 sm:size-6" aria-hidden />
                 </div>
-                <div>
-                  <p className="font-bold text-ink">Soy miembro de Ariz Club</p>
+                <div className="min-w-0">
+                  <p className="text-sm font-bold leading-snug text-ink sm:text-base">Soy miembro de Ariz Club</p>
                 </div>
               </button>
               <button
                 type="button"
                 onClick={() => setView('new-step1')}
-                className="group flex flex-col items-center gap-3 rounded-xl border-2 border-edge bg-surface p-5 text-center transition-all hover:border-brand hover:bg-brand-soft"
+                className="group flex items-center gap-3 rounded-xl border-2 border-edge bg-surface p-3 text-left transition-all hover:border-brand hover:bg-brand-soft sm:flex-col sm:gap-3 sm:p-5 sm:text-center"
               >
-                <div className="flex size-12 items-center justify-center rounded-full bg-brand-soft text-brand transition-colors group-hover:bg-brand group-hover:text-on-brand">
-                  <UserRoundPlus className="size-6" aria-hidden />
+                <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand-soft text-brand transition-colors group-hover:bg-brand group-hover:text-on-brand sm:size-12">
+                  <UserRoundPlus className="size-5 sm:size-6" aria-hidden />
                 </div>
-                <div>
-                  <p className="font-bold text-ink">Quiero inscribirme para ser miembro de Ariz Club</p>
+                <div className="min-w-0">
+                  <p className="text-sm font-bold leading-snug text-ink sm:text-base">Quiero inscribirme para ser miembro de Ariz Club</p>
                 </div>
               </button>
             </div>

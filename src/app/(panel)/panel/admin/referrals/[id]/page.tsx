@@ -90,43 +90,43 @@ export default async function AdminReferrerDetailPage({ params, searchParams }: 
       <section className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
         <Card className="overflow-hidden">
           <CardContent className="p-0">
-            <div className="bg-brand p-5 text-on-brand sm:p-6">
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div>
+            <div className="bg-brand p-4 text-on-brand sm:p-6">
+              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between sm:gap-4">
+                <div className="min-w-0">
                   <p className="text-xs font-black uppercase tracking-[0.18em] text-white/70">Codigo de referente</p>
-                  <p className="mt-2 font-display text-3xl font-black tracking-tight">{referrer.code}</p>
+                  <p className="mt-2 break-all font-display text-2xl font-black tracking-tight sm:text-3xl">{referrer.code}</p>
                 </div>
-                <div className="rounded-card bg-white/12 px-4 py-3 text-right ring-1 ring-white/15">
+                <div className="flex items-center justify-between gap-3 rounded-card bg-white/12 px-3 py-2 text-left ring-1 ring-white/15 sm:block sm:px-4 sm:py-3 sm:text-right">
                   <p className="text-[11px] font-black uppercase tracking-wide text-white/70">Total acumulado</p>
-                  <p className="text-4xl font-black">{referrer.totalPoints.toLocaleString("es-PE")}</p>
+                  <p className="text-3xl font-black sm:text-4xl">{referrer.totalPoints.toLocaleString("es-PE")}</p>
                 </div>
               </div>
             </div>
 
-            <div className="grid gap-3 p-5 sm:grid-cols-3 sm:p-6">
-              <div className="rounded-card border border-edge bg-surface-muted p-4">
-                <UsersRound className="size-5 text-brand" />
-                <p className="mt-3 text-2xl font-black text-ink">{referrer.referrals.length}</p>
-                <p className="text-xs font-bold uppercase tracking-wide text-muted">Referidos</p>
+            <div className="grid grid-cols-3 gap-2 p-3 sm:gap-3 sm:p-6">
+              <div className="min-w-0 rounded-card border border-edge bg-surface-muted p-2 sm:p-4">
+                <UsersRound className="size-4 text-brand sm:size-5" />
+                <p className="mt-2 text-xl font-black text-ink sm:mt-3 sm:text-2xl">{referrer.referrals.length}</p>
+                <p className="text-[9px] font-bold uppercase tracking-wide text-muted sm:text-xs">Referidos</p>
               </div>
-              <div className="rounded-card border border-edge bg-surface-muted p-4">
-                <UserRoundCheck className="size-5 text-brand" />
-                <p className="mt-3 text-2xl font-black text-ink">{countByStatus(referrer.referrals, "OPERATION_COMPLETED")}</p>
-                <p className="text-xs font-bold uppercase tracking-wide text-muted">Concretados</p>
+              <div className="min-w-0 rounded-card border border-edge bg-surface-muted p-2 sm:p-4">
+                <UserRoundCheck className="size-4 text-brand sm:size-5" />
+                <p className="mt-2 text-xl font-black text-ink sm:mt-3 sm:text-2xl">{countByStatus(referrer.referrals, "OPERATION_COMPLETED")}</p>
+                <p className="text-[9px] font-bold uppercase tracking-wide text-muted sm:text-xs">Concretados</p>
               </div>
-              <div className="rounded-card border border-edge bg-surface-muted p-4">
-                <TrendingUp className="size-5 text-brand" />
-                <p className="mt-3 text-2xl font-black text-ink">{countByStatus(referrer.referrals, "VISIT")}</p>
-                <p className="text-xs font-bold uppercase tracking-wide text-muted">En visita</p>
+              <div className="min-w-0 rounded-card border border-edge bg-surface-muted p-2 sm:p-4">
+                <TrendingUp className="size-4 text-brand sm:size-5" />
+                <p className="mt-2 text-xl font-black text-ink sm:mt-3 sm:text-2xl">{countByStatus(referrer.referrals, "VISIT")}</p>
+                <p className="text-[9px] font-bold uppercase tracking-wide text-muted sm:text-xs">En visita</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-5 sm:p-6">
+          <CardContent className="p-4 sm:p-6">
             <p className="text-xs font-black uppercase tracking-[0.16em] text-accent">Contacto</p>
-            <div className="mt-4 flex flex-col gap-3">
+            <div className="mt-3 flex flex-col gap-2 sm:mt-4 sm:gap-3">
               <a href={`mailto:${referrer.email}`} className="flex min-w-0 items-center gap-3 rounded-card border border-edge bg-surface-muted p-3 text-sm font-semibold text-ink hover:border-brand">
                 <Mail className="size-4 shrink-0 text-brand" />
                 <span className="break-all">{referrer.email}</span>
@@ -135,9 +135,9 @@ export default async function AdminReferrerDetailPage({ params, searchParams }: 
                 <Phone className="size-4 shrink-0 text-brand" />
                 <span>{referrer.phone}</span>
               </a>
-              <div className="flex items-center gap-3 rounded-card border border-edge bg-surface-muted p-3 text-sm font-semibold text-ink">
+              <div className="flex min-w-0 items-start gap-3 rounded-card border border-edge bg-surface-muted p-3 text-sm font-semibold text-ink">
                 <CalendarDays className="size-4 shrink-0 text-brand" />
-                <span>{latestReferral ? `Ultimo referido: ${formatDate(latestReferral.createdAt)}` : "Sin referidos registrados"}</span>
+                <span className="min-w-0 break-words">{latestReferral ? `Ultimo referido: ${formatDate(latestReferral.createdAt)}` : "Sin referidos registrados"}</span>
               </div>
               <DeleteReferrerButton action={deleteReferrer.bind(null, referrer.id)} />
             </div>
