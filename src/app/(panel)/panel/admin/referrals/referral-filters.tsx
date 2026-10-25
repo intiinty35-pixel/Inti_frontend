@@ -26,9 +26,9 @@ export function ReferralFilters({ search, from, to }: { search: string; from: st
   ];
 
   return (
-    <section className="rounded-card border border-edge bg-surface p-4 shadow-[var(--shadow-card)]">
-      <form method="get" action={BASE} className="grid gap-3 lg:grid-cols-[1fr_auto_auto_auto] lg:items-end">
-        <label className="grid gap-1.5 text-xs font-bold text-brand">
+    <section className="rounded-card border border-edge bg-surface p-3 shadow-[var(--shadow-card)] sm:p-4">
+      <form method="get" action={BASE} className="grid gap-3 sm:grid-cols-1 lg:grid-cols-[1fr_auto_auto_auto] lg:items-end">
+        <label className="col-span-2 grid min-w-0 gap-1.5 text-xs font-bold text-brand sm:col-span-1">
           Buscar por nombre
           <span className="relative">
             <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted" aria-hidden="true" />
@@ -36,32 +36,34 @@ export function ReferralFilters({ search, from, to }: { search: string; from: st
               name="search"
               defaultValue={search}
               placeholder="Miembro, referido, correo o código"
-              className="h-10 w-full rounded-card border border-edge bg-white pl-9 pr-3 text-sm font-normal outline-none focus:border-brand focus:ring-2 focus:ring-brand/15"
+              className="h-11 w-full min-w-0 rounded-card border border-edge bg-white pl-9 pr-3 text-sm font-normal outline-none focus:border-brand focus:ring-2 focus:ring-brand/15 sm:h-10"
             />
           </span>
         </label>
-        <label className="grid gap-1.5 text-xs font-bold text-brand">
-          Desde
-          <input
-            type="date"
-            name="from"
-            defaultValue={from}
-            className="h-10 rounded-card border border-edge bg-white px-3 text-sm font-normal outline-none focus:border-brand focus:ring-2 focus:ring-brand/15"
-          />
-        </label>
-        <label className="grid gap-1.5 text-xs font-bold text-brand">
-          Hasta
-          <input
-            type="date"
-            name="to"
-            defaultValue={to}
-            className="h-10 rounded-card border border-edge bg-white px-3 text-sm font-normal outline-none focus:border-brand focus:ring-2 focus:ring-brand/15"
-          />
-        </label>
-        <div className="flex gap-2">
+        <div className="col-span-2 grid min-w-0 grid-cols-2 gap-2 sm:col-span-1 sm:grid-cols-1 lg:contents">
+          <label className="grid min-w-0 gap-1.5 text-xs font-bold text-brand">
+            Desde
+            <input
+              type="date"
+              name="from"
+              defaultValue={from}
+              className="h-11 w-full min-w-0 rounded-card border border-edge bg-white px-2 text-sm font-normal outline-none focus:border-brand focus:ring-2 focus:ring-brand/15 sm:h-10 sm:px-3"
+            />
+          </label>
+          <label className="grid min-w-0 gap-1.5 text-xs font-bold text-brand">
+            Hasta
+            <input
+              type="date"
+              name="to"
+              defaultValue={to}
+              className="h-11 w-full min-w-0 rounded-card border border-edge bg-white px-2 text-sm font-normal outline-none focus:border-brand focus:ring-2 focus:ring-brand/15 sm:h-10 sm:px-3"
+            />
+          </label>
+        </div>
+        <div className="col-span-2 flex gap-2 sm:col-span-1">
           <button
             type="submit"
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-card bg-brand px-4 text-sm font-bold text-on-brand hover:bg-brand-hover"
+            className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-card bg-brand px-4 text-sm font-bold text-on-brand hover:bg-brand-hover sm:h-10 sm:flex-none"
           >
             <CalendarRange className="size-4" aria-hidden="true" />
             Filtrar
@@ -69,7 +71,7 @@ export function ReferralFilters({ search, from, to }: { search: string; from: st
           {active ? (
             <Link
               href={BASE}
-              className="inline-flex h-10 items-center justify-center gap-1.5 rounded-card border border-edge px-3 text-sm font-bold text-muted hover:border-brand hover:text-brand"
+              className="inline-flex h-11 items-center justify-center gap-1.5 rounded-card border border-edge px-3 text-sm font-bold text-muted hover:border-brand hover:text-brand sm:h-10"
             >
               <X className="size-4" aria-hidden="true" />
               Limpiar
@@ -77,7 +79,7 @@ export function ReferralFilters({ search, from, to }: { search: string; from: st
           ) : null}
         </div>
       </form>
-      <div className="mt-3 flex flex-nowrap items-center gap-1 overflow-x-auto sm:gap-2">
+      <div className="mt-3 flex flex-nowrap items-center gap-1 overflow-x-auto pb-1 sm:gap-2 sm:pb-0">
         <Link
           href={search ? `${BASE}?${new URLSearchParams({ search }).toString()}` : BASE}
           className={`shrink-0 whitespace-nowrap rounded-full border px-2 py-1 text-xs font-bold transition-colors sm:px-3 ${!from && !to ? "border-brand bg-brand text-on-brand" : "border-edge text-brand hover:border-brand"}`}

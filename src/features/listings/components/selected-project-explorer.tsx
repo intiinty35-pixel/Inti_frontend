@@ -15,12 +15,14 @@ import { formatPrice } from '@/shared/lib/format';
 import { buildArizWhatsappUrl } from '@/shared/lib/whatsapp';
 import { ROUTES } from '@/shared/config/routes';
 import { SharePropertyButton } from './share-property-button';
+import { createMapRequestCache } from '../lib/map-request-cache';
 import type { Listing } from '../types/listing';
 import s from './selected-project-explorer.module.css';
 
 const EMPTY: SitePlan = { logoUrl: '', zones: [], lots: [] };
 const NO_MARKERS: [] = [];
 const STAGES = { PRE_SALE: 'Preventa', UNDER_CONSTRUCTION: 'En construcción', DELIVERED: 'Entregado' };
+const getCachedProjectDetail = createMapRequestCache<ProjectApiDetail>();
 
 export function SelectedProjectExplorer({ project, plan, planError, projectAccessGranted, accessCodeRequired, accessCodeError, accessCodeSkipped, accessCodeBusy, onSubmitAccessCode, onOmitAccessCode, onRequestAccessCode, focusPlanRequest, selectedLot, lotSheet, onSelectLot, onClose, onCloseLot }: {
   project: Listing; plan?: SitePlan | null; planError?: boolean; focusPlanRequest: number; selectedLot?: string; lotSheet?: ReactNode;
@@ -58,22 +60,24 @@ export function SelectedProjectExplorer({ project, plan, planError, projectAcces
     iconUrl: '/web_v/ubicacion.png',
   }], [center.lat, center.lng, project.id, project.price.amount, project.price.currency, project.title]);
   useEffect(() => {
-    const controller = new AbortController();
+    let cancelled = false;
     let pending = false;
     async function refresh() {
       if (pending || document.hidden) return;
       pending = true;
       try {
-        const data = await apiClient.get<ProjectApiDetail>(`/projects/${encodeURIComponent(project.slug)}`, { cache: 'no-store', signal: controller.signal });
-        if (!controller.signal.aborted) { setDetail(data); setDetailError(false); }
-      } catch { if (!controller.signal.aborted) setDetailError(true); }
+        const data = await getCachedProjectDetail(
+          project.slug,
+          () => apiClient.get<ProjectApiDetail>(`/projects/${encodeURIComponent(project.slug)}`, { cache: 'no-store' }),
+        );
+        if (!cancelled) { setDetail(data); setDetailError(false); }
+      } catch { if (!cancelled) setDetailError(true); }
       finally { pending = false; }
     }
     void refresh();
-    const timer = window.setInterval(() => void refresh(), 15000);
     const visible = () => { if (!document.hidden) void refresh(); };
     document.addEventListener('visibilitychange', visible);
-    return () => { controller.abort(); clearInterval(timer); document.removeEventListener('visibilitychange', visible); };
+    return () => { cancelled = true; document.removeEventListener('visibilitychange', visible); };
   }, [project.slug]);
   useEffect(() => { info.current?.scrollTo({ top: 0 }); }, [selectedLot]);
   useEffect(() => {

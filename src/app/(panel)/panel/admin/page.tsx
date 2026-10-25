@@ -1,7 +1,7 @@
 import { ProfileDistribution } from "@/features/admin/components/profile-distribution";
 import { loadProfileDistribution } from "@/features/admin/api/profile-distribution";
 import Link from "next/link";
-import { Building2, Crown, Home, LineChart, Users } from "lucide-react";
+import { Building2, ChevronDown, Crown, Home, LineChart, SlidersHorizontal, Users } from "lucide-react";
 import { CATEGORICAL, Card } from "@/shared/ui";
 import { ROUTES } from "@/shared/config/routes";
 import {
@@ -386,8 +386,68 @@ export default async function PanelAdminPage({ searchParams }: PanelAdminPagePro
               Rendimiento del sistema
             </h2>
           </div>
-          <div className="flex flex-wrap items-center gap-3">
-        <div className="flex flex-wrap items-center gap-2">
+          <div className="w-full sm:w-auto">
+            <details className="group grid gap-2 sm:hidden">
+              <summary className="flex min-h-10 list-none items-center justify-between gap-3 rounded-xl border border-edge bg-surface px-3 text-sm font-bold text-brand shadow-sm [&::-webkit-details-marker]:hidden">
+                <span className="flex min-w-0 items-center gap-2">
+                  <SlidersHorizontal size={16} className="shrink-0" />
+                  <span>Filtros</span>
+                  <span className="truncate text-xs font-medium text-muted">
+                    · {RANGE_FILTERS.find((item) => item.key === range)?.label} · {PROFILE_FILTERS.find((item) => item.key === profile)?.label}
+                  </span>
+                </span>
+                <ChevronDown size={16} className="shrink-0 transition-transform group-open:rotate-180" />
+              </summary>
+              <div className="grid gap-3 rounded-xl border border-edge bg-surface-muted p-3">
+                <div className="grid gap-1.5">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-muted">Periodo</span>
+                  <div className="grid grid-cols-3 gap-1">
+                    {RANGE_FILTERS.map((item) => {
+                      const active = item.key === range;
+                      const params = new URLSearchParams();
+                      if (profile !== "all") params.set("perfil", profile);
+                      params.set("rango", item.key);
+                      return (
+                        <Link
+                          key={item.key}
+                          href={`${ROUTES.panel.admin.base}?${params.toString()}`}
+                          className={`inline-flex min-h-8 items-center justify-center rounded-lg border px-1.5 text-center text-[11px] font-bold transition-colors ${
+                            active
+                              ? "border-brand bg-brand text-on-brand"
+                              : "border-edge bg-surface text-muted hover:border-brand hover:text-brand"
+                          }`}
+                        >
+                          {item.label}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+                <div className="grid gap-1.5 border-t border-edge pt-2">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-muted">Perfil</span>
+                  <div className="grid grid-cols-2 gap-1">
+                    {PROFILE_FILTERS.map((item) => {
+                      const active = item.key === profile;
+                      return (
+                        <Link
+                          key={item.key}
+                          href={`${item.href}${item.href.includes("?") ? "&" : "?"}rango=${range}`}
+                          className={`inline-flex min-h-8 items-center justify-center rounded-lg border px-2 text-center text-[11px] font-bold transition-colors ${
+                            active
+                              ? "border-brand bg-brand text-on-brand"
+                              : "border-edge bg-surface text-muted hover:border-brand hover:text-brand"
+                          }`}
+                        >
+                          {item.label}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </details>
+            <div className="hidden sm:flex sm:flex-wrap sm:items-center sm:gap-3">
+        <div className="grid grid-cols-3 gap-1 sm:flex sm:flex-wrap sm:items-center sm:gap-2">
           {RANGE_FILTERS.map((item) => {
             const active = item.key === range;
             const params = new URLSearchParams();
@@ -397,7 +457,7 @@ export default async function PanelAdminPage({ searchParams }: PanelAdminPagePro
               <Link
                 key={item.key}
                 href={`${ROUTES.panel.admin.base}?${params.toString()}`}
-                className={`inline-flex h-9 items-center rounded-card border px-3 text-xs font-black transition-colors ${
+                className={`inline-flex min-h-8 items-center justify-center rounded-card border px-1.5 text-center text-[11px] font-black transition-colors sm:h-9 sm:min-h-0 sm:px-3 sm:text-xs ${
                   active
                     ? "border-brand bg-brand text-on-brand"
                     : "border-edge bg-surface text-muted hover:border-brand hover:text-brand"
@@ -408,14 +468,14 @@ export default async function PanelAdminPage({ searchParams }: PanelAdminPagePro
             );
           })}
         </div>
-          <div className="flex flex-wrap gap-2 border-l border-edge pl-3">
+          <div className="grid grid-cols-2 gap-1 border-t border-edge pt-2 sm:flex sm:flex-wrap sm:gap-2 sm:border-l sm:border-t-0 sm:pt-0 sm:pl-3">
             {PROFILE_FILTERS.map((item) => {
               const active = item.key === profile;
               return (
                 <Link
                   key={item.key}
                   href={`${item.href}${item.href.includes("?") ? "&" : "?"}rango=${range}`}
-                  className={`inline-flex h-9 items-center rounded-card border px-3 text-xs font-black transition-colors ${
+                  className={`inline-flex min-h-8 items-center justify-center rounded-card border px-2 text-center text-[11px] font-black transition-colors sm:h-9 sm:min-h-0 sm:px-3 sm:text-xs ${
                     active
                       ? "border-brand bg-brand text-on-brand"
                       : "border-edge bg-surface text-muted hover:border-brand hover:text-brand"
@@ -425,6 +485,7 @@ export default async function PanelAdminPage({ searchParams }: PanelAdminPagePro
                 </Link>
               );
             })}
+          </div>
           </div>
           </div>
         </div>
@@ -537,4 +598,3 @@ export default async function PanelAdminPage({ searchParams }: PanelAdminPagePro
     </div>
   );
 }
-

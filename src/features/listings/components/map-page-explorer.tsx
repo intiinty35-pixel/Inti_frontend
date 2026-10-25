@@ -12,6 +12,7 @@ import { formatPrice } from '@/shared/lib/format';
 import { buildArizWhatsappUrl } from '@/shared/lib/whatsapp';
 import { ROUTES } from '@/shared/config/routes';
 import { uniqueProjectListings } from '../lib/map-projects';
+import { createMapRequestCache } from '../lib/map-request-cache';
 import { ListingImage } from './listing-image';
 import { SharePropertyButton } from './share-property-button';
 import type { Listing } from '../types/listing';
@@ -24,6 +25,7 @@ type PublishedPlan = SitePlan & { currency?: 'PEN' | 'USD' };
 const EMPTY: SitePlan = { logoUrl: '', zones: [], lots: [] };
 const CENTER = { lat: -9.19, lng: -75.0152 };
 const PERU_BOUNDS = [{ lat: -18.35, lng: -81.4 }, { lat: 0.05, lng: -68.65 }];
+const getCachedSitePlan = createMapRequestCache<PublishedPlan | null>();
 
 function LotSheet({ lot, project, code, onClose }: { lot: PlanLot; project: Listing; code: string; onClose: () => void }) {
   const money = (amount: number) => formatPrice(amount, project.price.currency);
@@ -115,10 +117,10 @@ export function MapPageExplorer({ listings, loadError = false, mapToolbarHref }:
   }), [projects]);
   useEffect(() => {
     if (!active) return;
-    const controller = new AbortController();
+    let cancelled = false;
     const project = active;
     const accessCode = accessCodes[project.id];
-    if (!accessCode) return () => controller.abort();
+    if (!accessCode) return () => { cancelled = true; };
     let pending = false;
     let focused = false;
     let loaded = false;
@@ -126,15 +128,18 @@ export function MapPageExplorer({ listings, loadError = false, mapToolbarHref }:
       if (pending || document.hidden) return;
       pending = true;
       try {
-        const data = await apiClient.get<PublishedPlan | null>(`/projects/${encodeURIComponent(project.slug)}/site-plan`, { cache: 'no-store', signal: controller.signal, headers: accessCode ? { 'X-Site-Plan-Code': accessCode } : undefined });
-        if (controller.signal.aborted) return;
+        const data = await getCachedSitePlan(
+          JSON.stringify([project.slug, accessCode]),
+          () => apiClient.get<PublishedPlan | null>(`/projects/${encodeURIComponent(project.slug)}/site-plan`, { cache: 'no-store', headers: { 'X-Site-Plan-Code': accessCode } }),
+        );
+        if (cancelled) return;
         if (data === undefined) throw new Error('La respuesta del plano está vacía.');
         setResult({ id: project.id, plan: data, authorized: true });
         setValidatingProjectId(undefined);
         loaded = true;
         if (data && !focused) { setFocusPlanRequest(value => value + 1); focused = true; }
       } catch (cause) {
-        if (!controller.signal.aborted && !loaded) {
+        if (!cancelled && !loaded) {
           if (cause instanceof ApiError && cause.status === 403)
             setResult({ id: project.id, plan: null, accessRequired: true, invalidCode: Boolean(accessCode) });
           else setResult({ id: project.id, plan: null, error: true });
@@ -143,10 +148,9 @@ export function MapPageExplorer({ listings, loadError = false, mapToolbarHref }:
       } finally { pending = false; }
     }
     void refresh();
-    const timer = accessCode ? window.setInterval(() => void refresh(), 15000) : undefined;
     const visible = () => { if (!document.hidden && accessCode) void refresh(); };
     document.addEventListener('visibilitychange', visible);
-    return () => { controller.abort(); if (timer) clearInterval(timer); document.removeEventListener('visibilitychange', visible); };
+    return () => { cancelled = true; document.removeEventListener('visibilitychange', visible); };
   }, [active, accessCodes]);
   function selectProject(id: string) {
     setView('both');

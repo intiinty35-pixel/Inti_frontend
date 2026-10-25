@@ -24,7 +24,7 @@ export function DeleteReferrerButton({
           void action();
         });
       }}
-      className="border-error/30 text-error hover:border-error hover:bg-error/10"
+      className="w-full border-red-200 bg-red-50 text-red-700 hover:border-red-300 hover:bg-red-100 sm:w-auto"
     >
       <Trash2 className="size-4" />
       {pending ? "Eliminando..." : "Eliminar miembro"}

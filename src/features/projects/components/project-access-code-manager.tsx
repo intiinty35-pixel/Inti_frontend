@@ -126,10 +126,12 @@ export function ProjectAccessCodeManager({
               </p>
             )}
             {current && (
-              <div className="flex flex-wrap items-center gap-2 rounded-xl border border-green-200 bg-green-50 p-3">
-                <KeyRound size={16} className="text-green-800" />
-                <code className="min-w-0 flex-1 break-all text-base font-bold tracking-wider text-green-950">{current.code}</code>
-                <button type="button" onClick={() => void copyCode(project)} className="inline-flex min-h-9 items-center gap-2 rounded-lg border border-green-300 bg-white px-3 text-sm font-bold text-green-900">
+              <div className="grid min-w-0 grid-cols-1 gap-3 rounded-xl border border-green-200 bg-green-50 p-3 sm:flex sm:flex-wrap sm:items-center sm:gap-2">
+                <div className="flex min-w-0 items-center gap-2 sm:flex-1">
+                  <KeyRound size={16} className="shrink-0 text-green-800" />
+                  <code className="min-w-0 break-all text-base font-bold tracking-wider text-green-950">{current.code}</code>
+                </div>
+                <button type="button" onClick={() => void copyCode(project)} className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-lg border border-green-300 bg-white px-3 text-sm font-bold text-green-900 sm:min-h-9 sm:w-auto">
                   <Copy size={15} /> Copiar
                 </button>
                 <span className="inline-flex items-center gap-1 text-xs text-green-800"><Check size={14} />Visible solo ahora</span>

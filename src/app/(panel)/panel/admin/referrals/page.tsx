@@ -61,9 +61,11 @@ export default async function AdminReferralsPage({
               desde esta vista.
             </p>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-col items-center gap-2 sm:flex-row sm:flex-wrap sm:items-center">
             <ProjectPointsModal />
-            {data.items.length > 0 && <ReferralsExportButtons query={filterQuery} />}
+            {data.items.length > 0 && (
+              <ReferralsExportButtons query={filterQuery} />
+            )}
           </div>
         </div>
       </section>
