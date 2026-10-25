@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { Bell, PauseCircle, Trash2, X } from "lucide-react";
 import { Button, ConfirmDialog } from "@/shared/ui";
@@ -166,43 +167,58 @@ export function AdminTestActions({ label, notifyId, deleteTarget }: AdminTestAct
         />
       ) : null}
 
-      {open ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-ink/35 p-4 sm:p-6">
+      {open && typeof document !== "undefined"
+        ? createPortal(
+        <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-ink p-3 sm:p-6">
           <form
             onSubmit={handleNotify}
-            className="my-auto w-full max-w-[min(94vw,680px)] overflow-hidden rounded-card border border-edge bg-surface text-left shadow-[var(--shadow-pop)]"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="notify-dialog-title"
+            aria-describedby="notify-dialog-description"
+            className="my-auto flex max-h-[calc(100dvh-1.5rem)] w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-edge bg-surface text-left shadow-[var(--shadow-pop)] sm:max-h-[calc(100dvh-3rem)]"
           >
-            <div className="flex items-start justify-between gap-3 border-b border-edge p-4 sm:p-5">
-              <div className="min-w-0">
-                <p className="text-xs font-black uppercase tracking-[0.16em] text-accent">
-                  Notificar usuario
-                </p>
-                <h2 className="mt-1 truncate text-lg font-black text-brand sm:text-xl">{label}</h2>
+            <div className="flex items-start justify-between gap-4 border-b border-edge bg-canvas p-4 sm:p-6">
+              <div className="flex min-w-0 items-start gap-3">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent/15 text-brand">
+                  <Bell className="size-5" aria-hidden="true" />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted">
+                    Notificación por correo
+                  </p>
+                  <h2 id="notify-dialog-title" className="mt-1 break-words text-lg font-bold leading-snug text-brand sm:text-xl">
+                    Notificar usuario
+                  </h2>
+                  <p id="notify-dialog-description" className="mt-1 break-words text-sm text-muted">
+                    {label}
+                  </p>
+                </div>
               </div>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="flex size-9 shrink-0 items-center justify-center rounded-card border border-edge text-muted transition-colors hover:text-ink"
+                className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-edge bg-surface text-muted transition-colors hover:border-brand hover:text-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
                 aria-label="Cerrar"
               >
                 <X className="size-4" />
               </button>
             </div>
 
-            <div className="space-y-4 p-4 sm:p-5">
-              <label className="grid gap-2 text-xs font-black uppercase tracking-[0.12em] text-muted">
-                <span>Asunto / razon</span>
+            <div className="min-h-0 space-y-4 overflow-y-auto p-4 sm:space-y-5 sm:p-6">
+              <label className="grid gap-2 text-sm font-semibold text-ink">
+                <span>Asunto / razón</span>
                 <input
                   value={subject}
                   onChange={(event) => setSubject(event.target.value)}
                   minLength={3}
                   maxLength={120}
                   required
-                  className="h-11 w-full rounded-card border border-edge bg-canvas px-3 text-sm font-semibold normal-case tracking-normal text-ink outline-none focus:border-brand"
+                  className="h-12 w-full rounded-xl border border-edge bg-surface px-3 text-base font-normal text-ink outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/15"
                 />
               </label>
 
-              <label className="grid gap-2 text-xs font-black uppercase tracking-[0.12em] text-muted">
+              <label className="grid gap-2 text-sm font-semibold text-ink">
                 <span>Mensaje</span>
                 <textarea
                   value={message}
@@ -211,24 +227,26 @@ export function AdminTestActions({ label, notifyId, deleteTarget }: AdminTestAct
                   maxLength={2000}
                   required
                   rows={5}
-                  className="h-40 w-full resize-none rounded-card border border-edge bg-canvas px-3 py-3 text-sm font-semibold leading-6 normal-case tracking-normal text-ink outline-none focus:border-brand sm:h-44"
+                  className="min-h-36 w-full resize-y rounded-xl border border-edge bg-surface px-3 py-3 text-base font-normal leading-6 text-ink outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/15 sm:min-h-40"
                 />
               </label>
 
-              {error ? <p className="mt-3 text-sm font-bold text-error">{error}</p> : null}
+              {error ? <p role="alert" className="rounded-xl border border-error/20 bg-error/5 px-3 py-2 text-sm font-semibold text-error">{error}</p> : null}
 
-              <div className="grid grid-cols-2 gap-2 pt-1">
-                <Button type="button" variant="secondary" onClick={() => setOpen(false)} className="w-full">
+              <div className="flex flex-col-reverse gap-2 border-t border-edge pt-4 sm:flex-row sm:justify-end">
+                <Button type="button" variant="secondary" onClick={() => setOpen(false)} className="h-11 w-full sm:w-auto">
                   Cancelar
                 </Button>
-                <Button type="submit" disabled={loading} className="w-full">
+                <Button type="submit" disabled={loading} className="h-11 w-full sm:min-w-36 sm:w-auto">
                   {loading ? "Enviando..." : "Enviar correo"}
                 </Button>
               </div>
             </div>
           </form>
-        </div>
-      ) : null}
+        </div>,
+        document.body,
+      )
+        : null}
     </div>
   );
 }
