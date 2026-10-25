@@ -100,6 +100,7 @@ export function ProjectSitePlan({
             setInvalidCode(false);
             setAccessCodeBusy(true);
             setAccessCode(code);
+            setRetry(value=>value+1);
           }}
           onOmit={() => {
             setAccessCode("");
@@ -122,8 +123,8 @@ export function ProjectSitePlan({
         </div>
       </section>
     );
-  if (!plan) return null;
-  if (plan.mode === "APARTMENTS") return <ApartmentProjectViewer plan={plan} center={center} currency={currency} />;
+  if (!plan) return <section className={`${s.editor} my-8`}><div className={s.card}><h2>Plano del proyecto</h2><p>El plano de este proyecto todavía no está publicado. Cuando el administrador publique las torres, pisos y departamentos, podrás explorarlos aquí.</p><button type="button" onClick={() => setRetry(value => value + 1)}>Volver a consultar</button></div></section>;
+  if (plan.mode === "APARTMENTS") return <ApartmentProjectViewer plan={plan} center={center} currency={currency} slug={slug} accessCode={accessCode} />;
   const filtered = plan.lots.filter(
     (item) =>
       (filter === "ALL" || item.status === filter) &&

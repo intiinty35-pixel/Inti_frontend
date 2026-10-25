@@ -407,7 +407,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             </section>
           ) : null}
 
-          {project.hasPublishedSitePlan && <ProjectSitePlan slug={slug} center={{ lat: hasCoords ? lat : -12.0464, lng: hasCoords ? lng : -77.0428 }} currency={project.currency} />}
+          {(project.hasPublishedSitePlan || project.category === "DEPARTAMENTOS") && <ProjectSitePlan slug={slug} center={{ lat: hasCoords ? lat : -12.0464, lng: hasCoords ? lng : -77.0428 }} currency={project.currency} />}
           {!project.hasPublishedSitePlan && project.lots.length > 0 ? (
             <ProjectLotsBrowser
               lots={project.lots}

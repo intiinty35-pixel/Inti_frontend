@@ -10,7 +10,7 @@ import type { ApiCurrency, ApiLotMode, ProjectApiLot } from "@/features/projects
 
 const LOT_STATUS_LABEL: Record<string, string> = {
   AVAILABLE: "Disponible",
-  RESERVED: "Reservado",
+  RESERVED: "Separado",
   SOLD: "Vendido",
   BLOCKED: "Bloqueado",
 };
@@ -80,7 +80,7 @@ export function ProjectLotsBrowser({
           {[
             { value: "ALL", label: "Todos" },
             { value: "AVAILABLE", label: "En venta" },
-            { value: "RESERVED", label: "Reservados" },
+            { value: "RESERVED", label: "Separados" },
             { value: "SOLD", label: "Vendidos" },
           ].map((option) => (
             <button

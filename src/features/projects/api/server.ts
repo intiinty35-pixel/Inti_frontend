@@ -14,13 +14,14 @@ export async function getPublicProjectsServer(
   origin?: "ADMIN" | "AGENT",
   sort?: "recent" | "price-asc" | "price-desc" | "featured",
   page = 1,
+  fresh = false,
 ): Promise<ProjectApiPaged> {
   const params = new URLSearchParams({ pageSize: String(pageSize), page: String(page) });
   if (origin) params.set("origin", origin);
   if (sort) params.set("sort", sort);
   const response = await fetch(`${env.backendUrl}/projects?${params.toString()}`, {
     headers: { Accept: "application/json" },
-    ...(origin === "ADMIN"
+    ...(fresh || origin === "ADMIN"
       ? { cache: "no-store" as const }
       : { next: { revalidate: PUBLIC_REVALIDATE_SECONDS } }),
   });
@@ -36,7 +37,7 @@ export async function getPublicProjectsServer(
 export async function getProjectBySlugServer(slug: string): Promise<ProjectApiDetail> {
   const response = await fetch(`${env.backendUrl}/projects/${encodeURIComponent(slug)}`, {
     headers: { Accept: "application/json" },
-    next: { revalidate: PUBLIC_REVALIDATE_SECONDS },
+    cache: "no-store",
   });
 
   if (response.status === 404) {

@@ -22,6 +22,7 @@ import {
   type Point,
   type SitePlan,
   type PlanImage,
+  type PlanLot,
 } from "../lib/site-plan";
 
 export type PlanTool = "SELECT" | "BLOCK" | "STREET" | "PARK" | "LOT" | "GROUP" | "CONTOUR";
@@ -53,6 +54,7 @@ type Props = {
   planContextRadiusM?: number;
   publicView?: boolean;
   currency?: string;
+  lotSummary?: (lot: PlanLot) => ReturnType<typeof lotHoverSummary>;
   matchingLotIds?: readonly string[];
   focusProject?: boolean;
   overviewBounds?: readonly Point[];
@@ -314,6 +316,7 @@ function zoomToSeparate(markers: readonly PlanMapMarker[], fromZoom: number) {
 }
 
 export function SitePlanMap(props: Props) {
+  const lotSummary=props.lotSummary;
   const host = useRef<HTMLDivElement>(null);
   const map = useRef<GoogleMap | null>(null);
   const [sdk, setSdk] = useState<MapsSdk>();
@@ -539,7 +542,7 @@ export function SitePlanMap(props: Props) {
         const node = document.createElement("div");
         node.className = styles.lotTooltip;
         node.hidden = true;
-        const summary = lotHoverSummary(shape.lot, props.currency);
+        const summary = lotSummary?.(shape.lot) ?? lotHoverSummary(shape.lot, props.currency);
         for (const [key, value] of Object.entries(summary)) {
           if (!value) continue;
           const line = document.createElement(key === "title" ? "strong" : "span");
@@ -746,6 +749,7 @@ export function SitePlanMap(props: Props) {
     props.points,
     props.publicView,
     props.currency,
+    lotSummary,
     props.matchingLotIds,
     zoom,
   ]);
@@ -1145,7 +1149,7 @@ export function SitePlanMap(props: Props) {
             {
               {
                 AVAILABLE: "Disponible",
-                RESERVED: "Reservado",
+                RESERVED: "Separado",
                 SOLD: "Vendido",
                 BLOCKED: "Bloqueado",
               }[status]

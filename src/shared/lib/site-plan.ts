@@ -83,7 +83,7 @@ export const LOT_COLORS = {
 };
 export const LOT_LABELS = {
   AVAILABLE: "Disponible",
-  RESERVED: "Reservado",
+  RESERVED: "Separado",
   SOLD: "Vendido",
   BLOCKED: "Bloqueado",
 };
@@ -349,18 +349,59 @@ export function distributeFloorGroup(path: FloorPoint[], count: number, layout: 
   if (!Number.isInteger(count) || count < 1 || count > 100) throw new Error("Elige entre 1 y 100 departamentos para el grupo.");
   if (path.length < 3 || path.some(p => !Number.isFinite(p.x) || !Number.isFinite(p.y) || p.x < 0 || p.x > 1 || p.y < 0 || p.y > 1) || !Number.isFinite(aspect) || aspect <= 0)
     throw new Error("Dibuja el contorno del grupo dentro del plano del piso.");
-  const cosine = Math.cos(-12 * Math.PI / 180), scale = .001;
-  const project = (p: FloorPoint): Point => ({ lat: -12 + p.y * aspect * scale, lng: -77 + p.x * scale / cosine });
-  const minX = Math.min(...path.map(p => p.x)), maxX = Math.max(...path.map(p => p.x));
-  const minY = Math.min(...path.map(p => p.y)), maxY = Math.max(...path.map(p => p.y));
-  const w = maxX - minX, h = maxY - minY;
-  const dx = layout === "COLUMNS" ? w / count : layout === "ROWS" ? w : .1;
-  const dy = layout === "COLUMNS" ? h : layout === "ROWS" ? h / count : .1 / aspect;
-  const seed = [{ x: minX, y: minY }, { x: minX + dx, y: minY }, { x: minX + dx, y: minY + dy }, { x: minX, y: minY + dy }].map(project);
-  return blockLotGroup(path.map(project), seed, count, 1, 1).map(lot => lot.path.map(p => ({
-    x: Math.max(0, Math.min(1, (p.lng + 77) * cosine / scale)),
-    y: Math.max(0, Math.min(1, (p.lat + 12) / (scale * aspect))),
-  })));
+  const invalid = () => new Error("Para el grupo dibuja un rectángulo: arrastra sobre el plano o marca sus cuatro esquinas. Las formas especiales se dibujan como departamento individual.");
+  const rectangular = path.length === 4 && path.every((p, i) => {
+    const q = path[(i + 1) % 4], r = path[(i + 2) % 4];
+    const ux = q.x - p.x, uy = (q.y - p.y) * aspect, vx = r.x - q.x, vy = (r.y - q.y) * aspect;
+    return Math.abs(ux * vx + uy * vy) <= Math.hypot(ux, uy) * Math.hypot(vx, vy) * 1e-4;
+  });
+  if (!rectangular) {
+    const left = Math.min(...path.map(p => p.x)), right = Math.max(...path.map(p => p.x));
+    const top = Math.min(...path.map(p => p.y)), bottom = Math.max(...path.map(p => p.y));
+    const inside = (p: FloorPoint) => {
+      let result = false;
+      for (let i = 0, j = path.length - 1; i < path.length; j = i++) {
+        const a = path[i], b = path[j];
+        if ((a.y > p.y) !== (b.y > p.y) && p.x < (b.x - a.x) * (p.y - a.y) / (b.y - a.y) + a.x) result = !result;
+      }
+      return result;
+    };
+    const cross = (a: FloorPoint, b: FloorPoint, c: FloorPoint) => (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+    const fits = (rect: FloorPoint[]) => rect.every(inside) && rect.every((a, i) => {
+      const b = rect[(i + 1) % 4];
+      return path.every((c, j) => { const d = path[(j + 1) % path.length]; return !(cross(a, b, c) * cross(a, b, d) < 0 && cross(c, d, a) * cross(c, d, b) < 0); });
+    });
+    let best: FloorPoint[] = [], bestScale = 0;
+    for (let row = 1; row < 16; row++) for (let col = 1; col < 16; col++) {
+      const cx = left + (right - left) * col / 16, cy = top + (bottom - top) * row / 16;
+      if (!inside({ x: cx, y: cy })) continue;
+      const rectangle = (scale: number) => { const dx = (right - left) * scale / 2, dy = (bottom - top) * scale / 2; return [{ x: cx - dx, y: cy - dy }, { x: cx + dx, y: cy - dy }, { x: cx + dx, y: cy + dy }, { x: cx - dx, y: cy + dy }]; };
+      let low = 0, high = 1;
+      for (let step = 0; step < 22; step++) { const middle = (low + high) / 2; if (fits(rectangle(middle))) low = middle; else high = middle; }
+      if (low > bestScale) { bestScale = low; best = rectangle(low * .999999); }
+    }
+    if (bestScale < 1e-6) throw invalid();
+    return distributeFloorGroup(best, count, layout, aspect);
+  }
+  const [a, b, c, d] = path.map(p => ({ x: p.x, y: p.y * aspect }));
+  const u = { x: b.x - a.x, y: b.y - a.y }, v = { x: d.x - a.x, y: d.y - a.y };
+  const w = Math.hypot(u.x, u.y), h = Math.hypot(v.x, v.y);
+  if (w < 1e-6 || h < 1e-6 || Math.abs(u.x * v.x + u.y * v.y) > w * h * 1e-4 || Math.hypot(c.x - b.x - d.x + a.x, c.y - b.y - d.y + a.y) > Math.min(w, h) * 1e-4) throw invalid();
+  let columns = layout === "ROWS" ? 1 : count;
+  if (layout === "AUTO") {
+    let score = Infinity;
+    for (let candidate = 1; candidate <= count; candidate++) {
+      if (count % candidate) continue;
+      const next = Math.abs(Math.log((w / candidate) / (h / (count / candidate))));
+      if (next < score) { score = next; columns = candidate; }
+    }
+  }
+  const rows = count / columns;
+  const point = (x: number, y: number) => ({ x: a.x + u.x * x + v.x * y, y: (a.y + u.y * x + v.y * y) / aspect });
+  return Array.from({ length: count }, (_, index) => {
+    const col = index % columns, row = Math.floor(index / columns);
+    return [point(col / columns, row / rows), point((col + 1) / columns, row / rows), point((col + 1) / columns, (row + 1) / rows), point(col / columns, (row + 1) / rows)];
+  });
 }
 
 export function splitQuad(path: Point[], count: number): Point[][] {

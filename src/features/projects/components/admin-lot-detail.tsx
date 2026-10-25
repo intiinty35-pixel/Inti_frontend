@@ -9,6 +9,7 @@ import {
   type PlanLot,
 } from "@/shared/lib/site-plan";
 import { env } from "@/shared/lib/env";
+import { rectangularSides } from "@/shared/lib/lot-measurements";
 import s from "./site-plan.module.css";
 
 export function AdminLotDetail({
@@ -48,6 +49,7 @@ export function AdminLotDetail({
     ["Perímetro", `${lot.perimeterM} m`],
     ["Dimensiones", lot.dimensions || "Sin especificar"],
     ["Frente", `${lot.frontM} m`],
+    ["Fondo", rectangularSides(lot.dimensions)?.depth ? `${rectangularSides(lot.dimensions)!.depth} m` : "Sin especificar"],
     ["Precio por m²", money(lot.priceM2)],
     ["Precio al contado", lot.cashAllowed ? money(lot.price) : "No disponible"],
   ];

@@ -113,6 +113,7 @@ export function SitePlanEditor({ initial, initialShowLots = false, environmentOn
   const groupCount = groupNumbers.length;
   const [groupFront, setGroupFront] = useState(8);
   const [groupDepth, setGroupDepth] = useState(18);
+  const [groupUseMeasurements,setGroupUseMeasurements] = useState(false);
   const [groupDirection, setGroupDirection] = useState(false);
   const [groupReverse, setGroupReverse] = useState(false);
   const groupGeometry = useMemo(() => {
@@ -302,7 +303,7 @@ export function SitePlanEditor({ initial, initialShowLots = false, environmentOn
   }
   async function select(id: string) {
     if (busy) return false;
-    if (id === selected) return true;
+    if (id === selected) { if (plan.lots.some(l=>l.id===id)) setEditingLot(true); return true; }
     if (!await confirmDiscard()) return false;
     closeForm();
     setTool("SELECT");
@@ -310,7 +311,7 @@ export function SitePlanEditor({ initial, initialShowLots = false, environmentOn
     setEditingLot(false);
     setError("");
     const found = plan.lots.find((l) => l.id === id);
-    if (found) setLot(structuredClone(found));
+    if (found) { setLot(structuredClone(found)); setEditingLot(true); }
     else {
       const foundZone = plan.zones.find((z) => z.id === id);
       if (foundZone) {
@@ -386,13 +387,17 @@ export function SitePlanEditor({ initial, initialShowLots = false, environmentOn
         }
         const generated = parts.map((path, i) => {
           const existing = availableBase[i];
-          if (existing) return { ...existing, path };
+          const official = rectangularMetrics(groupFront,groupDepth);
+          if(!official) throw new Error("Ingresa un frente y un fondo mayores que cero.");
+          const dimensions = `${groupFront} × ${groupDepth} m`;
+          if (existing) return { ...existing, path, ...(groupUseMeasurements ? { ...official, dimensions, priceM2: Math.round(existing.price / official.areaM2 * 100) / 100 } : {}) };
           const created = newLot(path);
-          const areaM2 = measured[i].areaM2;
+          const areaM2 = official.areaM2;
           return {
             ...created,
             ...groupTerms,
             ...measured[i],
+            ...official, dimensions,
             areaM2,
             priceM2: Math.round((groupTerms.price / areaM2) * 100) / 100,
             monthlyPayment:
@@ -771,6 +776,7 @@ export function SitePlanEditor({ initial, initialShowLots = false, environmentOn
       const status: Record<string, PlanLot["status"]> = {
         disponible: "AVAILABLE",
         reservado: "RESERVED",
+        separado: "RESERVED",
         vendido: "SOLD",
         bloqueado: "BLOCKED",
         available: "AVAILABLE",
@@ -1331,6 +1337,12 @@ export function SitePlanEditor({ initial, initialShowLots = false, environmentOn
                     ? "Editar lote"
                     : "Guardar lote"}
                 </h2>
+                <div className={s.grid}>
+                  <label>Frente (m)<input type="number" min="0" step="0.01" value={rectangularSides(lot.dimensions)?.front ?? lot.frontM} onChange={e=>updateSide("front",Number(e.target.value))}/></label>
+                  <label>Fondo (m)<input type="number" min="0" step="0.01" value={rectangularSides(lot.dimensions)?.depth || ""} placeholder="Ej. 18" onChange={e=>updateSide("depth",Number(e.target.value))}/></label>
+                  {numeric("Área (m²) *", "areaM2", 0.01)}
+                  {numeric("Perímetro (m)", "perimeterM")}
+                </div>
                 {lot.path.length >= 3 && !selected && plan.lots.length > 0 && (
                   <label>
                     Lote existente del proyecto
@@ -1400,16 +1412,6 @@ export function SitePlanEditor({ initial, initialShowLots = false, environmentOn
 
                 {text("Dirección", "address")}
                 <div className={s.grid}>
-                  {numeric("Área m² *", "areaM2", 0.01)}
-                  {numeric("Perímetro m", "perimeterM")}
-                  <label>
-                    Frente m
-                    <input type="number" min="0" step="0.01" value={rectangularSides(lot.dimensions)?.front ?? lot.frontM} onChange={e => updateSide("front", Number(e.target.value))} />
-                  </label>
-                  <label>
-                    Fondo / costado m
-                    <input type="number" min="0" step="0.01" value={rectangularSides(lot.dimensions)?.depth || ""} placeholder="Ej. 18" onChange={e => updateSide("depth", Number(e.target.value))} />
-                  </label>
                   <label>
                     Dimensiones (ej. 8 × 18 m)
                     <input maxLength={100} value={lot.dimensions} onChange={e => {
@@ -1597,35 +1599,31 @@ export function SitePlanEditor({ initial, initialShowLots = false, environmentOn
           {tool === "GROUP" && (
             <section className={`${s.card} ${s.fields}`}>
               <h2>Grupo de lotes iguales</h2>
+              <div className={s.grid}>
+                <label>Frente (m)<input type="number" min={0.01} step={0.01} value={groupFront || ""} onChange={e => {setGroupFront(Number(e.target.value));setGroupUseMeasurements(true);}} /></label>
+                <label>Fondo (m)<input type="number" min={0.01} step={0.01} value={groupDepth || ""} onChange={e => {setGroupDepth(Number(e.target.value));setGroupUseMeasurements(true);}} /></label>
+                <label>Área de cada lote (m²)<input aria-label="Área de cada lote (m²)" readOnly value={rectangularMetrics(groupFront,groupDepth)?.areaM2 ?? ""} placeholder="Calculada automáticamente" /></label>
+              </div>
+              <details>
+                <summary>Opciones del grupo</summary>
               <label>
-                Forma de crear el grupo
+                Modo
                 <select value={groupMode} onChange={e => { setGroupMode(e.target.value as "AREA" | "SPLIT"); setGroupBoundary([]); setPoints([]); }}>
                   <option value="AREA">Contorno del grupo + primer lote modelo</option>
                   <option value="SPLIT">Dividir una franja completa</option>
                 </select>
               </label>
-              <p>
-                {groupMode === "AREA"
-                  ? groupBoundary.length < 3
-                    ? "Paso 1: dibuja el contorno de este grupo dentro de la manzana y pulsa Usar contorno del grupo. Puede ser solo una parte de la manzana, por ejemplo el espacio para seis lotes iguales."
-                    : "Paso 2: dibuja el primer lote como guía de orientación y proporción. Indica la cantidad que quieres y el sistema ajustará las medidas para distribuirlos dentro del contorno azul."
-                  : "Marca cuatro esquinas en orden alrededor de toda la franja. Revisa la división y los códigos antes de generar."}
-              </p>
-              {groupMode === "AREA" && (groupBoundary.length < 3
-                ? <button type="button" disabled={busy || points.length < 3} onClick={finish}>Usar contorno del grupo</button>
-                : <button type="button" disabled={busy} onClick={() => { setGroupBoundary([]); setPoints([]); setError(""); setMessage(""); }}>Volver a dibujar el contorno del grupo</button>)}
-              {groupMode === "SPLIT" && <div className={s.grid}>
-                <label>Frente de cada lote (m)<input type="number" min={0.01} step={0.01} value={groupFront} onChange={e => setGroupFront(Number(e.target.value))} /></label>
-                <label>Fondo de cada lote (m)<input type="number" min={0.01} step={0.01} value={groupDepth} onChange={e => setGroupDepth(Number(e.target.value))} /></label>
-              </div>}
               {groupMode === "SPLIT" && <button type="button" onClick={() => setGroupDirection(v => !v)}>Cambiar sentido de división</button>}
               <label className={s.check}>
                 <input type="checkbox" checked={groupReverse} onChange={e => setGroupReverse(e.target.checked)} />
                 Numerar desde el extremo opuesto
               </label>
-              <p className={s.muted}>{groupMode === "AREA" ? "Tú decides la cantidad. El sistema ajusta el tamaño de los lotes al contorno, conservando la orientación y proporción del modelo. Las medidas y áreas se calculan a partir del resultado. " : ""}Los colores por estado se aplican al generar. Revisa la escala del plano.</p>
+              </details>
+              {groupMode === "AREA" && (groupBoundary.length < 3
+                ? <button type="button" disabled={busy || points.length < 3} onClick={finish}>Usar contorno del grupo</button>
+                : <button type="button" disabled={busy} onClick={() => { setGroupBoundary([]); setPoints([]); setError(""); setMessage(""); }}>Redibujar contorno</button>)}
               {groupGeometry.error && <p role="alert" className={s.error}>{groupGeometry.error}</p>}
-              <div className={s.notice} aria-live="polite">{groupCount} lotes{groupMode === "SPLIT" ? ` · ${groupFront * groupDepth} m² cada uno` : groupGeometry.lots.length ? ` · ${groupGeometry.lots[0].areaM2} m² aprox. por lote` : " · Tamaño ajustado automáticamente"}{groupCount > 0 ? ` · Del ${groupStart} al ${groupEnd}` : ""}</div>
+              <div className={s.notice} aria-live="polite">{groupCount} lotes · {rectangularMetrics(groupFront,groupDepth)?.areaM2 ?? "—"} m² cada uno{groupCount > 0 ? ` · Del ${groupStart} al ${groupEnd}` : ""}</div>
               {groupProportionMismatch && <p role="status" className={s.error}>La proporción dibujada no coincide con frente y fondo. Revisa la franja, las medidas o cambia el sentido de división.</p>}
               <label>
                 Manzana *

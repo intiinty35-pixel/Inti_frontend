@@ -10,7 +10,7 @@ export async function MapExplorerSection({ mapToolbarHref }: { mapToolbarHref?: 
   try {
     let page = 1;
     while (true) {
-      const result = await getPublicProjectsServer(50, undefined, "recent", page);
+      const result = await getPublicProjectsServer(50, undefined, "recent", page, true);
       listings.push(...result.items.flatMap(project => projectToMapListing(project) ?? []));
       if (!result.hasMore || !result.items.length) break;
       page += 1;

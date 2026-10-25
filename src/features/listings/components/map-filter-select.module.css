@@ -13,6 +13,18 @@
 .option { display: flex; align-items: center; justify-content: space-between; gap: 14px; width: 100%; padding: 11px 12px; border-radius: 11px; text-align: left; font-size: 13px; font-weight: 500; color: #34415d; cursor: pointer; }
 .option:hover, .option:focus-visible { outline: none; background: #f1f4fa; }
 .option[aria-checked="true"] { background: var(--brand-soft); color: var(--brand); font-weight: 650; }
+.field.elegant { padding:0; border:0; flex:auto; }
+.elegant .trigger { min-height:66px; gap:12px; padding:12px 14px; border:1px solid #e0e7f0; border-radius:16px; background:linear-gradient(120deg,#f0f5fb,#f8fafc); box-shadow:0 2px 5px #173f6b04; transition:border-color .18s,box-shadow .18s,background .18s; }
+.elegant .trigger:hover,.elegant .trigger[aria-expanded="true"] { border-color:#b7cbe4; background:#edf3fb; box-shadow:0 5px 16px #173f6b0a; }
+.elegant .fieldIcon { display:grid; place-items:center; flex-shrink:0; width:38px; height:38px; border:1px solid #dce6f2; border-radius:12px; background:#fff; }
+.elegant .fieldIcon svg { color:#365d89; }
+.elegant .fieldText { display:grid; gap:5px; flex:1; min-width:0; }
+.fieldText > span:last-child { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#213e60; font-size:13px; font-weight:650; }
+.fieldLabel { color:#7b8ca2; font-size:10px; font-weight:500; letter-spacing:.02em; }
+.elegantMenu { padding:8px; border-color:#dce6f2; border-radius:16px; background:#fcfdff; box-shadow:0 14px 40px #173f6b1c; }
+.elegantMenu .menuTitle { padding:9px 12px; text-transform:none; letter-spacing:0; font-size:11px; color:#7b8ca2; }
+.elegantMenu .option { min-height:43px; padding:11px 12px; border-radius:10px; }
+.elegantMenu .option[aria-checked="true"] { background:#eaf1fb; color:#214d7b; }
 @keyframes appear { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
 @media (prefers-reduced-motion: reduce) { .menu { animation: none; }.trigger svg { transition: none; } }
 @media (max-width: 1199px) { .field { flex: 0 0 115px; }.compact { flex: 0 1 225px; } }

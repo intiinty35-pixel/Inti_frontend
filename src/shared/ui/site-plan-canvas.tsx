@@ -34,6 +34,8 @@ export function SitePlanCanvas({
   previewPaths = [],
   previewLabels = [],
   currency,
+  moveDrawing = false,
+  onDrawingMove,
 }: {
   plan: SitePlan;
   tool: PlanTool;
@@ -48,6 +50,8 @@ export function SitePlanCanvas({
   previewPaths?: Point[][];
   previewLabels?: string[];
   currency?: string;
+  moveDrawing?: boolean;
+  onDrawingMove?: (dx: number, dy: number) => void;
 }) {
   const [hovered, setHovered] = useState<{ id: string; x: number; y: number }>();
   const hoveredLot = hovered && plan.lots.find(lot => lot.id === hovered.id);
@@ -58,6 +62,7 @@ export function SitePlanCanvas({
     return () => cancelAnimationFrame(frame);
   }, []);
   const svg = useRef<SVGSVGElement>(null);
+  const drawingDrag = useRef<{ x: number; y: number } | null>(null);
   const viewport = useRef<HTMLDivElement>(null);
   const pan = useRef<{
     x: number;
@@ -155,7 +160,7 @@ export function SitePlanCanvas({
   const renderedWidth =
     Math.min(frame.width, (frame.height * image.widthM) / image.heightM) * zoom;
   const renderedHeight = (renderedWidth * image.heightM) / image.widthM;
-  const canCrop = Boolean(onCrop && showImage && !failed && loadedUrl === image.url && tool === "SELECT" && !points.length);
+  const canCrop = Boolean(!moveDrawing && onCrop && showImage && !failed && loadedUrl === image.url && tool === "SELECT" && !points.length);
   const cropBounds = cropDraft ?? { left: 0, top: 0, right: 1, bottom: 1 };
   const cropHandles = [
     { x: -1, y: -1, label: "Esquina superior izquierda", cursor: "nwse-resize" },
@@ -767,7 +772,29 @@ export function SitePlanCanvas({
                 />
               );
             })}
-          {canCrop && <g pointerEvents="none">
+          {moveDrawing && <rect width={1000} height={1000} fill="transparent" style={{ cursor: "move", touchAction: "none" }}
+            aria-label="Mover todo el dibujo sobre la hoja" onClick={event => event.stopPropagation()}
+            onPointerDown={event => {
+              if (event.button !== 0) return;
+              event.stopPropagation();
+              const matrix = svg.current?.getScreenCTM();
+              if (!matrix) return;
+              const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse());
+              drawingDrag.current = { x: point.x, y: point.y };
+              event.currentTarget.setPointerCapture(event.pointerId);
+            }}
+            onPointerMove={event => {
+              if (!drawingDrag.current) return;
+              event.stopPropagation();
+              const matrix = svg.current?.getScreenCTM();
+              if (!matrix) return;
+              const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse());
+              onDrawingMove?.((point.x - drawingDrag.current.x) / 1000, (point.y - drawingDrag.current.y) / 1000);
+              drawingDrag.current = { x: point.x, y: point.y };
+            }}
+            onPointerUp={event => { event.stopPropagation(); drawingDrag.current = null; if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId); }}
+            onPointerCancel={() => { drawingDrag.current = null; }} onLostPointerCapture={() => { drawingDrag.current = null; }} />}
+          {canCrop && !moveDrawing && <g pointerEvents="none">
             {cropDraft && <g fill="rgba(15,23,42,.5)">
               <rect width={1000} height={cropBounds.top * 1000} />
               <rect y={cropBounds.bottom * 1000} width={1000} height={(1 - cropBounds.bottom) * 1000} />

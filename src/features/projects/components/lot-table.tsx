@@ -41,7 +41,7 @@ export function LotTable({ plan, project, exportUrl, onClose, onEdit, onDelete }
   const currentPage = Math.min(page, pages);
   const visibleRows = rows.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   return <section className={`${s.lotBook} ${ui.inventory}`} aria-labelledby="lot-table-title">
-    <header className={ui.hero}><p className={ui.eyebrow}>Lotes / {project.name}</p><span className={ui.pill}>Inventario de lotes</span><h1>{project.name}</h1><div className={ui.metrics}>{[[counts.total, 'Total'], [counts.available, 'Disponibles'], [counts.reserved, 'Reservados'], [counts.sold, 'Vendidos']].map(([count, label]) => <div key={label}><strong>{count}</strong><span>{label}</span></div>)}<div className={ui.progress}><span>Avance de ventas <strong>{progress}%</strong></span><progress value={progress} max={100} aria-label="Avance de ventas" /></div></div></header>
+    <header className={ui.hero}><p className={ui.eyebrow}>Lotes / {project.name}</p><span className={ui.pill}>Inventario de lotes</span><h1>{project.name}</h1><div className={ui.metrics}>{[[counts.total, 'Total'], [counts.available, 'Disponibles'], [counts.reserved, 'Separados'], [counts.sold, 'Vendidos']].map(([count, label]) => <div key={label}><strong>{count}</strong><span>{label}</span></div>)}<div className={ui.progress}><span>Avance de ventas <strong>{progress}%</strong></span><progress value={progress} max={100} aria-label="Avance de ventas" /></div></div></header>
     <h2 id="lot-table-title" className="mb-3 text-lg font-bold">Lotes del proyecto · {project.name}</h2>
     <div className={`${s.lotTableTools} ${ui.tools}`}>
       <span>{rows.length} de {drawnLots.length} lotes</span>

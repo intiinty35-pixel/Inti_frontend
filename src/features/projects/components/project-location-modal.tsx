@@ -11,6 +11,7 @@ import {
 } from "@/features/projects/api";
 import type { ProjectApiSummary } from "@/features/projects/types/api";
 import type { ProjectDraft } from "@/features/projects/types/draft";
+import { searchMapPlace } from "@/shared/lib/geo";
 
 export function ProjectLocationModal({
   project,
@@ -71,6 +72,16 @@ export function ProjectLocationModal({
 
     onSavingChange(true);
     try {
+      const original = project.location;
+      const addressChanged = [draft.street.trim(), draft.streetNumber.trim(), draft.district, draft.province, draft.department].join('|') !==
+        [original.street?.trim() ?? '', original.streetNumber?.trim() ?? '', original.district, original.province, original.department].join('|');
+      const pointUnchanged = draft.lat === (original.lat ?? original.latitude) && draft.lng === (original.lng ?? original.longitude);
+      if (addressChanged && pointUnchanged) {
+        const place = await searchMapPlace([draft.street, draft.streetNumber, draft.district, draft.province, draft.department]);
+        if (!place) throw new Error("No encontramos la nueva dirección. Usa «Ubicar dirección» o fija el punto correcto en el mapa antes de guardar.");
+        location.latitude = place.latitude;
+        location.longitude = place.longitude;
+      }
       await (adminMode
         ? updateAdminProjectLocation(project.id, location)
         : updateProjectLocation(project.id, location));

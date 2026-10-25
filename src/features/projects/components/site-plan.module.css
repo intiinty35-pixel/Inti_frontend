@@ -1,7 +1,7 @@
 .editor {
   display: grid;
   min-width: 0;
-  gap: 18px;
+  gap: 12px;
   color: #193445;
 }
 .discardDialog {
@@ -74,13 +74,17 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
-  border: 1px solid #dfe6ee;
-  border-radius: 12px;
+  gap: 5px;
+  min-height: 32px;
+  max-width: 100%;
+  border: 1px solid #c8d6e8;
+  border-radius: 4px;
   background: white;
-  padding: 10px 14px;
-  font-size: 13px;
-  font-weight: 650;
+  color: #214d7b;
+  padding: 5px 9px;
+  font-size: 12px;
+  line-height: 1.5;
+  font-weight: 500;
   cursor: pointer;
   text-decoration: none;
 }
@@ -105,19 +109,19 @@
 .card {
   background: white;
   border: 1px solid #dfe6ee;
-  border-radius: 16px;
-  padding: 20px;
+  border-radius: 8px;
+  padding: 14px;
 }
 .toolbar {
   display: flex;
-  gap: 16px;
+  gap: 10px;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
 }
 .actions {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   align-items: center;
   flex-wrap: wrap;
 }
@@ -145,17 +149,17 @@
 .streetDirectory button:focus-visible { outline: 2px solid #60a5fa; outline-offset: 2px; }
 .drawingActions { align-items: flex-end; }
 .editor .drawingActions > button,
-.editor .drawingActions > .button { min-height: 36px; padding: 8px 10px; font-size: 12px; }
+.editor .drawingActions > .button { min-height: 32px; padding: 5px 9px; font-size: 12px; }
 @media (min-width: 1024px) {
   .planControls { flex: 1 1 auto; min-width: 0; max-width: 100%; flex-wrap: wrap; gap: 6px; align-self: flex-end; }
   .planControls > * { flex-shrink: 0; white-space: nowrap; }
-  .editor .planControls button, .editor .planControls .button { padding: 8px; font-size: 11px; gap: 5px; }
+  .editor .planControls button, .editor .planControls .button { padding: 5px 8px; font-size: 12px; gap: 5px; }
   .planControls .groupRotation { gap: 4px; font-size: 11px; }
 }
 .layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 360px;
-  gap: 18px;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 12px;
   align-items: start;
 }
 .lotBook {
@@ -276,20 +280,20 @@
 }
 .editor label {
   display: grid;
-  gap: 6px;
+  gap: 4px;
   font-size: 12px;
-  font-weight: 650;
+  font-weight: 500;
 }
 .editor input:not([type="checkbox"]),
 .editor select,
 .editor textarea {
   width: 100%;
   min-width: 0;
-  border: 1px solid #ced8e2;
-  border-radius: 10px;
+  border: 1px solid #c8d6e8;
+  border-radius: 4px;
   background: white;
   color: #193445;
-  padding: 10px 12px;
+  padding: 6px 8px;
   font-size: 13px;
   font-weight: 450;
 }
@@ -301,12 +305,12 @@
 }
 .fields {
   display: grid;
-  gap: 13px;
+  gap: 8px;
 }
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 8px;
 }
 .check {
   display: flex !important;
@@ -336,9 +340,9 @@
   font-weight: 450;
 }
 .metric {
-  padding: 14px;
+  padding: 10px;
   border: 1px solid #e1e7ee;
-  border-radius: 12px;
+  border-radius: 6px;
   font-size: 12px;
 }
 .metric strong {
@@ -414,14 +418,14 @@
 .editor .drawingSelectTrigger {
   position: relative;
   justify-content: flex-start;
-  min-height: 36px;
+  min-height: 32px;
   width: 100%;
   border: 1px solid #bfdbfe;
-  border-radius: 10px;
-  padding: 7px 30px 7px 40px;
-  background: linear-gradient(135deg, #ffffff, #eff6ff);
+  border-radius: 4px;
+  padding: 5px 30px 5px 36px;
+  background: #ffffff;
   color: #1e3a5f;
-  box-shadow: 0 2px 5px #1e40af08;
+  box-shadow: none;
   font: inherit;
   font-size: 12px;
   font-weight: 650;
@@ -494,8 +498,8 @@
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     align-items: stretch;
-    gap: 7px;
-    padding: 12px;
+    gap: 6px;
+    padding: 10px;
   }
   .drawingToolbar > .drawingActions,
   .drawingToolbar > .planControls { display: contents; }
@@ -510,11 +514,11 @@
   .editor .drawingToolbar .groupRotation > button {
     width: 100%;
     min-width: 0;
-    min-height: 44px;
+    min-height: 36px;
     padding: 7px 5px;
     gap: 4px;
-    border-radius: 9px;
-    font-size: 10px;
+    border-radius: 4px;
+    font-size: 11px;
     line-height: 1.35;
     text-align: center;
     white-space: normal;

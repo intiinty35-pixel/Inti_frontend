@@ -44,14 +44,14 @@ export const LOT_MODE_LABELS: Record<LotMode, string> = {
 
 export const LOT_STATUSES: readonly RadioOption[] = [
   { value: "disponible", label: "Disponible" },
-  { value: "reservado", label: "Reservado" },
+  { value: "reservado", label: "Separado" },
   { value: "vendido", label: "Vendido" },
   { value: "bloqueado", label: "Bloqueado" },
 ];
 
 export const LOT_STATUS_LABELS: Record<LotStatus, string> = {
   disponible: "Disponible",
-  reservado: "Reservado",
+  reservado: "Separado",
   vendido: "Vendido",
   bloqueado: "Bloqueado",
 };

@@ -2,13 +2,13 @@
 
 import { useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Check, ChevronDown } from 'lucide-react';
+import { Check, ChevronDown, type LucideIcon } from 'lucide-react';
 import styles from './map-filter-select.module.css';
 
 type Option = { value: string; label: string };
 
-export function MapFilterSelect({ label, value, options, onChange, compact = false }: {
-  label: string; value: string; options: Option[]; onChange: (value: string) => void; compact?: boolean;
+export function MapFilterSelect({ label, value, options, onChange, compact = false, elegant = false, icon: Icon }: {
+  label: string; value: string; options: Option[]; onChange: (value: string) => void; compact?: boolean; elegant?: boolean; icon?: LucideIcon;
 }) {
   const id = useId();
   const trigger = useRef<HTMLButtonElement>(null);
@@ -44,13 +44,13 @@ export function MapFilterSelect({ label, value, options, onChange, compact = fal
       window.removeEventListener('scroll', hide, true);
     };
   }, [position]);
-  return <div className={`${styles.field} ${compact ? styles.compact : ''}`}>
-    {!compact && <span id={`${id}-label`} className={styles.label}>{label}</span>}
+  return <div className={`${styles.field} ${compact ? styles.compact : ''} ${elegant ? styles.elegant : ''}`}>
+    {!compact && !elegant && <span id={`${id}-label`} className={styles.label}>{label}</span>}
     <button ref={trigger} type="button" className={styles.trigger} aria-label={`${label}: ${selected?.label ?? ''}`} aria-haspopup="menu" aria-expanded={!!position} aria-controls={position ? id : undefined}
       onClick={() => position ? close() : open()} onKeyDown={event => {
         if (event.key === 'ArrowDown' || event.key === 'ArrowUp') { event.preventDefault(); open(event.key === 'ArrowUp'); }
-      }}><span>{selected?.label ?? 'Seleccionar'}</span><ChevronDown size={15} className={position ? styles.rotated : ''} /></button>
-    {position && createPortal(<div ref={menu} id={id} role="menu" aria-label={label} className={styles.menu} style={{ left: position.left, top: position.top, width: position.width, maxHeight: `min(340px, calc(100dvh - ${position.top + 12}px))` }} onKeyDown={event => {
+      }}>{elegant && Icon && <span className={styles.fieldIcon}><Icon size={19}/></span>}<span className={elegant ? styles.fieldText : undefined}>{elegant && <span className={styles.fieldLabel}>{label}</span>}<span>{selected?.label ?? 'Seleccionar'}</span></span><ChevronDown size={15} className={position ? styles.rotated : ''} /></button>
+    {position && createPortal(<div ref={menu} id={id} role="menu" aria-label={label} className={`${styles.menu} ${elegant ? styles.elegantMenu : ''}`} style={{ left: position.left, top: position.top, width: position.width, maxHeight: `min(340px, calc(100dvh - ${position.top + 12}px))` }} onKeyDown={event => {
       const items = Array.from(menu.current?.querySelectorAll<HTMLButtonElement>('[role="menuitemradio"]') ?? []);
       const current = items.indexOf(document.activeElement as HTMLButtonElement);
       if (event.key === 'Escape') { event.preventDefault(); close(); }

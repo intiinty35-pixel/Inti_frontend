@@ -2,8 +2,11 @@
 
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { ArrowLeft, ArrowUpRight, Building2, Check, ChevronLeft, ChevronRight, Droplets, Image as ImageIcon, Lightbulb, MapPin, Phone, ShieldCheck, Waves, X, Zap } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, Building2, Check, ChevronLeft, ChevronRight, Droplets, Layers3, Image as ImageIcon, Lightbulb, MapPin, Phone, ShieldCheck, Waves, X, Zap } from 'lucide-react';
 import { SitePlanMap } from '@/shared/ui/site-plan-map';
+import { floorApartmentMapPlan } from '@/shared/lib/plan-coordinates';
+import { APARTMENT_STATUS_LABELS, APARTMENT_STATUS_COLORS } from '@/shared/lib/apartment-plan';
+import { ProtectedLotPdfDownload } from '@/shared/ui/protected-lot-pdf-download';
 import { PublicPlanAccess } from '@/shared/ui/public-plan-access';
 import { LotBudgetFinder } from '@/shared/ui/lot-budget-finder';
 import { findBudgetLots, type LotBudgetFilter } from '@/shared/lib/lot-budget';
@@ -15,6 +18,7 @@ import { formatPrice } from '@/shared/lib/format';
 import { buildArizWhatsappUrl } from '@/shared/lib/whatsapp';
 import { ROUTES } from '@/shared/config/routes';
 import { SharePropertyButton } from './share-property-button';
+import { MapFilterSelect } from './map-filter-select';
 import type { Listing } from '../types/listing';
 import s from './selected-project-explorer.module.css';
 
@@ -22,8 +26,9 @@ const EMPTY: SitePlan = { logoUrl: '', zones: [], lots: [] };
 const NO_MARKERS: [] = [];
 const STAGES = { PRE_SALE: 'Preventa', UNDER_CONSTRUCTION: 'En construcción', DELIVERED: 'Entregado' };
 
-export function SelectedProjectExplorer({ project, plan, planError, projectAccessGranted, accessCodeRequired, accessCodeError, accessCodeSkipped, accessCodeBusy, onSubmitAccessCode, onOmitAccessCode, onRequestAccessCode, focusPlanRequest, selectedLot, lotSheet, onSelectLot, onClose, onCloseLot }: {
+export function SelectedProjectExplorer({ project, plan, planError, projectAccessGranted, accessCodeRequired, accessCodeError, accessCodeSkipped, accessCodeBusy, onSubmitAccessCode, onOmitAccessCode, onRequestAccessCode, focusPlanRequest, selectedLot, lotSheet, onSelectLot, onClose, onCloseLot, accessCode = '' }: {
   project: Listing; plan?: SitePlan | null; planError?: boolean; focusPlanRequest: number; selectedLot?: string; lotSheet?: ReactNode;
+  accessCode?: string;
   projectAccessGranted?: boolean;
   accessCodeRequired?: boolean; accessCodeError?: boolean; accessCodeSkipped?: boolean; accessCodeBusy?: boolean;
   onSubmitAccessCode: (code: string) => void; onOmitAccessCode: () => void; onRequestAccessCode: () => void;
@@ -36,15 +41,44 @@ export function SelectedProjectExplorer({ project, plan, planError, projectAcces
   const [planImagePreference, setPlanImagePreference] = useState<{ url: string; visible: boolean }>();
   const [expandedDescription, setExpandedDescription] = useState(false);
   const [budgetFilter, setBudgetFilter] = useState<LotBudgetFilter | null>(null);
+  const [buildingId, setBuildingId] = useState<string>();
+  const [floorId, setFloorId] = useState<string>();
+  const [towerFloors, setTowerFloors] = useState<Record<string, string>>({});
+  const [apartmentId, setApartmentId] = useState<string>();
+  const [apartmentStatus, setApartmentStatus] = useState('');
+  const [apartmentQuery, setApartmentQuery] = useState('');
+  const [floorFocus, setFloorFocus] = useState(0);
+  const apartmentsMode = plan?.mode === 'APARTMENTS';
+  const buildings = plan?.buildings ?? [];
+  const building = buildings.find(item => item.id === buildingId) ?? buildings[0];
+  const floors = [...(building?.floors ?? [])].sort((a,b) => a.number-b.number);
+  const floor = floors.find(item => item.id === (floorId ?? towerFloors[building?.id ?? ''])) ?? floors.find(item => item.number === 1) ?? floors[0];
+  const apartment = floor?.apartments.find(item => item.id === apartmentId);
+  const displayedFloors = useMemo(() => (plan?.buildings ?? []).map(tower => {
+    const sorted = [...tower.floors].sort((a,b) => a.number-b.number);
+    const current = tower.id === building?.id ? floor : sorted.find(item => item.id === towerFloors[tower.id]) ?? sorted.find(item => item.number === 1) ?? sorted[0];
+    return { tower, floor: current };
+  }), [plan, building, floor, towerFloors]);
+  const displayedUnits = useMemo(() => displayedFloors.flatMap(item => (item.floor?.apartments ?? []).map(unit => ({ ...item, unit }))), [displayedFloors]);
+  const mapPlan = useMemo(() => {
+    if (!apartmentsMode || !plan || !building) return plan ?? EMPTY;
+    const base = floorApartmentMapPlan(plan, building, floor);
+    return { ...base, lots: displayedFloors.flatMap(item => floorApartmentMapPlan(plan, item.tower, item.floor).lots) };
+  }, [apartmentsMode, plan, building, floor, displayedFloors]);
+  const finderLots = useMemo(() => apartmentsMode ? mapPlan.lots.filter(lot =>
+    floor?.apartments.some(unit => unit.id === lot.id && (!apartmentStatus || unit.status === apartmentStatus)) &&
+    lot.code.toLowerCase().includes(apartmentQuery.toLowerCase())
+  ) : mapPlan.lots, [apartmentsMode, mapPlan, floor, apartmentStatus, apartmentQuery]);
   const matchingLotIds = useMemo(() => {
-    if (!budgetFilter || !plan) return undefined;
-    const result = findBudgetLots(plan.lots, budgetFilter);
-    return [...result.matches, ...result.nearby].map(lot => lot.id);
-  }, [plan, budgetFilter]);
+    if (!budgetFilter && (!apartmentsMode || (!buildingId && !floorId && !apartmentStatus && !apartmentQuery))) return undefined;
+    const result = budgetFilter ? findBudgetLots(finderLots, budgetFilter) : undefined;
+    const budgetIds = result && new Set([...result.matches, ...result.nearby].map(lot => lot.id));
+    return finderLots.filter(lot => !budgetIds || budgetIds.has(lot.id)).map(lot => lot.id);
+  }, [finderLots, budgetFilter, apartmentsMode, buildingId, floorId, apartmentStatus, apartmentQuery]);
   const info = useRef<HTMLElement>(null);
   const dialog = useRef<HTMLDialogElement>(null);
   const imageTrigger = useRef<HTMLButtonElement>(null);
-  const center = useMemo(() => ({ lat: project.location.lat ?? -9.19, lng: project.location.lng ?? -75.0152 }), [project.location.lat, project.location.lng]);
+  const center = useMemo(() => ({ lat: detail?.location?.latitude ?? project.location.lat ?? -9.19, lng: detail?.location?.longitude ?? project.location.lng ?? -75.0152 }), [detail?.location?.latitude, detail?.location?.longitude, project.location.lat, project.location.lng]);
   const planImageUrl = plan?.image?.url;
   const showPlanImage = Boolean(planImageUrl && planImagePreference?.url === planImageUrl && planImagePreference.visible);
   const locationMarkers = useMemo(() => [{
@@ -75,14 +109,14 @@ export function SelectedProjectExplorer({ project, plan, planError, projectAcces
     document.addEventListener('visibilitychange', visible);
     return () => { controller.abort(); clearInterval(timer); document.removeEventListener('visibilitychange', visible); };
   }, [project.slug]);
-  useEffect(() => { info.current?.scrollTo({ top: 0 }); }, [selectedLot]);
+  useEffect(() => { info.current?.scrollTo({ top: 0 }); }, [selectedLot, apartmentId]);
   useEffect(() => {
     if (lightbox) dialog.current?.showModal();
     else if (dialog.current?.open) dialog.current.close();
   }, [lightbox]);
   const images = [...new Set((detail?.images?.length ? detail.images : project.images).filter(Boolean))];
   const currentPhoto = images.length ? photo % images.length : 0;
-  const lots = plan?.lots ?? [];
+  const lots = apartmentsMode ? (plan.buildings ?? []).flatMap(building => building.floors.flatMap(floor => floor.apartments)) : plan?.lots ?? [];
   const counts = { available: lots.filter(lot => lot.status === 'AVAILABLE').length, reserved: lots.filter(lot => lot.status === 'RESERVED').length, sold: lots.filter(lot => lot.status === 'SOLD').length };
   const soldPercent = lots.length ? Math.round(counts.sold / lots.length * 100) : 0;
   const description = detail?.description || project.description || '';
@@ -94,12 +128,28 @@ export function SelectedProjectExplorer({ project, plan, planError, projectAcces
   const whatsapp = contact ? `https://wa.me/${contact.replace(/\D/g, '')}?text=${encodeURIComponent(message)}` : buildArizWhatsappUrl(message);
   function shiftPhoto(delta: number) { setPhoto(value => images.length ? (value + delta + images.length) % images.length : 0); }
   function selectLot(id: string) {
-    onSelectLot(id);
+    if (apartmentsMode) {
+      if (buildings.some(item => item.id === id)) { setBuildingId(id); setFloorId(undefined); setApartmentId(undefined); setFloorFocus(value => value + 1); setBudgetFilter(null); return; }
+      const selected = displayedUnits.find(item => item.unit.id === id);
+      if (!selected) return;
+      setBuildingId(selected.tower.id);
+      setFloorId(selected.floor?.id);
+      setApartmentId(id);
+    } else onSelectLot(id);
     if (window.matchMedia('(max-width: 1023px)').matches) requestAnimationFrame(() => info.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
   }
+  const apartmentSheet = apartment && <article className={s.apartmentSheet} aria-label={`Ficha del departamento ${apartment.code}`}>
+    <div className={s.infoHeader}><span className={s.eyebrow}>Ficha del departamento</span><button type="button" aria-label="Cerrar ficha del departamento" onClick={()=>setApartmentId(undefined)}><X size={18}/></button></div>
+    <div className={s.apartmentHero}><Building2 size={26}/><h2>Departamento {apartment.code}</h2><p>{building?.name} · {floor?.name}</p><span className={s.apartmentBadge} style={{color:APARTMENT_STATUS_COLORS[apartment.status]}}><span style={{background:APARTMENT_STATUS_COLORS[apartment.status]}}/>{APARTMENT_STATUS_LABELS[apartment.status]}</span></div>
+    <section className={s.apartmentPrice}><span>{apartment.operation === 'RENT' ? 'Alquiler mensual' : 'Precio de venta'}</span><strong>{formatPrice(apartment.price, project.price.currency)}</strong><small>{project.title}</small></section>
+    <dl className={s.apartmentFacts}>{[['Área',`${apartment.areaM2} m²`],['Dormitorios',apartment.bedrooms],['Baños',apartment.bathrooms],['Mantenimiento mensual',formatPrice(apartment.maintenanceFee,project.price.currency)]].map(([label,value])=><div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
+    {apartment.notes && <section className={s.apartmentNotes}><h3>Detalles del departamento</h3><p>{apartment.notes}</p></section>}
+    <div className={s.apartmentActions}><ProtectedLotPdfDownload key={apartment.id} slug={project.slug} lotId={apartment.id} code={accessCode} unitType="apartment" className={s.apartmentDownload}/>
+    <a className={s.apartmentContact} href={buildArizWhatsappUrl(`Hola, me interesa el departamento ${apartment.code}, ${building?.name}, ${floor?.name} del proyecto ${project.title}.`)} target="_blank" rel="noreferrer">Consultar por WhatsApp<ArrowUpRight size={16}/></a></div>
+  </article>;
   return <section className={`${s.explorer} ${projectAccessGranted ? '' : s.locationOnly}`} aria-label={`Plano e información de ${project.title}`}>
     <div className={s.map}>
-      <SitePlanMap matchingLotIds={matchingLotIds} currency={project.price.currency} plan={plan ?? EMPTY} center={center} showImage={showPlanImage} mapType="roadmap" compactMapControl publicView legendStatuses={['SOLD', 'RESERVED', 'AVAILABLE']} legendAction={planImageUrl ? <button type="button" className={s.legendImageButton} aria-pressed={showPlanImage} onClick={() => setPlanImagePreference({ url: planImageUrl, visible: !showPlanImage })}><ImageIcon size={14} />{showPlanImage ? 'Ocultar imagen del plano' : 'Ver imagen del plano'}</button> : undefined} markers={projectAccessGranted && plan ? NO_MARKERS : locationMarkers} focusPlanRequest={Math.max(1, focusPlanRequest)} focusPlanZoom={17} selected={selectedLot} onSelect={selectLot} className={s.mapSurface} />
+      <SitePlanMap lotSummary={apartmentsMode ? lot => { const unit = displayedUnits.find(item => item.unit.id === lot.id)?.unit; return { title: `Departamento ${lot.code}`, priceM2: undefined, price: formatPrice(lot.price, project.price.currency) + (unit?.operation === 'RENT' ? ' / mes' : ''), detail: `${lot.areaM2} m² · ${unit ? APARTMENT_STATUS_LABELS[unit.status] : ''}` }; } : undefined} matchingLotIds={matchingLotIds} currency={project.price.currency} plan={mapPlan} center={center} showImage={showPlanImage} mapType="roadmap" compactMapControl publicView legendStatuses={['SOLD', 'RESERVED', 'AVAILABLE']} legendAction={planImageUrl ? <button type="button" className={s.legendImageButton} aria-pressed={showPlanImage} onClick={() => setPlanImagePreference({ url: planImageUrl, visible: !showPlanImage })}><ImageIcon size={14} />{showPlanImage ? 'Ocultar imagen del plano' : 'Ver imagen del plano'}</button> : undefined} markers={projectAccessGranted && plan ? NO_MARKERS : locationMarkers} focusPlanRequest={Math.max(1, focusPlanRequest) + floorFocus} focusPlanZoom={17} selected={apartmentsMode ? apartmentId : selectedLot} onSelect={selectLot} className={s.mapSurface} />
       <button type="button" className={s.back} onClick={onClose}><ArrowLeft size={15} />Volver a proyectos</button>
       {projectAccessGranted && images.length > 0 && <button ref={imageTrigger} type="button" className={s.photoTrigger} onClick={() => setLightbox(true)} aria-label="Ver imágenes del proyecto"><ImageIcon size={16} />Ver imágenes</button>}
       {accessCodeSkipped && <button type="button" className={s.accessAgain} onClick={onRequestAccessCode}><ImageIcon size={16} />Ingresar código para ver el plano</button>}
@@ -109,14 +159,21 @@ export function SelectedProjectExplorer({ project, plan, planError, projectAcces
       {(plan === null || planError) && !accessCodeRequired && !accessCodeSkipped && <p role={planError ? 'alert' : 'status'} className={s.mapNotice}>{planError ? 'No se pudo actualizar el plano.' : 'Este proyecto todavía no tiene un plano publicado.'}</p>}
       {accessCodeSkipped && <p role="status" className={s.mapNotice}>Se muestra la ubicación del proyecto. El plano permanece oculto.</p>}
     </div>
-    {projectAccessGranted && <aside ref={info} className={s.info} aria-label={selectedLot ? 'Ficha del lote seleccionado' : 'Información del proyecto'}>
-      {lotSheet ? <><button type="button" className={s.returnInfo} onClick={onCloseLot}><ArrowLeft size={15} />Información del proyecto</button>{lotSheet}</> : <>
+    {projectAccessGranted && <aside ref={info} className={s.info} aria-label={apartmentId ? 'Ficha del departamento seleccionado' : selectedLot ? 'Ficha del lote seleccionado' : 'Información del proyecto'}>
+
+      {apartmentSheet ? <><button type="button" className={s.returnInfo} onClick={()=>setApartmentId(undefined)}><ArrowLeft size={15}/>Información del proyecto</button>{apartmentSheet}</> : lotSheet ? <><button type="button" className={s.returnInfo} onClick={onCloseLot}><ArrowLeft size={15} />Información del proyecto</button>{lotSheet}</> : <>
         <div className={s.infoHeader}><span className={s.eyebrow}>Información del proyecto</span><button type="button" onClick={onClose} aria-label="Cerrar proyecto"><X size={19} /></button></div>
         {detail?.agent.name && <section className={s.developer}><span className={s.publisherInitial}>{detail.agent.name.charAt(0)}</span><div><span>Publicado por</span><strong>{detail.agent.name}</strong></div></section>}
         <h1>{detail?.name ?? project.title}</h1>
         <p className={s.location}><MapPin size={15} />{[project.location.district, project.location.province, project.location.department].filter((value, index, values) => value && values.indexOf(value) === index).join(', ')}</p>
         <section className={s.commercial}><span className={s.eyebrow}>Etapa comercial</span><h2>{detail ? STAGES[detail.stage] : 'Proyecto inmobiliario'}</h2><strong>Desde {formatPrice(detail?.cheapestLotPrice ?? detail?.priceFrom ?? project.price.amount, detail?.currency ?? project.price.currency)}</strong></section>
-        {plan && <LotBudgetFinder lots={plan.lots} currency={detail?.currency ?? project.price.currency} filter={budgetFilter} onChange={setBudgetFilter} onSelect={selectLot} />}
+      {apartmentsMode && <section className={s.apartmentFilters} aria-label="Filtrar departamentos">
+        <MapFilterSelect elegant icon={Building2} label="Torre" value={building?.id ?? ''} options={buildings.map(item=>({value:item.id,label:item.name}))} onChange={value=>{setBuildingId(value);setFloorId(undefined);setApartmentId(undefined);setBudgetFilter(null);setFloorFocus(previous=>previous+1);}}/>
+        <MapFilterSelect elegant icon={Layers3} label="Piso" value={floor?.id ?? ''} options={floors.map(item=>({value:item.id,label:item.name}))} onChange={value=>{setFloorId(value);if(building) setTowerFloors(previous=>({...previous,[building.id]:value}));setApartmentId(undefined);setBudgetFilter(null);setFloorFocus(previous=>previous+1);}}/>
+        <MapFilterSelect elegant icon={ShieldCheck} label="Estado" value={apartmentStatus} options={[{value:'',label:'Todos los estados'},...Object.entries(APARTMENT_STATUS_LABELS).filter(([value])=>value !== 'BLOCKED').map(([value,label])=>({value,label}))]} onChange={setApartmentStatus}/>
+        <label>Buscar departamento<input type="search" value={apartmentQuery} onChange={event=>setApartmentQuery(event.target.value)} placeholder="Número de departamento"/></label>
+      </section>}
+        {plan && <LotBudgetFinder key={apartmentsMode ? `${building?.id}:${floor?.id}:${apartmentStatus}:${apartmentQuery}` : 'lots'} unitType={apartmentsMode ? 'apartment' : 'lot'} lots={finderLots} currency={detail?.currency ?? project.price.currency} filter={budgetFilter} onChange={setBudgetFilter} onSelect={selectLot} />}
         {plan && <section className={s.inventory}><div className={s.counts}>{[[counts.available, 'Disponibles'], [counts.reserved, 'Separados'], [counts.sold, 'Vendidos']].map(([count, label]) => <div key={label}><strong>{count}</strong><span>{label}</span></div>)}</div><div className={s.progress}><span>Avance de ventas</span><strong>{soldPercent}%</strong></div><progress value={soldPercent} max={100} aria-label="Avance de ventas" /><small>Datos del plano publicado · actualización cada 15 segundos</small></section>}
         <div className={s.contact}><a href={whatsapp} target="_blank" rel="noreferrer" className={s.whatsapp}>Consultar por WhatsApp<ArrowUpRight size={17} /></a><SharePropertyButton className={s.shareAction} buttonClassName={s.shareButton} title={project.title} latitude={project.location.lat} longitude={project.location.lng} href={ROUTES.project(project.slug)} label="Compartir" kind="proyecto" />{detail?.agent.phone && <a className={s.call} href={`tel:${detail.agent.phone}`}><Phone size={15} />Llamar</a>}</div>
         {description && <section className={s.section}><h2>Acerca del proyecto</h2><p id={`description-${project.id}`}>{visibleDescription}</p>{isLongDescription && <button type="button" className={s.readMore} aria-expanded={expandedDescription} aria-controls={`description-${project.id}`} onClick={() => setExpandedDescription(value => !value)}>{expandedDescription ? 'Ver menos' : 'Ver más'}</button>}</section>}

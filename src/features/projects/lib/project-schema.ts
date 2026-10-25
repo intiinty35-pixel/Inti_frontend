@@ -7,6 +7,7 @@ import {
   MAX_PROJECT_IMAGES,
   MAX_RENDER_IMAGES,
   MIN_DESCRIPTION_LENGTH,
+  type LotDraft,
   type ProjectDraft,
 } from "@/features/projects/types/draft";
 
@@ -208,7 +209,8 @@ const milestonesSchema = z.array(milestoneSchema).superRefine((rows, context) =>
 
 const dateMessage = "Usa el formato de fecha del navegador";
 
-export const projectDraftSchema = z
+export function createProjectDraftSchema({ managedInventory = false }: { managedInventory?: boolean } = {}) {
+return z
   .object({
     category: z.enum(CATEGORY_KEYS, { error: "Elige el tipo de propiedad" }),
     stage: z.enum(STAGE_KEYS, { error: "Elige la fase actual" }),
@@ -272,7 +274,7 @@ export const projectDraftSchema = z
       .optional(),
 
     lotMode: z.enum(LOT_MODE_KEYS),
-    lots: lotsSchema,
+    lots: managedInventory ? z.array(z.custom<LotDraft>()) : z.array(lotSchema),
 
     constructionStart: optionalIsoDate(dateMessage),
     estimatedDelivery: isoDate("Elige la fecha estimada de entrega"),
@@ -293,6 +295,10 @@ export const projectDraftSchema = z
     renderImages: z.array(fileSchema).max(MAX_RENDER_IMAGES, `Máximo ${MAX_RENDER_IMAGES} renders`),
   })
   .superRefine((draft, context) => {
+    if (!managedInventory && draft.category !== "departamentos") {
+      const result = lotsSchema.safeParse(draft.lots);
+      if (!result.success) for (const issue of result.error.issues) context.addIssue({ ...issue, path: ["lots", ...issue.path] });
+    }
     const keptImages = draft.keptMedia.filter((media) => media.type === "IMAGE").length;
     if (draft.images.length + keptImages === 0) {
       context.addIssue({
@@ -355,7 +361,7 @@ export const projectDraftSchema = z
       });
     }
 
-    if (draft.lotMode === "grupo") {
+    if (!managedInventory && draft.category !== "departamentos" && draft.lotMode === "grupo") {
       draft.lots.forEach((lot, index) => {
         if (isBlankLot(lot) || lot.lotCount !== undefined) {
           return;
@@ -390,6 +396,10 @@ export const projectDraftSchema = z
       });
     }
   });
+
+}
+
+export const projectDraftSchema = createProjectDraftSchema();
 
 const STEP_ONE_FIELDS = [
   "category",

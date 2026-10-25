@@ -21,7 +21,7 @@ import {
   type CreateProjectPayload,
 } from "@/features/projects/api";
 import { countStepErrors, PROJECT_DRAFT_DEFAULTS } from "@/features/projects/lib/project-draft";
-import { LAST_STEP_INDEX, WIZARD_STEPS, projectDraftSchema } from "@/features/projects/lib/project-schema";
+import { LAST_STEP_INDEX, WIZARD_STEPS, createProjectDraftSchema } from "@/features/projects/lib/project-schema";
 import { projectDetailToDraft } from "@/features/projects/lib/project-from-api";
 import type { ProjectApiDetail } from "@/features/projects/types/api";
 import type { LotDraft, ProjectDraft } from "@/features/projects/types/draft";
@@ -80,12 +80,14 @@ export function ProjectPublishWizard({
   onSave,
 }: ProjectPublishWizardProps) {
   const editing = initialProject !== undefined;
+  const managedInventory = Boolean(initialProject?.hasSitePlan);
+  const validationSchema = useMemo(() => createProjectDraftSchema({ managedInventory }), [managedInventory]);
   const initialDraft = useMemo(
     () => (initialProject ? projectDetailToDraft(initialProject) : PROJECT_DRAFT_DEFAULTS),
     [initialProject],
   );
   const form = useForm<ProjectDraft>({
-    resolver: zodResolver(projectDraftSchema),
+    resolver: zodResolver(validationSchema),
     defaultValues: initialDraft,
     mode: "onTouched",
   });
@@ -214,6 +216,7 @@ export function ProjectPublishWizard({
 
         const media = mergeProjectMedia(getValues("keptMedia"), [...images, ...plans, ...renders]);
         const input = toProjectInput({ ...next, tourUrl }, media);
+        if (managedInventory) input.lots = [];
         if (initialProject) {
           await updateProject(initialProject.id, input);
         } else {
@@ -229,7 +232,7 @@ export function ProjectPublishWizard({
         setSaving(false);
       }
     },
-    [adminMode, getValues, initialProject, onSave],
+    [adminMode, getValues, initialProject, managedInventory, onSave],
   );
 
   if (saved) {
