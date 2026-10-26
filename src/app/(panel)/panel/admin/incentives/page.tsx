@@ -112,7 +112,7 @@ export default async function AdminIncentivesPage({
           </CardContent>
         </Card>
       ) : (
-        <section className="grid min-w-0 max-w-full gap-4 overflow-x-hidden md:grid-cols-2 xl:grid-cols-4">
+        <section className="grid min-w-0 max-w-full grid-cols-2 gap-2 overflow-x-hidden sm:gap-4 xl:grid-cols-4">
           {data.items.map((incentive) => (
             <IncentiveCard key={incentive.id} incentive={incentive} />
           ))}

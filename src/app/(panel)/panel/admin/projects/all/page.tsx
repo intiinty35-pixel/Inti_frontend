@@ -10,6 +10,8 @@ import { Pagination } from "@/shared/ui/pagination";
 import { AdminPortfolioSummary } from "@/features/projects/components/admin-portfolio-summary";
 import { KeyRound } from "lucide-react";
 
+const PAGE_SIZE = 12;
+
 async function PortfolioOverview({ data, filtered }: { data: ProjectApiPaged; filtered: boolean }) {
   const summary = await (async () => {
     const inventory = filtered ? await getAdminAllProjectsPagedServer(1, undefined, 20) : data;
@@ -24,10 +26,17 @@ export default async function AllProjectsPage({
   searchParams: Promise<{ page?: string; status?: string }>;
 }) {
   const params = await searchParams;
-  const page = Math.max(1, Math.floor(Number(params.page) || 1));
+  const requestedPage = Number(params.page);
+  let page = Number.isSafeInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1;
   const status = params.status && Object.hasOwn(PROJECT_STATUS_LABELS, params.status)
     ? params.status as ApiProjectStatus : undefined;
-  const data = await getAdminAllProjectsPagedServer(page, status, 20);
+  let data = await getAdminAllProjectsPagedServer(page, status, PAGE_SIZE);
+  const lastPage = Math.max(1, Math.ceil(data.total / PAGE_SIZE));
+
+  if (page > lastPage) {
+    page = lastPage;
+    data = await getAdminAllProjectsPagedServer(page, status, PAGE_SIZE);
+  }
   const filters: { label: string; status?: ApiProjectStatus }[] = [
     { label: "Todos" },
     ...Object.entries(PROJECT_STATUS_LABELS).map(([value, label]) => ({ label, status: value as ApiProjectStatus })),

@@ -302,15 +302,15 @@ function MetricCard({
   Icon: typeof Users;
 }) {
   return (
-    <Card className="flex min-h-40 flex-col items-center justify-center overflow-hidden p-5 text-center">
+    <Card className="flex aspect-square min-w-0 flex-col items-center justify-center overflow-hidden p-2 text-center sm:aspect-auto sm:min-h-40 sm:p-5">
       <div className="flex flex-col items-center">
-        <span className={`flex size-11 items-center justify-center rounded-xl ${tone}`}>
-          <Icon className="size-5" aria-hidden="true" />
+        <span className={`flex size-9 items-center justify-center rounded-xl sm:size-11 ${tone}`}>
+          <Icon className="size-4 sm:size-5" aria-hidden="true" />
         </span>
-        <p className="mt-4 text-[11px] font-black tracking-[0.16em] text-muted uppercase">{label}</p>
-        <p className="mt-2 font-display text-4xl font-black tracking-tight text-brand">{value}</p>
+        <p className="mt-2 text-[9px] font-black tracking-[0.12em] text-muted uppercase sm:mt-4 sm:text-[11px] sm:tracking-[0.16em]">{label}</p>
+        <p className="mt-0.5 font-display text-2xl font-black tracking-tight text-brand sm:mt-2 sm:text-4xl">{value}</p>
       </div>
-      <p className="mt-3 text-xs font-semibold text-muted">{hint}</p>
+      <p className="mt-1 text-[10px] font-semibold leading-tight text-muted sm:mt-3 sm:text-xs">{hint}</p>
     </Card>
   );
 }
@@ -490,7 +490,7 @@ export default async function PanelAdminPage({ searchParams }: PanelAdminPagePro
           </div>
         </div>
 
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="mt-6 grid grid-cols-2 gap-2 sm:gap-4 xl:grid-cols-4">
           <MetricCard
             label="Profesionales"
             value={String(allProfessionals.length)}

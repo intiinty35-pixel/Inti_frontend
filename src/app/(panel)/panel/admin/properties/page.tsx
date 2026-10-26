@@ -5,14 +5,25 @@ import { ROUTES } from "@/shared/config/routes";
 import { getAdminPropertiesPagedServer } from "@/features/listings/api/server";
 import { OwnerListingCard } from "@/features/listings/components/owner-listing-card";
 
+const PAGE_SIZE = 6;
+
 export default async function AdminPropertiesPage({
   searchParams,
 }: {
   searchParams: Promise<{ page?: string }>;
 }) {
   const { page: pageParam } = await searchParams;
-  const page = Math.max(1, Number(pageParam) || 1);
-  const { items, total, pageSize } = await getAdminPropertiesPagedServer(page);
+  const requestedPage = Number(pageParam);
+  let page = Number.isSafeInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1;
+  let data = await getAdminPropertiesPagedServer(page, PAGE_SIZE);
+  const lastPage = Math.max(1, Math.ceil(data.total / data.pageSize));
+
+  if (page > lastPage) {
+    page = lastPage;
+    data = await getAdminPropertiesPagedServer(page, PAGE_SIZE);
+  }
+
+  const { items, total, pageSize } = data;
 
   return (
     <div className="flex min-w-0 max-w-full flex-col gap-6 overflow-x-hidden">

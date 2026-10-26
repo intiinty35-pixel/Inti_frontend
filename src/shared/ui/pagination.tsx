@@ -17,7 +17,37 @@ export function Pagination({ page, pageSize, total, buildHref }: PaginationProps
   });
 
   return (
-    <nav aria-label="Paginacion" className="flex max-w-full flex-wrap items-center justify-center gap-1.5 overflow-hidden">
+    <nav aria-label="Paginacion" className="flex max-w-full items-center justify-center">
+      <div className="flex items-center gap-2 sm:hidden">
+        <Link
+          href={buildHref(Math.max(1, page - 1))}
+          aria-disabled={page === 1}
+          className={cn(
+            "flex h-9 items-center justify-center rounded-card border border-edge px-2.5 text-xs font-medium",
+            page === 1
+              ? "pointer-events-none opacity-40"
+              : "text-ink hover:border-brand",
+          )}
+        >
+          Anterior
+        </Link>
+        <span className="whitespace-nowrap text-xs font-medium text-muted">
+          Página {page} de {totalPages}
+        </span>
+        <Link
+          href={buildHref(Math.min(totalPages, page + 1))}
+          aria-disabled={page === totalPages}
+          className={cn(
+            "flex h-9 items-center justify-center rounded-card border border-edge px-2.5 text-xs font-medium",
+            page === totalPages
+              ? "pointer-events-none opacity-40"
+              : "text-ink hover:border-brand",
+          )}
+        >
+          Siguiente
+        </Link>
+      </div>
+      <div className="hidden flex-wrap items-center justify-center gap-1.5 sm:flex">
       <Link
         href={buildHref(Math.max(1, page - 1))}
         aria-disabled={page === 1}
@@ -68,7 +98,7 @@ export function Pagination({ page, pageSize, total, buildHref }: PaginationProps
       >
         Siguiente
       </Link>
+      </div>
     </nav>
   );
 }
-
