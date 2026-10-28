@@ -56,7 +56,7 @@ export default async function PublicHomePage() {
   return (
     <>
       <WelcomeModal />
-      <section className="relative isolate z-30 -mt-[var(--header-h)] min-h-[440px] overflow-visible pr-4 pt-[calc(var(--header-h)+3rem)] pb-[160px] pl-6 text-left text-white sm:min-h-[520px] sm:pr-6 sm:pl-7 sm:pt-[calc(var(--header-h)+4.5rem)] lg:min-h-[540px] lg:pb-32 lg:pr-6 lg:pl-8 lg:pt-[calc(var(--header-h)+6rem)] xl:pr-8 xl:pl-9">
+      <section className="relative isolate z-30 -mt-[var(--header-h)] min-h-[440px] overflow-visible pr-4 pt-[calc(var(--header-h)+2rem)] pb-[160px] pl-6 text-left text-white sm:min-h-[520px] sm:pr-6 sm:pl-7 sm:pt-[calc(var(--header-h)+4.5rem)] lg:min-h-[540px] lg:pb-32 lg:pr-6 lg:pl-8 lg:pt-[calc(var(--header-h)+6rem)] xl:pr-8 xl:pl-9">
         <HomeHeroBackground />
         <span
           aria-hidden
@@ -72,7 +72,7 @@ export default async function PublicHomePage() {
         <span aria-hidden className="absolute inset-x-0 bottom-0 h-1 bg-accent" />
 
         <div className={`${HERO_TEXT} relative z-10 flex flex-col items-start`}>
-          <p className="text-[10px] font-black tracking-[0.12em] text-white/90 uppercase">
+          <p className="hidden text-[10px] font-black tracking-[0.12em] text-white/90 uppercase sm:block">
             Tumbes, un gran lugar para tu historia
           </p>
           <h1 className="mt-2 max-w-2xl text-3xl leading-[1.05] font-black tracking-tight sm:text-4xl lg:text-6xl">
@@ -98,7 +98,7 @@ export default async function PublicHomePage() {
           </div>
         </div>
 
-        <div className="absolute inset-x-0 bottom-0 z-10 translate-y-1/2 px-4 sm:px-6 lg:inset-x-6 lg:px-0 xl:inset-x-8">
+        <div className="absolute inset-x-0 bottom-3 z-10 translate-y-1/2 px-4 sm:bottom-0 sm:px-6 lg:inset-x-6 lg:px-0 xl:inset-x-8">
           <div className={HERO_SHELL}>
             <Suspense fallback={<SearchFormFallback />}>
               <SearchForm />

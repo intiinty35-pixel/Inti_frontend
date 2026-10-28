@@ -226,7 +226,7 @@ function ServiceActions({
   consultationVariant?: "secondary" | "accent";
 }) {
   return (
-    <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+    <div className="mt-8 grid grid-cols-2 gap-2 [&>a]:gap-1 [&>a]:px-2 [&>a]:text-[10px] [&>button]:gap-1 [&>button]:px-2 [&>button]:text-[10px] [&_svg]:shrink-0 sm:flex sm:flex-row sm:flex-wrap sm:gap-3 sm:[&>a]:gap-2 sm:[&>a]:px-5 sm:[&>a]:text-sm sm:[&>button]:gap-2 sm:[&>button]:px-5 sm:[&>button]:text-sm">
       <WhatsappCta service={service} variant={whatsappVariant} />
       <ConsultationButton service={service} onOpen={onOpen} variant={consultationVariant} />
     </div>
@@ -452,16 +452,16 @@ export function ServicesSection() {
               </p>
 
               <div className="mt-8 rounded-2xl border border-edge bg-surface p-4 shadow-[var(--shadow-card)] sm:p-5">
-                <div className="grid gap-2 sm:grid-cols-2">
+                <div className="grid grid-cols-2 gap-2">
                   {COMMERCIAL_SERVICES.map((item, index) => (
                     <div
                       key={item}
-                      className="group flex items-start gap-3 rounded-card bg-canvas px-3 py-3 transition-colors hover:bg-brand-soft"
+                      className="group flex min-w-0 items-start gap-2 rounded-card bg-canvas px-2 py-3 transition-colors hover:bg-brand-soft sm:gap-3 sm:px-3"
                     >
                       <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-brand text-[11px] font-black text-on-brand">
                         {String(index + 1).padStart(2, "0")}
                       </span>
-                      <span className="text-sm font-semibold leading-6 text-ink">{item}</span>
+                      <span className="min-w-0 text-xs font-semibold leading-5 break-words text-ink sm:text-sm sm:leading-6">{item}</span>
                     </div>
                   ))}
                 </div>
@@ -498,12 +498,12 @@ export function ServicesSection() {
                 </blockquote>
                 <ServiceActions service="Asesoria legal" onOpen={setSelectedService} />
               </div>
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
                 {LEGAL_ITEMS.slice(0, 8).map((item, index) => (
                   <div
                     key={item}
                     className={cn(
-                      "group relative min-h-24 rounded-card border border-edge bg-canvas p-4 shadow-[var(--shadow-card)] transition duration-200 hover:-translate-y-0.5 hover:border-brand",
+                      "group relative min-w-0 min-h-24 rounded-card border border-edge bg-canvas p-3 shadow-[var(--shadow-card)] transition duration-200 hover:-translate-y-0.5 hover:border-brand sm:p-4",
                       index >= 4 && "lg:translate-x-3",
                     )}
                   >
@@ -511,15 +511,15 @@ export function ServicesSection() {
                       className="absolute left-3 top-3 size-2 rounded-full bg-accent shadow-[0_0_0_4px_rgb(245_184_0_/_0.14)]"
                       aria-hidden
                     />
-                    <p className="pl-4 text-sm font-black leading-5 text-brand">{item}</p>
+                    <p className="break-words pl-4 text-xs font-black leading-5 text-brand sm:text-sm">{item}</p>
                   </div>
                 ))}
-                <div className="rounded-card border border-edge bg-brand p-3 text-white shadow-[var(--shadow-card)] sm:col-span-2 lg:col-span-4">
-                  <div className="grid gap-2 sm:grid-cols-2">
+                <div className="col-span-2 rounded-card border border-edge bg-brand p-3 text-white shadow-[var(--shadow-card)] lg:col-span-4">
+                  <div className="grid grid-cols-2 gap-2">
                     {LEGAL_ITEMS.slice(8).map((item) => (
                       <div key={item} className="rounded-card bg-white/8 px-3 py-2">
                         <span className="mr-2 inline-block size-2 rounded-full bg-accent align-middle" aria-hidden />
-                        <span className="text-sm font-black leading-5 text-white">{item}</span>
+                        <span className="text-xs font-black leading-5 text-white sm:text-sm">{item}</span>
                       </div>
                     ))}
                   </div>

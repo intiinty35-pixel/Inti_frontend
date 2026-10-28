@@ -8,14 +8,14 @@ import { ServiceImage } from "@/features/services/components/service-image";
 export function ServicesHero() {
   return (
     <section className="relative -mt-[var(--header-h)] overflow-hidden bg-brand text-white">
-      <div className="relative aspect-[8/3] w-full">
+      <div className="relative aspect-[12/5] w-full sm:aspect-[8/3]">
         <ServiceImage
           src={SERVICES_HERO_IMAGE}
           alt="Servicios inmobiliarios de ARIZ Proyectos"
           priority
           unoptimized
           className="size-full"
-          imgClassName="object-contain object-center"
+          imgClassName="object-cover object-center sm:object-contain"
         />
         <span
           aria-hidden="true"

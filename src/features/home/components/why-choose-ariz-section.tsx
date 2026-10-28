@@ -92,11 +92,11 @@ function FlipReasonCard({ reason }: { reason: Reason }) {
       onClick={() => setFlipped((value) => !value)}
       aria-pressed={flipped}
       title={flipped ? "Volver a ver el resumen" : "Ver más información"}
-      className="h-[200px] w-full rounded-[8px] text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand sm:h-[245px]"
+      className="h-full min-h-[240px] w-full rounded-[8px] text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand sm:h-[245px] sm:min-h-0"
       style={{ perspective: "1400px" }}
     >
       <div
-        className="relative h-full w-full transition-transform duration-500"
+        className="relative grid h-full w-full transition-transform duration-500"
         style={{
           transformStyle: "preserve-3d",
           transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
@@ -104,7 +104,7 @@ function FlipReasonCard({ reason }: { reason: Reason }) {
       >
         {/* Cara frontal */}
         <div
-          className="absolute inset-0 flex min-w-0 flex-col rounded-[8px] border border-edge bg-surface p-3 shadow-sm sm:p-4"
+          className="col-start-1 row-start-1 flex min-w-0 flex-col rounded-[8px] border border-edge bg-surface p-3 shadow-sm sm:p-4"
           style={backfaceVisibility}
         >
           <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-[6px] bg-accent/15 text-accent">
@@ -128,7 +128,7 @@ function FlipReasonCard({ reason }: { reason: Reason }) {
 
         {/* Cara trasera */}
         <div
-          className="absolute inset-0 flex flex-col rounded-[8px] bg-brand p-3.5 text-white shadow-[var(--shadow-pop)] sm:p-4"
+          className="col-start-1 row-start-1 flex min-w-0 flex-col rounded-[8px] bg-brand p-3.5 text-white shadow-[var(--shadow-pop)] sm:p-4"
           style={{ ...backfaceVisibility, transform: "rotateY(180deg)" }}
         >
           <p className="text-[10px] font-bold tracking-[0.16em] text-accent uppercase">
@@ -177,7 +177,7 @@ export function WhyChooseArizSection() {
             que te acompaña hasta el final.
           </p>
         </div>
-        <ul className="mt-5 grid grid-cols-1 gap-3 sm:mt-7 sm:grid-cols-2 sm:gap-4 lg:grid-cols-5">
+        <ul className="mt-5 grid grid-cols-2 gap-3 sm:mt-7 sm:grid-cols-2 sm:gap-4 lg:grid-cols-5">
           {REASONS.map((reason) => (
             <li key={reason.key} className="w-full">
               <FlipReasonCard reason={reason} />

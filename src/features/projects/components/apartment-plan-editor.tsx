@@ -1,5 +1,7 @@
 "use client";
 
+import { monthlyInstallment } from "@/shared/lib/lot-financing";
+
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Building2, Copy, Eye, EyeOff, Plus, Save, Upload } from "lucide-react";
@@ -98,7 +100,10 @@ export function ApartmentPlanEditor({ initial }: { initial: PlanSession }) {
   }
   function patchUnit(patch: Partial<PlanApartment>) {
     if (!floor || !unit) return;
-    patchFloor({ apartments: floor.apartments.map(a => a.id === unit.id ? { ...a, ...patch } : a) });
+    const next = { ...unit, ...patch };
+    if (next.operation === "RENT") next.financingAllowed = false;
+    next.monthlyPayment = next.financingAllowed ? monthlyInstallment(next.financedPrice ?? 0, next.downPayment ?? 0, next.installments ?? 0, next.interestRateMonthly ?? 0) : 0;
+    patchFloor({ apartments: floor.apartments.map(a => a.id === unit.id ? next : a) });
   }
   function copyApartment(direction: "LEFT" | "RIGHT" | "UP" | "DOWN") {
     if (!floor || !unit || locked || pending) return;
@@ -182,6 +187,9 @@ export function ApartmentPlanEditor({ initial }: { initial: PlanSession }) {
     for (const b of buildings) for (const f of b.floors) for (const a of f.apartments) {
       if (!a.code.trim() || !(a.areaM2 > 0) || !floorPolygonValid(a.path)) { setError(`Completa el metraje, número y dibujo de ${b.name}, ${f.name}, departamento ${a.code}.`); return; }
     }
+    for (const b of buildings) for (const f of b.floors) for (const a of f.apartments) {
+      if (a.operation === "SALE" && a.financingAllowed && (!(a.financedPrice! > 0) || !(a.downPayment! >= 0) || a.downPayment! >= a.financedPrice! || !Number.isInteger(a.installments) || a.installments! < 1 || a.installments! > 1200 || !(a.monthlyPayment! > 0))) { setError(`Revisa el precio al crédito, inicial y cuotas del departamento ${a.code}.`); return; }
+    }
     setBusy(true); setError(""); setMessage("");
     try {
       const response = await fetch(`${env.apiUrl}${basePath}`, { method: "PUT", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ revision, plan, publish }) });
@@ -198,7 +206,7 @@ export function ApartmentPlanEditor({ initial }: { initial: PlanSession }) {
   return <section className={s.editor} aria-label="Editor de edificios y departamentos">
     <header className={s.header}>
       <div><p className={s.muted}>Edificios · Pisos · Departamentos</p><h1 className="text-2xl font-black">{initial.project.name}</h1><p className={s.muted}>{dirty ? "Cambios sin guardar" : "Borrador guardado"}{publishedAt ? ` · Publicado ${new Date(publishedAt).toLocaleDateString("es-PE")}` : ""}</p></div>
-      <div className={s.actions}>
+      <div className={`${s.actions} ${s.headerActions}`}>
         <Link className={s.link} href={`/panel/admin/projects/${initial.project.id}/site-plan?view=environment`} onClick={event => { if ((dirty || pending) && !window.confirm("Hay cambios sin guardar. ¿Salir al editor del entorno?")) event.preventDefault(); }}>Entorno: calles y áreas comunes</Link>
         <button type="button" disabled={locked} onClick={() => void save(false)}><Save size={15} />Guardar borrador</button>
         <button type="button" className={s.primary} disabled={locked} onClick={() => void save(true)}>Publicar plano</button>
@@ -312,15 +320,27 @@ export function ApartmentPlanEditor({ initial }: { initial: PlanSession }) {
           <button type="button" className={s.danger} disabled={pending} onClick={() => { if (window.confirm(`¿Eliminar ${building.name} con todos sus pisos y departamentos del borrador?`)) { change({ ...plan, buildings: buildings.filter(b => b.id !== building.id) }); setBuildingId(undefined); setFloorId(undefined); setUnitId(undefined); } }}>Eliminar edificio del borrador</button>
         </div></section>}
         {floor && <section className={s.card}><h2>Datos del piso</h2><div className={s.fields}><div className={s.grid}>
-          <label>Número de piso<input type="number" min={-20} max={300} step={1} value={floor.number} onChange={e => patchFloor({ number: Number(e.target.value) })} /></label>
           <label>Nombre<input maxLength={100} value={floor.name} onChange={e => patchFloor({ name: e.target.value })} /></label>
+          <label>Número de piso<input type="number" min={-20} max={300} step={1} value={floor.number} onChange={e => patchFloor({ number: Number(e.target.value) })} /></label>
         </div><button type="button" className={s.danger} disabled={pending} onClick={() => { if (building && window.confirm(`¿Eliminar ${floor.name} y sus departamentos del borrador?`)) { patchBuilding({ floors: building.floors.filter(f => f.id !== floor.id) }); setFloorId(undefined); setUnitId(undefined); } }}>Eliminar piso</button></div>
           <div className={s.unitList}>{floor.apartments.map(a => <button type="button" key={a.id} disabled={pending} className={`${s.unitButton} ${a.id === unitId ? s.active : ""}`} onClick={() => setUnitId(a.id)}><span><strong>Dpto. {a.code}</strong><small>{a.areaM2} m² · {a.operation === "RENT" ? "Alquiler" : "Venta"}</small></span><span><strong>{money(a.price)}</strong><small>{APARTMENT_STATUS_LABELS[a.status]}</small></span></button>)}</div>
         </section>}
         {unit && <section className={s.card}><h2>Departamento {unit.code}</h2><div className={s.fields}>
           <div className={s.grid}><label>Número / código<input maxLength={80} value={unit.code} onChange={e => patchUnit({ code: e.target.value })} /></label><label>Metraje (m²)<input type="number" min={.01} step="any" value={unit.areaM2 || ""} onChange={e => patchUnit({ areaM2: Number(e.target.value) })} /></label></div>
-          <div className={s.grid}><label>Operación<select value={unit.operation} onChange={e => patchUnit({ operation: e.target.value as "SALE" | "RENT", status: "AVAILABLE" })}><option value="SALE">Venta al contado</option><option value="RENT">Alquiler mensual</option></select></label><label>Estado<select value={unit.status} onChange={e => patchUnit({ status: e.target.value as PlanApartment["status"] })}>{Object.entries(APARTMENT_STATUS_LABELS).filter(([key]) => unit.operation === "SALE" ? key !== "RENTED" : key !== "SOLD").map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label></div>
+          <div className={s.grid}><label>Operación<select value={unit.operation} onChange={e => patchUnit({ operation: e.target.value as "SALE" | "RENT", status: "AVAILABLE" })}><option value="SALE">Venta</option><option value="RENT">Alquiler mensual</option></select></label><label>Estado<select value={unit.status} onChange={e => patchUnit({ status: e.target.value as PlanApartment["status"] })}>{Object.entries(APARTMENT_STATUS_LABELS).filter(([key]) => unit.operation === "SALE" ? key !== "RENTED" : key !== "SOLD").map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label></div>
           <div className={s.grid}><label>{unit.operation === "RENT" ? "Alquiler mensual" : "Precio al contado"} ({initial.project.currency})<input type="number" min={0} step="any" value={unit.price || ""} onChange={e => patchUnit({ price: Number(e.target.value) })} /></label><label>Mantenimiento mensual ({initial.project.currency})<input type="number" min={0} step="any" value={unit.maintenanceFee} onChange={e => patchUnit({ maintenanceFee: Number(e.target.value) })} /></label><label>Dormitorios<input type="number" min={0} max={100} step={1} value={unit.bedrooms} onChange={e => patchUnit({ bedrooms: Number(e.target.value) })} /></label><label>Baños<input type="number" min={0} max={100} step={1} value={unit.bathrooms} onChange={e => patchUnit({ bathrooms: Number(e.target.value) })} /></label></div>
+          {unit.operation === "SALE" && <>
+            <label className={s.creditOption}><span>Ofrecer venta al crédito</span><input type="checkbox" checked={unit.financingAllowed ?? false} onChange={e => patchUnit({ financingAllowed: e.target.checked, financedPrice: unit.financedPrice ?? unit.price, downPayment: unit.downPayment ?? 0, installments: unit.installments || 12 })} /></label>
+            {unit.financingAllowed && <>
+              <div className={s.grid}>
+                <label>Precio al crédito ({initial.project.currency})<input type="number" min={0} max={999999999999} step="0.01" value={unit.financedPrice ?? ""} onChange={e => patchUnit({ financedPrice: Number(e.target.value) })} /></label>
+                <label>Cuota inicial ({initial.project.currency})<input type="number" min={0} max={unit.financedPrice} step="0.01" value={unit.downPayment ?? ""} onChange={e => patchUnit({ downPayment: Number(e.target.value) })} /></label>
+                <label>Número de cuotas mensuales<input type="number" min={1} max={1200} step={1} value={unit.installments ?? ""} onChange={e => patchUnit({ installments: Number(e.target.value) })} /></label>
+                <label>Interés<select value={(unit.interestRateMonthly ?? 0) > 0 ? "YES" : "NO"} onChange={e => patchUnit({ interestRateMonthly: e.target.value === "YES" ? 1 : 0 })}><option value="NO">Sin interés</option><option value="YES">Con interés</option></select></label>
+                {(unit.interestRateMonthly ?? 0) > 0 && <label>Tasa de interés mensual (%)<input type="number" min={0.01} max={100} step="0.01" value={unit.interestRateMonthly} onChange={e => patchUnit({ interestRateMonthly: Number(e.target.value) })} /></label>}
+              </div>
+            </>}
+          </>}
           <label>Descripción / condiciones<textarea maxLength={2000} value={unit.notes} onChange={e => patchUnit({ notes: e.target.value })} /></label>
           <p className={s.muted}><span className={s.dot} style={{ background: APARTMENT_STATUS_COLORS[unit.status] }} />{APARTMENT_STATUS_LABELS[unit.status]}. Puedes arrastrar los vértices de su dibujo para ajustarlo.</p>
           <button type="button" className={s.primary} disabled={locked || pending || !dirty} onClick={() => void save(false)}><Save size={15} />Guardar departamento {unit.code}</button>

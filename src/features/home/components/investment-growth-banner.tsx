@@ -40,21 +40,21 @@ export function InvestmentGrowthBanner() {
               Terrenos, casas y departamentos en las mejores zonas del Perú y Tumbes.
             </p>
 
-            <div className="mt-5 flex flex-wrap gap-3">
+            <div className="mt-5 flex gap-2 sm:flex-wrap sm:gap-3">
               <Link
                 href={buildServiceWhatsappUrl("inversion con Ariz Proyectos")}
                 target="_blank"
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-[6px] bg-[#25D366] px-4 text-sm font-black text-white transition hover:bg-[#1fb85a]"
+                className="inline-flex h-11 min-w-0 flex-1 items-center justify-center gap-1 rounded-[6px] bg-[#25D366] px-2 text-[10px] whitespace-nowrap font-black text-white transition hover:bg-[#1fb85a] sm:flex-none sm:gap-2 sm:px-4 sm:text-sm"
               >
-                <WhatsappIcon className="size-5" />
+                <WhatsappIcon className="size-4 shrink-0 sm:size-5" />
                 Hablar por WhatsApp
               </Link>
               <Link
                 href={ROUTES.investments}
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-[6px] bg-accent px-4 text-sm font-black text-on-accent transition hover:bg-accent-hover"
+                className="inline-flex h-11 min-w-0 flex-1 items-center justify-center gap-1 rounded-[6px] bg-accent px-2 text-[10px] whitespace-nowrap font-black text-on-accent transition hover:bg-accent-hover sm:flex-none sm:gap-2 sm:px-4 sm:text-sm"
               >
                 Solicitar asesoria
-                <ChartIcon className="size-4" />
+                <ChartIcon className="size-4 shrink-0" />
               </Link>
             </div>
           </div>
@@ -77,9 +77,9 @@ export function InvestmentGrowthBanner() {
               ))}
             </div>
 
-            <p className="max-w-[220px] text-right text-2xl leading-none font-black tracking-tight text-white sm:text-3xl">
-              Tumbes,
-              <span className="block text-accent">gran futuro</span>
+            <p className="text-right text-2xl leading-none font-black tracking-tight whitespace-nowrap text-white sm:max-w-[220px] sm:text-3xl sm:whitespace-normal">
+              Tumbes,{" "}
+              <span className="text-accent sm:block">gran futuro</span>
             </p>
           </div>
         </div>

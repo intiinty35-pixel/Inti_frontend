@@ -1,5 +1,6 @@
 "use client";
 
+import { ApartmentLocation } from "./apartment-location";
 import { useState } from "react";
 import { SitePlanMap } from "@/shared/ui/site-plan-map";
 import type { Point, SitePlan } from "@/shared/lib/site-plan";
@@ -62,6 +63,7 @@ export function ApartmentProjectViewer({ plan, center, currency, slug, accessCod
           <div className={s.tabs} role="group" aria-label="Elegir piso">{[...building.floors].sort((a,b)=>a.number-b.number).map(f=><button key={f.id} type="button" aria-pressed={floor?.id===f.id} className={floor?.id===f.id?s.active:undefined} onClick={()=>{setFloorId(f.id);setUnitId(undefined);setQuery("");}}>{f.name}</button>)}</div>
           {view==="FLOOR" ? floor ? <ApartmentFloorCanvas key={`${building.id}:${floor.id}`} publicView outline={floorBuildingOutline(plan,building,floor)} currency={currency} floor={{...floor,image:resolveFloorImage(plan,floor)}} selected={unitId} onSelect={selectUnit}/> : <p className={s.empty}>Esta torre aún no tiene pisos publicados.</p> : <SitePlanMap plan={floorApartmentMapPlan(plan,building,floor)} center={center} showImage={Boolean(plan.image)} selected={unitId ?? building.id} onSelect={id=>{if(floor?.apartments.some(a=>a.id===id))selectUnit(id);else selectBuilding(id);}} currency={currency} lotSummary={lot=>{const apartment=floor?.apartments.find(a=>a.id===lot.id);return {title:`Departamento ${lot.code}`,price:money(lot.price)+(apartment?.operation==="RENT"?"/mes":""),priceM2:undefined,detail:`${lot.areaM2} m² · ${apartment?APARTMENT_STATUS_LABELS[apartment.status]:""}`};}} focusPlanZoom={20} focusPlanRequest={1001+(plan.buildings?.findIndex(b=>b.id===building.id)??0)*1000+(floor?.number??0)} legendStatuses={[]} legendAction={<span>Pasa el mouse o selecciona un departamento</span>} publicView/>}
         </section>
+        {unit && floor && <ApartmentLocation key={unit.id} plan={plan} building={building} floor={floor} unit={unit} />}
         <div className={s.card}><h3>Disponibilidad</h3><div className={s.tabs}>{Object.entries(APARTMENT_STATUS_LABELS).map(([key, label]) => <span key={key} className={s.muted}><span className={s.dot} style={{ background: APARTMENT_STATUS_COLORS[key as keyof typeof APARTMENT_STATUS_COLORS] }} />{label}</span>)}</div></div>
       </div>
       <aside className={s.sidebar}>
@@ -79,6 +81,16 @@ export function ApartmentProjectViewer({ plan, center, currency, slug, accessCod
           <div className={s.metrics}><span><strong>{unit.areaM2} m²</strong>Área</span><span><strong>{unit.bedrooms}</strong>Dormitorios</span><span><strong>{unit.bathrooms}</strong>Baños</span></div>
           <div className={`${s.notice} mt-4`}><p>{unit.operation === "RENT" ? "Alquiler mensual" : "Precio de venta al contado"}</p><strong className="text-xl">{money(unit.price)}</strong></div>
           <p className="mt-3 text-sm">Mantenimiento: <strong>{money(unit.maintenanceFee)} / mes</strong></p>
+          {unit.operation === "SALE" && unit.financingAllowed && <div className={s.notice}>
+            <p>Precio al crédito: <strong>{money(unit.financedPrice ?? 0)}</strong></p>
+            <p>Inicial: {money(unit.downPayment ?? 0)}</p>
+            <p>{unit.installments} cuotas mensuales de {money(unit.monthlyPayment ?? 0)}</p>
+            <p>{unit.interestRateMonthly ? `Interés mensual: ${unit.interestRateMonthly}%` : "Sin interés"}</p>
+            <p>Saldo a financiar: {money(Math.max(0, (unit.financedPrice ?? 0) - (unit.downPayment ?? 0)))}</p>
+            <p>Total de cuotas: {money((unit.installments ?? 0) * (unit.monthlyPayment ?? 0))}</p>
+            <p>Total a pagar: {money((unit.downPayment ?? 0) + (unit.installments ?? 0) * (unit.monthlyPayment ?? 0))}</p>
+            <p className={s.muted}>La última cuota puede ajustarse por redondeo.</p>
+          </div>}
           {unit.notes && <p className="mt-3 whitespace-pre-line text-sm">{unit.notes}</p>}
           <div className={s.sheetDownload}><ProtectedLotPdfDownload key={unit.id} slug={slug} lotId={unit.id} code={accessCode} unitType="apartment" className={s.primary} /></div>
         </article>}

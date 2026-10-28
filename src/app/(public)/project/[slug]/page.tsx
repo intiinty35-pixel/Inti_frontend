@@ -582,12 +582,14 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
           {/* Preguntas rapidas: al final, despues del mapa. Abren un modal que
               lleva al WhatsApp del anunciante. Misma logica que en propiedades. */}
+          <div className="hidden lg:block">
           <QuickQuestions
             propertyTitle={project.name}
             agentName={project.agent.name}
             whatsappDigits={whatsappDigits}
             context="project"
           />
+          </div>
         </main>
 
         <aside id="contacto" className="flex flex-col gap-4 lg:sticky lg:top-20">
@@ -599,6 +601,15 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               compact
               whatsappUrl={whatsappUrl}
               defaultMessage={`¡Hola! Quiero que se comuniquen conmigo para recibir más información sobre el proyecto ${project.name} que vi en ARIZ.`}
+            />
+          </div>
+
+          <div className="lg:hidden">
+            <QuickQuestions
+              propertyTitle={project.name}
+              agentName={project.agent.name}
+              whatsappDigits={whatsappDigits}
+              context="project"
             />
           </div>
 

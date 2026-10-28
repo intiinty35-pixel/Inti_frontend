@@ -119,6 +119,12 @@ export type PlanApartment = {
   code: string;
   areaM2: number;
   price: number;
+  financingAllowed?: boolean;
+  financedPrice?: number;
+  downPayment?: number;
+  installments?: number;
+  interestRateMonthly?: number;
+  monthlyPayment?: number;
   operation: "SALE" | "RENT";
   status: ApartmentStatus;
   maintenanceFee: number;
