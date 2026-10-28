@@ -83,8 +83,8 @@ function formatDate(value?: string | null) {
 
 function StatBox({ label, value }: { label: string; value: number }) {
   return (
-    <Card className="p-4 text-center">
-      <p className="text-2xl font-black text-ink">{value}</p>
+    <Card className="p-3 text-center sm:p-4">
+      <p className="text-xl font-black text-ink sm:text-2xl">{value}</p>
       <p className="mt-1 text-xs font-black tracking-wide text-muted uppercase">{label}</p>
     </Card>
   );
@@ -170,7 +170,7 @@ export default async function AdminAccountsPage({ searchParams }: AdminAccountsP
         <Link href={`${ROUTES.panel.admin.accounts}?vista=users`} aria-current={activeView === 'users' ? 'page' : undefined}>Usuarios registrados</Link>
       </nav>
 
-      <div className="grid gap-3 md:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-3">
         <StatBox label="Pendientes" value={pending} />
         <StatBox label="Aprobadas" value={approved} />
         <StatBox label="Inmobiliarias" value={agencies} />

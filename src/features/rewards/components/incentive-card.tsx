@@ -63,10 +63,10 @@ export function IncentiveCard({ incentive }: IncentiveCardProps) {
           </div>
         )}
 
-        <CardContent className="flex flex-1 flex-col p-4 text-center">
+        <CardContent className="flex flex-1 flex-col px-2 py-1 text-center sm:p-4">
           <div className="flex justify-center">
             <span
-              className={`rounded-full px-2.5 py-1 text-[11px] font-black ${
+              className={`rounded-full px-2 py-0.5 text-[10px] font-black sm:px-2.5 sm:py-1 sm:text-[11px] ${
                 active ? "bg-success/10 text-success" : "bg-muted/15 text-muted"
               }`}
             >
@@ -74,37 +74,37 @@ export function IncentiveCard({ incentive }: IncentiveCardProps) {
             </span>
           </div>
 
-          <h2 className="mt-3 line-clamp-2 break-words font-display text-lg font-black leading-tight text-brand">
+          <h2 className="mt-0.5 line-clamp-2 break-words font-display text-sm font-black leading-tight text-brand sm:mt-3 sm:text-lg">
             {incentive.name}
           </h2>
-          <p className="mt-2 line-clamp-2 text-xs leading-5 text-muted">
+          <p className="mt-0.5 line-clamp-2 text-[10px] leading-4 text-muted sm:mt-2 sm:text-xs sm:leading-5">
             {incentive.description}
           </p>
 
-          <div className="mt-5 grid grid-cols-2 gap-2 border-y border-edge py-3">
+          <div className="mt-1.5 grid grid-cols-2 gap-2 border-y border-edge py-1 sm:mt-5 sm:py-3">
             <div>
-              <Coins className="mx-auto size-4 text-accent" aria-hidden="true" />
-              <p className="mt-1 text-[10px] font-black uppercase tracking-[0.12em] text-muted">
+              <Coins className="mx-auto size-3.5 text-accent sm:size-4" aria-hidden="true" />
+              <p className="mt-0.5 text-[9px] font-black uppercase tracking-[0.1em] text-muted sm:mt-1 sm:text-[10px] sm:tracking-[0.12em]">
                 Puntos
               </p>
-              <p className="mt-1 text-lg font-black text-brand">
+              <p className="mt-0.5 text-sm font-black text-brand sm:mt-1 sm:text-lg">
                 {incentive.pointsRequired.toLocaleString("es-PE")}
               </p>
             </div>
             <div>
-              <Package className={`mx-auto size-4 ${outOfStock ? "text-error" : "text-accent"}`} aria-hidden="true" />
-              <p className="mt-1 text-[10px] font-black uppercase tracking-[0.12em] text-muted">
+              <Package className={`mx-auto size-3.5 sm:size-4 ${outOfStock ? "text-error" : "text-accent"}`} aria-hidden="true" />
+              <p className="mt-0.5 text-[9px] font-black uppercase tracking-[0.1em] text-muted sm:mt-1 sm:text-[10px] sm:tracking-[0.12em]">
                 Stock
               </p>
-              <p className={`mt-1 text-lg font-black ${outOfStock ? "text-error" : "text-brand"}`}>
+              <p className={`mt-0.5 text-sm font-black sm:mt-1 sm:text-lg ${outOfStock ? "text-error" : "text-brand"}`}>
                 {incentive.stock.toLocaleString("es-PE")}
               </p>
             </div>
           </div>
 
-          <span className="mt-auto inline-flex h-10 items-center justify-center gap-2 pt-4 text-xs font-black text-brand">
+          <span className="mt-auto inline-flex h-7 items-center justify-center gap-1.5 pt-1 text-[10px] font-black text-brand sm:h-10 sm:gap-2 sm:pt-4 sm:text-xs">
             Editar incentivo
-            <ArrowUpRight className="size-4" aria-hidden="true" />
+            <ArrowUpRight className="size-3.5 sm:size-4" aria-hidden="true" />
           </span>
         </CardContent>
       </Link>

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Calendar, Edit, Plus, Settings2 } from "lucide-react";
-import { Card, CardContent } from "@/shared/ui";
+import { Card, CardContent, Pagination } from "@/shared/ui";
 import { ROUTES } from "@/shared/config/routes";
 import { listAdminCampaignsServer, type CampaignStatus } from "@/features/admin/api/campaigns";
 import { CopyCodeButton } from "./copy-code-button";
@@ -11,6 +11,7 @@ const STATUS_STYLES: Record<CampaignStatus, { bg: string; text: string; label: s
   INACTIVE: { bg: "bg-muted/20", text: "text-muted", label: "Inactiva" },
   EXPIRED: { bg: "bg-warning/10", text: "text-warning", label: "Expirada" },
 };
+const PAGE_SIZE = 12;
 
 function formatDate(dateStr: string) {
   const date = new Date(dateStr);
@@ -25,8 +26,23 @@ function isDateInPast(dateStr: string) {
   return new Date(dateStr) < new Date();
 }
 
-export default async function AdminCampaignsPage() {
-  const { items: campaigns, total } = await listAdminCampaignsServer(1, 50);
+export default async function AdminCampaignsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const params = await searchParams;
+  const requestedPage = Number(params.page);
+  let page = Number.isSafeInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1;
+  let result = await listAdminCampaignsServer(page, PAGE_SIZE);
+  const lastPage = Math.max(1, Math.ceil(result.total / PAGE_SIZE));
+
+  if (page > lastPage) {
+    page = lastPage;
+    result = await listAdminCampaignsServer(page, PAGE_SIZE);
+  }
+
+  const { items: campaigns, total } = result;
 
   const activeCampaigns = campaigns.filter((c) => {
     if (c.status === "ACTIVE") return true;
@@ -81,14 +97,14 @@ export default async function AdminCampaignsPage() {
         <MetricCard
           label="Campañas activas"
           value={activeCampaigns.length}
-          hint="Campañas en ejecución."
+          hint="Activas en esta página."
           tone="bg-success/10 text-success"
           Icon={Calendar}
         />
         <MetricCard
           label="Proyectos cubiertos"
           value={new Set(campaigns.flatMap((c) => c.projectIds)).size}
-          hint="Proyectos con campaña activa."
+          hint="Proyectos cubiertos en esta página."
           tone="bg-accent/15 text-accent"
           Icon={Calendar}
         />
@@ -229,6 +245,13 @@ export default async function AdminCampaignsPage() {
           })}
         </section>
       )}
+
+      <Pagination
+        page={page}
+        pageSize={PAGE_SIZE}
+        total={total}
+        buildHref={(nextPage) => `${ROUTES.panel.admin.campaigns}?page=${nextPage}`}
+      />
 
       <Card className="border-accent/30 bg-accent/5">
         <CardContent className="p-5">

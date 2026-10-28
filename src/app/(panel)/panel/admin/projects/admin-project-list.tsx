@@ -5,6 +5,8 @@ import { ROUTES } from "@/shared/config/routes";
 import { OwnerProjectCard } from "@/features/projects/components/owner-project-card";
 import { getAdminProjectsPagedServer } from "@/features/projects/api/server";
 
+const PAGE_SIZE = 6;
+
 function ProjectMetric({
   label,
   value,
@@ -29,8 +31,17 @@ export async function AdminProjectList({
   searchParams: Promise<{ page?: string }>;
 }) {
   const { page: pageParam } = await searchParams;
-  const page = Math.max(1, Number(pageParam) || 1);
-  const { items, total, pageSize } = await getAdminProjectsPagedServer(page);
+  const requestedPage = Number(pageParam);
+  let page = Number.isSafeInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1;
+  let data = await getAdminProjectsPagedServer(page, undefined, PAGE_SIZE);
+  const lastPage = Math.max(1, Math.ceil(data.total / data.pageSize));
+
+  if (page > lastPage) {
+    page = lastPage;
+    data = await getAdminProjectsPagedServer(page, undefined, PAGE_SIZE);
+  }
+
+  const { items, total, pageSize } = data;
 
   return (
     <div className="flex min-w-0 max-w-full flex-col gap-6 overflow-x-hidden">

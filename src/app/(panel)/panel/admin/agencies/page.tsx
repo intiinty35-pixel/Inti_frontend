@@ -10,7 +10,6 @@ import {
   PanelsTopLeft,
 } from "lucide-react";
 import { Card, CardContent, Pagination } from "@/shared/ui";
-import { AdminPageHeader } from "@/app/(panel)/panel/admin/admin-shell";
 import { listAgencies } from "@/features/admin/api/server";
 import { ROUTES } from "@/shared/config/routes";
 
@@ -68,12 +67,6 @@ export default async function AdminAgenciesPage({
 
   return (
     <div className="flex flex-col gap-7">
-      <AdminPageHeader
-        eyebrow="Moderación"
-        title="Revisión de inmobiliarias"
-        description="Controla publicaciones pendientes, prioriza cuentas activas y aprueba contenido antes de que llegue al portal."
-      />
-
       <section className="relative overflow-hidden rounded-card border border-edge bg-surface p-5 shadow-[var(--shadow-card)] sm:p-6">
         <div className="absolute inset-x-0 top-0 h-1.5 bg-brand" aria-hidden="true" />
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-center">
