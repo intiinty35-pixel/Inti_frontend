@@ -8,7 +8,7 @@ En **Admin → Todos los proyectos → Editar plano y lotes** se administra el i
 - Google Cloud debe tener Maps JavaScript API y facturación habilitadas. Autoriza el dominio de la aplicación y localhost para desarrollo en las restricciones de sitios web de la clave.
 - `BillingNotEnabledMapError` significa que falta activar la facturación del proyecto de Google Cloud asociado a la clave. La aplicación no puede activarla por código.
 - La migración `20261020000000_project_site_plans` crea la tabla de borradores y publicaciones. En despliegues nuevos se aplica con las demás migraciones.
-- El logo de ARIZ para PDF está en `Ariz_Web_Backend_REPO/assets/ariz-logo.png`; Docker lo incluye automáticamente.
+- El logo de ARIZ para PDF está en `Ariz_Web_Backend_REPO/assets/inti-logo.png`; Docker lo incluye automáticamente.
 
 ## Editor
 
