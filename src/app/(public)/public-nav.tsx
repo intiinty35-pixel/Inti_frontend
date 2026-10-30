@@ -91,16 +91,20 @@ export const NAV_ITEMS: readonly NavItem[] = [
     isActive: (path, _operation, type) =>
       path === ROUTES.projects || (path === ROUTES.properties && type === "projects"),
   },
+  /* [OCULTO-DEMO P6] Menu: Terrenos
   {
     label: "Terrenos",
     href: `${ROUTES.properties}?operation=buy&type=land`,
     isActive: (path, _operation, type) => path === ROUTES.properties && type === "land",
   },
+  */
+  /* [OCULTO-DEMO P7] Menu: Mapa
   {
     label: "Mapa",
     href: ROUTES.map,
     isActive: (path) => path === ROUTES.map,
   },
+  */
 ];
 
 const BASE =

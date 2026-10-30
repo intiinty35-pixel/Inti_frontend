@@ -32,6 +32,7 @@ const GROUPS: readonly FooterGroup[] = [
       { label: "Ver mapa", href: `${ROUTES.home}#mapa` },
     ],
   },
+  /* [OCULTO-DEMO P8] Footer: grupo Profesionales
   {
     title: "Profesionales",
     links: [
@@ -41,8 +42,9 @@ const GROUPS: readonly FooterGroup[] = [
       { label: "Para desarrolladores", href: ROUTES.registerProfessional },
     ],
   },
+  */
   {
-    title: "Ariz",
+    title: "Inti",
     links: [
       { label: "Nosotros", href: "/nosotros" },
       { label: "Centro de ayuda", href: "/centro-de-ayuda" },
@@ -89,10 +91,10 @@ function SocialIcon({ name }: { name: SocialNetwork }) {
 
 function Brand() {
   return (
-    <Link href={ROUTES.home} className="flex items-center gap-2.5" aria-label="Ariz Proyectos">
+    <Link href={ROUTES.home} className="flex items-center gap-2.5" aria-label="Inti Proyectos">
       <img
         src="/logo/logo.png"
-        alt="Ariz Proyectos"
+        alt="Inti Proyectos"
         className="h-10 w-auto rounded-sm bg-white p-1 shadow-[inset_0_0_0_1px_rgb(255_255_255_/_0.8)]"
       />
     </Link>
@@ -154,7 +156,7 @@ export function PublicFooter({ publishHref = ROUTES.registerProfessional }: { pu
                       href={href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      aria-label={`Ariz en ${name} (se abre en una pestaña nueva)`}
+                      aria-label={`Inti en ${name} (se abre en una pestaña nueva)`}
                       className="grid size-10 place-items-center rounded-full border border-white/20 text-white/80 transition-colors hover:border-accent hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                     >
                       <SocialIcon name={name} />
@@ -179,7 +181,7 @@ export function PublicFooter({ publishHref = ROUTES.registerProfessional }: { pu
         <div className="mt-10 grid grid-cols-1 items-center gap-6 border-t border-white/20 pt-6 text-xs text-white/70 md:grid-cols-3">
           {/* Izquierda: Copyright y Términos */}
           <div className="order-2 flex flex-col items-center gap-1 text-center md:order-1 md:items-start md:text-left">
-            <span>© {new Date().getFullYear()} Ariz Proyectos</span>
+            <span>© {new Date().getFullYear()} Inti Proyectos</span>
             <Link href={ROUTES.terms} className="font-semibold text-accent transition-colors hover:text-white">
               Términos y condiciones
             </Link>

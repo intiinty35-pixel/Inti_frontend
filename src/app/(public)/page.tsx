@@ -27,7 +27,7 @@ export const metadata = buildMetadata({
     "Busca casas, departamentos, terrenos, lotes y proyectos inmobiliarios en Peru. Compra, alquila, vende y descubre oportunidades con rentabilidad, plusvalia y comisiones.",
   path: "/",
   keywords: [
-    "inmobiliaria ariz",
+    "inmobiliaria inti",
     "buscar propiedades en Peru",
     "comprar propiedades",
     "alquilar propiedades",
@@ -37,10 +37,10 @@ export const metadata = buildMetadata({
 });
 
 const HERO_OVERLAY =
-  "linear-gradient(90deg, rgb(4 15 52 / 0.86) 0%, rgb(4 15 52 / 0.66) 32%, rgb(4 15 52 / 0.22) 52%, rgb(4 15 52 / 0.04) 68%, rgb(4 15 52 / 0) 82%), linear-gradient(180deg, rgb(0 0 0 / 0.12) 0%, rgb(0 0 0 / 0.01) 54%, rgb(0 0 0 / 0.14) 100%)";
+  "linear-gradient(90deg, rgb(20 24 31 / 0.86) 0%, rgb(20 24 31 / 0.66) 32%, rgb(20 24 31 / 0.22) 52%, rgb(20 24 31 / 0.04) 68%, rgb(20 24 31 / 0) 82%), linear-gradient(180deg, rgb(0 0 0 / 0.12) 0%, rgb(0 0 0 / 0.01) 54%, rgb(0 0 0 / 0.14) 100%)";
 
 const HERO_OVERLAY_MOBILE =
-  "linear-gradient(180deg, rgb(4 15 52 / 0.45) 0%, rgb(4 15 52 / 0.3) 50%, rgb(4 15 52 / 0.5) 100%)";
+  "linear-gradient(180deg, rgb(20 24 31 / 0.45) 0%, rgb(20 24 31 / 0.3) 50%, rgb(20 24 31 / 0.5) 100%)";
 
 const HERO_SHELL = "mx-auto w-full max-w-[1180px]";
 
@@ -82,7 +82,9 @@ export default async function PublicHomePage() {
             Compra, vende, alquila e invierte con el respaldo de una empresa solida y confiable.
           </p>
           <div className="mt-6 mb-10 flex w-full max-w-xl gap-2 sm:mb-0 sm:w-auto sm:flex-wrap sm:gap-3">
+            {/* [OCULTO-DEMO P5] Boton de referidos del hero
             <ReferralCta />
+            */}
             <Link
               href={ROUTES.properties}
               className="inline-flex h-10 min-w-0 flex-1 items-center justify-center rounded-[6px] border border-brand bg-accent px-2 text-center text-[10px] leading-tight font-black text-brand shadow-[0_10px_26px_rgb(0_0_0_/_0.18)] transition-colors hover:bg-[#d99a00] sm:h-11 sm:flex-none sm:px-5 sm:text-sm"
@@ -111,11 +113,19 @@ export default async function PublicHomePage() {
       <CategoryShowcase topSpacing={promotions.length > 0 ? "section" : "hero"} />
       <ArizProjectsSection />
       <FeaturedListingsSection />
+      {/* [OCULTO-DEMO P1] Seccion Proyectos publicados
       <PublishedProjectsSection />
+      */}
       <WhyChooseArizSection />
+      {/* [OCULTO-DEMO P2] Seccion Inversiones (entrada)
       <InvestmentEntrySection />
+      */}
+      {/* [OCULTO-DEMO P3] Seccion Testimonios
       <TestimonialsSection />
+      */}
+      {/* [OCULTO-DEMO P4] Banner Inversion y crecimiento
       <InvestmentGrowthBanner />
+      */}
       <AccountCtaSection />
     </>
   );
