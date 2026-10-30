@@ -24,9 +24,15 @@ interface CustomerNavItem {
 const NAV_ITEMS: readonly CustomerNavItem[] = [
   { key: "account", label: "Mi cuenta", href: ROUTES.panel.client.base, Icon: LayoutDashboard },
   { key: "favorites", label: "Mis favoritos", href: ROUTES.panel.client.favorites, Icon: Heart },
+  /* [OCULTO-DEMO C1] Menu: Mis propiedades
   { key: "properties", label: "Mis propiedades", href: ROUTES.panel.client.properties, Icon: Building2 },
+  */
+  /* [OCULTO-DEMO C2] Menu: Mis alquileres
   { key: "rentals", label: "Mis alquileres", href: ROUTES.panel.client.rentals, Icon: KeyRound },
+  */
+  /* [OCULTO-DEMO C3] Menu: Membresia
   { key: "membership", label: "Membresía", href: ROUTES.panel.client.membership, Icon: Crown },
+  */
   { key: "profile", label: "Mi perfil", href: ROUTES.panel.client.profile, Icon: UserRound },
 ];
 

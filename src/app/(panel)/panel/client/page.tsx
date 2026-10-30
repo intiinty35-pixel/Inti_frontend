@@ -49,13 +49,15 @@ export default async function PanelClientPage() {
                 </h1>
                 <p className="mt-4 max-w-2xl text-sm font-medium leading-6 text-muted">
                   Administra tus propiedades, consulta tus favoritos y revisa el estado de tus
-                  publicaciones desde tu cuenta ARIZ.
+                  publicaciones desde tu cuenta INTI.
                 </p>
               </div>
               <div className="flex shrink-0 flex-wrap gap-3">
+                {/* [OCULTO-DEMO C4] Dashboard: boton Ver membresia
                 <Link href={ROUTES.panel.client.membership}>
                   <Button variant="secondary">Ver membresía</Button>
                 </Link>
+                */}
                 <Link href={ROUTES.panel.client.newProperty}>
                   <Button>Publicar propiedad</Button>
                 </Link>
@@ -69,8 +71,11 @@ export default async function PanelClientPage() {
               value={String(properties.length)}
               hint={`${active} publicadas / ${paused} pausadas`}
             />
+            {/* [OCULTO-DEMO C5] Dashboard: dato Propiedades en alquiler
             <StatCard label="Propiedades en alquiler" value={String(rentals)} hint="Anuncios de alquiler" />
+            */}
             <StatCard label="Mis favoritos" value={String(favorites.length)} hint="Propiedades guardadas" />
+            {/* [OCULTO-DEMO C6] Dashboard: dato Membresia / Publicacion gratuita
             <StatCard
               label={membership.trialAvailable ? "Publicación gratuita" : "Membresía"}
               value={
@@ -90,8 +95,10 @@ export default async function PanelClientPage() {
                     : "Consulta tus opciones"
               }
             />
+            */}
           </div>
 
+          {/* [OCULTO-DEMO C7] Dashboard: tarjetas Tus publicaciones y Membresia
           <section className="grid min-w-0 grid-cols-1 gap-5 lg:grid-cols-2">
             <Card className="overflow-hidden border-edge bg-[linear-gradient(180deg,#ffffff_0%,#f9fafc_100%)]">
               <div className="h-1 bg-brand" aria-hidden />
@@ -142,6 +149,7 @@ export default async function PanelClientPage() {
               </CardContent>
             </Card>
           </section>
+          */}
         </div>
 
         <aside className="flex min-w-0 flex-col gap-5 xl:sticky xl:top-28 xl:self-start">
@@ -167,12 +175,14 @@ export default async function PanelClientPage() {
               >
                 Mi perfil y contraseña
               </Link>
+              {/* [OCULTO-DEMO C8] Accesos rapidos: Mis alquileres
               <Link
                 href={ROUTES.panel.client.rentals}
                 className="rounded-card border border-edge px-4 py-3 text-sm font-semibold text-brand hover:border-brand"
               >
                 Mis alquileres ({rentals})
               </Link>
+              */}
               <Link
                 href={ROUTES.panel.client.favorites}
                 className="rounded-card border border-edge px-4 py-3 text-sm font-semibold text-brand hover:border-brand"
