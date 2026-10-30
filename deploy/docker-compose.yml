@@ -1,16 +1,16 @@
 # Frontend (Next.js) — despliegue independiente.
 # Escucha solo en 127.0.0.1:3102; el Nginx del servidor lo publica como intinmobiliaria.com.
-# Llama al backend por la red Docker "ariz-net" (http://ariz_backend:4000); /api se reenvia ahi.
+# Llama al backend por la red Docker "inti-net" (http://inti_backend:4000); /api se reenvia ahi.
 # Las variables NEXT_PUBLIC_* y BACKEND_URL se fijan en el BUILD: si cambian, reconstruir (sh deploy/deploy.sh).
 
-name: ariz-web-frontend
+name: inti-web-frontend
 
 services:
   frontend:
     build:
       context: ..
       args:
-        BACKEND_URL: ${BACKEND_URL:-http://ariz_backend:4000}
+        BACKEND_URL: ${BACKEND_URL:-http://inti_backend:4000}
         NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-https://intinmobiliaria.com}
         NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: ${NEXT_PUBLIC_GOOGLE_MAPS_API_KEY:-}
         NEXT_PUBLIC_FIREBASE_API_KEY: ${NEXT_PUBLIC_FIREBASE_API_KEY:-}
@@ -26,7 +26,7 @@ services:
         NEXT_PUBLIC_PAYMENT_BANK_CCI: ${NEXT_PUBLIC_PAYMENT_BANK_CCI:-}
         NEXT_PUBLIC_PAYMENT_ACCOUNT_HOLDER: ${NEXT_PUBLIC_PAYMENT_ACCOUNT_HOLDER:-}
         NEXT_PUBLIC_PAYMENT_TAX_ID: ${NEXT_PUBLIC_PAYMENT_TAX_ID:-}
-    container_name: ariz_frontend
+    container_name: inti_frontend
     restart: unless-stopped
     logging:
       driver: json-file
@@ -37,13 +37,13 @@ services:
       NODE_ENV: production
       PORT: 3000
       HOSTNAME: 0.0.0.0
-      BACKEND_URL: ${BACKEND_URL:-http://ariz_backend:4000}
+      BACKEND_URL: ${BACKEND_URL:-http://inti_backend:4000}
       AUTH_COOKIE_NAME: ${AUTH_COOKIE_NAME:-ariz_session}
     ports:
       - "127.0.0.1:3102:3000"
     networks:
-      - ariz-net
+      - inti-net
 
 networks:
-  ariz-net:
+  inti-net:
     external: true

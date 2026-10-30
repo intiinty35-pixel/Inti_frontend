@@ -10,7 +10,7 @@ RUN pnpm install --frozen-lockfile
 
 FROM deps AS build
 ARG NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
-ARG BACKEND_URL=http://ariz_backend:4000
+ARG BACKEND_URL=http://inti_backend:4000
 ARG NEXT_PUBLIC_API_URL=/api
 ARG NEXT_PUBLIC_SITE_URL=https://intinmobiliaria.com
 ARG NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=rpixghm0
