@@ -20,10 +20,16 @@ const NAV_ITEMS = [
   { key: "projects", label: "Mis proyectos", href: ROUTES.panel.owner.projects, Icon: ChartIcon },
   { key: "new-property", label: "Publicar propiedad", href: ROUTES.panel.owner.newListing, Icon: PlusIcon },
   { key: "new-project", label: "Publicar proyecto", href: ROUTES.panel.owner.newProject, Icon: PlusIcon },
+  /* [OCULTO-DEMO O1] Menu: Estadisticas
   { key: "stats", label: "Estadisticas", href: ROUTES.panel.owner.stats, Icon: ChartIcon },
+  */
+  /* [OCULTO-DEMO O2] Menu: Suscripcion
   { key: "subscription", label: "Suscripcion", href: ROUTES.panel.owner.subscription, Icon: BellIcon },
+  */
   { key: "profile", label: "Mi perfil", href: ROUTES.panel.owner.profile, Icon: UserIcon },
+  /* [OCULTO-DEMO O3] Menu: Configuracion
   { key: "settings", label: "Configuracion", href: ROUTES.panel.owner.settings, Icon: SettingsIcon },
+  */
 ] as const;
 
 function isActiveOwnerRoute(pathname: string, href: string) {

@@ -16,7 +16,7 @@ const STATUS_NOTICES = {
   },
   REJECTED: {
     style: "bg-error/10 text-error",
-    text: "Tu perfil no fue aprobado. Comunicate con Ariz Proyectos para mas informacion.",
+    text: "Tu perfil no fue aprobado. Comunicate con Inti Proyectos para mas informacion.",
   },
 } as const;
 
@@ -80,9 +80,11 @@ export default async function OwnerDashboardPage() {
                 </p>
               </div>
               <div className="flex shrink-0 flex-wrap items-center gap-3">
+                {/* [OCULTO-DEMO O4] Dashboard: boton Ver membresia
                 <Link href={ROUTES.panel.owner.subscription}>
                   <Button variant="secondary">Ver membresia</Button>
                 </Link>
+                */}
                 <Link href={ROUTES.panel.owner.newListing}>
                   <Button>Publicar propiedad</Button>
                 </Link>
@@ -109,7 +111,9 @@ export default async function OwnerDashboardPage() {
             <p role="status" className={`rounded-card px-4 py-3 text-sm ${notice.style}`}>
               {notice.text}
             </p>
-          ) : !hasActivePlan ? (
+          ) : null}
+          {/* [OCULTO-DEMO O7] Dashboard: tarjeta "No tienes un plan activo"
+          {!hasActivePlan ? (
             <Card>
               <CardContent className="flex flex-wrap items-center justify-between gap-4 pt-6">
                 <div>
@@ -123,6 +127,7 @@ export default async function OwnerDashboardPage() {
               </CardContent>
             </Card>
           ) : null}
+          */}
 
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
@@ -162,6 +167,7 @@ export default async function OwnerDashboardPage() {
               )}
             </DashboardPanel>
 
+            {/* [OCULTO-DEMO O5] Dashboard: panel Actividad reciente
             <DashboardPanel title="Actividad reciente">
               {sources.length > 0 ? (
                 <div className="mt-4 w-full">
@@ -187,7 +193,9 @@ export default async function OwnerDashboardPage() {
                 <EmptyChart message="Las consultas nuevas apareceran aqui" />
               )}
             </DashboardPanel>
+            */}
 
+            {/* [OCULTO-DEMO O6] Dashboard: panel Publicaciones con mas vistas
             <DashboardPanel title="Publicaciones con mas vistas">
               {topActivity.length > 0 && topActivity[0].value > 0 ? (
                 <div className="mt-4 w-full">
@@ -197,6 +205,7 @@ export default async function OwnerDashboardPage() {
                 <EmptyChart message="Las estadisticas apareceran cuando tus publicaciones reciban visitas" />
               )}
             </DashboardPanel>
+            */}
           </section>
         </div>
 

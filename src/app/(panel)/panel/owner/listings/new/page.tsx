@@ -31,9 +31,11 @@ export default async function NewOwnerListingPage() {
             Activa una membresia pagando con Yape, Plin o transferencia. En cuanto el agente valide tu pago,
             podras publicar tus propiedades.
           </p>
+          {/* [OCULTO-DEMO O8] Publicar propiedad: boton "Ver planes y pagar"
           <Link href={ROUTES.panel.owner.subscription} className="mt-4 inline-flex">
             <Button>Ver planes y pagar</Button>
           </Link>
+          */}
         </div>
       ) : (
         <PropertyPublishWizard />

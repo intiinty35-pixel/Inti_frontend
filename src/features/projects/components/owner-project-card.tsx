@@ -257,6 +257,7 @@ export function OwnerProjectCard({
                       {needsSubscription ? "No se pudo publicar" : "Error al publicar el proyecto"}
                     </h2>
                     <p className="mt-2 text-sm text-muted">{error}</p>
+                    {/* [OCULTO-DEMO O9] Aviso al publicar proyecto: boton "Consultar suscripcion"
                     {needsSubscription ? (
                       <Link
                         href={ROUTES.panel.owner.subscription}
@@ -265,6 +266,7 @@ export function OwnerProjectCard({
                         Consultar suscripción
                       </Link>
                     ) : null}
+                    */}
                   </div>
                   <button
                     type="button"
