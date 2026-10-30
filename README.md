@@ -19,15 +19,14 @@ Vuelve a compilar la imagen cuando cambies Firebase o los datos públicos de pag
 
 First, run the development server:
 
+Este proyecto usa pnpm (la versión está fijada en `packageManager`; actívala con `corepack enable`).
+
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
+
+Tests: `pnpm test`.
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
