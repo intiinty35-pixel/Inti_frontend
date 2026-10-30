@@ -113,7 +113,7 @@ export function RegistrationReferralsDashboard() {
           <div>
             <p className="text-sm font-black uppercase tracking-[0.22em] text-accent">Programa de referidos</p>
             <h1 className="mt-2 font-display text-3xl font-black tracking-tight text-brand sm:text-4xl">Inscripciones por código</h1>
-            <p className="mt-2 max-w-2xl text-sm font-semibold leading-6 text-muted">Miembros que se inscribieron al Ariz Club usando el código de otro miembro. Cada inscripción otorga 50 puntos al invitante.</p>
+            <p className="mt-2 max-w-2xl text-sm font-semibold leading-6 text-muted">Miembros que se inscribieron al Inti Club usando el código de otro miembro. Cada inscripción otorga 50 puntos al invitante.</p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <button type="button" onClick={() => setLive(!live)} className={buttonClass} aria-pressed={live} title="Actualización cada 15 segundos">

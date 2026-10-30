@@ -63,7 +63,7 @@ export default async function AdminCampaignsPage({
               Campañas
             </h1>
             <p className="mx-auto mt-3 max-w-2xl text-sm font-semibold leading-6 text-muted sm:text-base sm:mx-0">
-              Gestiona campañas temporales con puntos independientes para proyectos ARIZ. Los
+              Gestiona campañas temporales con puntos independientes para proyectos INTI. Los
               puntos de campaña se cuentan aparte de los puntos normales de referidos.
             </p>
           </div>

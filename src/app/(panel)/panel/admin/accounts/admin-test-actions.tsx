@@ -56,9 +56,9 @@ export function AdminTestActions({ label, notifyId, deleteTarget }: AdminTestAct
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState("");
-  const [subject, setSubject] = useState("Notificacion administrativa de ARIZ");
+  const [subject, setSubject] = useState("Notificacion administrativa de INTI");
   const [message, setMessage] = useState(
-    "Estamos revisando tu cuenta y tus publicaciones para mantener la calidad de la plataforma. Por favor ingresa a tu panel de ARIZ y corrige la informacion indicada.",
+    "Estamos revisando tu cuenta y tus publicaciones para mantener la calidad de la plataforma. Por favor ingresa a tu panel de INTI y corrige la informacion indicada.",
   );
   const [error, setError] = useState("");
 

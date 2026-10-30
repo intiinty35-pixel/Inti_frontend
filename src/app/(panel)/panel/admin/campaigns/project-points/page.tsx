@@ -28,14 +28,14 @@ export default async function AdminCampaignProjectPointsPage() {
               Puntos por proyecto
             </h1>
             <p className="mx-auto mt-3 max-w-2xl text-sm font-semibold leading-6 text-muted sm:text-base sm:mx-0">
-              Configura puntos adicionales para proyectos ARIZ. Estos puntos se suman a las reglas
+              Configura puntos adicionales para proyectos INTI. Estos puntos se suman a las reglas
               globales de referidos.
             </p>
           </div>
           <div className="flex flex-col items-center gap-2 sm:items-end">
             <span className="inline-flex w-fit items-center gap-2 rounded-full bg-brand-soft px-3 py-1 text-xs font-black text-brand">
               <Settings2 className="size-3.5" aria-hidden="true" />
-              Solo proyectos ARIZ
+              Solo proyectos INTI
             </span>
             <span className="inline-flex w-fit items-center gap-2 rounded-full bg-accent/15 px-3 py-1 text-xs font-black text-accent">
               <Coins className="size-3.5" aria-hidden="true" />
@@ -52,7 +52,7 @@ export default async function AdminCampaignProjectPointsPage() {
               Configuración
             </p>
             <h2 className="mt-1 text-lg font-black text-brand">
-              Proyectos ARIZ ({projects.length})
+              Proyectos INTI ({projects.length})
             </h2>
           </div>
         </div>
@@ -66,7 +66,7 @@ export default async function AdminCampaignProjectPointsPage() {
               <Settings2 className="size-6" aria-hidden="true" />
             </span>
             <h2 className="mt-4 font-display text-xl font-black text-brand">
-              No hay proyectos ARIZ disponibles
+              No hay proyectos INTI disponibles
             </h2>
             <p className="mt-2 max-w-md text-sm leading-6 text-muted">
               Cuando se creen proyectos desde el panel de administración, aparecerán aquí para configurar puntos adicionales.
@@ -92,7 +92,7 @@ export default async function AdminCampaignProjectPointsPage() {
               <li className="flex items-start gap-2">
                 <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-accent" />
                 <span>
-                  Solo aplica a proyectos creados por ARIZ o el panel de administración.
+                  Solo aplica a proyectos creados por INTI o el panel de administración.
                 </span>
               </li>
               <li className="flex items-start gap-2">

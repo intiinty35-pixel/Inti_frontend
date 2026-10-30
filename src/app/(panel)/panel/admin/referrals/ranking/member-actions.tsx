@@ -9,7 +9,7 @@ interface MemberData {
   bankAccount: string | null; yape: string | null; plin: string | null;
 }
 const fields = [
-  ['name', 'Nombre del miembro Ariz', 'text', 120], ['email', 'Correo', 'email', 254],
+  ['name', 'Nombre del miembro Inti', 'text', 120], ['email', 'Correo', 'email', 254],
   ['phone', 'Teléfono', 'tel', 30], ['bankAccount', 'Cuenta bancaria', 'text', 80],
   ['yape', 'Número de Yape', 'tel', 30], ['plin', 'Número de Plin', 'tel', 30],
 ] as const;
@@ -40,7 +40,7 @@ export function MemberActions({ id, name, onUpdated }: { id: string; name: strin
     finally { setPending(false); }
   }
   async function remove() {
-    if (!window.confirm(`¿Eliminar a “${name}” de la lista de miembros Ariz? Su historial de referidos y puntos se conserva.`)) return;
+    if (!window.confirm(`¿Eliminar a “${name}” de la lista de miembros Inti? Su historial de referidos y puntos se conserva.`)) return;
     setPending(true); setError(null);
     try {
       await apiClient.delete(`/admin/referrals/referrers/${encodeURIComponent(id)}`);
@@ -58,7 +58,7 @@ export function MemberActions({ id, name, onUpdated }: { id: string; name: strin
         <button type="button" disabled={pending} onClick={() => { setForm(null); setError(null); }} className={buttonClass}>Cancelar</button></div>
     </form> : <div className="flex gap-2">
       <button type="button" disabled={pending} title="Editar datos" aria-label={`Editar datos de ${name}`} onClick={() => void edit()} className={`${buttonClass} size-8 shrink-0`}><Pencil className="size-3.5" aria-hidden="true" /></button>
-      <button type="button" disabled={pending} title="Eliminar miembro Ariz" onClick={() => void remove()} aria-label={`Eliminar miembro Ariz ${name}`} className={`${buttonClass} size-8 shrink-0 text-error hover:border-error`}><Trash2 className="size-3.5" aria-hidden="true" /></button>
+      <button type="button" disabled={pending} title="Eliminar miembro Inti" onClick={() => void remove()} aria-label={`Eliminar miembro Inti ${name}`} className={`${buttonClass} size-8 shrink-0 text-error hover:border-error`}><Trash2 className="size-3.5" aria-hidden="true" /></button>
     </div>}
     {error && <p role="alert" className="text-xs text-error">{error}</p>}
   </div>;

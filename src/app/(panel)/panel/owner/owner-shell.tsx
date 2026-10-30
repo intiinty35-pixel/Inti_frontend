@@ -32,13 +32,13 @@ export function OwnerShell({ name, roleLabel, avatarUrl, canManageProjects = tru
         )}
       >
         <div className={cn("flex h-12 items-center", collapsed ? "justify-center" : "justify-between gap-3")}>
-          <Link href={ROUTES.home} className="flex min-w-0 items-center" aria-label="Ariz Proyectos">
+          <Link href={ROUTES.home} className="flex min-w-0 items-center" aria-label="Inti Proyectos">
             {collapsed ? (
               <span className="flex size-10 items-center justify-center rounded-lg bg-brand text-sm font-black text-on-brand">
                 AR
               </span>
             ) : (
-              <Image src="/logo/logo.png" alt="Ariz Proyectos" width={144} height={40} className="h-10 w-auto" style={{ width: "auto" }} />
+              <Image src="/logo/logo.png" alt="Inti Proyectos" width={144} height={40} className="h-10 w-auto" style={{ width: "auto" }} />
             )}
           </Link>
           {!collapsed ? (
@@ -99,8 +99,8 @@ export function OwnerShell({ name, roleLabel, avatarUrl, canManageProjects = tru
             onClick={() => setMobileOpen(false)}
           />
           <aside className="relative flex h-full w-[280px] flex-col gap-5 border-r border-edge bg-surface p-5 shadow-[var(--shadow-pop)]">
-            <Link href={ROUTES.home} className="flex h-12 items-center" aria-label="Ariz Proyectos">
-              <Image src="/logo/logo.png" alt="Ariz Proyectos" width={144} height={40} className="h-10 w-auto" style={{ width: "auto" }} />
+            <Link href={ROUTES.home} className="flex h-12 items-center" aria-label="Inti Proyectos">
+              <Image src="/logo/logo.png" alt="Inti Proyectos" width={144} height={40} className="h-10 w-auto" style={{ width: "auto" }} />
             </Link>
             <p className="px-2 text-[10px] font-bold tracking-[0.22em] text-muted uppercase">Panel profesional</p>
             <div className="flex-1 overflow-y-auto">

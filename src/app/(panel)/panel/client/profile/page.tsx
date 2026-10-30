@@ -30,7 +30,7 @@ export default async function PanelClientProfilePage() {
               Mi perfil
             </h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
-              Administra tus datos, agrega una foto y mantén segura tu cuenta ARIZ.
+              Administra tus datos, agrega una foto y mantén segura tu cuenta INTI.
             </p>
           </div>
         </div>
@@ -44,7 +44,7 @@ export default async function PanelClientProfilePage() {
             <p className="text-[11px] font-black tracking-wide uppercase">Nombre de cuenta</p>
           </div>
           <p className="mt-2 break-words font-display text-xl font-black text-brand">{fullName}</p>
-          <p className="mt-1 text-xs text-muted">Así te identificarán en ARIZ</p>
+          <p className="mt-1 text-xs text-muted">Así te identificarán en INTI</p>
         </div>
         <div className="relative min-w-0 overflow-hidden rounded-card border border-edge bg-surface px-5 py-4 shadow-[var(--shadow-card)]">
           <span className="absolute inset-x-0 top-0 h-1 bg-brand" aria-hidden />

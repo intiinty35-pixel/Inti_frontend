@@ -15,7 +15,7 @@ export default async function OwnerSubscriptionPage() {
       profile.businessName?.trim() ||
       [profile.user.firstName, profile.user.lastName].filter(Boolean).join(" ").trim() ||
       "mi inmobiliaria";
-    const message = `Hola ARIZ, soy ${businessName}. Quiero coordinar la habilitacion de publicaciones para mi inmobiliaria.`;
+    const message = `Hola INTI, soy ${businessName}. Quiero coordinar la habilitacion de publicaciones para mi inmobiliaria.`;
     const whatsappUrl = `https://wa.me/${MANAGER_WHATSAPP}?text=${encodeURIComponent(message)}`;
 
     return (
@@ -34,7 +34,7 @@ export default async function OwnerSubscriptionPage() {
                 Contacto directo
               </p>
               <h2 className="mt-1 font-display text-2xl font-black tracking-tight text-brand">
-                Coordina con el gerente de ARIZ
+                Coordina con el gerente de INTI
               </h2>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
                 Escribenos para acordar la habilitacion de publicaciones, cupos, revision y condiciones de trabajo para tu inmobiliaria.

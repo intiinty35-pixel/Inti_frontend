@@ -54,7 +54,7 @@ export default async function PanelClientRentalsPage() {
           <span className="absolute inset-x-0 top-0 h-1 bg-success" aria-hidden />
           <p className="text-[11px] font-black tracking-wide text-muted uppercase">Publicados</p>
           <p className="mt-2 font-display text-3xl font-black text-success">{published}</p>
-          <p className="mt-1 text-xs text-muted">Visibles en ARIZ</p>
+          <p className="mt-1 text-xs text-muted">Visibles en INTI</p>
         </div>
         <div className="relative flex flex-col items-center overflow-hidden rounded-card border border-edge bg-surface px-5 py-4 text-center shadow-[var(--shadow-card)]">
           <span className="absolute inset-x-0 top-0 h-1 bg-warning" aria-hidden />

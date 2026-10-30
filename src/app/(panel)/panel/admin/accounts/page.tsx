@@ -206,7 +206,7 @@ export default async function AdminAccountsPage({ searchParams }: AdminAccountsP
                             </span>
                             {item.isOfficialDeveloper ? (
                               <span className="rounded-full bg-accent/15 px-2.5 py-1 text-[11px] font-bold text-accent">
-                                PROYECTOS ARIZ
+                                PROYECTOS INTI
                               </span>
                             ) : null}
                           </div>

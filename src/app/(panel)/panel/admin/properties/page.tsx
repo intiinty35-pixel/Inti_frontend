@@ -31,13 +31,13 @@ export default async function AdminPropertiesPage({
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-muted">
-              Publicaciones de ARIZ
+              Publicaciones de INTI
             </p>
             <h1 className="mt-1 font-display text-2xl font-black text-brand sm:text-3xl">
-              Publicar propiedades ARIZ
+              Publicar propiedades INTI
             </h1>
             <p className="mt-1 max-w-2xl text-sm font-semibold leading-5 text-muted">
-              {total} {total === 1 ? "propiedad publicada" : "propiedades publicadas"} por ARIZ. Se publican
+              {total} {total === 1 ? "propiedad publicada" : "propiedades publicadas"} por INTI. Se publican
               sin pago ni membresía.
             </p>
           </div>
@@ -75,7 +75,7 @@ export default async function AdminPropertiesPage({
           <div className="mx-auto flex size-11 items-center justify-center rounded-card bg-brand/10 text-brand">
             <Home className="size-5" />
           </div>
-          <p className="mt-4 font-display text-xl font-black text-brand">Aún no hay propiedades de ARIZ</p>
+          <p className="mt-4 font-display text-xl font-black text-brand">Aún no hay propiedades de INTI</p>
           <p className="mx-auto mt-2 max-w-md text-sm text-muted">
             Publica una propiedad desde aquí. Es libre: no consume membresía ni límite de plan.
           </p>
@@ -84,7 +84,7 @@ export default async function AdminPropertiesPage({
             className="mt-6 inline-flex h-11 items-center justify-center gap-2 rounded-card bg-brand px-5 text-sm font-bold text-on-brand transition-colors hover:bg-brand-hover"
           >
             <Plus className="size-4" />
-            Publicar propiedad ARIZ
+            Publicar propiedad INTI
           </Link>
         </div>
       )}

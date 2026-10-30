@@ -85,7 +85,7 @@ export function ReferralRecordsDashboard() {
       if (!response.ok) throw new Error();
       const url = URL.createObjectURL(await response.blob());
       const link = document.createElement("a");
-      link.href = url; link.download = `referidos-ariz-${limaDate()}.xlsx`;
+      link.href = url; link.download = `referidos-inti-${limaDate()}.xlsx`;
       document.body.appendChild(link); link.click(); link.remove(); URL.revokeObjectURL(url);
     } catch { setError("No se pudo exportar el Excel. Intenta nuevamente."); }
     finally { setExporting(false); }
@@ -101,7 +101,7 @@ export function ReferralRecordsDashboard() {
           <div>
             <p className="text-sm font-black uppercase tracking-[0.22em] text-accent">Programa de referidos</p>
             <h1 className="mt-2 font-display text-3xl font-black tracking-tight text-brand sm:text-4xl">Control de referidos</h1>
-            <p className="mt-2 max-w-2xl text-sm font-semibold leading-6 text-muted">Cada fila es un referido. Consulta su contacto, estado y el miembro Ariz que lo registró.</p>
+            <p className="mt-2 max-w-2xl text-sm font-semibold leading-6 text-muted">Cada fila es un referido. Consulta su contacto, estado y el miembro Inti que lo registró.</p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <button type="button" onClick={() => setLive(!live)} className={buttonClass} aria-pressed={live} title="Actualización cada 15 segundos">
@@ -124,7 +124,7 @@ export function ReferralRecordsDashboard() {
       </section>
       <section className="rounded-card border border-edge bg-surface p-4 shadow-[var(--shadow-card)]">
         <div className="grid grid-cols-2 items-end gap-3 xl:grid-cols-[2fr_1fr_1fr_1fr]">
-          <label className="grid min-w-0 gap-1.5 text-xs font-bold text-brand">Buscar referido o miembro Ariz
+          <label className="grid min-w-0 gap-1.5 text-xs font-bold text-brand">Buscar referido o miembro Inti
             <span className="relative min-w-0"><Search className="pointer-events-none absolute left-3 top-3 size-4 text-muted" />
               <input value={search} maxLength={80} onChange={(event) => { setSearch(event.target.value); setPage(1); }} placeholder="Nombre, correo, teléfono o código" className={`${inputClass} pl-9`} />
             </span>
@@ -181,7 +181,7 @@ export function ReferralRecordsDashboard() {
               {[200, 120, 130, 240, 120, 200, 120, 180, 170, 170, 220, 90, 130, 200].map((width, i) => <col key={i} style={{ width }} />)}
             </colgroup>
             <thead className="bg-surface-muted text-[11px] font-black uppercase tracking-[0.12em] text-muted"><tr>
-              {['Referido', 'Código', 'Teléfono', 'Correo', 'WhatsApp', 'Miembro ARIZ', 'Código miembro', 'Estado', 'Interés', 'Disponibilidad', 'Proyecto', 'Puntos', 'Registro', 'Acciones'].map(label => <th key={label} scope="col">{label}</th>)}
+              {['Referido', 'Código', 'Teléfono', 'Correo', 'WhatsApp', 'Miembro INTI', 'Código miembro', 'Estado', 'Interés', 'Disponibilidad', 'Proyecto', 'Puntos', 'Registro', 'Acciones'].map(label => <th key={label} scope="col">{label}</th>)}
             </tr></thead>
             <tbody className="divide-y divide-edge">
               {!data ? <tr><td colSpan={14} className="px-4 py-10 text-center text-muted">{error ? 'No se pudo cargar la lista.' : 'Cargando referidos...'}</td></tr> : !data.items.length ? <tr><td colSpan={14} className="px-4 py-10 text-center text-muted">No hay referidos con estos filtros.</td></tr> : data.items.map(row => (

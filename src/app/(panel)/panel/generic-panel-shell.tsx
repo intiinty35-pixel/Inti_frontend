@@ -19,10 +19,10 @@ export function GenericPanelShell({ name, role, modules, children }: GenericPane
   return (
     <div className="min-h-screen">
       <aside className="flex w-full flex-col gap-3 border-b border-edge bg-surface p-4 md:fixed md:inset-y-0 md:left-0 md:w-64 md:gap-6 md:border-r md:border-b-0 md:p-6">
-        <Link href={ROUTES.home} className="flex items-center gap-2" aria-label="Ariz Proyectos">
+        <Link href={ROUTES.home} className="flex items-center gap-2" aria-label="Inti Proyectos">
           <Image
             src="/logo/logo.png"
-            alt="Ariz Proyectos"
+            alt="Inti Proyectos"
             width={180}
             height={50}
             className="h-9 w-auto"

@@ -6,7 +6,7 @@ import { AdminPageHeader } from '@/app/(panel)/panel/admin/admin-shell';
 import { getAdminClaim } from '@/features/claims/api/server';
 
 const COMPANY_INFO = {
-  businessName: 'ARIZ GROUP S.A.C.',
+  businessName: 'INTI GROUP S.A.C.',
   ruc: '20615573711',
   address: 'Jr. Lopez Aldana 286, La Victoria, Lima, Perú',
 };
