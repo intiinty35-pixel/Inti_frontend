@@ -1,5 +1,5 @@
 /** Paleta categórica validada (orden fijo, nunca ciclada). Ver skill de dataviz. */
-export const CATEGORICAL = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100"] as const;
+export const CATEGORICAL = ["#0b3d91", "#eb6834", "#1baf7a", "#eda100"] as const;
 
 /** Paleta de estado, fija, nunca reutilizada para series. */
 export const STATUS = {

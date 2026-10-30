@@ -25,7 +25,7 @@ export function ReviewPublishModal({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState(
-    `Hola, gerente de ARIZ. Le escribe ${agencyName?.trim() || "la inmobiliaria"}. Solicito habilitar la publicación de mi ${itemType} "${itemName}". Quisiera coordinar el acuerdo de atención.`,
+    `Hola, gerente de INTI. Le escribe ${agencyName?.trim() || "la inmobiliaria"}. Solicito habilitar la publicación de mi ${itemType} "${itemName}". Quisiera coordinar el acuerdo de atención.`,
   );
 
   if (!open || typeof document === "undefined") return null;

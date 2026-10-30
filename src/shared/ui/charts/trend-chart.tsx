@@ -23,7 +23,7 @@ function pathFor(points: Array<{ x: number; y: number }>) {
   return points.map((point, index) => `${index === 0 ? "M" : "L"}${point.x},${point.y}`).join(" ");
 }
 
-export function TrendChart({ data, color = "#0b5ed7", height = 300 }: TrendChartProps) {
+export function TrendChart({ data, color = "#0b3d91", height = 300 }: TrendChartProps) {
   const [activeIndex, setActiveIndex] = useState(Math.max(0, data.length - 1));
 
   const chart = useMemo(() => {
@@ -68,7 +68,7 @@ export function TrendChart({ data, color = "#0b5ed7", height = 300 }: TrendChart
 
         {chart.gridY.map((line) => (
           <g key={line.y}>
-            <line x1={LEFT} y1={line.y} x2={WIDTH - RIGHT} y2={line.y} stroke="#d7dde8" strokeWidth="1" />
+            <line x1={LEFT} y1={line.y} x2={WIDTH - RIGHT} y2={line.y} stroke="#e5e2db" strokeWidth="1" />
             <text x="10" y={line.y + 4} fill="#667085" fontSize="10" fontWeight="700">
               {line.value}
             </text>
@@ -76,7 +76,7 @@ export function TrendChart({ data, color = "#0b5ed7", height = 300 }: TrendChart
         ))}
 
         {chart.gridX.map((x) => (
-          <line key={x} x1={x} y1={TOP} x2={x} y2={height - BOTTOM} stroke="#eef1f6" strokeWidth="1" />
+          <line key={x} x1={x} y1={TOP} x2={x} y2={height - BOTTOM} stroke="#e5e2db" strokeWidth="1" />
         ))}
 
         <path d={chart.path} fill="none" stroke="#dc2626" strokeWidth="2.2" strokeLinejoin="round" strokeLinecap="round" />
@@ -99,7 +99,7 @@ export function TrendChart({ data, color = "#0b5ed7", height = 300 }: TrendChart
                 onMouseEnter={() => setActiveIndex(index)}
                 onClick={() => setActiveIndex(index)}
               />
-              <circle cx={point.x} cy={point.y} r={selected ? 4.5 : 2.5} fill={selected ? "#111827" : point.value > 0 ? "#111827" : "transparent"} />
+              <circle cx={point.x} cy={point.y} r={selected ? 4.5 : 2.5} fill={selected ? "#082a6b" : point.value > 0 ? "#082a6b" : "transparent"} />
               {showLabel ? (
                 <g>
                   <rect

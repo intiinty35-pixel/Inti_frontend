@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { env } from "@/shared/lib/env";
 
-export const SITE_NAME = "Ariz Proyectos";
+export const SITE_NAME = "Inti Proyectos";
 export const SEO_KEYWORDS = [
   "inmobiliaria en Peru",
   "propiedades en venta",

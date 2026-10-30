@@ -141,7 +141,7 @@ export function SitePlanCanvas({
   }, [image?.url]);
   if (!image)
     return (
-      <div className="grid min-h-[640px] place-items-center rounded-2xl border-2 border-dashed border-blue-200 bg-blue-50 p-8 text-center">
+      <div className="grid min-h-[640px] place-items-center rounded-2xl border-2 border-dashed border-blue-200 bg-brand-soft p-8 text-center">
         <div>
           <h2 className="text-lg font-bold text-slate-800">
             Primero carga el plano del proyecto
@@ -262,7 +262,7 @@ export function SitePlanCanvas({
       lot: undefined,
       label: z.kind === "CONTOUR" ? "" : z.name,
       contour: z.kind === "CONTOUR",
-      color: z.kind === "CONTOUR" ? "#0ea5e9" : z.kind === "PARK" ? "#4d7c0f" : z.kind === "BLOCK" ? "#3b82f6" : "#92400e",
+      color: z.kind === "CONTOUR" ? "#0ea5e9" : z.kind === "PARK" ? "#4d7c0f" : z.kind === "BLOCK" ? "#0b3d91" : "#92400e",
       zone: true,
     })),
     ...plan.lots
@@ -602,7 +602,7 @@ export function SitePlanCanvas({
                   points={shape.path.map(position).join(" ")}
                   fill={shape.color}
                   fillOpacity={shape.contour || ("kind" in shape && shape.kind === "STREET") ? 0 : "kind" in shape && shape.kind === "PARK" ? 0.35 : shape.zone ? 0.08 : hovered?.id === shape.id ? 0.5 : 0.3}
-                  stroke={shape.id === selected ? "#2563eb" : shape.lot?.status === "AVAILABLE" ? AVAILABLE_LOT_BORDER : shape.color}
+                  stroke={shape.id === selected ? "#0b3d91" : shape.lot?.status === "AVAILABLE" ? AVAILABLE_LOT_BORDER : shape.color}
                   strokeWidth={shape.id === "drawing-group-area" ? 1.5 : "kind" in shape && shape.kind === "STREET" ? (shape.id === selected ? 3 : 0) : shape.contour ? (shape.id === selected ? 5 : 4) : shape.id === selected ? 3 : !showImage ? 2.5 : 1.5}
                   strokeLinejoin="round"
                   vectorEffect="non-scaling-stroke"
@@ -633,7 +633,7 @@ export function SitePlanCanvas({
                     fontWeight={shape.zone ? 700 : 600}
                     textAnchor="middle"
                     dominantBaseline="middle"
-                    fill={"kind" in shape && (shape.kind === "STREET" || shape.kind === "BLOCK") ? "#ffffff" : "#102a43"}
+                    fill={"kind" in shape && (shape.kind === "STREET" || shape.kind === "BLOCK") ? "#ffffff" : "#082a6b"}
                     stroke={"kind" in shape && shape.kind === "BLOCK" ? "none" : "kind" in shape && shape.kind === "STREET" ? STREET_COLOR : shape.zone ? "white" : "none"}
                     strokeWidth={shape.zone ? 0.6 : 0}
                     paintOrder="stroke"
@@ -662,8 +662,8 @@ export function SitePlanCanvas({
           {points.length > 0 && (
             <polyline
               points={points.map(position).join(" ")}
-              fill={points.length >= 3 ? "#2563eb33" : "none"}
-              stroke="#2563eb"
+              fill={points.length >= 3 ? "#0b3d9133" : "none"}
+              stroke="#0b3d91"
               strokeWidth={tool === "GROUP" ? 1.5 : 2}
               vectorEffect="non-scaling-stroke"
               pointerEvents="none"
@@ -693,9 +693,9 @@ export function SitePlanCanvas({
             const label = previewLabels[index] ?? String(index + 1);
             const fitted = fitPolygonText(label, anchor.radius, 12);
             return <g key={`preview-${index}`} pointerEvents="none">
-              <polygon points={path.map(position).join(" ")} fill="#2563eb" fillOpacity={0.16} stroke="#2563eb" strokeWidth={1.5} strokeDasharray="5 3" vectorEffect="non-scaling-stroke" />
+              <polygon points={path.map(position).join(" ")} fill="#0b3d91" fillOpacity={0.16} stroke="#0b3d91" strokeWidth={1.5} strokeDasharray="5 3" vectorEffect="non-scaling-stroke" />
               <g transform={`translate(${anchor.x * 1000 / renderedWidth} ${anchor.y * 1000 / (renderedWidth * aspect)}) scale(${1000 / renderedWidth} ${1000 / (renderedWidth * aspect)})`}>
-                <text textAnchor="middle" dominantBaseline="central" fontSize={fitted.size} fontWeight={750} fill="#1e40af" stroke="white" strokeWidth={3} paintOrder="stroke">
+                <text textAnchor="middle" dominantBaseline="central" fontSize={fitted.size} fontWeight={750} fill="#0b3d91" stroke="white" strokeWidth={3} paintOrder="stroke">
                   {fitted.lines.map((line, lineIndex) => <tspan key={lineIndex} x={0} dy={lineIndex === 0 ? -(fitted.lines.length - 1) * fitted.size * 0.6 : fitted.size * 1.2}>{line}</tspan>)}
                 </text>
               </g>
@@ -710,8 +710,8 @@ export function SitePlanCanvas({
           {rectangle.length === 4 && (
             <polygon
               points={rectangle.map(position).join(" ")}
-              fill="#2563eb33"
-              stroke="#2563eb"
+              fill="#0b3d9133"
+              stroke="#0b3d91"
               strokeWidth={tool === "GROUP" ? 1.5 : 2}
               vectorEffect="non-scaling-stroke"
               pointerEvents="none"
@@ -725,7 +725,7 @@ export function SitePlanCanvas({
                 cx={p.x * 1000}
                 cy={p.y * 1000}
                 r={2.5 * 1000 / renderedWidth}
-                fill="#2563eb"
+                fill="#0b3d91"
                 stroke="white"
                 strokeWidth={1}
                 vectorEffect="non-scaling-stroke"
@@ -743,7 +743,7 @@ export function SitePlanCanvas({
                   cy={p.y * 1000}
                   r={3.5 * 1000 / renderedWidth}
                   fill="white"
-                  stroke="#2563eb"
+                  stroke="#0b3d91"
                   strokeWidth="2"
                   vectorEffect="non-scaling-stroke"
                   style={{ cursor: "grab", touchAction: "none" }}
@@ -801,7 +801,7 @@ export function SitePlanCanvas({
               <rect y={cropBounds.top * 1000} width={cropBounds.left * 1000} height={(cropBounds.bottom - cropBounds.top) * 1000} />
               <rect x={cropBounds.right * 1000} y={cropBounds.top * 1000} width={(1 - cropBounds.right) * 1000} height={(cropBounds.bottom - cropBounds.top) * 1000} />
             </g>}
-            <rect x={cropBounds.left * 1000} y={cropBounds.top * 1000} width={(cropBounds.right - cropBounds.left) * 1000} height={(cropBounds.bottom - cropBounds.top) * 1000} fill="none" stroke="#1974f4" strokeWidth={1.5} strokeDasharray="6 4" vectorEffect="non-scaling-stroke" />
+            <rect x={cropBounds.left * 1000} y={cropBounds.top * 1000} width={(cropBounds.right - cropBounds.left) * 1000} height={(cropBounds.bottom - cropBounds.top) * 1000} fill="none" stroke="#0b3d91" strokeWidth={1.5} strokeDasharray="6 4" vectorEffect="non-scaling-stroke" />
           </g>}
         </svg>
         {canCrop && cropHandles.map(handle => <button key={`crop-${handle.label}`} type="button" className={styles.resizeHandle} aria-label={`Recortar: ${handle.label}`} title={`${handle.label}: arrastra para recortar el plano`}

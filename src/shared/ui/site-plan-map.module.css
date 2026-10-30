@@ -8,11 +8,11 @@
   width: max-content;
   max-width: 210px;
   padding: 8px 10px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #e5e2db;
   border-radius: 10px;
   background: #ffffff;
   color: #334155;
-  box-shadow: 0 6px 20px #0f172a26;
+  box-shadow: 0 6px 20px #082a6b26;
   font: 600 11px/1.4 sans-serif;
   pointer-events: none;
 }

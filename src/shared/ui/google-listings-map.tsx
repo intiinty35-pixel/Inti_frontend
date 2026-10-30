@@ -216,7 +216,7 @@ export function GoogleListingsMap({
             <p className="mt-3 font-bold">Contado: {money(lot.price)}</p>
           )}
           {lot.financingAllowed && (
-            <div className="mt-3 rounded-xl bg-blue-50 p-3">
+            <div className="mt-3 rounded-xl bg-brand-soft p-3">
               <p className="font-bold">
                 Financiado: {money(lot.financedPrice)}
               </p>
@@ -233,7 +233,7 @@ export function GoogleListingsMap({
             code={accessCodes[owner.point.id] ?? accessCodes[owner.slug] ?? ""}
           />
           <Link
-            className="mt-3 block text-center text-xs font-bold text-blue-700"
+            className="mt-3 block text-center text-xs font-bold text-brand"
             href={owner.point.href}
           >
             Ver proyecto completo
@@ -256,7 +256,7 @@ export function GoogleListingsMap({
               <p className="text-xs text-slate-500">Se muestra la ubicación del proyecto. Se omitió el código y el plano permanece oculto.</p>
               <button
                 type="button"
-                className="text-left text-xs font-bold text-blue-700"
+                className="text-left text-xs font-bold text-brand"
                 onClick={() => setOmittedCodes(previous => ({ ...previous, [active.id]: false }))}
               >
                 Ingresar código para ver el plano
@@ -268,13 +268,13 @@ export function GoogleListingsMap({
         active && (
           <article className="absolute bottom-20 right-3 z-10 w-[min(290px,calc(100%-24px))] rounded-2xl border border-slate-200 bg-white p-4 text-slate-800 shadow-xl">
             <h3 className="font-bold">{active.title}</h3>
-            <p className="mt-1 text-sm font-bold text-blue-700">
+            <p className="mt-1 text-sm font-bold text-brand">
               {active.priceLabel}
             </p>
             <p className="mt-1 text-xs">{active.districtLabel}</p>
             <Link
               href={active.href}
-              className="mt-3 inline-block text-sm font-bold text-blue-700"
+              className="mt-3 inline-block text-sm font-bold text-brand"
             >
               Ver ficha completa →
             </Link>

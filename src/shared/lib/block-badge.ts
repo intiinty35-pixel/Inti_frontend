@@ -1,6 +1,6 @@
 import type { PlanZone } from "./site-plan";
 
-const COLORS = ["#2563eb", "#7c3aed", "#0f766e", "#be185d", "#b45309", "#4338ca", "#0369a1", "#a21caf", "#4d7c0f", "#b91c1c", "#047857", "#c2410c", "#6d28d9", "#0e7490", "#9f1239", "#3f6212"];
+const COLORS = ["#0b3d91", "#7c3aed", "#0f766e", "#be185d", "#b45309", "#4338ca", "#0b3d91", "#a21caf", "#4d7c0f", "#b91c1c", "#047857", "#c2410c", "#6d28d9", "#0e7490", "#9f1239", "#3f6212"];
 export const BLOCK_BADGE_SIZE = 24;
 
 export function blockBadge(zone: Pick<PlanZone, "id" | "name">, zones: PlanZone[]) {

@@ -1,4 +1,4 @@
-.finder { margin-top:18px; padding:18px; min-width:0; border:1px solid #cfe3dc; border-left:3px solid #059669; border-radius:18px; background:linear-gradient(145deg,#fff 65%,#f0fdf8); box-shadow:0 8px 24px #065f4609; color:#172a3a; }
+.finder { margin-top:18px; padding:18px; min-width:0; border:1px solid #cfe3dc; border-left:3px solid #059669; border-radius:18px; background:linear-gradient(145deg,#fff 65%,#f0fdf8); box-shadow:0 8px 24px #065f4609; color:#082a6b; }
 .eyebrow { display:flex; align-items:center; gap:6px; color:#047857; font-size:9px; font-weight:750; letter-spacing:.07em; text-transform:uppercase; }
 .finder h2 { margin:8px 0 5px; font-size:19px; font-weight:750; line-height:1.25; letter-spacing:-.03em; }
 .description { margin:0 0 15px; padding-bottom:14px; border-bottom:1px solid #e1ebe7; font-size:11px; color:#718096; line-height:1.6; }

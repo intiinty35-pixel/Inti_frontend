@@ -21,7 +21,7 @@ export function BarChart({ data }: BarChartProps) {
   if (data.length === 0) return null;
 
   return (
-    <div className="w-full rounded-card border border-edge bg-[#071b2f] p-4 text-white shadow-[var(--shadow-card)]">
+    <div className="w-full rounded-card border border-edge bg-[#082a6b] p-4 text-white shadow-[var(--shadow-card)]">
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
           <p className="text-[11px] font-black uppercase tracking-[0.16em] text-white/50">Distribucion</p>

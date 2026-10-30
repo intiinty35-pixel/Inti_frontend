@@ -496,7 +496,7 @@ export function SitePlanMap(props: Props) {
       ...props.plan.zones.map((zone) => ({
         id: zone.id,
         path: zone.path,
-        color: zone.kind === "CONTOUR" ? "#2563eb" : zone.kind === "PARK" ? "#4d7c0f" : zone.kind === "BLOCK" ? "#3b82f6" : "#92400e",
+        color: zone.kind === "CONTOUR" ? "#0b3d91" : zone.kind === "PARK" ? "#4d7c0f" : zone.kind === "BLOCK" ? "#0b3d91" : "#92400e",
         lot: undefined,
         label: zone.kind === "CONTOUR" ? "" : zone.name,
         contour: zone.kind === "CONTOUR",
@@ -607,7 +607,7 @@ export function SitePlanMap(props: Props) {
           pointerEvents: "none",
           whiteSpace: "nowrap",
           font: "600 9px sans-serif",
-          color: shape.street ? "#ffffff" : "#0f172a",
+          color: shape.street ? "#ffffff" : "#082a6b",
           background: "transparent",
           borderRadius: "4px",
           padding: "0",
@@ -725,7 +725,7 @@ export function SitePlanMap(props: Props) {
           new sdk.Polygon({
             map: current,
             paths: props.points,
-            fillColor: "#2563eb",
+            fillColor: "#0b3d91",
             fillOpacity: 0.2,
             strokeColor: "#ffffff",
             clickable: false,
@@ -830,9 +830,9 @@ export function SitePlanMap(props: Props) {
         label.textContent = marker.priceLabel;
         Object.assign(label.style, {
           display: "block",
-          background: focused ? "#1974f4" : "#ffffff",
-          color: focused ? "#ffffff" : "#193445",
-          border: "2px solid #1974f4",
+          background: focused ? "#0b3d91" : "#ffffff",
+          color: focused ? "#ffffff" : "#082a6b",
+          border: "2px solid #0b3d91",
           borderRadius: "20px",
           padding: "6px 10px",
           lineHeight: "1",
@@ -843,7 +843,7 @@ export function SitePlanMap(props: Props) {
       if (marker.iconUrl) {
         const icon = document.createElement('img');
         icon.src = marker.iconUrl; icon.alt = ''; icon.width = 46; icon.height = 46;
-        Object.assign(icon.style, { width: '46px', height: '46px', objectFit: 'contain', display: 'block', filter: focused ? 'drop-shadow(0 3px 5px #2563eb)' : 'drop-shadow(0 2px 3px #0004)' });
+        Object.assign(icon.style, { width: '46px', height: '46px', objectFit: 'contain', display: 'block', filter: focused ? 'drop-shadow(0 3px 5px #0b3d91)' : 'drop-shadow(0 2px 3px #0004)' });
         node.append(icon);
       }
       ["mousedown", "touchstart", "pointerdown"].forEach((name) =>
@@ -885,8 +885,8 @@ export function SitePlanMap(props: Props) {
           clusterPrice ? ` Desde ${clusterPrice}.` : ""
         } Acercar para verlos.`,
       );
-      const baseShadow = "0 8px 22px #00124f2e, 0 2px 6px #00124f1a";
-      const hoverShadow = "0 12px 28px #00124f3d, 0 3px 8px #00124f24";
+      const baseShadow = "0 8px 22px #082a6b2e, 0 2px 6px #082a6b1a";
+      const hoverShadow = "0 12px 28px #082a6b3d, 0 3px 8px #082a6b24";
       Object.assign(node.style, {
         position: "absolute",
         transform: "translate(-50%,-50%)",
@@ -897,7 +897,7 @@ export function SitePlanMap(props: Props) {
         borderRadius: "9999px",
         border: "1px solid #dbe7f5",
         background: "#ffffff",
-        color: "#193445",
+        color: "#082a6b",
         boxShadow: baseShadow,
         cursor: "pointer",
         font: "600 13px/1.15 sans-serif",
@@ -913,7 +913,7 @@ export function SitePlanMap(props: Props) {
         borderRadius: "9999px",
         display: "grid",
         placeItems: "center",
-        background: "linear-gradient(145deg, #2f8bff, #1560d8)",
+        background: "linear-gradient(145deg, #0b3d91, #0b3d91)",
         boxShadow: "inset 0 0 0 1px #ffffff40",
         flex: "0 0 auto",
       });
@@ -932,7 +932,7 @@ export function SitePlanMap(props: Props) {
       Object.assign(titleText.style, {
         fontWeight: "700",
         fontSize: "13px",
-        color: "#193445",
+        color: "#082a6b",
       });
       const hint = document.createElement("span");
       hint.textContent = clusterPrice
@@ -941,7 +941,7 @@ export function SitePlanMap(props: Props) {
       Object.assign(hint.style, {
         fontWeight: clusterPrice ? "700" : "500",
         fontSize: "10px",
-        color: clusterPrice ? "#1974f4" : "#6b8199",
+        color: clusterPrice ? "#0b3d91" : "#6b8199",
       });
       text.append(titleText, hint);
       node.append(badge, text);
@@ -1120,8 +1120,8 @@ export function SitePlanMap(props: Props) {
         aria-label="Mapa interactivo del plano y lotes"
       />
       {props.compactMapControl && <div className="absolute left-3 top-3 z-10 inline-flex overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm" role="group" aria-label="Tipo de mapa">
-        <button type="button" className="px-3 py-1.5 text-[11px] font-semibold text-slate-700 hover:bg-blue-50" onClick={() => map.current?.setMapTypeId('roadmap')}>Mapa</button>
-        <button type="button" className="border-l border-slate-200 px-3 py-1.5 text-[11px] font-semibold text-slate-700 hover:bg-blue-50" onClick={() => map.current?.setMapTypeId('satellite')}>Satélite</button>
+        <button type="button" className="px-3 py-1.5 text-[11px] font-semibold text-slate-700 hover:bg-brand-soft" onClick={() => map.current?.setMapTypeId('roadmap')}>Mapa</button>
+        <button type="button" className="border-l border-slate-200 px-3 py-1.5 text-[11px] font-semibold text-slate-700 hover:bg-brand-soft" onClick={() => map.current?.setMapTypeId('satellite')}>Satélite</button>
       </div>}
       {!sdk && !error && (
         <div

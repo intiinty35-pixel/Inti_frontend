@@ -72,7 +72,7 @@ export function ProtectedLotPdfDownload({
       </button>
       {error && <span role="alert" className="mt-2 block text-xs text-red-700">{error}</span>}
       {preview && createPortal(<dialog ref={dialog} className={s.dialog} aria-label="Vista previa de la ficha PDF" onCancel={()=>setPreview(undefined)} onClose={()=>setPreview(undefined)}>
-        <header className={s.header}><div><span>ARIZ · Ficha del inmueble</span><h2>Tu ficha está lista</h2></div><button type="button" aria-label="Cerrar vista previa" onClick={()=>setPreview(undefined)}><X size={20}/></button></header>
+        <header className={s.header}><div><span>INTI · Ficha del inmueble</span><h2>Tu ficha está lista</h2></div><button type="button" aria-label="Cerrar vista previa" onClick={()=>setPreview(undefined)}><X size={20}/></button></header>
         <iframe className={s.document} src={`${preview}#toolbar=0`} title="Vista previa del PDF del departamento"/>
         <footer className={s.footer}><p>Revisa la ficha y guarda una copia en tu dispositivo.</p><a href={preview} target="_blank" rel="noreferrer">Abrir PDF</a><a className={s.download} href={preview} download={filename}><FileDown size={17}/>Descargar PDF</a></footer>
       </dialog>,document.body)}

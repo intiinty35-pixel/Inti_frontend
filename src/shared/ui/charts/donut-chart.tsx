@@ -30,7 +30,7 @@ export function DonutChart({ data, centerLabel = "total" }: DonutChartProps) {
     <div className="grid w-full gap-4 sm:grid-cols-[minmax(130px,150px)_minmax(0,1fr)] sm:items-center">
       <div className="relative mx-auto">
         <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="size-32 sm:size-36 md:size-40" role="img" aria-label={`Distribucion ${centerLabel}`}>
-          <circle cx={SIZE / 2} cy={SIZE / 2} r={RADIUS} fill="none" stroke="#edf1f6" strokeWidth={STROKE} />
+          <circle cx={SIZE / 2} cy={SIZE / 2} r={RADIUS} fill="none" stroke="#e5e2db" strokeWidth={STROKE} />
           {hasData
             ? data.map((datum, index) => {
                 const length = (datum.value / total) * CIRC;
@@ -56,7 +56,7 @@ export function DonutChart({ data, centerLabel = "total" }: DonutChartProps) {
                 );
               })
             : null}
-          <text x={SIZE / 2} y={SIZE / 2 - 3} textAnchor="middle" fontSize="30" fontWeight="900" fill="#073763">
+          <text x={SIZE / 2} y={SIZE / 2 - 3} textAnchor="middle" fontSize="30" fontWeight="900" fill="#082a6b">
             {total}
           </text>
           <text x={SIZE / 2} y={SIZE / 2 + 17} textAnchor="middle" fontSize="10" fontWeight="800" fill="#667085">

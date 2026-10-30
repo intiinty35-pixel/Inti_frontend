@@ -11,9 +11,9 @@ function isPlaceholder(value: string) {
 }
 
 /**
- * Cuenta oficial de ARIZ GROUP SAC para depositos y transferencias, definida en
+ * Cuenta oficial de INTI GROUP SAC para depositos y transferencias, definida en
  * las variables `NEXT_PUBLIC_PAYMENT_*`. Si falta `BANK_ACCOUNT` la seccion de pago
- * no se muestra. `YAPE_PLIN_NUMBER` es el celular de Yape y Plin de ARIZ.
+ * no se muestra. `YAPE_PLIN_NUMBER` es el celular de Yape y Plin de INTI.
  */
 const payment = {
   yapePlinNumber: process.env.NEXT_PUBLIC_PAYMENT_YAPE_PLIN_NUMBER ?? "",
