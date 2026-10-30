@@ -5,13 +5,14 @@ ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 
 FROM base AS deps
-COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile --dangerously-allow-all-builds
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN pnpm install --frozen-lockfile
 
 FROM deps AS build
 ARG NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+ARG BACKEND_URL=http://ariz_backend:4000
 ARG NEXT_PUBLIC_API_URL=/api
-ARG NEXT_PUBLIC_SITE_URL=https://arizinmobiliaria.com
+ARG NEXT_PUBLIC_SITE_URL=https://intinmobiliaria.com
 ARG NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=rpixghm0
 ARG NEXT_PUBLIC_FIREBASE_API_KEY
 ARG NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
@@ -26,6 +27,8 @@ ARG NEXT_PUBLIC_PAYMENT_BANK_ACCOUNT
 ARG NEXT_PUBLIC_PAYMENT_BANK_CCI
 ARG NEXT_PUBLIC_PAYMENT_ACCOUNT_HOLDER
 ARG NEXT_PUBLIC_PAYMENT_TAX_ID
+# next.config.ts evalua BACKEND_URL al compilar: el rewrite /api queda fijado en la imagen.
+ENV BACKEND_URL=$BACKEND_URL
 ENV NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=$NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
