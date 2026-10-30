@@ -1,33 +1,33 @@
 :root {
   color-scheme: light;
 
-  --brand: #00124f;
-  --brand-hover: #0b2170;
-  --brand-soft: #e8ecf8;
+  --brand: #0b3d91;
+  --brand-hover: #082a6b;
+  --brand-soft: #e7edf8;
   --on-brand: #ffffff;
 
-  --accent: #f2a900;
-  --accent-hover: #d99700;
-  --on-accent: #00124f;
+  --accent: #f5b731;
+  --accent-hover: #e0a21b;
+  --on-accent: #14181f;
 
   /* Verde oficial de WhatsApp: identidad de marca, no decorativo. */
   --wa: #25d366;
   --wa-hover: #1eb257;
 
-  --canvas: #f5f6fa;
+  --canvas: #faf8f4;
   --surface: #ffffff;
-  --surface-muted: #eef0f6;
-  --edge: #dde1ec;
+  --surface-muted: #f1efea;
+  --edge: #e5e2db;
 
-  --ink: #0b1437;
-  --muted: #646d8a;
+  --ink: #14181f;
+  --muted: #6b7280;
 
   --success: #2f7d4f;
   --warning: #b7791f;
   --error: #b3402e;
   --info: #2f6fb3;
 
-  --focus-ring: rgb(0 18 79 / 0.3);
+  --focus-ring: rgb(11 61 145 / 0.3);
 
   --font-family-base: "Segoe UI", "Avenir Next", Avenir, ui-sans-serif, system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
   --font-family-display: var(--font-family-base);
@@ -54,6 +54,6 @@
    */
   --header-h: 72px;
 
-  --shadow-card: 0 1px 2px rgb(11 20 55 / 0.05), 0 18px 40px -18px rgb(11 20 55 / 0.22);
-  --shadow-pop: 0 18px 48px -16px rgb(11 20 55 / 0.32);
+  --shadow-card: 0 1px 2px rgb(20 24 31 / 0.05), 0 18px 40px -18px rgb(20 24 31 / 0.22);
+  --shadow-pop: 0 18px 48px -16px rgb(20 24 31 / 0.32);
 }
