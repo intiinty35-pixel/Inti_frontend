@@ -16,12 +16,12 @@ const FAQS = [
       "Ingresa a /inversiones, revisa el tipo de inversion y abre la oportunidad que te interesa. Desde ahi puedes contactar a un asesor por WhatsApp o correo.",
   },
   {
-    question: "ARIZ revisa documentos legales?",
+    question: "INTI revisa documentos legales?",
     answer:
       "Si. El equipo puede orientar la revision de partidas, titulos, cargas, contratos, minutas y otros documentos relacionados al inmueble.",
   },
   {
-    question: "Puedo vender un terreno o proyecto con ARIZ?",
+    question: "Puedo vender un terreno o proyecto con INTI?",
     answer:
       "Si. Puedes solicitar una evaluacion comercial para definir precio, estrategia, material de venta y seguimiento de interesados.",
   },
@@ -34,8 +34,8 @@ const FAQS = [
 
 export default function HelpCenterPage() {
   const mailHref = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(
-    "Consulta desde Centro de ayuda ARIZ",
-  )}&body=${encodeURIComponent("Hola ARIZ, necesito ayuda con:")}`;
+    "Consulta desde Centro de ayuda INTI",
+  )}&body=${encodeURIComponent("Hola INTI, necesito ayuda con:")}`;
 
   return (
     <main className="bg-canvas">
@@ -43,7 +43,7 @@ export default function HelpCenterPage() {
         <div className="mx-auto w-full max-w-[105rem]">
           <p className="text-[11px] font-black uppercase tracking-[0.18em] text-accent">Centro de ayuda</p>
           <h1 className="mt-4 max-w-4xl font-display text-4xl font-black leading-tight sm:text-6xl">
-            Respuestas rapidas y soporte directo de ARIZ
+            Respuestas rapidas y soporte directo de INTI
           </h1>
           <p className="mt-5 max-w-2xl text-base font-semibold leading-7 text-white/78">
             Revisa preguntas frecuentes o escribe al centro de ayuda para recibir asistencia.

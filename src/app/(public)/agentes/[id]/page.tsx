@@ -16,13 +16,13 @@ export async function generateMetadata({ params }: AgentPageProps): Promise<Meta
   try {
     const agent = await getAgentProfile(id);
     return buildMetadata({
-      title: `${agent.name} | Agente ARIZ`,
-      description: `Perfil público de ${agent.name} en ARIZ.`,
+      title: `${agent.name} | Agente INTI`,
+      description: `Perfil público de ${agent.name} en INTI.`,
       path: `/agentes/${id}`,
     });
   } catch {
     return buildMetadata({
-      title: "Agente ARIZ",
+      title: "Agente INTI",
       description: "Perfil público de agente inmobiliario.",
       path: `/agentes/${id}`,
     });
@@ -75,7 +75,7 @@ export default async function AgentPage({ params }: AgentPageProps) {
       <section className="overflow-hidden rounded-card border border-edge bg-surface shadow-[var(--shadow-card)]">
         <div className="grid gap-0 xl:grid-cols-[minmax(0,1fr)_380px]">
           <div className="relative min-h-[380px] overflow-hidden bg-brand p-6 text-white sm:p-8 lg:p-10">
-            {/* Unica decoracion: chevron/roof del logo ARIZ en accent, detras de la tarjeta de info. */}
+            {/* Unica decoracion: chevron/roof del logo INTI en accent, detras de la tarjeta de info. */}
             <svg
               aria-hidden
               className="pointer-events-none absolute -left-24 -bottom-24 h-[32rem] w-[32rem] text-accent opacity-[0.13]"
@@ -97,7 +97,7 @@ export default async function AgentPage({ params }: AgentPageProps) {
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="rounded-full bg-accent/15 px-3 py-1 text-xs font-semibold text-accent">
-                      Anunciante ARIZ
+                      Anunciante INTI
                     </span>
                     {agent.status === "APPROVED" ? (
                       <span className="flex items-center gap-1.5 rounded-full bg-accent/15 px-3 py-1 text-xs font-semibold text-accent">

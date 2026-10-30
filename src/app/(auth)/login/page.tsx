@@ -13,7 +13,7 @@ import { buildMetadata } from "@/shared/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
   title: "Iniciar sesión",
-  description: "Accede a tu cuenta de Ariz Proyectos.",
+  description: "Accede a tu cuenta de Inti Proyectos.",
   path: ROUTES.login,
 });
 

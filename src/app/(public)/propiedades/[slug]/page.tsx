@@ -71,14 +71,14 @@ export async function generateMetadata({ params }: PropertyPageProps): Promise<M
   try {
     const property = await getListingBySlug(slug);
     return buildMetadata({
-      title: `${property.title} | ARIZ`,
+      title: `${property.title} | INTI`,
       description: property.description,
       path: `/propiedades/${slug}`,
       image: property.images[0],
     });
   } catch {
     return buildMetadata({
-      title: "Propiedad | ARIZ",
+      title: "Propiedad | INTI",
       description: "Detalle de propiedad.",
       path: `/propiedades/${slug}`,
     });
@@ -169,7 +169,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
   ].filter(Boolean).join(", ");
   const whatsappDigits = property.agent.whatsapp?.replace(/\D/g, "");
   const whatsappUrl = whatsappDigits
-    ? `https://wa.me/${whatsappDigits}?text=${encodeURIComponent(`Hola, vi "${property.title}" en ARIZ y quisiera más información.`)}`
+    ? `https://wa.me/${whatsappDigits}?text=${encodeURIComponent(`Hola, vi "${property.title}" en INTI y quisiera más información.`)}`
     : undefined;
   const operationLabel = OPERATION_LABEL[property.operation] ?? "Disponible";
   const operationPhrase = property.operation === "rent" ? "en alquiler" : property.operation === "buy" ? "en venta" : "disponible";
@@ -384,7 +384,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
               propertyId={property.id}
               compact
               whatsappUrl={whatsappUrl}
-              defaultMessage={`¡Hola! Quiero que se comuniquen conmigo por este inmueble ${operationPhrase} que vi en ARIZ.`}
+              defaultMessage={`¡Hola! Quiero que se comuniquen conmigo por este inmueble ${operationPhrase} que vi en INTI.`}
             />
           </div>
 
@@ -402,7 +402,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
               {property.agent.status === "APPROVED" ? (
                 <span className="mt-1 flex items-center gap-1 text-xs font-bold text-success">
                   <CheckIcon className="size-3.5" />
-                  Verificado por ARIZ
+                  Verificado por INTI
                 </span>
               ) : null}
             </span>

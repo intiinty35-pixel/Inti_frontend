@@ -91,14 +91,14 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
   try {
     const project = await getProjectBySlugServer(slug);
     return buildMetadata({
-      title: `${project.name} | ARIZ`,
+      title: `${project.name} | INTI`,
       description: project.description.slice(0, 160),
       path: `/project/${slug}`,
       image: project.coverImage ?? undefined,
     });
   } catch {
     return buildMetadata({
-      title: "Proyecto | ARIZ",
+      title: "Proyecto | INTI",
       description: "Detalle de proyecto inmobiliario.",
       path: `/project/${slug}`,
     });
@@ -136,7 +136,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   const whatsappDigits = project.agent.whatsapp?.replace(/\D/g, "");
   const whatsappUrl = whatsappDigits
     ? `https://wa.me/${whatsappDigits}?text=${encodeURIComponent(
-        `Hola, vi el proyecto "${project.name}" en ARIZ y quisiera más información.`,
+        `Hola, vi el proyecto "${project.name}" en INTI y quisiera más información.`,
       )}`
     : undefined;
 
@@ -193,7 +193,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   const amenitiesA = project.amenities.slice(0, half);
   const amenitiesB = project.amenities.slice(half);
   const agentTypeLabel = project.agent.type === "ADMIN"
-    ? "Publicado por ARIZ"
+    ? "Publicado por INTI"
     : AGENT_TYPE_LABEL[project.agent.type] ?? "Agente inmobiliario";
   const hasFullData =
     detailRows.length > 0 || project.amenities.length > 0 || project.services.length > 0;
@@ -600,7 +600,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               source="PROJECT_FORM"
               compact
               whatsappUrl={whatsappUrl}
-              defaultMessage={`¡Hola! Quiero que se comuniquen conmigo para recibir más información sobre el proyecto ${project.name} que vi en ARIZ.`}
+              defaultMessage={`¡Hola! Quiero que se comuniquen conmigo para recibir más información sobre el proyecto ${project.name} que vi en INTI.`}
             />
           </div>
 
@@ -630,7 +630,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                 {project.agent.status === "APPROVED" ? (
                   <span className="mt-1 flex items-center gap-1 text-xs font-bold text-success">
                     <CheckIcon className="size-3.5" />
-                    Verificado por ARIZ
+                    Verificado por INTI
                   </span>
                 ) : null}
               </span>
@@ -646,7 +646,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                 <span className="block truncate text-xs text-muted">{agentTypeLabel}</span>
                 <span className="mt-1 flex items-center gap-1 text-xs font-bold text-success">
                   <CheckIcon className="size-3.5" />
-                  Publicado por ARIZ
+                  Publicado por INTI
                 </span>
               </span>
             </div>

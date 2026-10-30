@@ -27,7 +27,7 @@ import { LandDirectorySection } from "@/features/listings/components/land-direct
 const propertyMetadata: Metadata = buildMetadata({
   title: "Propiedades en venta y alquiler en Peru",
   description:
-    "Encuentra propiedades en venta y alquiler: casas, departamentos, terrenos, lotes, locales y proyectos inmobiliarios publicados en Ariz Proyectos.",
+    "Encuentra propiedades en venta y alquiler: casas, departamentos, terrenos, lotes, locales y proyectos inmobiliarios publicados en Inti Proyectos.",
   path: "/propiedades",
   keywords: [
     "propiedades en venta",
@@ -85,7 +85,7 @@ export async function generateMetadata({ searchParams }: PropertiesPageProps): P
   const params = await searchParams;
   if (valueOf(params.type) === "projects") return buildMetadata({
     title: "Proyectos inmobiliarios en Perú",
-    description: "Descubre los proyectos publicados por ARIZ e inmobiliarias del Perú. Filtra por ubicación, etapa y presupuesto, y explora sus ubicaciones en el mapa.",
+    description: "Descubre los proyectos publicados por INTI e inmobiliarias del Perú. Filtra por ubicación, etapa y presupuesto, y explora sus ubicaciones en el mapa.",
     path: "/propiedades?operation=buy&type=projects",
   });
   return propertyMetadata;

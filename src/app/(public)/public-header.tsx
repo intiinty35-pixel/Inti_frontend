@@ -24,10 +24,10 @@ export interface PublicHeaderProps {
 
 function Logo({ light }: { light: boolean }) {
   return (
-    <Link href={ROUTES.home} className="flex items-center gap-2.5" aria-label="Ariz Proyectos">
+    <Link href={ROUTES.home} className="flex items-center gap-2.5" aria-label="Inti Proyectos">
       <img
         src="/logo/logo.png"
-        alt="Ariz Proyectos"
+        alt="Inti Proyectos"
         className={cn("h-12 w-auto", light && "drop-shadow-[0_0_2px_rgb(255_255_255_/_0.95)]")}
       />
     </Link>

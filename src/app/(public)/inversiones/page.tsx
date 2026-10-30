@@ -8,9 +8,9 @@ import {
 import type { InvestmentOpportunity, InvestmentType } from "@/features/investment-opportunities/types";
 
 export const metadata = buildMetadata({
-  title: "Inversion Ariz | Oportunidades inmobiliarias",
+  title: "Inversion Inti | Oportunidades inmobiliarias",
   description:
-    "Evalua oportunidades de inversion inmobiliaria y contacta con un asesor de ARIZ.",
+    "Evalua oportunidades de inversion inmobiliaria y contacta con un asesor de INTI.",
   path: ROUTES.investments,
   keywords: [
     "inversion inmobiliaria",

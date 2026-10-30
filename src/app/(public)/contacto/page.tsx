@@ -56,7 +56,7 @@ const INFO = [
   },
   {
     label: "Facebook",
-    value: "Inmobiliaria Ariz Proyectos",
+    value: "Inmobiliaria Inti Proyectos",
     href: "https://web.facebook.com/Arizproyectos?locale=es_LA",
     Icon: Share2,
   },
@@ -74,7 +74,7 @@ export default function ContactPage() {
             Un solo aliado para distintas necesidades del ciclo inmobiliario.
           </h1>
           <p className="mt-5 max-w-2xl text-base font-semibold leading-7 text-white/78">
-            Ponte en contacto con Ariz Proyectos para identificar oportunidades,
+            Ponte en contacto con Inti Proyectos para identificar oportunidades,
             administrar procesos comerciales y materializar proyectos inmobiliarios.
           </p>
         </div>
@@ -87,7 +87,7 @@ export default function ContactPage() {
               Nuestra propuesta de valor
             </p>
             <h2 className="font-display text-3xl font-black text-brand">
-              Por que Ariz Proyectos
+              Por que Inti Proyectos
             </h2>
           </div>
 
@@ -119,7 +119,7 @@ export default function ContactPage() {
                   <p className="text-[11px] font-black uppercase tracking-[0.16em] text-accent">
                     Trabajemos juntos
                   </p>
-                  <h2 className="text-2xl font-black text-brand">ARIZ Proyectos</h2>
+                  <h2 className="text-2xl font-black text-brand">INTI Proyectos</h2>
                 </div>
               </div>
               <p className="mt-4 text-sm leading-7 text-muted">

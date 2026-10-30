@@ -14,7 +14,7 @@ import { buildMetadata } from "@/shared/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
   title: "Crear cuenta",
-  description: "Crea tu cuenta en Ariz Proyectos.",
+  description: "Crea tu cuenta en Inti Proyectos.",
   path: ROUTES.register,
 });
 

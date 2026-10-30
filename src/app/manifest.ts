@@ -2,15 +2,15 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Ariz Proyectos",
-    short_name: "Ariz",
+    name: "Inti Proyectos",
+    short_name: "Inti",
     description:
       "Portal inmobiliario para buscar propiedades en venta, alquileres, lotes, proyectos inmobiliarios y servicios inmobiliarios en Peru.",
     start_url: "/",
     scope: "/",
     display: "standalone",
     background_color: "#ffffff",
-    theme_color: "#111827",
+    theme_color: "#082a6b",
     categories: ["business", "real estate", "productivity"],
     lang: "es-PE",
     icons: [

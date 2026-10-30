@@ -3,52 +3,52 @@ import Link from "next/link";
 import { ArrowRightIcon } from "@/shared/ui";
 
 export const metadata: Metadata = {
-  title: "Terminos y condiciones | Ariz Inmobiliaria",
+  title: "Terminos y condiciones | Inti Inmobiliaria",
   description:
-    "Terminos y condiciones de uso de Ariz Inmobiliaria para propiedades, proyectos, inversiones, referidos y servicios inmobiliarios.",
+    "Terminos y condiciones de uso de Inti Inmobiliaria para propiedades, proyectos, inversiones, referidos y servicios inmobiliarios.",
 };
 
 const SECTIONS = [
   {
     title: "1. Aceptacion de los terminos",
     body: [
-      "Al navegar, registrarte, enviar formularios, publicar inmuebles, solicitar informacion o usar los servicios de Ariz Inmobiliaria, aceptas estos terminos y condiciones.",
+      "Al navegar, registrarte, enviar formularios, publicar inmuebles, solicitar informacion o usar los servicios de Inti Inmobiliaria, aceptas estos terminos y condiciones.",
       "Si no estas de acuerdo con alguna condicion, debes abstenerte de usar la plataforma o solicitar servicios mediante sus canales digitales.",
     ],
   },
   {
-    title: "2. Servicios de Ariz Inmobiliaria",
+    title: "2. Servicios de Inti Inmobiliaria",
     body: [
-      "Ariz Inmobiliaria brinda informacion, intermediacion, promocion, asesoria comercial y canales de contacto para compra, venta, alquiler, inversion, corretaje y desarrollo de proyectos inmobiliarios.",
+      "Inti Inmobiliaria brinda informacion, intermediacion, promocion, asesoria comercial y canales de contacto para compra, venta, alquiler, inversion, corretaje y desarrollo de proyectos inmobiliarios.",
       "La plataforma puede mostrar propiedades, proyectos, oportunidades de inversion, servicios, formularios, mapas, imagenes, precios referenciales y datos enviados por propietarios, asesores, desarrolladores o terceros autorizados.",
     ],
   },
   {
     title: "3. Informacion publicada",
     body: [
-      "Ariz procura mantener informacion clara y actualizada, pero los precios, areas, disponibilidad, condiciones comerciales, ubicaciones, imagenes, planos y caracteristicas pueden variar sin previo aviso.",
-      "Toda decision de compra, alquiler, inversion o contratacion debe ser confirmada directamente con un asesor de Ariz y, cuando corresponda, con la documentacion legal y tecnica respectiva.",
+      "Inti procura mantener informacion clara y actualizada, pero los precios, areas, disponibilidad, condiciones comerciales, ubicaciones, imagenes, planos y caracteristicas pueden variar sin previo aviso.",
+      "Toda decision de compra, alquiler, inversion o contratacion debe ser confirmada directamente con un asesor de Inti y, cuando corresponda, con la documentacion legal y tecnica respectiva.",
     ],
   },
   {
     title: "4. Registro, formularios y datos de contacto",
     body: [
       "El usuario declara que la informacion enviada mediante formularios es verdadera, actual, completa y que cuenta con autorizacion para compartirla.",
-      "Al enviar tus datos, autorizas a Ariz Inmobiliaria a contactarte por telefono, WhatsApp, correo electronico u otros medios para atender tu solicitud, coordinar visitas, enviar informacion comercial o dar seguimiento a procesos inmobiliarios.",
+      "Al enviar tus datos, autorizas a Inti Inmobiliaria a contactarte por telefono, WhatsApp, correo electronico u otros medios para atender tu solicitud, coordinar visitas, enviar informacion comercial o dar seguimiento a procesos inmobiliarios.",
     ],
   },
   {
     title: "5. Publicacion de propiedades y proyectos",
     body: [
       "Los usuarios que publiquen propiedades o proyectos son responsables de la veracidad de la informacion, titularidad, autorizaciones, imagenes, documentos y condiciones ofrecidas.",
-      "Ariz puede revisar, pausar, rechazar, editar o retirar publicaciones cuando detecte informacion incompleta, inconsistente, engañosa, duplicada, no autorizada o contraria a estos terminos.",
+      "Inti puede revisar, pausar, rechazar, editar o retirar publicaciones cuando detecte informacion incompleta, inconsistente, engañosa, duplicada, no autorizada o contraria a estos terminos.",
     ],
   },
   {
     title: "6. Referidos, puntos e incentivos",
     body: [
       "El programa de referidos permite registrar contactos interesados en servicios o productos inmobiliarios. Los puntos, beneficios o incentivos dependen de las reglas vigentes, validacion del referido y disponibilidad de recompensas.",
-      "Ariz puede verificar, aprobar, rechazar o ajustar referidos, puntos y canjes cuando exista informacion incorrecta, duplicidad, uso indebido o incumplimiento de las condiciones del programa.",
+      "Inti puede verificar, aprobar, rechazar o ajustar referidos, puntos y canjes cuando exista informacion incorrecta, duplicidad, uso indebido o incumplimiento de las condiciones del programa.",
     ],
   },
   {
@@ -61,28 +61,28 @@ const SECTIONS = [
   {
     title: "8. Responsabilidad del usuario",
     body: [
-      "El usuario se compromete a usar la plataforma de manera licita, respetuosa y sin afectar la seguridad, disponibilidad, reputacion o funcionamiento de Ariz Inmobiliaria.",
+      "El usuario se compromete a usar la plataforma de manera licita, respetuosa y sin afectar la seguridad, disponibilidad, reputacion o funcionamiento de Inti Inmobiliaria.",
       "Esta prohibido enviar informacion falsa, suplantar identidades, publicar contenido sin autorizacion, intentar acceder a cuentas ajenas o usar la plataforma para fines fraudulentos.",
     ],
   },
   {
     title: "9. Limitacion de responsabilidad",
     body: [
-      "Ariz Inmobiliaria no sera responsable por decisiones tomadas sin verificar informacion, por cambios realizados por terceros, por fallas de servicios externos o por negociaciones realizadas fuera de los canales formales de atencion.",
-      "La participacion de Ariz como plataforma, intermediario o asesor no reemplaza la revision legal, financiera, tecnica o tributaria que cada usuario deba realizar segun su caso.",
+      "Inti Inmobiliaria no sera responsable por decisiones tomadas sin verificar informacion, por cambios realizados por terceros, por fallas de servicios externos o por negociaciones realizadas fuera de los canales formales de atencion.",
+      "La participacion de Inti como plataforma, intermediario o asesor no reemplaza la revision legal, financiera, tecnica o tributaria que cada usuario deba realizar segun su caso.",
     ],
   },
   {
     title: "10. Proteccion de datos",
     body: [
-      "Ariz trata los datos personales enviados por los usuarios para atender solicitudes, gestionar contactos, prestar servicios, mejorar la experiencia y realizar comunicaciones relacionadas con sus actividades inmobiliarias.",
-      "El usuario puede solicitar actualizacion, rectificacion o eliminacion de sus datos mediante los canales oficiales de contacto de Ariz Inmobiliaria.",
+      "Inti trata los datos personales enviados por los usuarios para atender solicitudes, gestionar contactos, prestar servicios, mejorar la experiencia y realizar comunicaciones relacionadas con sus actividades inmobiliarias.",
+      "El usuario puede solicitar actualizacion, rectificacion o eliminacion de sus datos mediante los canales oficiales de contacto de Inti Inmobiliaria.",
     ],
   },
   {
     title: "11. Cambios en los terminos",
     body: [
-      "Ariz Inmobiliaria puede modificar estos terminos y condiciones cuando lo considere necesario. La version vigente sera la publicada en esta pagina.",
+      "Inti Inmobiliaria puede modificar estos terminos y condiciones cuando lo considere necesario. La version vigente sera la publicada en esta pagina.",
       "El uso continuo de la plataforma despues de una actualizacion implica la aceptacion de los cambios realizados.",
     ],
   },
@@ -97,11 +97,11 @@ export default function TermsPage() {
             Legal
           </p>
           <h1 className="mt-4 max-w-4xl font-display text-4xl font-black leading-tight sm:text-6xl">
-            Terminos y condiciones de Ariz Inmobiliaria
+            Terminos y condiciones de Inti Inmobiliaria
           </h1>
           <p className="mt-5 max-w-2xl text-base font-semibold leading-7 text-white/78">
             Condiciones aplicables al uso del sitio, formularios, publicaciones, servicios,
-            inversiones y programa de referidos de Ariz Inmobiliaria.
+            inversiones y programa de referidos de Inti Inmobiliaria.
           </p>
         </div>
       </section>
@@ -138,7 +138,7 @@ export default function TermsPage() {
             <h2 className="mt-2 text-xl font-black text-brand">Necesitas ayuda?</h2>
             <p className="mt-3 text-sm leading-6 text-muted">
               Si tienes dudas sobre estos terminos o sobre el uso de tus datos, contacta al
-              equipo de Ariz Inmobiliaria.
+              equipo de Inti Inmobiliaria.
             </p>
             <Link
               href="/contacto"

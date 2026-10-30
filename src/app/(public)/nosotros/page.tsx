@@ -30,8 +30,8 @@ const PRINCIPLES = [
 ] as const;
 
 const INSTITUTIONAL_INFO = [
-  { label: "Razon social", value: "Ariz Group S.A.C." },
-  { label: "Nombre comercial", value: "Ariz Proyectos" },
+  { label: "Razon social", value: "Inti Group S.A.C." },
+  { label: "Nombre comercial", value: "Inti Proyectos" },
   { label: "RUC", value: "20609623552" },
   { label: "Registro inmobiliario", value: "Codigo de agencia inmobiliaria N.º 02407-PJ-MVCS" },
 ] as const;
@@ -48,7 +48,7 @@ export default function AboutPage() {
             Construimos relaciones de confianza alrededor de cada propiedad, proyecto e inversion.
           </h1>
           <p className="mt-5 max-w-3xl text-base font-semibold leading-7 text-white/78">
-            Ariz Proyectos articula intermediacion inmobiliaria, promocion de proyectos y
+            Inti Proyectos articula intermediacion inmobiliaria, promocion de proyectos y
             soluciones vinculadas a construccion y desarrollo urbano.
           </p>
         </div>
@@ -65,12 +65,12 @@ export default function AboutPage() {
                 <p className="text-xs font-black uppercase tracking-[0.16em] text-accent">
                   Quienes somos
                 </p>
-                <h2 className="font-display text-3xl font-black text-brand">Ariz Proyectos</h2>
+                <h2 className="font-display text-3xl font-black text-brand">Inti Proyectos</h2>
               </div>
             </div>
 
             <p className="mt-6 text-sm leading-7 text-muted">
-              Ariz Proyectos es el nombre comercial de Ariz Group S.A.C., empresa de Tumbes
+              Inti Proyectos es el nombre comercial de Inti Group S.A.C., empresa de Tumbes
               dedicada al sector inmobiliario y de la construccion. Articulamos la
               intermediacion de inmuebles, la promocion y comercializacion de proyectos, y
               soluciones relacionadas con la ejecucion de obras y el desarrollo urbano.
@@ -87,7 +87,7 @@ export default function AboutPage() {
                 href="/contacto"
                 className="inline-flex h-11 items-center justify-center gap-2 rounded-card bg-brand px-5 text-sm font-black text-on-brand hover:bg-brand-hover"
               >
-                Contactar a ARIZ
+                Contactar a INTI
                 <ArrowRightIcon className="size-4" />
               </Link>
               <Link

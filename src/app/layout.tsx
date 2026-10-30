@@ -9,8 +9,8 @@ const logoUrl = absoluteUrl("/web_v/logo_web.png");
 export const metadata: Metadata = {
   metadataBase: new URL(env.siteUrl),
   title: {
-    default: "Ariz Proyectos | Inmobiliaria, propiedades y proyectos en Peru",
-    template: "%s | Ariz Proyectos",
+    default: "Inti Proyectos | Inmobiliaria, propiedades y proyectos en Peru",
+    template: "%s | Inti Proyectos",
   },
   description:
     "Portal inmobiliario para comprar, alquilar y vender propiedades, lotes y proyectos inmobiliarios en Peru. Servicios inmobiliarios, intermediacion, rentabilidad, plusvalia y comisiones.",
@@ -37,14 +37,14 @@ export const metadata: Metadata = {
     locale: "es_PE",
     url: env.siteUrl,
     siteName: SITE_NAME,
-    title: "Ariz Proyectos | Propiedades, alquileres y proyectos inmobiliarios",
+    title: "Inti Proyectos | Propiedades, alquileres y proyectos inmobiliarios",
     description:
       "Busca propiedades en venta y alquiler, proyectos de lotizacion, servicios inmobiliarios e inversiones con potencial de rentabilidad y plusvalia.",
     images: [{ url: logoUrl, width: 1200, height: 630, alt: SITE_NAME }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Ariz Proyectos | Inmobiliaria en Peru",
+    title: "Inti Proyectos | Inmobiliaria en Peru",
     description:
       "Propiedades en venta y alquiler, proyectos inmobiliarios, lotes, servicios y oportunidades de inversion.",
     images: [logoUrl],

@@ -5,8 +5,8 @@ import styles from "./map-page.module.css";
 import { getSession } from "@/features/auth/api/server";
 
 export const metadata = buildMetadata({
-  title: "Mapa de proyectos — ARIZ",
-  description: "Explora los proyectos de ARIZ, sus planos y lotes en el mapa interactivo.",
+  title: "Mapa de proyectos — INTI",
+  description: "Explora los proyectos de INTI, sus planos y lotes en el mapa interactivo.",
   path: ROUTES.map,
 });
 

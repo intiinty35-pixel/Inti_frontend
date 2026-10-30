@@ -92,7 +92,7 @@ export default function RewardsPage() {
     }
   }
 
-  // Si llegamos con un codigo en la URL (ej. desde el modal "Ariz Club"),
+  // Si llegamos con un codigo en la URL (ej. desde el modal "Inti Club"),
   // lo precargamos via el estado inicial y lo validamos una sola vez para aterrizar
   // directo en el catalogo. Se lee aqui (y no con `useSearchParams`) porque ese
   // hook provoca un bailout de CSR que remonta el arbol y reinicia el estado.
@@ -148,13 +148,13 @@ export default function RewardsPage() {
     if (!access?.referrer) return;
 
     const shareUrl = `${window.location.origin}${ROUTES.rewards}?code=${encodeURIComponent(access.referrer.code)}`;
-    const shareText = `Hola, ${access.referrer.name} te invita a descubrir nuevas oportunidades inmobiliarias con Ariz. Únete con mi código ${access.referrer.code} en Ariz. ${shareUrl}`;
+    const shareText = `Hola, ${access.referrer.name} te invita a descubrir nuevas oportunidades inmobiliarias con Inti. Únete con mi código ${access.referrer.code} en Inti. ${shareUrl}`;
 
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
         await navigator.share({
-          title: "Ariz Club",
-          text: `Hola, ${access.referrer.name} te invita a descubrir nuevas oportunidades inmobiliarias con Ariz.`,
+          title: "Inti Club",
+          text: `Hola, ${access.referrer.name} te invita a descubrir nuevas oportunidades inmobiliarias con Inti.`,
           url: shareUrl,
         });
         return;
@@ -183,7 +183,7 @@ export default function RewardsPage() {
           className="pointer-events-none absolute inset-0 -z-10 lg:hidden"
           style={{
             backgroundImage:
-              "linear-gradient(180deg, rgb(4 15 52 / 0.5) 0%, rgb(4 15 52 / 0.72) 100%)",
+              "linear-gradient(180deg, rgb(20 24 31 / 0.5) 0%, rgb(20 24 31 / 0.72) 100%)",
           }}
         />
         <span
@@ -191,7 +191,7 @@ export default function RewardsPage() {
           className="pointer-events-none absolute inset-0 -z-10 hidden lg:block"
           style={{
             backgroundImage:
-              "linear-gradient(90deg, rgb(4 15 52 / 0.88) 0%, rgb(4 15 52 / 0.76) 38%, rgb(4 15 52 / 0.45) 62%, rgb(4 15 52 / 0.2) 100%), linear-gradient(180deg, rgb(0 0 0 / 0.08) 0%, rgb(0 0 0 / 0.12) 100%)",
+              "linear-gradient(90deg, rgb(20 24 31 / 0.88) 0%, rgb(20 24 31 / 0.76) 38%, rgb(20 24 31 / 0.45) 62%, rgb(20 24 31 / 0.2) 100%), linear-gradient(180deg, rgb(0 0 0 / 0.08) 0%, rgb(0 0 0 / 0.12) 100%)",
           }}
         />
         <span aria-hidden className="absolute inset-x-0 bottom-0 h-1 bg-accent" />
@@ -232,7 +232,7 @@ export default function RewardsPage() {
                   Catálogo de recompensas
                 </h2>
                 <p className="mt-3 text-sm leading-relaxed text-muted sm:text-base">
-                  Accede a tus beneficios con el código de referente que recibiste de Ariz.
+                  Accede a tus beneficios con el código de referente que recibiste de Inti.
                 </p>
               </div>
 

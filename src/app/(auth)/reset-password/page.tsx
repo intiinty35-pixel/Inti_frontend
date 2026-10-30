@@ -6,7 +6,7 @@ import { buildMetadata } from "@/shared/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
   title: "Crear contraseña nueva",
-  description: "Elige una contraseña nueva para tu cuenta de Ariz Proyectos.",
+  description: "Elige una contraseña nueva para tu cuenta de Inti Proyectos.",
   path: ROUTES.resetPassword,
   noIndex: true,
 });

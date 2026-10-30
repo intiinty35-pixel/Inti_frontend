@@ -8,7 +8,7 @@ const TOPICS = [
   "Quiero información",
   "Comprar una propiedad",
   "Vender mi propiedad",
-  "Invertir con ARIZ",
+  "Invertir con INTI",
   "Publicar como profesional",
   "Soporte de cuenta",
 ];

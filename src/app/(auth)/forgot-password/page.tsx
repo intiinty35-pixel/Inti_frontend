@@ -6,7 +6,7 @@ import { buildMetadata } from "@/shared/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
   title: "Recuperar contraseña",
-  description: "Recupera el acceso a tu cuenta de Ariz Proyectos.",
+  description: "Recupera el acceso a tu cuenta de Inti Proyectos.",
   path: ROUTES.forgotPassword,
   noIndex: true,
 });
