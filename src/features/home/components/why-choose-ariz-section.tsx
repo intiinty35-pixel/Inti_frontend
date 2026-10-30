@@ -53,7 +53,7 @@ const REASONS: readonly Reason[] = [
   {
     key: "acompanamiento",
     title: "Te acompañamos",
-    description: "Un asesor de ARIZ te guía desde la búsqueda hasta la escritura.",
+    description: "Un asesor de INTI te guía desde la búsqueda hasta la escritura.",
     Icon: Handshake,
     backTitle: "Te guiamos en todo",
     backPoints: [
@@ -112,7 +112,7 @@ function FlipReasonCard({ reason }: { reason: Reason }) {
           </span>
 
           <div className="mt-2.5 min-w-0">
-            <h3 className="break-words text-sm leading-tight font-black tracking-tight text-[#071A5A] sm:text-base">
+            <h3 className="break-words text-sm leading-tight font-black tracking-tight text-[#082a6b] sm:text-base">
               {reason.title}
             </h3>
             <p className="mt-1 break-words text-[11px] leading-snug text-[#596273] sm:text-[12.5px] sm:leading-relaxed">
@@ -166,14 +166,14 @@ export function WhyChooseArizSection() {
             </p>
             <h2
               id="por-que-elegir-ariz"
-              className="mt-2 max-w-full text-xl leading-tight font-black tracking-tight text-[#071A5A] text-balance sm:text-3xl"
+              className="mt-2 max-w-full text-xl leading-tight font-black tracking-tight text-[#082a6b] text-balance sm:text-3xl"
             >
-              Por qué elegir Ariz
+              Por qué elegir Inti
             </h2>
           </div>
 
           <p className="text-sm leading-relaxed font-bold text-[#596273] lg:pb-0.5">
-            Comprar con ARIZ significa comprar con datos verificados y el respaldo de un asesor
+            Comprar con INTI significa comprar con datos verificados y el respaldo de un asesor
             que te acompaña hasta el final.
           </p>
         </div>

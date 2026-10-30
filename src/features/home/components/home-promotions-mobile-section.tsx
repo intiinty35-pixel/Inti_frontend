@@ -13,7 +13,7 @@ export function HomePromotionsMobileSection({ promotions }: { promotions: Curren
   return (
     <section
       aria-label="Promociones vigentes"
-      className="bg-[#F3F4F8] px-3 pt-[180px] pb-7 sm:px-4 sm:pt-[190px] lg:hidden"
+      className="bg-[#f1efea] px-3 pt-[180px] pb-7 sm:px-4 sm:pt-[190px] lg:hidden"
     >
       <div className="mx-auto w-full">
         <HeroPromotionsCarousel promotions={promotions} />

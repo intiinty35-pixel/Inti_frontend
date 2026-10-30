@@ -65,7 +65,7 @@ export function LeadForm({
   propertyId,
   projectId,
   source = "PROPERTY_FORM",
-  defaultMessage = "¡Hola! Quiero que se comuniquen conmigo por este inmueble que vi en ARIZ.",
+  defaultMessage = "¡Hola! Quiero que se comuniquen conmigo por este inmueble que vi en INTI.",
   compact = false,
   whatsappUrl,
 }: LeadFormProps) {

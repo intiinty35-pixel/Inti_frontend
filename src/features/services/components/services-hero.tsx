@@ -11,7 +11,7 @@ export function ServicesHero() {
       <div className="relative aspect-[12/5] w-full sm:aspect-[8/3]">
         <ServiceImage
           src={SERVICES_HERO_IMAGE}
-          alt="Servicios inmobiliarios de ARIZ Proyectos"
+          alt="Servicios inmobiliarios de INTI Proyectos"
           priority
           unoptimized
           className="size-full"

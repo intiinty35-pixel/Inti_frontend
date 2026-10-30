@@ -146,7 +146,7 @@ export function ConstructionServices() {
                 <div className="mt-5 grid grid-cols-2 gap-3">
                   <a
                     href={buildArizManagerWhatsappUrl(
-                      `Hola ARIZ Proyectos, quiero cotizar el servicio de ${service.title}.`,
+                      `Hola INTI Proyectos, quiero cotizar el servicio de ${service.title}.`,
                     )}
                     target="_blank"
                     rel="noreferrer"

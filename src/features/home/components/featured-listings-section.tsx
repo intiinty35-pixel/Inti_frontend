@@ -15,11 +15,11 @@ export async function FeaturedListingsSection() {
   }));
 
   return (
-    <section className="bg-[#F3F4F8] px-3 pt-3 pb-8 sm:px-4 lg:px-5 xl:px-6">
+    <section className="bg-[#f1efea] px-3 pt-3 pb-8 sm:px-4 lg:px-5 xl:px-6">
       <div className="mx-auto w-full">
         <div className="flex items-center justify-between gap-4">
           <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
-            <h2 className="text-[22px] leading-none font-black tracking-tight text-[#071A5A] sm:text-[26px]">
+            <h2 className="text-[22px] leading-none font-black tracking-tight text-[#082a6b] sm:text-[26px]">
               Propiedades destacadas
             </h2>
             <span aria-hidden className="hidden h-0.5 w-7 rounded-full bg-accent sm:block" />
@@ -30,7 +30,7 @@ export async function FeaturedListingsSection() {
 
           <Link
             href={ROUTES.properties}
-            className="flex shrink-0 items-center gap-2 text-[10px] font-black text-[#071A5A] transition-colors hover:text-brand sm:text-xs"
+            className="flex shrink-0 items-center gap-2 text-[10px] font-black text-[#082a6b] transition-colors hover:text-brand sm:text-xs"
           >
             Ver todas las propiedades
             <ArrowRightIcon className="size-3.5" />

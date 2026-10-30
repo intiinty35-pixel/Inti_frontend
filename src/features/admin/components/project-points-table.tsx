@@ -79,7 +79,7 @@ export function ProjectPointsTable({
     return (
       <div className="rounded-card border border-edge bg-surface-muted p-8 text-center">
         <p className="text-sm font-semibold text-muted">
-          No hay proyectos ARIZ disponibles para configurar puntos.
+          No hay proyectos INTI disponibles para configurar puntos.
         </p>
       </div>
     );

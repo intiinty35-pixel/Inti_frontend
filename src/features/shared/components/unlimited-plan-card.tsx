@@ -12,8 +12,8 @@ export interface UnlimitedPlanCardProps {
 export function UnlimitedPlanCard({ customerName, userType }: UnlimitedPlanCardProps) {
   const baseMessage =
     userType === "USER"
-      ? `Hola ARIZ, soy ${customerName}. Estoy interesado en el Plan Ilimitado para publicar propiedades sin límite. ¿Podrían cotizar?`
-      : `Hola ARIZ, soy ${customerName}. Como agente/inmobiliaria estoy interesado en el Plan Ilimitado para publicar propiedades sin límite. ¿Podrían cotizar?`;
+      ? `Hola INTI, soy ${customerName}. Estoy interesado en el Plan Ilimitado para publicar propiedades sin límite. ¿Podrían cotizar?`
+      : `Hola INTI, soy ${customerName}. Como agente/inmobiliaria estoy interesado en el Plan Ilimitado para publicar propiedades sin límite. ¿Podrían cotizar?`;
 
   const whatsappUrl = buildArizWhatsappUrl(baseMessage);
 
@@ -41,21 +41,21 @@ export function UnlimitedPlanCard({ customerName, userType }: UnlimitedPlanCardP
             Convenio directo
           </span>
           <span className="mt-1 block text-xl font-black text-amber-600">
-            Cotiza con ARIZ Group
+            Cotiza con INTI Group
           </span>
         </div>
 
         <ul className="mt-auto flex w-full flex-col gap-2 text-left text-xs text-ink">
           <li className="flex items-start gap-2">
-            <span className="mt-0.5 size-3.5 shrink-0 rounded-full bg-amber-400" />
+            <span className="mt-0.5 size-3.5 shrink-0 rounded-full bg-accent" />
             <span>Sin límite de publicaciones</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="mt-0.5 size-3.5 shrink-0 rounded-full bg-amber-400" />
-            <span>Negociación directa con ARIZ</span>
+            <span className="mt-0.5 size-3.5 shrink-0 rounded-full bg-accent" />
+            <span>Negociación directa con INTI</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="mt-0.5 size-3.5 shrink-0 rounded-full bg-amber-400" />
+            <span className="mt-0.5 size-3.5 shrink-0 rounded-full bg-accent" />
             <span>Precio personalizado para ti</span>
           </li>
         </ul>

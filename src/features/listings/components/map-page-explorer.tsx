@@ -47,7 +47,7 @@ function LotSheet({ lot, project, code, onClose }: { lot: PlanLot; project: List
       </div>
       <a
         className={styles.contactButton}
-        href={buildArizWhatsappUrl(`Hola ARIZ, me interesa el lote ${lot.code}${lot.block ? ` de la manzana ${lot.block}` : ''} del proyecto "${project.title}". ¿Me brindan más información?`)}
+        href={buildArizWhatsappUrl(`Hola INTI, me interesa el lote ${lot.code}${lot.block ? ` de la manzana ${lot.block}` : ''} del proyecto "${project.title}". ¿Me brindan más información?`)}
         target="_blank"
         rel="noreferrer"
       >
@@ -177,7 +177,7 @@ export function MapPageExplorer({ listings, loadError = false, mapToolbarHref }:
   const listSummary = <><h2><MapPin size={17} />{projects.length} proyectos</h2>{sortControl}</>;
   return <div className={styles.explorer}>
     <div ref={filtersRef} className={`${styles.filters} ${mapToolbarHref ? styles.brandedFilters : ''}`} aria-label="Filtros del mapa">
-      {mapToolbarHref && <Link href={ROUTES.home} className={styles.toolbarLogo} aria-label="ARIZ Proyectos, inicio"><img src="/logo/logo.png" alt="ARIZ Proyectos" /></Link>}
+      {mapToolbarHref && <Link href={ROUTES.home} className={styles.toolbarLogo} aria-label="INTI Proyectos, inicio"><img src="/logo/logo.png" alt="INTI Proyectos" /></Link>}
       <div className={styles.filterFields}>
       <div className={styles.operation} role="group" aria-label="Operación">{[['buy', 'Comprar'], ['rent', 'Alquilar']].map(([value, label]) => <button type="button" key={value} aria-pressed={operation === value} className={operation === value ? styles.filterActive : ''} onClick={() => { setOperation(value); resetSelection(); }}>{label}</button>)}</div>
       <MapFilterSelect label="Región" value={region} onChange={value => { setRegion(value); setZone(''); resetSelection(); }} options={[{ value: '', label: 'Todo el Perú' }, ...regions.map(value => ({ value, label: value }))]} />
@@ -218,7 +218,7 @@ export function MapPageExplorer({ listings, loadError = false, mapToolbarHref }:
               <div className={styles.contactBlock}>
                 <span className={styles.quickResponse}>Respuesta rápida</span>
                 <div className={styles.contactActions}>
-                  <a className={styles.contactButton} href={buildArizWhatsappUrl(`Hola ARIZ, vi el proyecto "${project.title}" en el mapa y quisiera más información.`)} target="_blank" rel="noreferrer"><WhatsappIcon className={styles.contactIcon} />Contactar</a>
+                  <a className={styles.contactButton} href={buildArizWhatsappUrl(`Hola INTI, vi el proyecto "${project.title}" en el mapa y quisiera más información.`)} target="_blank" rel="noreferrer"><WhatsappIcon className={styles.contactIcon} />Contactar</a>
                   <SharePropertyButton title={project.title} latitude={project.location.lat} longitude={project.location.lng} address={project.location.address} href={ROUTES.project(project.slug)} label="Compartir" kind="proyecto" className="w-full" buttonClassName="w-full justify-center" />
                 </div>
               </div>

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { submitPublicClaim, type ClaimInput, type ClaimResponse, type ClaimType } from "@/features/claims/api/client";
 
 const COMPANY_INFO = {
-  businessName: "ARIZ GROUP SOCIEDAD ANONIMA CERRADA",
+  businessName: "INTI GROUP SOCIEDAD ANONIMA CERRADA",
   ruc: "20609623552",
   address: "Jr. Huascar Nro. 310 Int. 01 Otr. Centro Tumbes, Tumbes, Peru",
 };
@@ -28,7 +28,7 @@ interface ClaimFormProps {
 
 function SectionTitle({ children }: { children: string }) {
   return (
-    <div className="border-b border-[#c9d1dc] bg-[#f2f3f5] px-3 py-2 text-[11px] font-black uppercase tracking-wide text-[#001b3f]">
+    <div className="border-b border-[#c9d1dc] bg-[#e5e2db] px-3 py-2 text-[11px] font-black uppercase tracking-wide text-[#082a6b]">
       {children}
     </div>
   );
@@ -46,8 +46,8 @@ function Row({
   hint?: string;
 }) {
   return (
-    <div className="grid border-b border-[#d9dee7] md:grid-cols-[205px_minmax(0,1fr)]">
-      <div className="border-[#d9dee7] bg-[#fafbfc] px-3 py-2.5 text-[11px] font-bold text-[#001b3f] md:border-r">
+    <div className="grid border-b border-[#e5e2db] md:grid-cols-[205px_minmax(0,1fr)]">
+      <div className="border-[#e5e2db] bg-[#f1efea] px-3 py-2.5 text-[11px] font-bold text-[#082a6b] md:border-r">
         {label}
         {required ? <span className="text-[#e3262e]"> *</span> : null}
         {hint ? <span className="mt-1 block text-[10px] font-semibold text-[#667085]">{hint}</span> : null}
@@ -58,9 +58,9 @@ function Row({
 }
 
 const inputClass =
-  "h-8 w-full rounded-[2px] border border-[#bfc8d6] bg-white px-2.5 text-[11px] text-[#001b3f] outline-none transition placeholder:text-[#98a2b3] focus:border-[#0b5ed7] focus:ring-1 focus:ring-[#0b5ed7]/20";
+  "h-8 w-full rounded-[2px] border border-[#bfc8d6] bg-white px-2.5 text-[11px] text-[#082a6b] outline-none transition placeholder:text-[#98a2b3] focus:border-[#0b3d91] focus:ring-1 focus:ring-[#0b3d91]/20";
 const textareaClass =
-  "min-h-16 w-full rounded-[2px] border border-[#bfc8d6] bg-white p-2.5 text-[11px] leading-5 text-[#001b3f] outline-none transition placeholder:text-[#98a2b3] focus:border-[#0b5ed7] focus:ring-1 focus:ring-[#0b5ed7]/20";
+  "min-h-16 w-full rounded-[2px] border border-[#bfc8d6] bg-white p-2.5 text-[11px] leading-5 text-[#082a6b] outline-none transition placeholder:text-[#98a2b3] focus:border-[#0b3d91] focus:ring-1 focus:ring-[#0b3d91]/20";
 
 function FieldError({ message }: { message?: string }) {
   return message ? <p className="mt-1 text-[11px] font-semibold text-[#e3262e]">{message}</p> : null;
@@ -145,20 +145,20 @@ export function ClaimForm({ onSuccess }: ClaimFormProps) {
   return (
     <form onSubmit={handleSubmit} className="overflow-hidden rounded-[5px] border border-[#bfc8d6] bg-white shadow-sm">
       <header className="relative border-b border-[#c9d1dc] px-3 py-6 text-center sm:px-5">
-        <img src="/logo/logo.png" alt="ARIZ" className="absolute right-3 top-4 h-5 w-auto sm:right-5 sm:top-5 sm:h-6" />
-        <h1 className="pr-16 text-[20px] font-black uppercase tracking-wide text-[#001b3f] sm:pr-20">Libro de Reclamaciones</h1>
+        <img src="/logo/logo.png" alt="INTI" className="absolute right-3 top-4 h-5 w-auto sm:right-5 sm:top-5 sm:h-6" />
+        <h1 className="pr-16 text-[20px] font-black uppercase tracking-wide text-[#082a6b] sm:pr-20">Libro de Reclamaciones</h1>
         <p className="mt-1 text-[11px] font-medium text-[#35445c]">(Ley N° 29571, Codigo de Proteccion y Defensa del Consumidor)</p>
       </header>
 
       <SectionTitle>I. Datos de la empresa</SectionTitle>
       <Row label="Razon Social">
-        <p className="text-[11px] font-semibold text-[#001b3f]">{COMPANY_INFO.businessName}</p>
+        <p className="text-[11px] font-semibold text-[#082a6b]">{COMPANY_INFO.businessName}</p>
       </Row>
       <Row label="RUC">
-        <p className="text-[11px] font-semibold text-[#001b3f]">{COMPANY_INFO.ruc}</p>
+        <p className="text-[11px] font-semibold text-[#082a6b]">{COMPANY_INFO.ruc}</p>
       </Row>
       <Row label="Direccion">
-        <p className="text-[11px] font-semibold text-[#001b3f]">{COMPANY_INFO.address}</p>
+        <p className="text-[11px] font-semibold text-[#082a6b]">{COMPANY_INFO.address}</p>
       </Row>
 
       <SectionTitle>II. Identificacion del consumidor</SectionTitle>
@@ -187,7 +187,7 @@ export function ClaimForm({ onSuccess }: ClaimFormProps) {
 
       <SectionTitle>III. Identificacion del bien contratado</SectionTitle>
       <Row label="Tipo de Bien" required>
-        <div className="flex flex-wrap gap-5 text-[11px] font-semibold text-[#001b3f]">
+        <div className="flex flex-wrap gap-5 text-[11px] font-semibold text-[#082a6b]">
           {["Producto", "Servicio"].map((option) => (
             <label key={option} className="inline-flex items-center gap-2">
               <input type="radio" name="assetType" checked={assetType === option} onChange={() => setAssetType(option)} />
@@ -208,7 +208,7 @@ export function ClaimForm({ onSuccess }: ClaimFormProps) {
 
       <SectionTitle>IV. Reclamo o Queja</SectionTitle>
       <Row label="Tipo" required>
-        <div className="flex flex-wrap gap-5 text-[11px] font-semibold text-[#001b3f]">
+        <div className="flex flex-wrap gap-5 text-[11px] font-semibold text-[#082a6b]">
           <label className="inline-flex items-center gap-2">
             <input type="radio" name="type" checked={type === "Claim"} onChange={() => setType("Claim")} />
             Reclamo
@@ -241,7 +241,7 @@ export function ClaimForm({ onSuccess }: ClaimFormProps) {
           {submitting ? "Enviando..." : "Enviar Reclamo"}
         </button>
         <p className="mt-3 text-center text-[11px] font-medium text-[#667085]">
-          Al enviar, acepta los terminos del Libro de Reclamaciones de ARIZ.
+          Al enviar, acepta los terminos del Libro de Reclamaciones de INTI.
         </p>
       </div>
     </form>

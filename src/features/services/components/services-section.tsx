@@ -470,11 +470,11 @@ export function ServicesSection() {
               <ServiceActions service="Corretaje inmobiliario" onOpen={setSelectedService} />
             </div>
             <div className="relative">
-              <ServiceImage src="/servicios/servicios.png" alt="Equipo comercial inmobiliario de ARIZ" className="h-80 rounded-2xl lg:h-[460px]" />
+              <ServiceImage src="/servicios/servicios.png" alt="Equipo comercial inmobiliario de INTI" className="h-80 rounded-2xl lg:h-[460px]" />
               <div className="absolute inset-x-5 bottom-5 rounded-card bg-white/92 p-5 shadow-[var(--shadow-card)] backdrop-blur">
                 <p className="text-[11px] font-black uppercase tracking-[0.16em] text-accent">Fuerza comercial</p>
                 <p className="mt-2 text-xl font-black text-brand">
-                  ARIZ puede asumir la venta y seguimiento comercial de tu proyecto.
+                  INTI puede asumir la venta y seguimiento comercial de tu proyecto.
                 </p>
               </div>
             </div>

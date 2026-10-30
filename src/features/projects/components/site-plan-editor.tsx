@@ -1945,7 +1945,7 @@ export function SitePlanEditor({ initial, initialShowLots = false, environmentOn
                 {plan.logoUrl
                   ? "Logo del proyecto cargado."
                   : "Carga el logo del proyecto para incluirlo en las fichas PDF."}{" "}
-                El logo de ARIZ se incluye automáticamente.
+                El logo de INTI se incluye automáticamente.
               </p>
             </section>
           )}

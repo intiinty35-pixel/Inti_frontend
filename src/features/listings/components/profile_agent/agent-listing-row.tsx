@@ -59,7 +59,7 @@ export function AgentListingRow({ listing, whatsappDigits }: AgentListingRowProp
   const locationLine = [listing.location.district, listing.location.department].filter(Boolean).join(", ");
   const href = ROUTES.property(listing.slug);
   const whatsappUrl = whatsappDigits
-    ? `https://wa.me/${whatsappDigits}?text=${encodeURIComponent(`Hola, vi "${listing.title}" en ARIZ y quisiera más información.`)}`
+    ? `https://wa.me/${whatsappDigits}?text=${encodeURIComponent(`Hola, vi "${listing.title}" en INTI y quisiera más información.`)}`
     : undefined;
 
   return (

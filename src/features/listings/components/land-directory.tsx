@@ -37,9 +37,9 @@ export function LandDirectory({ listings, operation, loadError }: { listings: Li
   function change<T>(setter: (value: T) => void, value: T) { setter(value); setPage(1); }
   function goToPage(value: number) { setPage(value); results.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
   return <div className={s.directory}>
-    <section className={s.hero} style={{ backgroundImage: "linear-gradient(90deg,#071333d9,#07133370),url('/inversiones/tumbes-coast-banner.png')" }}>
+    <section className={s.hero} style={{ backgroundImage: "linear-gradient(90deg,#082a6bd9,#082a6b70),url('/inversiones/tumbes-coast-banner.png')" }}>
       <div className={s.heroContent}><span className={s.heroBadge}><Trees size={13} />TERRENOS {operation === 'rent' ? 'EN ALQUILER' : 'EN VENTA'}</span><h1>El espacio para tu próximo proyecto <span>está aquí</span></h1><p>Descubre terrenos {operation === 'rent' ? 'en alquiler' : 'en venta'} en el Perú. Compara ubicación, metraje y precio para encontrar tu próxima oportunidad.</p><Link className={s.heroLink} href="#terrenos">Explorar terrenos<ArrowUpRight size={17} /></Link></div>
-      <div className={s.mapPreview}><MiniMap points={points} /><Link className={s.mapLink} href={ROUTES.map} aria-label="Abrir el mapa de ARIZ"><span><MapPin size={15} />Explorar en el mapa<ArrowUpRight size={15} /></span></Link></div>
+      <div className={s.mapPreview}><MiniMap points={points} /><Link className={s.mapLink} href={ROUTES.map} aria-label="Abrir el mapa de INTI"><span><MapPin size={15} />Explorar en el mapa<ArrowUpRight size={15} /></span></Link></div>
     </section>
     <div className={s.content}>
       <nav className={s.stages} aria-label="Filtrar terrenos por metraje">{[['', 'Todos los terrenos'], ['small', 'Hasta 200 m²'], ['medium', 'Más de 200 a 500 m²'], ['large', 'Más de 500 m²']].map(([value, label]) => <button key={value} type="button" aria-pressed={area === value} onClick={() => change(setArea, value)}><Ruler size={14} />{label}</button>)}</nav>

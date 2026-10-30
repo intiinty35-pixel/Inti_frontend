@@ -9,7 +9,7 @@ interface RewardsHeroProps {
   totalPoints: number;
   campaignPoints?: number;
   backgroundImageUrl?: string;
-  /** Accion (ej. boton "Referir con Ariz") que se muestra bajo el nombre. */
+  /** Accion (ej. boton "Referir con Inti") que se muestra bajo el nombre. */
   action?: ReactNode;
 }
 
@@ -79,7 +79,7 @@ export function RewardsHero({
               {totalPoints.toLocaleString("es-PE")}
             </p>
             <div className="mt-4 flex items-center justify-between border-t border-edge pt-3">
-              <span className="text-sm font-semibold text-brand">Puntos Ariz</span>
+              <span className="text-sm font-semibold text-brand">Puntos Inti</span>
               <span className="rounded-full bg-brand-soft px-2.5 py-1 text-[11px] font-bold text-brand">
                 DISPONIBLES
               </span>

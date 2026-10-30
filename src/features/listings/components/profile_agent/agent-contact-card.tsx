@@ -16,9 +16,9 @@ export function AgentContactCard({ name, phone, email, whatsappDigits }: AgentCo
 
   const maskedPhone = phone ? `${phone.slice(0, Math.max(3, phone.length - 5))}•••••` : null;
   const whatsappUrl = whatsappDigits
-    ? `https://wa.me/${whatsappDigits}?text=${encodeURIComponent(`Hola ${name}, vi tu perfil en ARIZ y quisiera más información.`)}`
+    ? `https://wa.me/${whatsappDigits}?text=${encodeURIComponent(`Hola ${name}, vi tu perfil en INTI y quisiera más información.`)}`
     : undefined;
-  const mailUrl = email ? `mailto:${email}?subject=${encodeURIComponent("Consulta desde ARIZ")}` : undefined;
+  const mailUrl = email ? `mailto:${email}?subject=${encodeURIComponent("Consulta desde INTI")}` : undefined;
 
   return (
     <div className="w-full rounded-card border border-edge bg-surface p-5 shadow-[var(--shadow-card)] lg:max-w-sm">

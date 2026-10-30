@@ -252,7 +252,7 @@ export function ProjectPublishWizard({
             ? `El proyecto se actualizó con ${payload?.lots.length ?? 0} lotes.`
             : `El proyecto quedó guardado con ${payload?.lots.length ?? 0} lotes. ${
                 adminMode
-                  ? "Puedes publicarlo desde Proyectos ARIZ sin consumir créditos."
+                  ? "Puedes publicarlo desde Proyectos INTI sin consumir créditos."
                   : "Puedes publicarlo desde Mis proyectos cuando tengas crédito disponible en tu suscripción."
               }`}
         </p>
@@ -265,7 +265,7 @@ export function ProjectPublishWizard({
           )}
           <Link href={adminMode ? ROUTES.panel.admin.projects : ROUTES.panel.owner.projects}>
             <Button type="button">
-              {adminMode ? "Ver proyectos ARIZ" : "Ver mis proyectos"}
+              {adminMode ? "Ver proyectos INTI" : "Ver mis proyectos"}
               <ArrowRightIcon className="size-4" />
             </Button>
           </Link>

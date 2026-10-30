@@ -17,7 +17,7 @@ export interface ServiceBlockProps {
  * Overlay azul marino sobre la foto: asegura contraste con la etiqueta flotante
  * y mantiene el tono de marca sin oscurecer de mas la imagen.
  */
-const PHOTO_OVERLAY = "linear-gradient(180deg, rgb(0 18 79 / 0.10) 0%, rgb(0 18 79 / 0.55) 100%)";
+const PHOTO_OVERLAY = "linear-gradient(180deg, rgb(11 61 145 / 0.10) 0%, rgb(11 61 145 / 0.55) 100%)";
 
 /** Altura fija por breakpoint: sin ella la foto colapsa y no se ve. */
 const PHOTO_BOX = "h-64 w-full rounded-2xl sm:h-72 lg:h-[400px] xl:h-[460px]";

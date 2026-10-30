@@ -498,7 +498,7 @@ export function InvestmentOpportunityForm({
               </label>
             </div>
 
-            <div className="flex min-h-56 flex-col rounded-xl border border-edge bg-[#F8F9FC] p-3">
+            <div className="flex min-h-56 flex-col rounded-xl border border-edge bg-[#f1efea] p-3">
               {form.galleryImages.length ? (
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                   {form.galleryImages.map((url, index) => (

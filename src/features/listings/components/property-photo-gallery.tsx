@@ -13,7 +13,7 @@ interface PropertyPhotoGalleryProps {
   children?: ReactNode;
 }
 
-const FALLBACK = "linear-gradient(135deg, #2a3b85 0%, #00124f 100%)";
+const FALLBACK = "linear-gradient(135deg, #0b3d91 0%, #082a6b 100%)";
 
 function background(image?: string) {
   return [image ? `url(${image})` : null, FALLBACK].filter(Boolean).join(", ");

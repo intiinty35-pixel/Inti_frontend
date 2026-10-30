@@ -17,6 +17,6 @@ export interface AdminProjectWithPoints {
 
 export async function listAdminProjectPoints(): Promise<AdminProjectWithPoints[]> {
   const response = await backendFetch('/admin/campaigns/project-points');
-  if (!response.ok) throw new Error('No se pudieron cargar los puntos por proyecto Ariz.');
+  if (!response.ok) throw new Error('No se pudieron cargar los puntos por proyecto Inti.');
   return response.json() as Promise<AdminProjectWithPoints[]>;
 }

@@ -11,12 +11,12 @@ export async function ArizProjectsSection() {
     .catch(() => []);
 
   return (
-    <section className="bg-[#F3F4F8] px-3 pt-3 pb-8 sm:px-4 lg:px-5 xl:px-6">
+    <section className="bg-[#f1efea] px-3 pt-3 pb-8 sm:px-4 lg:px-5 xl:px-6">
       <div className="mx-auto w-full">
         <div className="flex items-center justify-between gap-4">
           <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
-            <h2 className="text-[22px] leading-none font-black tracking-tight text-[#071A5A] sm:text-[26px]">
-              Proyectos Ariz
+            <h2 className="text-[22px] leading-none font-black tracking-tight text-[#082a6b] sm:text-[26px]">
+              Proyectos Inti
             </h2>
             <span aria-hidden className="hidden h-0.5 w-7 rounded-full bg-accent sm:block" />
             <p className="text-[10px] leading-none font-bold text-[#596273] sm:text-[11px]">
@@ -26,7 +26,7 @@ export async function ArizProjectsSection() {
 
           <Link
             href={ROUTES.projects}
-            className="flex shrink-0 items-center gap-2 text-[10px] font-black text-[#071A5A] transition-colors hover:text-brand sm:text-xs"
+            className="flex shrink-0 items-center gap-2 text-[10px] font-black text-[#082a6b] transition-colors hover:text-brand sm:text-xs"
           >
             Ver todos los proyectos
             <ArrowRightIcon className="size-3.5" />
@@ -43,7 +43,7 @@ export async function ArizProjectsSection() {
           </ul>
         ) : (
           <p className="mt-5 rounded-card border border-dashed border-edge bg-surface p-8 text-center text-sm text-muted">
-            Pronto veras aqui los proyectos publicados por ARIZ.
+            Pronto veras aqui los proyectos publicados por INTI.
           </p>
         )}
       </div>

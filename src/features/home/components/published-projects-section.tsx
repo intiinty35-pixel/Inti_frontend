@@ -10,11 +10,11 @@ export async function PublishedProjectsSection() {
   if (!page || projects.length === 0) return null;
 
   return (
-    <section className="bg-[#F3F4F8] px-3 pt-3 pb-8 sm:px-4 lg:px-5 xl:px-6">
+    <section className="bg-[#f1efea] px-3 pt-3 pb-8 sm:px-4 lg:px-5 xl:px-6">
       <div className="mx-auto w-full">
         <div className="flex items-center justify-between gap-4">
           <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
-            <h2 className="text-xl leading-none font-black tracking-tight text-[#071A5A] sm:text-2xl">
+            <h2 className="text-xl leading-none font-black tracking-tight text-[#082a6b] sm:text-2xl">
               Proyectos destacados
             </h2>
             <span aria-hidden className="hidden h-0.5 w-7 rounded-full bg-accent sm:block" />

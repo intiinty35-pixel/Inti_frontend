@@ -15,7 +15,7 @@ const pillars = [
 export function InvestmentGrowthBanner() {
   return (
     <section className="relative overflow-hidden bg-[linear-gradient(180deg,#071A5A_0%,#273E84_58%,var(--brand-soft)_100%)]">
-      <div className="relative min-h-[250px] w-full overflow-hidden bg-[#071A5A] sm:min-h-[230px] lg:min-h-[210px]">
+      <div className="relative min-h-[250px] w-full overflow-hidden bg-[#082a6b] sm:min-h-[230px] lg:min-h-[210px]">
         <div
           aria-hidden
           className="absolute inset-0 bg-cover bg-center"
@@ -32,9 +32,9 @@ export function InvestmentGrowthBanner() {
 
         <div className="relative z-10 mx-auto grid min-h-[250px] w-full max-w-[105rem] gap-6 px-4 py-7 text-white sm:min-h-[230px] sm:px-6 lg:min-h-[210px] lg:grid-cols-[1fr_auto] lg:items-center lg:px-8 xl:px-10">
           <div>
-            <p className="text-[11px] font-black tracking-[0.16em] text-accent uppercase">Invierte con Ariz</p>
+            <p className="text-[11px] font-black tracking-[0.16em] text-accent uppercase">Invierte con Inti</p>
             <h2 className="mt-2 max-w-xl text-2xl leading-tight font-black tracking-tight sm:text-3xl">
-              Haz crecer tu inversion con <span className="text-accent">Ariz Proyectos</span>
+              Haz crecer tu inversion con <span className="text-accent">Inti Proyectos</span>
             </h2>
             <p className="mt-2 max-w-xl text-sm font-semibold text-white/86">
               Terrenos, casas y departamentos en las mejores zonas del Perú y Tumbes.
@@ -42,7 +42,7 @@ export function InvestmentGrowthBanner() {
 
             <div className="mt-5 flex gap-2 sm:flex-wrap sm:gap-3">
               <Link
-                href={buildServiceWhatsappUrl("inversion con Ariz Proyectos")}
+                href={buildServiceWhatsappUrl("inversion con Inti Proyectos")}
                 target="_blank"
                 className="inline-flex h-11 min-w-0 flex-1 items-center justify-center gap-1 rounded-[6px] bg-[#25D366] px-2 text-[10px] whitespace-nowrap font-black text-white transition hover:bg-[#1fb85a] sm:flex-none sm:gap-2 sm:px-4 sm:text-sm"
               >
@@ -67,7 +67,7 @@ export function InvestmentGrowthBanner() {
                   href={ROUTES.investments}
                   className="group flex flex-col items-center gap-2 text-center transition hover:-translate-y-0.5"
                 >
-                  <span className="inline-flex size-12 items-center justify-center rounded-full border border-accent/80 bg-[#071A5A]/55 text-accent shadow-[0_10px_26px_rgb(0_0_0_/_0.18)] backdrop-blur-sm transition group-hover:bg-accent group-hover:text-on-accent">
+                  <span className="inline-flex size-12 items-center justify-center rounded-full border border-accent/80 bg-[#082a6b]/55 text-accent shadow-[0_10px_26px_rgb(0_0_0_/_0.18)] backdrop-blur-sm transition group-hover:bg-accent group-hover:text-on-accent">
                     <Icon className="size-5" />
                   </span>
                   <span className="text-[11px] font-black text-white group-hover:text-accent sm:text-xs">

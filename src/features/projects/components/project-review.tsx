@@ -105,7 +105,7 @@ export function ProjectReview({
               ? "Al confirmar se suben las imágenes nuevas y se guardan los cambios. Si el proyecto ya está publicado, seguirá visible con la información actualizada."
               : `Al confirmarlo se suben las imágenes y el proyecto se guarda como borrador. ${
                   adminMode
-                    ? "Desde Proyectos ARIZ podrás publicarlo directamente, sin consumir créditos."
+                    ? "Desde Proyectos INTI podrás publicarlo directamente, sin consumir créditos."
                     : "Podrás publicarlo después desde Mis proyectos si tienes crédito disponible en tu suscripción."
                 }`}
           </p>
@@ -255,7 +255,7 @@ export function ProjectReview({
             : editing
               ? "Guardar cambios"
               : adminMode
-                ? "Guardar borrador ARIZ"
+                ? "Guardar borrador INTI"
                 : "Guardar borrador"}
         </Button>
       </div>

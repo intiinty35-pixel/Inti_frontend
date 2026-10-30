@@ -23,12 +23,12 @@ export async function getOwnerPropertyForEditServer(id: string): Promise<Propert
   return (await response.json()) as PropertyEditData;
 }
 
-/** Propiedades ARIZ (publicadas desde el panel de administrador). */
+/** Propiedades INTI (publicadas desde el panel de administrador). */
 export async function getAdminPropertiesPagedServer(page: number, pageSize = 9): Promise<PagedListings> {
   const response = await backendFetch(`/admin/properties?page=${page}&pageSize=${pageSize}`);
 
   if (!response.ok) {
-    throw new Error(`No se pudieron cargar las propiedades de ARIZ (${response.status})`);
+    throw new Error(`No se pudieron cargar las propiedades de INTI (${response.status})`);
   }
 
   return (await response.json()) as PagedListings;

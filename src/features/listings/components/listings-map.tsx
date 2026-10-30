@@ -34,7 +34,7 @@ export interface ListingsMapProps {
 const DEFAULT_CENTER: [number, number] = [-12.046374, -77.042793];
 const DEFAULT_ZOOM = 11;
 
-/** Icono de ubicación de ARIZ; las miniaturas conservan los puntos compactos. */
+/** Icono de ubicación de INTI; las miniaturas conservan los puntos compactos. */
 function buildPriceIcon(_priceLabel: string, active: boolean, compact: boolean) {
   const size = compact ? 28 : active ? 48 : 42;
   const anchor = compact ? 14 : active ? 46 : 40;

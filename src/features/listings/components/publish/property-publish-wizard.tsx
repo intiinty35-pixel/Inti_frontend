@@ -1104,7 +1104,7 @@ export function PropertyPublishWizard({
               </div>
               <label className="flex items-start gap-2 text-sm text-muted">
                 <input name="acceptTerms" type="checkbox" className="mt-1" />
-                Acepto los terminos y condiciones de publicacion de ARIZ.
+                Acepto los terminos y condiciones de publicacion de INTI.
               </label>
             </section>
 

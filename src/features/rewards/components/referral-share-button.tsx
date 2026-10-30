@@ -39,13 +39,13 @@ export function ReferralShareButton({
   async function share() {
     const url = buildReferralUrl(code);
     const text = referrerName
-      ? `Hola, ${referrerName} te invita a descubrir nuevas oportunidades inmobiliarias con Ariz.`
-      : "Descubre nuevas oportunidades inmobiliarias con Ariz.";
-    const shareMessage = `Únete con mi código ${code} en Ariz. ${url}`;
+      ? `Hola, ${referrerName} te invita a descubrir nuevas oportunidades inmobiliarias con Inti.`
+      : "Descubre nuevas oportunidades inmobiliarias con Inti.";
+    const shareMessage = `Únete con mi código ${code} en Inti. ${url}`;
 
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
-        await navigator.share({ title: "Ariz Club", text, url });
+        await navigator.share({ title: "Inti Club", text, url });
         return;
       } catch (error) {
         if (error instanceof Error && error.name === "AbortError") return;

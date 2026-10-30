@@ -220,7 +220,7 @@ function LotModal({
   businessName?: string | null;
   onClose: () => void;
 }) {
-  const company = businessName || developer || "ARIZ Proyectos";
+  const company = businessName || developer || "INTI Proyectos";
 
   function printSheet() {
     const html = buildLotSheetHtml({
@@ -355,15 +355,15 @@ function buildLotSheetHtml({
   <style>
     @page{size:A4;margin:18mm}
     *{box-sizing:border-box}
-    body{font-family:Arial,sans-serif;margin:0;color:#0b1437;background:#f5f6fa}
-    .sheet{max-width:760px;margin:auto;background:white;border:1px solid #d9deea;border-radius:18px;overflow:hidden}
-    header{background:#071A5A;color:white;padding:28px}
+    body{font-family:Arial,sans-serif;margin:0;color:#082a6b;background:#f1efea}
+    .sheet{max-width:760px;margin:auto;background:white;border:1px solid #e5e2db;border-radius:18px;overflow:hidden}
+    header{background:#082a6b;color:white;padding:28px}
     .top{display:flex;align-items:center;justify-content:space-between;gap:20px}
     .logo{height:54px;width:auto;border-radius:8px;background:white;padding:7px}
-    h1{margin:18px 0 0;font-size:34px;line-height:1}.eyebrow{margin:0;color:#f2a900;font-weight:800;text-transform:uppercase;letter-spacing:.12em;font-size:12px}
+    h1{margin:18px 0 0;font-size:34px;line-height:1}.eyebrow{margin:0;color:#f5b731;font-weight:800;text-transform:uppercase;letter-spacing:.12em;font-size:12px}
     .meta{margin:10px 0 0;color:rgba(255,255,255,.78);font-weight:700}
-    table{width:100%;border-collapse:collapse}td{padding:15px 22px;border-top:1px solid #e5e7ef}td:first-child{color:#646d8a;font-weight:800;width:38%}td:last-child{font-weight:800}
-    footer{padding:20px 22px;color:#646d8a;font-size:12px;line-height:1.6;background:#f7f8fb}
+    table{width:100%;border-collapse:collapse}td{padding:15px 22px;border-top:1px solid #e5e2db}td:first-child{color:#646d8a;font-weight:800;width:38%}td:last-child{font-weight:800}
+    footer{padding:20px 22px;color:#646d8a;font-size:12px;line-height:1.6;background:#f1efea}
     @media print{body{background:white}.sheet{border-radius:0;border:0}}
   </style>
 </head>
@@ -376,11 +376,11 @@ function buildLotSheetHtml({
           <h1>${escapeHtml(isGroup ? "Grupo" : "Lote")} ${escapeHtml(lot.lotNumber)}</h1>
           <p class="meta">${escapeHtml(projectName)}</p>
         </div>
-        <img class="logo" src="${escapeHtml(logoUrl)}" alt="ARIZ" />
+        <img class="logo" src="${escapeHtml(logoUrl)}" alt="INTI" />
       </div>
     </header>
     <table><tbody>${rows.map(([label, value]) => `<tr><td>${escapeHtml(label)}</td><td>${escapeHtml(value)}</td></tr>`).join("")}</tbody></table>
-    <footer>Ficha generada desde ARIZ Proyectos. Valida disponibilidad y condiciones con el asesor antes de separar.</footer>
+    <footer>Ficha generada desde INTI Proyectos. Valida disponibilidad y condiciones con el asesor antes de separar.</footer>
   </main>
 </body>
 </html>`;

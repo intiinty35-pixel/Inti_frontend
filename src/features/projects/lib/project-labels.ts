@@ -35,8 +35,8 @@ const AGENT_TYPE_LABELS: Record<string, string> = {
   INDIVIDUAL_OWNER: "Propietario",
 };
 
-/** Quién.CREó el proyecto: ARIZ o un tercero del ecosistema. */
+/** Quién.CREó el proyecto: INTI o un tercero del ecosistema. */
 export function projectOriginLabel(project: ProjectApiSummary): string {
-  if (project.origin === "ADMIN") return "ARIZ";
+  if (project.origin === "ADMIN") return "INTI";
   return AGENT_TYPE_LABELS[project.agent?.type ?? ""] ?? "Externo";
 }

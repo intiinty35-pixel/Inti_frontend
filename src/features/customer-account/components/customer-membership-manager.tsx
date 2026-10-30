@@ -324,7 +324,7 @@ export function CustomerMembershipManager({
                     </div>
                   ) : (
                     <p className="rounded-card bg-warning/10 p-4 text-sm text-warning">
-                      Los datos de pago aún no están configurados. Contacta con ARIZ antes de realizar
+                      Los datos de pago aún no están configurados. Contacta con INTI antes de realizar
                       una transferencia.
                     </p>
                   )}
@@ -372,7 +372,7 @@ export function CustomerMembershipManager({
         <div className="mt-6 grid gap-4 sm:grid-cols-3">
           <a
             href={buildArizWhatsappUrl(
-              `Hola ARIZ, soy ${customerName}. Me gustaría conocer más sobre los convenios disponibles para miembros.`,
+              `Hola INTI, soy ${customerName}. Me gustaría conocer más sobre los convenios disponibles para miembros.`,
             )}
             target="_blank"
             rel="noreferrer"
@@ -381,7 +381,7 @@ export function CustomerMembershipManager({
             <span className="flex size-12 items-center justify-center rounded-full bg-[#25d366]/10 text-[#25d366] transition-colors group-hover:bg-[#25d366]/20">
               <WhatsappIcon className="size-6" />
             </span>
-            <span className="text-base font-bold text-ink">Convenio con Ariz</span>
+            <span className="text-base font-bold text-ink">Convenio con Inti</span>
             <span className="text-xs text-muted">
               Consulta convenios exclusivos para miembros
             </span>
@@ -389,7 +389,7 @@ export function CustomerMembershipManager({
 
           <a
             href={buildArizWhatsappUrl(
-              `Hola ARIZ, soy ${customerName}. Tengo una consulta sobre mi membresía y mis publicaciones.`,
+              `Hola INTI, soy ${customerName}. Tengo una consulta sobre mi membresía y mis publicaciones.`,
             )}
             target="_blank"
             rel="noreferrer"
@@ -406,7 +406,7 @@ export function CustomerMembershipManager({
 
           <a
             href={buildArizWhatsappUrl(
-              `Hola ARIZ, soy ${customerName}. Estoy interesado en el servicio de corretaje inmobiliario.`,
+              `Hola INTI, soy ${customerName}. Estoy interesado en el servicio de corretaje inmobiliario.`,
             )}
             target="_blank"
             rel="noreferrer"
@@ -415,7 +415,7 @@ export function CustomerMembershipManager({
             <span className="flex size-12 items-center justify-center rounded-full bg-[#25d366]/10 text-[#25d366] transition-colors group-hover:bg-[#25d366]/20">
               <WhatsappIcon className="size-6" />
             </span>
-            <span className="text-base font-bold text-ink">Corretaje con Ariz</span>
+            <span className="text-base font-bold text-ink">Corretaje con Inti</span>
             <span className="text-xs text-muted">
               Intermediación profesional en compraventas
             </span>

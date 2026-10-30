@@ -41,7 +41,7 @@ interface FormErrors {
 type ModalView = 'initial' | 'existing-code' | 'existing-form' | 'new-step1' | 'new-step2' | 'new-step3';
 type PaymentMethod = '' | 'bank' | 'yape' | 'plin';
 
-/** Opción solo de pantalla: se envía como COMPRA_LOTE con el proyecto Ariz elegido. */
+/** Opción solo de pantalla: se envía como COMPRA_LOTE con el proyecto Inti elegido. */
 const ARIZ_PROJECT_INTEREST = 'PROYECTO_ARIZ';
 const SKIP_PROJECT = 'SKIP';
 const allowsArizProject = (interest: string) => [ARIZ_PROJECT_INTEREST, 'INVERSION', 'COMPRA_LOTE'].includes(interest);
@@ -291,7 +291,7 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
     else if (!isValidPeruPhone(phone)) next.phone = 'Ingresa un celular de 9 dígitos (ej. 923 655 566).';
     if (!interest) next.interest = 'Selecciona qué desea hacer.';
     if (allowsArizProject(interest) && !projectChoice) {
-      next.project = 'Elige un proyecto Ariz o selecciona "Omitir proyecto".';
+      next.project = 'Elige un proyecto Inti o selecciona "Omitir proyecto".';
     }
     if (!availability) next.availability = 'Selecciona la disponibilidad.';
     return next;
@@ -301,7 +301,7 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
     const next: FormErrors = {};
     if (!interest) next.interest = 'Selecciona qué desea hacer.';
     if (allowsArizProject(interest) && !projectChoice) {
-      next.project = 'Elige un proyecto Ariz o selecciona "Omitir proyecto".';
+      next.project = 'Elige un proyecto Inti o selecciona "Omitir proyecto".';
     }
     if (!availability) next.availability = 'Selecciona la disponibilidad.';
     return next;
@@ -512,18 +512,18 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
     return <div className="flex flex-col gap-4 p-6">
       <button type="button" onClick={() => setChoosingProject(false)} className="w-fit text-sm font-bold text-brand hover:underline">? Volver a las opciones</button>
       <div className="flex flex-col gap-1.5">
-            <span className="text-[13px] font-semibold text-brand">Elige el proyecto Ariz</span>
-            <p className="text-xs text-muted">Al recomendar un proyecto Ariz, sus puntos adicionales se suman a los puntos normales según el estado del referido.</p>
+            <span className="text-[13px] font-semibold text-brand">Elige el proyecto Inti</span>
+            <p className="text-xs text-muted">Al recomendar un proyecto Inti, sus puntos adicionales se suman a los puntos normales según el estado del referido.</p>
             {loadingProjects ? (
               <p className="text-xs text-muted">Cargando proyectos...</p>
             ) : projectsError ? (
               <div className="text-xs">
-                <p role="alert" className="text-error">No se pudieron cargar los proyectos Ariz.</p>
+                <p role="alert" className="text-error">No se pudieron cargar los proyectos Inti.</p>
                 <button type="button" onClick={() => setProjectsRetry((value) => value + 1)} className="mt-1 font-bold text-brand underline">Reintentar</button>
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-2">
-                {arizProjects?.length === 0 && <p className="text-xs text-muted">No hay proyectos Ariz publicados disponibles. Puedes continuar con “Omitir proyecto”.</p>}
+                {arizProjects?.length === 0 && <p className="text-xs text-muted">No hay proyectos Inti publicados disponibles. Puedes continuar con “Omitir proyecto”.</p>}
                 {(arizProjects ?? []).map((project) => (
                   <button
                     key={project.id}
@@ -641,12 +641,12 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
           <div className="flex items-center justify-between gap-3 rounded-lg border border-brand/20 bg-brand-soft p-3">
             <div className="min-w-0">
               <p className="text-sm font-semibold text-brand">
-                {projectChoice === SKIP_PROJECT ? 'Sin proyecto Ariz' : arizProjects?.find((project) => project.id === projectChoice)?.name || 'Proyectos y lotes Ariz'}
+                {projectChoice === SKIP_PROJECT ? 'Sin proyecto Inti' : arizProjects?.find((project) => project.id === projectChoice)?.name || 'Proyectos y lotes Inti'}
               </p>
               {errors.project && <p className="mt-1 text-xs font-medium text-error">{errors.project}</p>}
             </div>
             <button type="button" onClick={() => setChoosingProject(true)} className="shrink-0 rounded-lg bg-brand px-3 py-2 text-xs font-bold text-on-brand hover:bg-brand-hover">
-              {projectChoice ? 'Cambiar' : 'Elegir lotes Ariz'}
+              {projectChoice ? 'Cambiar' : 'Elegir lotes Inti'}
             </button>
           </div>
         )}
@@ -699,7 +699,7 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
         <div className="flex shrink-0 items-start justify-between gap-3 border-b border-edge bg-brand p-4 sm:gap-4 sm:p-6">
           <div className="min-w-0 flex-1 text-center">
             <h2 id="referral-modal-title" className="font-display text-lg font-black leading-tight text-white sm:text-2xl">
-              Bienvenidos al Ariz Club, Refiere, Gana, Acumula y disfruta.
+              Bienvenidos al Inti Club, Refiere, Gana, Acumula y disfruta.
             </h2>
           </div>
           <button
@@ -740,7 +740,7 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
                   <KeyRound className="size-5 sm:size-6" aria-hidden />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-bold leading-snug text-ink sm:text-base">Soy miembro de Ariz Club</p>
+                  <p className="text-sm font-bold leading-snug text-ink sm:text-base">Soy miembro de Inti Club</p>
                 </div>
               </button>
               <button
@@ -752,7 +752,7 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
                   <UserRoundPlus className="size-5 sm:size-6" aria-hidden />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-bold leading-snug text-ink sm:text-base">Quiero inscribirme para ser miembro de Ariz Club</p>
+                  <p className="text-sm font-bold leading-snug text-ink sm:text-base">Quiero inscribirme para ser miembro de Inti Club</p>
                 </div>
               </button>
             </div>
@@ -1029,7 +1029,7 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
                 ) : null}
                 <div className="border-t border-edge pt-4">
                   <Input
-                    label="Coloque el código del asesor Ariz (opcional)"
+                    label="Coloque el código del asesor Inti (opcional)"
                     placeholder="APCOD-XXXXXXXX"
                     value={invitedByCode}
                     onChange={(e) => handleInvitedByCodeChange(e.target.value)}
@@ -1041,7 +1041,7 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
                         ? `Código válido — Miembro: ${validatedInviter.name}`
                         : validatingInviter
                           ? 'Verificando código...'
-                          : 'Si un miembro de Ariz te invitó, ingresa su código aquí.'
+                          : 'Si un miembro de Inti te invitó, ingresa su código aquí.'
                     }
                   />
                 </div>

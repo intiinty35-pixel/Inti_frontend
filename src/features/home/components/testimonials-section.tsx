@@ -39,7 +39,7 @@ const TESTIMONIALS: readonly Testimonial[] = [
   },
   {
     name: "Lucía Paredes",
-    role: "Alquiló su casa con ARIZ",
+    role: "Alquiló su casa con INTI",
     quote:
       "Publicar mi propiedad fue sencillo y en menos de dos semanas ya tenía visitas de buenos interesados. El equipo se encargó de la parte difícil.",
     rating: 5,
@@ -49,7 +49,7 @@ const TESTIMONIALS: readonly Testimonial[] = [
     name: "Jorge Salazar",
     role: "Compró un terreno familiar",
     quote:
-      "Buscamos terreno por mucho tiempo y ARIZ nos ubicó el ideal. Los papeles estaban claros y nos acompañaron hasta la notaría. Excelente experiencia.",
+      "Buscamos terreno por mucho tiempo y INTI nos ubicó el ideal. Los papeles estaban claros y nos acompañaron hasta la notaría. Excelente experiencia.",
     rating: 5,
     avatar: "https://i.pravatar.cc/140?img=59",
   },
@@ -73,7 +73,7 @@ const TESTIMONIALS: readonly Testimonial[] = [
     name: "Ana Guzmán",
     role: "Compró por primera vez",
     quote:
-      "Mi primera compra fue con ARIZ y me resolvieron todas las dudas. Lo único que desearía es más opciones de financiamiento, pero el resto fue perfecto.",
+      "Mi primera compra fue con INTI y me resolvieron todas las dudas. Lo único que desearía es más opciones de financiamiento, pero el resto fue perfecto.",
     rating: 4,
     avatar: "https://i.pravatar.cc/140?img=25",
   },
@@ -87,7 +87,7 @@ const TESTIMONIALS: readonly Testimonial[] = [
   },
   {
     name: "Diana Flores",
-    role: "Buscó casa con ARIZ",
+    role: "Buscó casa con INTI",
     quote:
       "Me ayudaron a comparar zonas y me presentaron opciones que no encontraba en otros portales. El asesor fue muy paciente con todas mis preguntas.",
     rating: 5,
@@ -214,14 +214,14 @@ export function TestimonialsSection() {
             <p className="text-[11px] font-bold tracking-[0.18em] text-accent uppercase">
               Testimonios
             </p>
-            <h2 className="mt-2 text-2xl leading-none font-black tracking-tight text-[#071A5A] sm:text-3xl">
+            <h2 className="mt-2 text-2xl leading-none font-black tracking-tight text-[#082a6b] sm:text-3xl">
               Lo que dicen nuestros clientes
             </h2>
           </div>
 
           <div className="flex items-center gap-5">
             <p className="max-w-sm text-sm leading-relaxed font-bold text-[#596273] lg:text-right">
-              Historias reales de quienes ya compraron, vendieron o invirtieron con ARIZ.
+              Historias reales de quienes ya compraron, vendieron o invirtieron con INTI.
             </p>
 
             <div className="flex shrink-0 items-center gap-2">

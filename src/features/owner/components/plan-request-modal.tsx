@@ -84,7 +84,7 @@ export function PlanRequestModal({ plan, onClose }: { plan: Plan; onClose: () =>
           <div className="mt-4 rounded-card border border-edge bg-brand-soft p-3 text-xs text-ink">
             <p className="font-semibold">Sigue estos pasos:</p>
             <ol className="mt-1 list-decimal pl-4">
-              <li>Paga el monto con Yape, Plin o una transferencia a la cuenta oficial de ARIZ.</li>
+              <li>Paga el monto con Yape, Plin o una transferencia a la cuenta oficial de INTI.</li>
               <li>Envía tu captura de pago más abajo.</li>
               <li>El agente valida el pago y se activan tus beneficios.</li>
             </ol>

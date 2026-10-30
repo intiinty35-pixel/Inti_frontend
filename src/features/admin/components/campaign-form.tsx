@@ -235,12 +235,12 @@ export function CampaignForm({
           Proyectos asociados
         </h3>
         <p className="mt-2 text-xs font-semibold text-muted">
-          Selecciona los proyectos ARIZ que formarán parte de esta campaña.
+          Selecciona los proyectos INTI que formarán parte de esta campaña.
         </p>
         {arizProjects.length === 0 ? (
           <div className="mt-4 rounded-card border border-edge bg-surface-muted p-6 text-center">
             <p className="text-sm font-semibold text-muted">
-              No hay proyectos ARIZ disponibles.
+              No hay proyectos INTI disponibles.
             </p>
           </div>
         ) : (

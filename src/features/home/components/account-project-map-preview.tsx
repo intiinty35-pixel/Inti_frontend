@@ -48,7 +48,7 @@ export function AccountProjectMapPreview({
       <div className="absolute inset-x-5 top-5 flex items-center justify-between rounded-[8px] bg-white/90 px-4 py-3 shadow-sm backdrop-blur">
         <span className="flex items-center gap-2 text-sm font-black text-brand">
           <MapIcon className="size-5 text-accent" />
-          Mapa ARIZ
+          Mapa INTI
         </span>
         <span className="text-[11px] font-bold text-muted">Proyectos</span>
       </div>

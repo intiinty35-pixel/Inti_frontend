@@ -39,7 +39,7 @@ const categories: readonly Category[] = [
   },
   {
     slug: "invertir",
-    label: "Invertir con Ariz",
+    label: "Invertir con Inti",
     subtitle: "Oportunidades con alta plusvalia.",
     href: ROUTES.investments,
     Icon: TrendingUp,
@@ -125,7 +125,7 @@ export function CategoryShowcase({ topSpacing = "hero" }: CategoryShowcaseProps)
   return (
     <section
       className={cn(
-        "overflow-hidden bg-[#F3F4F8] pb-7 lg:pt-32",
+        "overflow-hidden bg-[#f1efea] pb-7 lg:pt-32",
         topSpacing === "hero" ? "pt-[180px] sm:pt-[190px]" : "pt-7 sm:pt-8",
       )}
     >

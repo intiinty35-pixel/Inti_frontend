@@ -162,7 +162,7 @@ export function PlansView({
         <CardContent className="grid gap-4 p-5 sm:p-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
           <div>
             <p className="text-[11px] font-black uppercase tracking-[0.16em] text-accent">
-              Membresia Ariz
+              Membresia Inti
             </p>
             <h2 className="mt-1 font-display text-2xl font-black tracking-tight text-brand">
               {hasMembershipRequest ? "Renueva tu membresia subiendo tu voucher" : "Activa tu membresia por primera vez"}

@@ -13,7 +13,7 @@ export const PREVIEW_ARIZ_PROJECTS: readonly Project[] = [
     id: "prj-valle-verde",
     slug: "lotizacion-valle-verde",
     name: "Lotización Valle Verde",
-    developer: "Ariz Proyectos",
+    developer: "Inti Proyectos",
     description:
       "Lotización con veredas y areas verdes, a pocos minutos de la carretera Panamericana Sur.",
     propertyType: "land",
@@ -32,8 +32,8 @@ export const PREVIEW_ARIZ_PROJECTS: readonly Project[] = [
   {
     id: "prj-ariz-miraflores",
     slug: "edificio-ariz-miraflores",
-    name: "Edificio Ariz Miraflores",
-    developer: "Ariz Proyectos",
+    name: "Edificio Inti Miraflores",
+    developer: "Inti Proyectos",
     description: "Torres de departamentos con vista al parque y amenidades en azotea.",
     propertyType: "apartments",
     location: { department: "Lima", province: "Lima", district: "Miraflores" },
@@ -51,8 +51,8 @@ export const PREVIEW_ARIZ_PROJECTS: readonly Project[] = [
   {
     id: "prj-torres-ariz-san-borja",
     slug: "torres-ariz-san-borja",
-    name: "Torres Ariz San Borja",
-    developer: "Ariz Proyectos",
+    name: "Torres Inti San Borja",
+    developer: "Inti Proyectos",
     description: "Departamentos familiares con areas verdes privadas y areas comunes.",
     propertyType: "apartments",
     location: { department: "Lima", province: "Lima", district: "San Borja" },
@@ -70,8 +70,8 @@ export const PREVIEW_ARIZ_PROJECTS: readonly Project[] = [
   {
     id: "prj-lotes-ariz-punta-hermosa",
     slug: "lotes-ariz-punta-hermosa",
-    name: "Lotes Ariz Punta Hermosa",
-    developer: "Ariz Proyectos",
+    name: "Lotes Inti Punta Hermosa",
+    developer: "Inti Proyectos",
     description: "Lotes de playa con servicios básicos y acceso directo a la playa.",
     propertyType: "country-lots",
     location: { department: "Lima", province: "Huaura", district: "Punta Hermosa" },
@@ -89,8 +89,8 @@ export const PREVIEW_ARIZ_PROJECTS: readonly Project[] = [
   {
     id: "prj-torres-ariz-los-olivos",
     slug: "torres-ariz-los-olivos",
-    name: "Torres Ariz Los Olivos",
-    developer: "Ariz Proyectos",
+    name: "Torres Inti Los Olivos",
+    developer: "Inti Proyectos",
     description:
       "Torres de departamentos con areas verdes comunes,Coworking y acceso directo a la Panamericana Norte.",
     propertyType: "apartments",

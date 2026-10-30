@@ -51,8 +51,8 @@ export function ApartmentProjectViewer({ plan, center, currency, slug, accessCod
               const x = points.reduce((sum,p) => sum+p.x,0)/points.length*1000;
               const y = points.reduce((sum,p) => sum+p.y,0)/points.length*overviewHeight;
               return <g key={b.id} role="button" tabIndex={0} aria-label={`Ver ${b.name}`} aria-pressed={building.id===b.id} style={{cursor:"pointer"}} onClick={()=>selectBuilding(b.id)} onKeyDown={event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();selectBuilding(b.id);}}}>
-                <polygon points={points.map(p=>`${p.x*1000},${p.y*overviewHeight}`).join(" ")} fill={building.id===b.id?"#d49a19":"#2563eb"} fillOpacity={.22} stroke={building.id===b.id?"#a77713":"#123a68"} strokeWidth={3} vectorEffect="non-scaling-stroke"/>
-                <text x={x} y={y} textAnchor="middle" dominantBaseline="middle" fontSize={18} fontWeight={750} fill="#123a68" stroke="white" strokeWidth={4} paintOrder="stroke" pointerEvents="none">{b.name}</text>
+                <polygon points={points.map(p=>`${p.x*1000},${p.y*overviewHeight}`).join(" ")} fill={building.id===b.id?"#e0a21b":"#0b3d91"} fillOpacity={.22} stroke={building.id===b.id?"#a77713":"#0b3d91"} strokeWidth={3} vectorEffect="non-scaling-stroke"/>
+                <text x={x} y={y} textAnchor="middle" dominantBaseline="middle" fontSize={18} fontWeight={750} fill="#0b3d91" stroke="white" strokeWidth={4} paintOrder="stroke" pointerEvents="none">{b.name}</text>
               </g>;
             })}
           </svg></div>

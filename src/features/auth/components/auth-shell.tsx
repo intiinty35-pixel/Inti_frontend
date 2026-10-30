@@ -73,18 +73,18 @@ export function AuthShell({
                 "mb-6 flex items-center justify-center rounded-xl",
                 sideImage && "bg-white/95 px-5 py-3 shadow-lg",
               )}
-              aria-label="Ariz Proyectos"
+              aria-label="Inti Proyectos"
             >
               <Image
                 src="/logo/logo.png"
-                alt="Ariz Proyectos"
+                alt="Inti Proyectos"
                 width={280}
                 height={78}
                 className="h-14 w-auto sm:h-16"
                 style={{ width: "auto" }}
               />
             </Link>
-            <p className="mb-3 text-[11px] font-bold tracking-[0.18em] text-accent lg:mb-4">ARIZ PROYECTOS</p>
+            <p className="mb-3 text-[11px] font-bold tracking-[0.18em] text-accent lg:mb-4">INTI PROYECTOS</p>
             <h1 className="max-w-2xl text-3xl leading-[1.05] font-light tracking-tight sm:text-4xl lg:text-[3.2rem]">
               {headline}
             </h1>
@@ -102,7 +102,7 @@ export function AuthShell({
           </div>
 
           <p className="relative z-10 hidden text-[10px] text-white/45 lg:block">
-            © 2026 Ariz Proyectos
+            © 2026 Inti Proyectos
           </p>
 
           <div
@@ -150,11 +150,11 @@ export function AuthShell({
             <Link
               href={ROUTES.home}
               className="mb-6 flex w-full justify-center"
-              aria-label="Ariz Proyectos"
+              aria-label="Inti Proyectos"
             >
               <Image
                 src="/logo/logo.png"
-                alt="Ariz Proyectos"
+                alt="Inti Proyectos"
                 width={180}
                 height={50}
                 className="h-10 w-auto"

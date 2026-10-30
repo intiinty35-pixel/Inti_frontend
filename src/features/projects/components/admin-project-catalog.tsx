@@ -66,7 +66,7 @@ export function AdminProjectCatalog({ projects }: { projects: ProjectApiSummary[
                   <td data-label="Proyecto" className={s.projectName}><strong>{project.name}</strong></td>
                   <td data-label="Tipo de proyecto"><span className={s.badge}>{project.category === 'DEPARTAMENTOS' ? 'Departamentos' : 'Lotes'}</span></td>
                   <td data-label="Departamento">{project.location?.department?.trim() || 'Sin departamento'}</td>
-                  <td data-label="Origen">{project.origin === 'ADMIN' ? 'ARIZ' : 'Desarrollador'}</td>
+                  <td data-label="Origen">{project.origin === 'ADMIN' ? 'INTI' : 'Desarrollador'}</td>
                   <td data-label="Estado"><span className={s.badge}>{PROJECT_STATUS_LABELS[project.status]}</span></td>
                   <td data-label="Unidades">{project.lotsCount}</td>
                   <td data-label="Acciones" className={s.actionCell}>{actions(project)}</td>
@@ -83,7 +83,7 @@ export function AdminProjectCatalog({ projects }: { projects: ProjectApiSummary[
                 <span className={s.badge}>{PROJECT_STATUS_LABELS[project.status]}</span>
                 <span className={s.badge}>{project.category === 'DEPARTAMENTOS' ? 'Proyecto de departamentos' : 'Proyecto de lotes'}</span>
                 <h3>{project.name}</h3>
-                <p><MapPin size={14} />{project.location?.district || 'Sin distrito'} · {project.origin === 'ADMIN' ? 'ARIZ' : 'Desarrollador'}</p>
+                <p><MapPin size={14} />{project.location?.district || 'Sin distrito'} · {project.origin === 'ADMIN' ? 'INTI' : 'Desarrollador'}</p>
                 <p><Layers size={14} />{project.lotsCount} {project.category === 'DEPARTAMENTOS' ? 'departamentos registrados' : 'lotes registrados'}</p>
                 {actions(project)}
               </div>

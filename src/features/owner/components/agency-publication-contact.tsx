@@ -22,7 +22,7 @@ export function AgencyPublicationContact({
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState(DEFAULT_REASON);
   const [message, setMessage] = useState(
-    `Hola ARIZ, soy ${businessName}. Quiero coordinar la habilitacion de publicaciones para mi inmobiliaria.`,
+    `Hola INTI, soy ${businessName}. Quiero coordinar la habilitacion de publicaciones para mi inmobiliaria.`,
   );
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);

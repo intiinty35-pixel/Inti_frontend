@@ -102,7 +102,7 @@ export function WelcomeModal() {
                 Tu propiedad merece llegar más lejos.
               </h2>
               <p className="mt-3 text-xl font-bold text-accent sm:text-2xl">
-                Publícala gratis con Ariz.
+                Publícala gratis con Inti.
               </p>
               <p className="mt-4 text-base text-muted sm:text-lg">
                 Conectamos tu propiedad con nuevas oportunidades y potenciales compradores.
@@ -142,7 +142,7 @@ export function WelcomeModal() {
         <div
           role="dialog"
           aria-modal="true"
-          aria-label="Únete al Ariz Club"
+          aria-label="Únete al Inti Club"
           className="fixed inset-0 z-50 flex items-center justify-center bg-ink/55 p-4"
         >
           <button
@@ -163,7 +163,7 @@ export function WelcomeModal() {
 
             <div className="flex flex-1 flex-col justify-center bg-brand p-7 text-white sm:p-10">
               <p className="text-[11px] font-black tracking-[0.18em] text-accent uppercase">
-                Ariz Club
+                Inti Club
               </p>
               <h2 className="mt-3 font-display text-3xl leading-tight font-black sm:text-4xl">
                 Únete al club de ariz proyectos. Refiere, gana, acumula y disfruta.
@@ -178,7 +178,7 @@ export function WelcomeModal() {
                   onClick={joinClub}
                   className="h-12 rounded-card border border-accent bg-accent px-5 text-sm font-black text-brand shadow-[0_12px_28px_rgb(0_0_0_/_0.22)] transition-colors hover:bg-[#d99a00]"
                 >
-                  Únete al Ariz Club
+                  Únete al Inti Club
                 </button>
                 <button
                   type="button"

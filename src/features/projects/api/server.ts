@@ -76,7 +76,7 @@ export async function getOwnerProjectDetailServer(id: string): Promise<ProjectAp
   return projects.find((project) => project.id === id) ?? null;
 }
 
-/** Proyectos creados desde el panel ARIZ; status permite consultar borradores únicamente. */
+/** Proyectos creados desde el panel INTI; status permite consultar borradores únicamente. */
 export async function getAdminProjectsPagedServer(
   page: number,
   status?: ApiProjectStatus,
@@ -87,14 +87,14 @@ export async function getAdminProjectsPagedServer(
 
   const response = await backendFetch(`/admin/projects?${params.toString()}`);
   if (!response.ok) {
-    throw new Error(`No se pudieron cargar los proyectos de ARIZ (${response.status})`);
+    throw new Error(`No se pudieron cargar los proyectos de INTI (${response.status})`);
   }
 
   return (await response.json()) as ProjectApiPaged;
 }
 
 /**
- * Portafolio completo: proyectos de ARIZ y de los desarrolladores. A diferencia
+ * Portafolio completo: proyectos de INTI y de los desarrolladores. A diferencia
  * de `getAdminProjectsPagedServer`, el backend acepta `status` y lo aplica en el
  * `where`, asi que el filtro no se resuelve en el cliente.
  */
@@ -114,13 +114,13 @@ export async function getAdminAllProjectsPagedServer(
   return (await response.json()) as ProjectApiPaged;
 }
 
-/** Detalle completo de un proyecto creado desde el panel ARIZ, para editarlo. */
+/** Detalle completo de un proyecto creado desde el panel INTI, para editarlo. */
 export async function getAdminProjectDetailServer(id: string): Promise<ProjectApiDetail | null> {
   const response = await backendFetch(`/admin/projects/${encodeURIComponent(id)}`);
 
   if (response.status === 404) return null;
   if (!response.ok) {
-    throw new Error(`No se pudo cargar el proyecto de ARIZ (${response.status})`);
+    throw new Error(`No se pudo cargar el proyecto de INTI (${response.status})`);
   }
 
   return (await response.json()) as ProjectApiDetail;

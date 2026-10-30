@@ -44,7 +44,7 @@ function QuestionModal({
   }, [onClose]);
 
   const href = whatsappDigits
-    ? `https://wa.me/${whatsappDigits}?text=${encodeURIComponent(`Hola, vi "${propertyTitle}" en ARIZ. ${question}`)}`
+    ? `https://wa.me/${whatsappDigits}?text=${encodeURIComponent(`Hola, vi "${propertyTitle}" en INTI. ${question}`)}`
     : undefined;
 
   return createPortal(

@@ -21,13 +21,13 @@ export function ProjectPointsModal() {
 
   return <>
     <button type="button" onClick={() => { dialog.current?.showModal(); void loadProjects(); }} className="inline-flex h-10 items-center justify-center gap-2 rounded-card border border-brand px-4 text-sm font-bold text-brand hover:bg-brand-soft">
-      <Building2 className="size-4" aria-hidden="true" />Puntos por proyecto Ariz
+      <Building2 className="size-4" aria-hidden="true" />Puntos por proyecto Inti
     </button>
     <dialog ref={dialog} aria-labelledby="project-points-title" className="fixed inset-0 m-auto max-h-[85dvh] w-[calc(100%_-_2rem)] max-w-4xl overflow-y-auto rounded-card border border-edge bg-surface p-5 text-ink shadow-xl backdrop:bg-ink/50 sm:p-6">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-xs font-black uppercase tracking-wide text-accent">Puntos adicionales</p>
-          <h2 id="project-points-title" className="mt-1 text-2xl font-black text-brand">Puntos por proyecto Ariz</h2>
+          <h2 id="project-points-title" className="mt-1 text-2xl font-black text-brand">Puntos por proyecto Inti</h2>
           <p className="mt-2 text-sm text-muted">Asigna puntos por contactar, visitar y concretar. Se suman a los puntos normales cuando el referido elige este proyecto.</p>
           <p className="mt-1 text-xs text-muted">Los cambios se aplican a los próximos registros y estados alcanzados; los puntos ya otorgados se conservan.</p>
         </div>

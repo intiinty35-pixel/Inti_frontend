@@ -85,7 +85,7 @@ export async function AccountCtaSection() {
           <p className="text-[11px] font-black tracking-[0.18em] text-accent uppercase">
             Tu busqueda, siempre contigo
           </p>
-          <h2 className="mt-3 max-w-3xl text-2xl leading-tight font-black tracking-tight text-[#071A5A] sm:text-3xl lg:text-4xl">
+          <h2 className="mt-3 max-w-3xl text-2xl leading-tight font-black tracking-tight text-[#082a6b] sm:text-3xl lg:text-4xl">
             Encuentra tu proximo espacio sin perder ninguna oportunidad
           </h2>
           <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted sm:text-base">

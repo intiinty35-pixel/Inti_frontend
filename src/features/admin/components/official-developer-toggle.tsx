@@ -32,19 +32,19 @@ export function OfficialDeveloperToggle({
   return (
     <>
       <Button variant="secondary" size="xs" className="whitespace-nowrap px-2" onClick={() => setOpen(true)}>
-        {isOfficialDeveloper ? "Quitar Ariz" : "Dar Ariz"}
+        {isOfficialDeveloper ? "Quitar Inti" : "Dar Inti"}
       </Button>
       <ConfirmDialog
         open={open}
         title={
           isOfficialDeveloper
-            ? `¿Quitarle a ${name} el privilegio de "Proyectos Ariz"?`
-            : `¿Dar a ${name} el privilegio de "Proyectos Ariz"?`
+            ? `¿Quitarle a ${name} el privilegio de "Proyectos Inti"?`
+            : `¿Dar a ${name} el privilegio de "Proyectos Inti"?`
         }
         description={
           isOfficialDeveloper
-            ? "Sus proyectos dejarán de aparecer en la sección destacada de Proyectos Ariz del home."
-            : "Sus proyectos publicados aparecerán en la sección destacada de Proyectos Ariz del home, igual que los creados desde el panel de administrador."
+            ? "Sus proyectos dejarán de aparecer en la sección destacada de Proyectos Inti del home."
+            : "Sus proyectos publicados aparecerán en la sección destacada de Proyectos Inti del home, igual que los creados desde el panel de administrador."
         }
         confirmLabel={isOfficialDeveloper ? "Quitar privilegio" : "Dar privilegio"}
         variant={isOfficialDeveloper ? "danger" : "primary"}

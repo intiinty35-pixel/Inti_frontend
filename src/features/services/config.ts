@@ -20,7 +20,7 @@ export type ServiceIcon = ComponentType<SVGProps<SVGSVGElement>>;
 export const ARIZ_WHATSAPP_DIGITS = SHARED_ARIZ_WHATSAPP_DIGITS;
 
 export function buildServiceWhatsappUrl(serviceName: string): string {
-  const message = `Hola ARIZ Proyectos, quiero cotizar el servicio de ${serviceName} para mi proyecto inmobiliario`;
+  const message = `Hola INTI Proyectos, quiero cotizar el servicio de ${serviceName} para mi proyecto inmobiliario`;
   return `https://wa.me/${ARIZ_WHATSAPP_DIGITS}?text=${encodeURIComponent(message)}`;
 }
 
@@ -29,7 +29,7 @@ export const SERVICES_CONTACT_HREF = "#contacto";
 export const SERVICES_HERO_IMAGE = "/servicios/servicios.png";
 
 export const SERVICE_IMAGE_FALLBACK =
-  "linear-gradient(135deg, #0B1B5C 0%, #00124f 100%)";
+  "linear-gradient(135deg, #082a6b 0%, #082a6b 100%)";
 
 
 export interface ServiceItem {
@@ -59,7 +59,7 @@ export const SERVICES: readonly ServiceItem[] = [
     icon: SearchIcon,
     image: "/servcios/teerrenos).jpg",
     imageAlt:
-      "Equipo de ARIZ Proyectos revisando planos sobre un terreno durante la evaluación de un lote",
+      "Equipo de INTI Proyectos revisando planos sobre un terreno durante la evaluación de un lote",
   },
   {
     key: "legal",
@@ -105,7 +105,7 @@ export interface TrustLogo {
   icon: ServiceIcon;
 }
 
-/** Instituciones con las que ARIZ trabaja a diario. */
+/** Instituciones con las que INTI trabaja a diario. */
 export const TRUST_LOGOS: readonly TrustLogo[] = [
   { key: "sunat", label: "SUNAT", initials: "SU", icon: BuildingIcon },
   { key: "sunarp", label: "SUNARP", initials: "SR", icon: FileIcon },
