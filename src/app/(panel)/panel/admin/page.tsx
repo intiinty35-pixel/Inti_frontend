@@ -505,6 +505,7 @@ export default async function PanelAdminPage({ searchParams }: PanelAdminPagePro
             tone="bg-success/10 text-success"
             Icon={Home}
           />
+          {/* [OCULTO-DEMO A15] Dashboard: metrica Membresias
           <MetricCard
             label="Membresias"
             value={String(visibleMembershipTotal)}
@@ -512,6 +513,7 @@ export default async function PanelAdminPage({ searchParams }: PanelAdminPagePro
             tone="bg-warning/15 text-warning"
             Icon={Crown}
           />
+          */}
           <MetricCard
             label="Proyectos"
             value={String(publishedProjects.length)}
@@ -561,6 +563,7 @@ export default async function PanelAdminPage({ searchParams }: PanelAdminPagePro
             <ExcelLineChart data={combinedPublicationTrend} color="#4472c4" />
           </div>
         </Card>
+        {/* [OCULTO-DEMO A14] Dashboard: tarjeta Distribucion del sistema
         <Card className="min-h-80 p-5">
           <div className="flex items-center justify-between gap-3">
             <div>
@@ -573,6 +576,7 @@ export default async function PanelAdminPage({ searchParams }: PanelAdminPagePro
             <ProfileDistribution initialData={distribution} />
           </div>
         </Card>
+        */}
 
         </div>
 

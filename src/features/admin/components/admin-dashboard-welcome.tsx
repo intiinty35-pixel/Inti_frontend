@@ -7,13 +7,15 @@ const shortcuts = [
   { title: 'Gestionar proyectos', description: 'Planos, lotes y publicación', href: `${ROUTES.panel.admin.projects}/all`, Icon: Building2 },
   { title: 'Gestionar propiedades', description: 'Inmuebles, edición y disponibilidad', href: ROUTES.panel.admin.properties, Icon: Home },
   { title: 'Administrar cuentas', description: 'Usuarios y profesionales del sistema', href: ROUTES.panel.admin.accounts, Icon: Users },
+  /* [OCULTO-DEMO A16] Dashboard admin, Accesos rapidos: Revisar membresias, Gestionar campanas y Consultar reportes
   { title: 'Revisar membresías', description: 'Solicitudes, planes y suscripciones', href: ROUTES.panel.admin.subscriptions, Icon: Crown },
   { title: 'Gestionar campañas', description: 'Promociones y proyectos participantes', href: ROUTES.panel.admin.campaigns, Icon: Megaphone },
   { title: 'Consultar reportes', description: 'Resultados y seguimiento del sistema', href: ROUTES.panel.admin.reports, Icon: ChartNoAxesCombined },
+  */
 ];
 
 export function AdminDashboardWelcome({ name }: { name?: string }) {
-  return <header className={s.welcome}><div><p className={s.eyebrow}>Panel de administración · ARIZ</p><h1>{name?.trim() ? `Bienvenido, ${name.trim()}` : 'Bienvenido al panel de administración'}</h1><p className={s.description}>Esta es la actividad de tu sistema. Administra proyectos, propiedades y profesionales desde un solo lugar.</p></div><div className={s.welcomeActions}><span><ShieldCheck size={16} />Administrador</span><Link href={ROUTES.map}><MapPin size={17} />Ver mapa<ArrowUpRight size={15} /></Link></div></header>;
+  return <header className={s.welcome}><div><p className={s.eyebrow}>Panel de administración · INTI</p><h1>{name?.trim() ? `Bienvenido, ${name.trim()}` : 'Bienvenido al panel de administración'}</h1><p className={s.description}>Esta es la actividad de tu sistema. Administra proyectos, propiedades y profesionales desde un solo lugar.</p></div><div className={s.welcomeActions}><span><ShieldCheck size={16} />Administrador</span><Link href={ROUTES.map}><MapPin size={17} />Ver mapa<ArrowUpRight size={15} /></Link></div></header>;
 }
 
 export function AdminDashboardShortcuts() {

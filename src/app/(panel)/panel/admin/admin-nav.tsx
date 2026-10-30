@@ -75,6 +75,7 @@ const NAV_ITEMS: readonly AdminNavItem[] = [
     Icon: Building2,
     group: "operacion",
   },
+  /* [OCULTO-DEMO A1] Menu: Planes
   {
     key: "plans",
     label: "Planes",
@@ -82,6 +83,8 @@ const NAV_ITEMS: readonly AdminNavItem[] = [
     Icon: BadgeDollarSign,
     group: "operacion",
   },
+  */
+  /* [OCULTO-DEMO A2] Menu: Solicitudes de pago
   {
     key: "subscriptions",
     label: "Solicitudes de pago",
@@ -89,6 +92,8 @@ const NAV_ITEMS: readonly AdminNavItem[] = [
     Icon: ClipboardCheck,
     group: "operacion",
   },
+  */
+  /* [OCULTO-DEMO A3] Menu: Reportes
   {
     key: "reports",
     label: "Reportes",
@@ -96,6 +101,7 @@ const NAV_ITEMS: readonly AdminNavItem[] = [
     Icon: MessageSquareText,
     group: "operacion",
   },
+  */
   {
     key: "claims",
     label: "Recibo de Reclamos",
@@ -103,6 +109,7 @@ const NAV_ITEMS: readonly AdminNavItem[] = [
     Icon: BookOpen,
     group: "operacion",
   },
+  /* [OCULTO-DEMO A4] Menu: Promociones
   {
     key: "promotions",
     label: "Promociones",
@@ -110,6 +117,8 @@ const NAV_ITEMS: readonly AdminNavItem[] = [
     Icon: Megaphone,
     group: "operacion",
   },
+  */
+  /* [OCULTO-DEMO A5] Menu: Miembros y puntos
   {
     key: "referrals",
     label: "Miembros y puntos",
@@ -117,6 +126,8 @@ const NAV_ITEMS: readonly AdminNavItem[] = [
     Icon: Coins,
     group: "recompensas",
   },
+  */
+  /* [OCULTO-DEMO A6] Menu: Miembros (ranking)
   {
     key: "referral-ranking",
     label: "Miembros",
@@ -124,6 +135,8 @@ const NAV_ITEMS: readonly AdminNavItem[] = [
     Icon: Trophy,
     group: "recompensas",
   },
+  */
+  /* [OCULTO-DEMO A7] Menu: Control de referidos
   {
     key: "referral-records",
     label: "Control de referidos",
@@ -131,6 +144,8 @@ const NAV_ITEMS: readonly AdminNavItem[] = [
     Icon: UsersRound,
     group: "recompensas",
   },
+  */
+  /* [OCULTO-DEMO A8] Menu: Miembros por codigo
   {
     key: "referral-registrations",
     label: "Miembros por código",
@@ -138,6 +153,8 @@ const NAV_ITEMS: readonly AdminNavItem[] = [
     Icon: UserRound,
     group: "recompensas",
   },
+  */
+  /* [OCULTO-DEMO A9] Menu: Campanas
   {
     key: "campaigns",
     label: "Campañas",
@@ -145,6 +162,8 @@ const NAV_ITEMS: readonly AdminNavItem[] = [
     Icon: CalendarClock,
     group: "recompensas",
   },
+  */
+  /* [OCULTO-DEMO A10] Menu: Incentivos
   {
     key: "incentives",
     label: "Incentivos",
@@ -152,6 +171,8 @@ const NAV_ITEMS: readonly AdminNavItem[] = [
     Icon: Gift,
     group: "recompensas",
   },
+  */
+  /* [OCULTO-DEMO A11] Menu: Canjes
   {
     key: "redemptions",
     label: "Canjes",
@@ -159,6 +180,7 @@ const NAV_ITEMS: readonly AdminNavItem[] = [
     Icon: HandCoins,
     group: "recompensas",
   },
+  */
   {
     key: "all-projects",
     label: "Todos los proyectos",
@@ -166,6 +188,7 @@ const NAV_ITEMS: readonly AdminNavItem[] = [
     Icon: MapIcon,
     group: "portafolio",
   },
+  /* [OCULTO-DEMO A12] Menu: Codigos de acceso
   {
     key: "project-access-codes",
     label: "Códigos de acceso",
@@ -173,20 +196,22 @@ const NAV_ITEMS: readonly AdminNavItem[] = [
     Icon: KeyRound,
     group: "portafolio",
   },
+  */
   {
     key: "projects",
-    label: "Proyectos ARIZ",
+    label: "Proyectos INTI",
     href: ROUTES.panel.admin.projects,
     Icon: Boxes,
     group: "portafolio",
   },
   {
     key: "ariz-properties",
-    label: "Publicar propiedades Ariz",
+    label: "Publicar propiedades Inti",
     href: ROUTES.panel.admin.properties,
     Icon: House,
     group: "portafolio",
   },
+  /* [OCULTO-DEMO A13] Menu: Proyectos de inversion
   {
     key: "investment-opportunities",
     label: "Proyectos de inversión",
@@ -194,6 +219,7 @@ const NAV_ITEMS: readonly AdminNavItem[] = [
     Icon: ChartNoAxesCombined,
     group: "portafolio",
   },
+  */
 ] as const;
 
 function isActiveAdminRoute(pathname: string, href: string) {
