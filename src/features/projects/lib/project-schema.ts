@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { FieldPath } from "react-hook-form";
 import { PROJECT_AMENITIES } from "@/features/projects/data/project-catalogs";
-import { isConsistentLocation } from "@/shared/data/peru-locations";
+import { isConsistentLocation } from "@/shared/data/bolivia-locations";
 import {
   MAX_PLAN_FILES,
   MAX_PROJECT_IMAGES,

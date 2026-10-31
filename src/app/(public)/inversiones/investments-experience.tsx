@@ -29,7 +29,7 @@ const goals = [
 ];
 
 const formatMoney = (value: number) =>
-  new Intl.NumberFormat("es-PE", {
+  new Intl.NumberFormat("es-BO", {
     style: "currency",
     currency: "PEN",
     maximumFractionDigits: 0,

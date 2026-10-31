@@ -90,7 +90,7 @@ export default async function AdminClaimsPage({ searchParams }: { searchParams: 
                       <td className="px-4 py-3 font-semibold text-ink">{claim.fullName}</td>
                       <td className="px-4 py-3 text-muted">{TYPE_LABELS[claim.type] || claim.type}</td>
                       <td className="px-4 py-3 text-muted">{claim.assetType}</td>
-                      <td className="px-4 py-3 text-muted">{new Date(claim.createdAt).toLocaleDateString('es-PE')}</td>
+                      <td className="px-4 py-3 text-muted">{new Date(claim.createdAt).toLocaleDateString('es-BO')}</td>
                       <td className="px-4 py-3">
                         <Link
                           href={`${ROUTES.panel.admin.claims}/${claim.id}`}
@@ -125,7 +125,7 @@ export default async function AdminClaimsPage({ searchParams }: { searchParams: 
                   <span>{TYPE_LABELS[claim.type] || claim.type}</span>
                   <span className="hidden sm:inline">·</span>
                   <span>{claim.assetType}</span>
-                  <span className="ml-auto text-xs">{new Date(claim.createdAt).toLocaleDateString('es-PE')}</span>
+                  <span className="ml-auto text-xs">{new Date(claim.createdAt).toLocaleDateString('es-BO')}</span>
                 </div>
               </Link>
             ))}

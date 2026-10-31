@@ -3,7 +3,7 @@ import { BuildingIcon, ChartIcon, HomeIcon, SparkleIcon, WhatsappIcon } from "@/
 import { ROUTES } from "@/shared/config/routes";
 import { buildServiceWhatsappUrl } from "@/features/services/config";
 
-const BANNER_IMAGE = "/inversiones/tumbes-coast-banner.png";
+const BANNER_IMAGE = "/home/1.jpg";
 
 const pillars = [
   { label: "Vive", Icon: HomeIcon },
@@ -37,7 +37,7 @@ export function InvestmentGrowthBanner() {
               Haz crecer tu inversion con <span className="text-accent">Inti Proyectos</span>
             </h2>
             <p className="mt-2 max-w-xl text-sm font-semibold text-white/86">
-              Terrenos, casas y departamentos en las mejores zonas del Perú y Tumbes.
+              Terrenos, casas y departamentos en Bolivia.
             </p>
 
             <div className="mt-5 flex gap-2 sm:flex-wrap sm:gap-3">
@@ -78,7 +78,7 @@ export function InvestmentGrowthBanner() {
             </div>
 
             <p className="text-right text-2xl leading-none font-black tracking-tight whitespace-nowrap text-white sm:max-w-[220px] sm:text-3xl sm:whitespace-normal">
-              Tumbes,{" "}
+              Santa Cruz de la Sierra,{" "}
               <span className="text-accent sm:block">gran futuro</span>
             </p>
           </div>

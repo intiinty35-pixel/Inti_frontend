@@ -13,7 +13,7 @@ export interface MapPoint extends MapPointCard {
 
 export interface ListingsMapProps {
   points: readonly MapPoint[];
-  /** Centro/zoom inicial: el encuadre de Lima cuando no hay puntos. */
+  /** Centro/zoom inicial de Bolivia cuando no hay puntos. */
   center?: [number, number];
   zoom?: number;
   className?: string;
@@ -30,8 +30,8 @@ export interface ListingsMapProps {
   compactPins?: boolean;
 }
 
-/** Encuadre de respaldo: Lima metropolitana. */
-const DEFAULT_CENTER: [number, number] = [-12.046374, -77.042793];
+/** Encuadre de respaldo: Santa Cruz de la Sierra. */
+const DEFAULT_CENTER: [number, number] = [-17.783333, -63.182126];
 const DEFAULT_ZOOM = 11;
 
 /** Icono de ubicación de INTI; las miniaturas conservan los puntos compactos. */

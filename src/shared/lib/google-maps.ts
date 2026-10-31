@@ -93,7 +93,7 @@ export function loadGoogleMaps(key: string): Promise<MapsSdk> {
         fail();
         window.dispatchEvent(new Event("ariz-maps-auth-error"));
       };
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}&callback=arizMapsReady&loading=async&v=weekly&language=es&region=PE`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}&callback=arizMapsReady&loading=async&v=weekly&language=es&region=BO`;
       script.async = true;
       script.onerror = () => {
         clearTimeout(timer);

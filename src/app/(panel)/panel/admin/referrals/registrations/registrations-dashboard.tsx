@@ -42,16 +42,16 @@ const PAGE_SIZE = 12;
 const inputClass = "h-10 min-w-0 w-full rounded-card border border-edge bg-white px-3 text-sm font-normal outline-none focus:border-brand focus:ring-2 focus:ring-brand/15";
 const buttonClass = "inline-flex h-10 items-center justify-center gap-2 rounded-card border border-edge px-3 text-xs font-bold text-brand hover:border-brand disabled:opacity-40";
 
-function limaDate(daysAgo = 0) {
+function boliviaDate(daysAgo = 0) {
   return new Date(Date.now() - 5 * 3_600_000 - daysAgo * 86_400_000).toISOString().slice(0, 10);
 }
 
 function formatDate(value: string) {
-  return new Intl.DateTimeFormat("es-PE", {
+  return new Intl.DateTimeFormat("es-BO", {
     day: "2-digit",
     month: "short",
     year: "numeric",
-    timeZone: "America/Lima",
+    timeZone: "America/La_Paz",
   }).format(new Date(value));
 }
 
@@ -134,7 +134,7 @@ export function RegistrationReferralsDashboard() {
             </span>
             <div>
               <p className="text-[11px] font-black uppercase tracking-[0.16em] text-muted">Inscripciones</p>
-              <p className="mt-1 font-display text-3xl font-black text-brand">{data?.totals.registrations.toLocaleString("es-PE") ?? "–"}</p>
+              <p className="mt-1 font-display text-3xl font-black text-brand">{data?.totals.registrations.toLocaleString("es-BO") ?? "–"}</p>
             </div>
           </div>
         </div>
@@ -145,7 +145,7 @@ export function RegistrationReferralsDashboard() {
             </span>
             <div>
               <p className="text-[11px] font-black uppercase tracking-[0.16em] text-muted">Puntos otorgados</p>
-              <p className="mt-1 font-display text-3xl font-black text-brand">{data?.totals.points.toLocaleString("es-PE") ?? "–"}</p>
+              <p className="mt-1 font-display text-3xl font-black text-brand">{data?.totals.points.toLocaleString("es-BO") ?? "–"}</p>
             </div>
           </div>
         </div>
@@ -182,7 +182,7 @@ export function RegistrationReferralsDashboard() {
             <button
               type="button"
               key={label}
-              onClick={() => { setFrom(days === null ? "" : limaDate(days)); setTo(days === null ? "" : limaDate()); setPage(1); }}
+              onClick={() => { setFrom(days === null ? "" : boliviaDate(days)); setTo(days === null ? "" : boliviaDate()); setPage(1); }}
               className="shrink-0 whitespace-nowrap rounded-full border border-edge px-2 py-1.5 text-xs font-bold text-brand hover:border-brand sm:px-3 sm:py-1"
             >
               {label}
@@ -200,7 +200,7 @@ export function RegistrationReferralsDashboard() {
           )}
           {data && (
             <span className="ml-auto w-full text-right text-[11px] font-semibold text-muted sm:w-auto">
-              Actualizado {new Intl.DateTimeFormat("es-PE", { timeStyle: "medium", timeZone: "America/Lima" }).format(new Date(data.generatedAt))}
+              Actualizado {new Intl.DateTimeFormat("es-BO", { timeStyle: "medium", timeZone: "America/La_Paz" }).format(new Date(data.generatedAt))}
             </span>
           )}
         </div>
@@ -226,7 +226,7 @@ export function RegistrationReferralsDashboard() {
                   <td><Link className={styles.name} title={row.inviter.name} href={ROUTES.panel.admin.referrer(row.inviter.id)}>{row.inviter.name}</Link></td>
                   <td className={styles.code}>{row.inviter.code}</td>
                   <td><a className={styles.email} title={row.inviter.email} href={row.inviter.email ? `mailto:${row.inviter.email}` : undefined}>{row.inviter.email || '—'}</a></td>
-                  <td className={styles.number}>+{row.pointsAwarded.toLocaleString('es-PE')}</td>
+                  <td className={styles.number}>+{row.pointsAwarded.toLocaleString('es-BO')}</td>
                   <td>{formatDate(row.createdAt)}</td>
                 </tr>
               ))}

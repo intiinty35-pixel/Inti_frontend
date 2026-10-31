@@ -11,7 +11,7 @@ const IDENTITY = [
   {
     title: "Vision",
     icon: TrendingUp,
-    text: "Consolidarnos como una empresa inmobiliaria y constructora referente en el norte del Peru, con capacidad de expansion y una oferta integral de servicios.",
+    text: "Consolidarnos como una empresa inmobiliaria y constructora referente en Bolivia, con capacidad de expansion y una oferta integral de servicios.",
   },
   {
     title: "Compromiso",
@@ -70,7 +70,7 @@ export default function AboutPage() {
             </div>
 
             <p className="mt-6 text-sm leading-7 text-muted">
-              Inti Proyectos es el nombre comercial de Inti Group S.A.C., empresa de Tumbes
+              Inti Proyectos es el nombre comercial de Inti Group S.A.C., con operaciones en Santa Cruz de la Sierra, Bolivia
               dedicada al sector inmobiliario y de la construccion. Articulamos la
               intermediacion de inmuebles, la promocion y comercializacion de proyectos, y
               soluciones relacionadas con la ejecucion de obras y el desarrollo urbano.

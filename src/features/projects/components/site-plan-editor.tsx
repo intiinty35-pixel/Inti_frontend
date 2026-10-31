@@ -152,12 +152,12 @@ export function SitePlanEditor({ initial, initialShowLots = false, environmentOn
   const [centerRequest, setCenterRequest] = useState(0);
   const [history, setHistory] = useState<SitePlan[]>([]);
   const mapCenter = useRef<Point>({
-    lat: Number(initial.project.location?.latitude ?? -12.0464),
-    lng: Number(initial.project.location?.longitude ?? -77.0428),
+    lat: Number(initial.project.location?.latitude ?? -17.7833),
+    lng: Number(initial.project.location?.longitude ?? -63.1821),
   });
   const center = useMemo<Point>(() => ({
-    lat: Number(initial.project.location?.latitude ?? -12.0464),
-    lng: Number(initial.project.location?.longitude ?? -77.0428),
+    lat: Number(initial.project.location?.latitude ?? -17.7833),
+    lng: Number(initial.project.location?.longitude ?? -63.1821),
   }), [initial.project.location?.latitude, initial.project.location?.longitude]);
   const hasLocation =
     initial.project.location?.latitude != null &&
@@ -875,7 +875,7 @@ export function SitePlanEditor({ initial, initialShowLots = false, environmentOn
     setMessage("Lotes vaciados. Guarda el borrador para conservar el cambio o pulsa Deshacer para recuperarlos.");
   }
   const money = (value: number) =>
-    new Intl.NumberFormat("es-PE", {
+    new Intl.NumberFormat("es-BO", {
       style: "currency",
       currency: initial.project.currency,
     }).format(value);
@@ -967,7 +967,7 @@ export function SitePlanEditor({ initial, initialShowLots = false, environmentOn
               {dirty ? "Cambios sin guardar" : "Borrador guardado"}
             </span>
             {publishedAt &&
-              ` · Publicado ${new Date(publishedAt).toLocaleDateString("es-PE")}`}
+              ` · Publicado ${new Date(publishedAt).toLocaleDateString("es-BO")}`}
           </p>
         </div>
         <div className={s.actions}>
@@ -1962,7 +1962,7 @@ export function SitePlanEditor({ initial, initialShowLots = false, environmentOn
                   <strong>
                     {plan.lots
                       .reduce((n, l) => n + l.areaM2, 0)
-                      .toLocaleString("es-PE")}{" "}
+                      .toLocaleString("es-BO")}{" "}
                     m²
                   </strong>
                 </div>

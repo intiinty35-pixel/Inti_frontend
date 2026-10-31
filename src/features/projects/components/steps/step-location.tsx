@@ -10,18 +10,11 @@ import { CrosshairIcon, MapIcon, PinIcon } from "@/shared/ui/icons";
 import { GoogleMapsLinkField } from "@/shared/ui/google-maps-link-field";
 import { LocationPicker, preloadLocationPicker, type MapPoint } from "@/shared/ui/location-picker";
 import { buildAddressQuery, searchMapPlace } from "@/shared/lib/geo";
-import {
-  PERU_DEPARTMENTS,
-  PERU_PLACE_OPTIONS,
-  buildDistrictOptions,
-  buildProvinceOptions,
-  getDistricts,
-  parsePlaceValue,
-} from "@/shared/data/peru-locations";
+import { BOLIVIA_DEPARTMENTS } from "@/shared/data/bolivia-locations";
 import type { ProjectDraft } from "@/features/projects/types/draft";
 
-const DEPARTMENT_OPTIONS = PERU_DEPARTMENTS.map((department) => ({ value: department, label: department }));
-const FALLBACK_CENTER: MapPoint = { latitude: -12.046374, longitude: -77.042793 };
+const DEPARTMENT_OPTIONS = BOLIVIA_DEPARTMENTS.map((department) => ({ value: department, label: department }));
+const FALLBACK_CENTER: MapPoint = { latitude: -17.783333, longitude: -63.182126 };
 
 export function StepLocation() {
   const { setValue, clearErrors, getValues } = useFormContext<ProjectDraft>();
@@ -33,13 +26,8 @@ export function StepLocation() {
   const [mapError, setMapError] = useState("");
 
   const departmentError = useFieldError<ProjectDraft>("department");
-  const provinceError = useFieldError<ProjectDraft>("province");
-  const districtError = useFieldError<ProjectDraft>("district");
   const latError = useFieldError<ProjectDraft>("lat");
   const lngError = useFieldError<ProjectDraft>("lng");
-
-  const hasDepartment = Boolean(department);
-  const hasProvince = Boolean(province);
 
   useEffect(() => {
     void preloadLocationPicker();
@@ -52,28 +40,6 @@ export function StepLocation() {
 
   const hasPoint = typeof lat === "number" && Number.isFinite(lat) && Math.abs(lat) <= 90
     && typeof lng === "number" && Number.isFinite(lng) && Math.abs(lng) <= 180;
-
-  function applyRegion(next: Partial<Pick<ProjectDraft, "department" | "province" | "district">>) {
-    const patch: Array<[keyof ProjectDraft, string]> = [];
-
-    if (next.department !== undefined) {
-      patch.push(["department", next.department]);
-    }
-
-    if (next.province !== undefined) {
-      patch.push(["province", next.province]);
-    }
-
-    if (next.district !== undefined) {
-      patch.push(["district", next.district]);
-    }
-
-    for (const [field, value] of patch) {
-      setValue(field, value as never, { shouldDirty: true });
-    }
-
-    clearErrors(["department", "province", "district"]);
-  }
 
   function applyPoint(next: MapPoint) {
     setPlaceLabel("");
@@ -128,27 +94,8 @@ export function StepLocation() {
   return (
     <div className="flex flex-col gap-6">
       <FieldSet
-        legend="Buscar ubicación"
-        description="Escribe el distrito, la provincia o el departamento y elígelo de la lista."
-      >
-        <SearchCombobox
-          label="Buscar por nombre"
-          placeholder="Buscar distrito, provincia o departamento"
-          emptyLabel="Sin coincidencias. Usa los selectores de abajo."
-          options={PERU_PLACE_OPTIONS}
-          onValueChange={(option) => {
-            const location = parsePlaceValue(option.value);
-
-            if (location) {
-              applyRegion(location);
-            }
-          }}
-        />
-      </FieldSet>
-
-      <FieldSet
-        legend="Jerarquía administrativa"
-        description="Los tres niveles son obligatorios y deben corresponderse entre sí."
+        legend="Ubicación en Bolivia"
+        description="Selecciona el departamento e indica la provincia y el municipio."
         required
       >
         <div className="grid gap-4 sm:grid-cols-3">
@@ -159,27 +106,24 @@ export function StepLocation() {
             value={department ?? ""}
             error={departmentError}
             required
-            onValueChange={(option) => applyRegion({ department: option.value, province: "", district: "" })}
+            onValueChange={(option) => {
+              setValue("department", option.value, { shouldDirty: true });
+              setValue("province", "", { shouldDirty: true });
+              setValue("district", "", { shouldDirty: true });
+              clearErrors(["department", "province", "district"]);
+            }}
           />
-          <SearchCombobox
+          <TextField<ProjectDraft>
+            name="province"
             label="Provincia"
-            placeholder={hasDepartment ? "Selecciona la provincia" : "Elige antes el departamento"}
-            options={buildProvinceOptions(department ?? "")}
-            value={province ?? ""}
-            error={provinceError}
+            placeholder="Ej. Andrés Ibáñez"
             required
-            emptyLabel={hasDepartment ? "Sin provincias" : "Elige un departamento"}
-            onValueChange={(option) => applyRegion({ province: option.value, district: "" })}
           />
-          <SearchCombobox
-            label="Distrito"
-            placeholder={hasProvince ? "Selecciona el distrito" : "Elige antes la provincia"}
-            options={buildDistrictOptions(department ?? "", province ?? "")}
-            value={district ?? ""}
-            error={districtError}
+          <TextField<ProjectDraft>
+            name="district"
+            label="Municipio"
+            placeholder="Ej. Santa Cruz de la Sierra"
             required
-            emptyLabel={hasProvince ? "Sin distritos" : "Elige una provincia"}
-            onValueChange={(option) => applyRegion({ district: option.value })}
           />
         </div>
       </FieldSet>
@@ -258,7 +202,7 @@ export function StepLocation() {
           <NumericField<ProjectDraft>
             name="lat"
             label="Latitud"
-            placeholder="-12.0464"
+            placeholder="-17.7833"
             step="any"
             inputMode="decimal"
             error={latError}
@@ -266,7 +210,7 @@ export function StepLocation() {
           <NumericField<ProjectDraft>
             name="lng"
             label="Longitud"
-            placeholder="-77.0428"
+            placeholder="-63.1821"
             step="any"
             inputMode="decimal"
             error={lngError}
@@ -279,8 +223,7 @@ export function StepLocation() {
         <p>
           {district
             ? `${district}, ${province}, ${department}.`
-            : "Aún no eliges el distrito."}{" "}
-          {hasProvince ? `${getDistricts(department ?? "", province ?? "").length} distritos en ${province}.` : null}
+            : "Indica el municipio, la provincia y el departamento de Bolivia."}
         </p>
       </div>
     </div>

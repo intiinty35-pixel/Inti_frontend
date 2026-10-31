@@ -197,6 +197,6 @@ export function ApartmentFloorCanvas({ floor, outline = [], selected, currency =
         {blockFrame.corners.map((point,index)=><circle key={index} aria-label={`Ajustar esquina ${index+1} del bloque`} cx={point.x*width} cy={point.y*height} r={3.5/renderScale} fill="white" stroke="#0b3d91" strokeWidth={1} vectorEffect="non-scaling-stroke" style={{cursor:"nwse-resize"}} onClick={event=>event.stopPropagation()} onPointerDown={event=>beginBlock(event,index)} onPointerMove={moveBlock} onPointerUp={endBlock} onPointerCancel={endBlock} onLostPointerCapture={()=>{blockDrag.current=null;}}/>)}
       </g>}
     </svg>
-    {detail && <div className={s.apartmentTooltip} role="status"><strong>Departamento {detail.code}</strong><span>{detail.areaM2} m²</span><strong>{new Intl.NumberFormat("es-PE",{style:"currency",currency}).format(detail.price)}{detail.operation === "RENT" ? "/mes" : ""}</strong></div>}
+    {detail && <div className={s.apartmentTooltip} role="status"><strong>Departamento {detail.code}</strong><span>{detail.areaM2} m²</span><strong>{new Intl.NumberFormat("es-BO",{style:"currency",currency}).format(detail.price)}{detail.operation === "RENT" ? "/mes" : ""}</strong></div>}
   </div>;
 }

@@ -19,28 +19,28 @@ interface HeroSlide {
 /** Contenido de cada diapositiva del Hero, sincronizado con la imagen de fondo. */
 const HERO_SLIDES: readonly HeroSlide[] = [
   {
-    eyebrow: "Inmobiliaria Inti · Tumbes",
+    eyebrow: "Inmobiliaria Inti · Santa Cruz de la Sierra",
     title: "Tu próximo hogar",
-    titleLine2: "empieza en Tumbes.",
+    titleLine2: "empieza en Santa Cruz de la Sierra.",
     description:
       "Casas, departamentos, terrenos y proyectos con plusvalía. Compra, alquila o invierte con el respaldo de una inmobiliaria registrada.",
   },
   {
-    eyebrow: "Proyectos Inti · Tumbes",
+    eyebrow: "Proyectos Inti · Santa Cruz de la Sierra",
     title: "Invierte en desarrollos",
     titleLine2: "con alta plusvalía.",
     description:
       "Proyectos inmobiliarios diseñados para crecer junto a ti y tu familia, con entrega garantizada y plusvalía comprobada.",
   },
   {
-    eyebrow: "Terrenos · Tumbes",
+    eyebrow: "Terrenos · Santa Cruz de la Sierra",
     title: "Tu terreno,",
     titleLine2: "tu futuro.",
     description:
       "Lotes residenciales y comerciales con ubicación estratégica, servicios cercanos y posibilidad de financiamiento.",
   },
   {
-    eyebrow: "Asesoría Inmobiliaria · Tumbes",
+    eyebrow: "Asesoría Inmobiliaria · Santa Cruz de la Sierra",
     title: "Compra, vende o alquila",
     titleLine2: "con total confianza.",
     description:

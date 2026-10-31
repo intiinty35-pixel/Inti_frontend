@@ -24,7 +24,7 @@ export function ApartmentProjectViewer({ plan, center, currency, slug, accessCod
     setUnitId(id);
     requestAnimationFrame(() => document.getElementById("public-apartment-detail")?.scrollIntoView({ behavior: "smooth", block: "nearest" }));
   };
-  const money = (value: number) => new Intl.NumberFormat("es-PE", { style: "currency", currency }).format(value);
+  const money = (value: number) => new Intl.NumberFormat("es-BO", { style: "currency", currency }).format(value);
   const selectBuilding = (id: string) => {
     if (!plan.buildings?.some(b => b.id === id)) return;
     setBuildingId(id); setFloorId(undefined); setUnitId(undefined); setQuery("");

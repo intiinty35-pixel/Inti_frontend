@@ -9,11 +9,11 @@ const logoUrl = absoluteUrl("/web_v/logo_web.png");
 export const metadata: Metadata = {
   metadataBase: new URL(env.siteUrl),
   title: {
-    default: "Inti Proyectos | Inmobiliaria, propiedades y proyectos en Peru",
+    default: "Inti Proyectos | Inmobiliaria, propiedades y proyectos en Bolivia",
     template: "%s | Inti Proyectos",
   },
   description:
-    "Portal inmobiliario para comprar, alquilar y vender propiedades, lotes y proyectos inmobiliarios en Peru. Servicios inmobiliarios, intermediacion, rentabilidad, plusvalia y comisiones.",
+    "Portal inmobiliario para comprar, alquilar y vender propiedades, lotes y proyectos inmobiliarios en Bolivia. Servicios inmobiliarios, intermediacion, rentabilidad, plusvalia y comisiones.",
   applicationName: SITE_NAME,
   generator: "Next.js",
   referrer: "origin-when-cross-origin",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    locale: "es_PE",
+    locale: "es_BO",
     url: env.siteUrl,
     siteName: SITE_NAME,
     title: "Inti Proyectos | Propiedades, alquileres y proyectos inmobiliarios",
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Inti Proyectos | Inmobiliaria en Peru",
+    title: "Inti Proyectos | Inmobiliaria en Bolivia",
     description:
       "Propiedades en venta y alquiler, proyectos inmobiliarios, lotes, servicios y oportunidades de inversion.",
     images: [logoUrl],
@@ -66,7 +66,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     image: logoUrl,
     areaServed: {
       "@type": "Country",
-      name: "Peru",
+      name: "Bolivia",
     },
     knowsAbout: [
       "venta de propiedades",

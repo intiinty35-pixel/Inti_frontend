@@ -5,14 +5,14 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "Inti Proyectos",
     short_name: "Inti",
     description:
-      "Portal inmobiliario para buscar propiedades en venta, alquileres, lotes, proyectos inmobiliarios y servicios inmobiliarios en Peru.",
+      "Portal inmobiliario para buscar propiedades en venta, alquileres, lotes, proyectos inmobiliarios y servicios inmobiliarios en Bolivia.",
     start_url: "/",
     scope: "/",
     display: "standalone",
     background_color: "#ffffff",
     theme_color: "#082a6b",
     categories: ["business", "real estate", "productivity"],
-    lang: "es-PE",
+    lang: "es-BO",
     icons: [
       {
         src: "/web_v/logo_web.png",

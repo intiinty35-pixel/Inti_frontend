@@ -135,7 +135,7 @@ export default function MyRedemptionsPage() {
                 <div className="min-w-0 flex-1">
                   <p className="text-lg font-bold text-ink">{redemption.incentiveName}</p>
                   <p className="mt-1 text-sm text-muted">
-                    {new Date(redemption.requestedAt).toLocaleDateString("es-PE", {
+                    {new Date(redemption.requestedAt).toLocaleDateString("es-BO", {
                       year: "numeric",
                       month: "long",
                       day: "numeric",
@@ -147,7 +147,7 @@ export default function MyRedemptionsPage() {
                     Puntos
                   </p>
                   <p className="text-xl font-black text-brand">
-                    {redemption.pointsSpent.toLocaleString("es-PE")}
+                    {redemption.pointsSpent.toLocaleString("es-BO")}
                   </p>
                 </div>
                 <div>

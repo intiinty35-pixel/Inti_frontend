@@ -30,7 +30,7 @@ export function AdminLotDetail({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const money = (n: number) =>
-    new Intl.NumberFormat("es-PE", { style: "currency", currency }).format(n);
+    new Intl.NumberFormat("es-BO", { style: "currency", currency }).format(n);
   const image = plan.image;
   const imageHeight = image ? 1000 * image.heightM / image.widthM : 1000;
   const normalized = image ? lot.path.map((p) => geoToImage(p, image)) : [];

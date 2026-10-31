@@ -26,7 +26,7 @@ import { ProjectDirectorySection } from "@/features/projects/components/project-
 import { LandDirectorySection } from "@/features/listings/components/land-directory-section";
 
 const propertyMetadata: Metadata = buildMetadata({
-  title: "Propiedades en venta y alquiler en Peru",
+  title: "Propiedades en venta y alquiler en Bolivia",
   description:
     "Encuentra propiedades en venta y alquiler: casas, departamentos, terrenos, lotes, locales y proyectos inmobiliarios publicados en Inti Proyectos.",
   path: "/propiedades",
@@ -85,8 +85,8 @@ function toListingPoints(items: readonly Listing[]): MapPoint[] {
 export async function generateMetadata({ searchParams }: PropertiesPageProps): Promise<Metadata> {
   const params = await searchParams;
   if (valueOf(params.type) === "projects") return buildMetadata({
-    title: "Proyectos inmobiliarios en Perú",
-    description: "Descubre los proyectos publicados por INTI e inmobiliarias del Perú. Filtra por ubicación, etapa y presupuesto, y explora sus ubicaciones en el mapa.",
+    title: "Proyectos inmobiliarios en Bolivia",
+    description: "Descubre los proyectos publicados por INTI e inmobiliarias de Bolivia. Filtra por ubicación, etapa y presupuesto, y explora sus ubicaciones en el mapa.",
     path: "/propiedades?operation=buy&type=projects",
   });
   return propertyMetadata;

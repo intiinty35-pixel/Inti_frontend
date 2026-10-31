@@ -27,7 +27,7 @@ const STATUSES = [
 ];
 const inputClass = "h-10 min-w-0 w-full rounded-card border border-edge bg-white px-3 text-sm font-normal outline-none focus:border-brand focus:ring-2 focus:ring-brand/15";
 const buttonClass = "inline-flex h-10 items-center justify-center gap-2 rounded-card border border-edge px-3 text-xs font-bold text-brand hover:border-brand disabled:opacity-40";
-function limaDate(daysAgo = 0) {
+function boliviaDate(daysAgo = 0) {
   return new Date(Date.now() - 5 * 3_600_000 - daysAgo * 86_400_000).toISOString().slice(0, 10);
 }
 
@@ -85,7 +85,7 @@ export function ReferralRecordsDashboard() {
       if (!response.ok) throw new Error();
       const url = URL.createObjectURL(await response.blob());
       const link = document.createElement("a");
-      link.href = url; link.download = `referidos-inti-${limaDate()}.xlsx`;
+      link.href = url; link.download = `referidos-inti-${boliviaDate()}.xlsx`;
       document.body.appendChild(link); link.click(); link.remove(); URL.revokeObjectURL(url);
     } catch { setError("No se pudo exportar el Excel. Intenta nuevamente."); }
     finally { setExporting(false); }
@@ -118,7 +118,7 @@ export function ReferralRecordsDashboard() {
         {([['Referidos', data?.totals.referrals], ['En visita', data?.totals.visits], ['Concretados', data?.totals.completed], ['Puntos', data?.totals.points]] as const).map(([label, value]) => (
           <div key={label} className="rounded-card border border-edge bg-surface p-4 text-center shadow-[var(--shadow-card)]">
             <p className="text-[11px] font-black uppercase tracking-[0.16em] text-muted">{label}</p>
-            <p className="mt-1 font-display text-3xl font-black text-brand">{value?.toLocaleString('es-PE') ?? '–'}</p>
+            <p className="mt-1 font-display text-3xl font-black text-brand">{value?.toLocaleString('es-BO') ?? '–'}</p>
           </div>
         ))}
       </section>
@@ -155,11 +155,11 @@ export function ReferralRecordsDashboard() {
           <div className="flex max-w-full flex-nowrap items-center gap-1 overflow-x-auto sm:gap-2">
           <CalendarRange className="size-4 shrink-0 text-muted" />
           {([['Todo', null], ['Hoy', 0], ['7 días', 6], ['4 semanas', 27], ['3 meses', 89]] as const).map(([label, days]) => (
-            <button type="button" key={label} onClick={() => { setFrom(days === null ? '' : limaDate(days)); setTo(days === null ? '' : limaDate()); setPage(1); }} className="shrink-0 whitespace-nowrap rounded-full border border-edge px-2 py-1 text-xs font-bold text-brand hover:border-brand sm:px-3">{label}</button>
+            <button type="button" key={label} onClick={() => { setFrom(days === null ? '' : boliviaDate(days)); setTo(days === null ? '' : boliviaDate()); setPage(1); }} className="shrink-0 whitespace-nowrap rounded-full border border-edge px-2 py-1 text-xs font-bold text-brand hover:border-brand sm:px-3">{label}</button>
           ))}
           </div>
           {(search || from || to || status) && <button type="button" onClick={() => { setSearch(''); setFrom(''); setTo(''); setStatus(''); setPage(1); }} className="text-xs font-bold text-brand underline">Limpiar filtros</button>}
-          {data && <span className="ml-auto text-[11px] font-semibold text-muted">Actualizado {new Intl.DateTimeFormat('es-PE', { timeStyle: 'medium', timeZone: 'America/Lima' }).format(new Date(data.generatedAt))}</span>}
+          {data && <span className="ml-auto text-[11px] font-semibold text-muted">Actualizado {new Intl.DateTimeFormat('es-BO', { timeStyle: 'medium', timeZone: 'America/La_Paz' }).format(new Date(data.generatedAt))}</span>}
         </div>
         <p className="mt-3 text-xs text-muted">Las fechas corresponden al registro del referido. Los totales y el Excel incluyen todos los resultados del filtro.</p>
       </section>
@@ -196,8 +196,8 @@ export function ReferralRecordsDashboard() {
                   <td className="px-6 py-5"><span className={`inline-flex whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-bold ${row.status === 'OPERATION_COMPLETED' ? 'bg-success/10 text-success' : row.status === 'REJECTED' ? 'bg-error/10 text-error' : 'bg-brand-soft text-brand'}`}>{row.statusLabel}</span></td>
                   <td title={row.interestLabel}><span className={styles.cellText}>{row.interestLabel}</span></td><td title={row.availabilityLabel}><span className={styles.cellText}>{row.availabilityLabel}</span></td>
                   <td title={row.project?.name}><span className={styles.cellText}>{row.project?.name ?? 'Sin proyecto'}</span></td>
-                  <td className="px-6 py-5 font-black text-brand">{row.points.toLocaleString('es-PE')}</td>
-                  <td className="px-6 py-5 text-xs text-muted">{new Date(row.createdAt).toLocaleDateString('es-PE', { timeZone: 'America/Lima' })}</td>
+                  <td className="px-6 py-5 font-black text-brand">{row.points.toLocaleString('es-BO')}</td>
+                  <td className="px-6 py-5 text-xs text-muted">{new Date(row.createdAt).toLocaleDateString('es-BO', { timeZone: 'America/La_Paz' })}</td>
                   <td className="px-6 py-5"><RecordActions id={row.id} name={row.name} points={row.points} onUpdated={load} /></td>
                 </tr>
               ))}

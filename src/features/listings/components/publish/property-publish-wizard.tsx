@@ -189,14 +189,14 @@ export function PropertyPublishWizard({
   const [loading, setLoading] = useState(false);
   const [uploadedImages, setUploadedImages] = useState<Array<{ url: string; publicId: string }>>([]);
   const [uploading, setUploading] = useState(false);
-  const [location, setLocationState] = useState({ latitude: -12.046374, longitude: -77.042793 });
-  // El mapa arranca centrado en Lima; solo se envian coordenadas si el usuario fijo un punto.
+  const [location, setLocationState] = useState({ latitude: -17.783333, longitude: -63.182126 });
+  // El mapa arranca centrado en Santa Cruz de la Sierra; solo se envian coordenadas si el usuario fijo un punto.
   const [locationSet, setLocationSet] = useState(false);
   const setLocation = (point: { latitude: number; longitude: number }) => {
     setLocationState(point);
     setLocationSet(true);
   };
-  const [locationLabel, setLocationLabel] = useState("Lima, Peru");
+  const [locationLabel, setLocationLabel] = useState("Santa Cruz de la Sierra, Bolivia");
   const [locating, setLocating] = useState(false);
   const [publishedSlug, setPublishedSlug] = useState<string | null>(null);
   const config = useMemo(() => PROPERTY_FORM_CONFIG[propertyType], [propertyType]);

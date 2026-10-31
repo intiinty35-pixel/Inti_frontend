@@ -94,7 +94,7 @@ export default async function RedemptionDetailPage({
                     Fecha de solicitud
                   </p>
                   <p className="mt-1 text-sm font-semibold text-ink">
-                    {new Date(redemption.requestedAt).toLocaleString("es-PE")}
+                    {new Date(redemption.requestedAt).toLocaleString("es-BO")}
                   </p>
                 </div>
               </div>
@@ -133,7 +133,7 @@ export default async function RedemptionDetailPage({
                       Puntos utilizados
                     </p>
                     <p className="mt-1 text-2xl font-black text-brand">
-                      {redemption.pointsSpent.toLocaleString("es-PE")}
+                      {redemption.pointsSpent.toLocaleString("es-BO")}
                     </p>
                   </div>
                   {redemption.incentiveImageUrl && (
@@ -166,7 +166,7 @@ export default async function RedemptionDetailPage({
                   <p className="text-sm text-muted">{redemption.processedBy.email}</p>
                   {redemption.processedAt && (
                     <p className="mt-1 text-xs text-muted">
-                      {new Date(redemption.processedAt).toLocaleString("es-PE")}
+                      {new Date(redemption.processedAt).toLocaleString("es-BO")}
                     </p>
                   )}
                 </div>
@@ -187,7 +187,7 @@ export default async function RedemptionDetailPage({
                       <div>
                         <p className="text-sm font-semibold text-ink">{movement.description}</p>
                         <p className="mt-0.5 text-xs text-muted">
-                          {new Date(movement.createdAt).toLocaleString("es-PE")}
+                          {new Date(movement.createdAt).toLocaleString("es-BO")}
                         </p>
                       </div>
                       <p

@@ -25,7 +25,7 @@ interface Category {
 }
 
 const categories: readonly Category[] = [
-  { slug: "comprar", label: "Comprar propiedad", subtitle: "Encuentra tu hogar ideal en Tumbes.", href: `${ROUTES.properties}?operation=buy`, Icon: House },
+  { slug: "comprar", label: "Comprar propiedad", subtitle: "Encuentra tu hogar ideal en Santa Cruz de la Sierra.", href: `${ROUTES.properties}?operation=buy`, Icon: House },
   { slug: "proyectos", label: "Ver proyectos", subtitle: "Conoce nuestros desarrollos inmobiliarios.", href: ROUTES.projects, Icon: Construction },
   { slug: "invertir", label: "Invertir con Inti", subtitle: "Oportunidades con alta plusvalía.", href: ROUTES.investments, Icon: TrendingUp },
   { slug: "vender", label: "Vender mi propiedad", subtitle: "Publica y vende con el mejor respaldo.", href: ROUTES.registerProfessional, Icon: HandCoins },

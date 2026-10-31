@@ -1,4 +1,4 @@
-const integerFormatter = new Intl.NumberFormat("es-PE", { maximumFractionDigits: 0 });
+const integerFormatter = new Intl.NumberFormat("es-BO", { maximumFractionDigits: 0 });
 
 const CURRENCY_SYMBOLS: Record<string, string> = {
   PEN: "S/",

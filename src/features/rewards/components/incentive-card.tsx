@@ -88,7 +88,7 @@ export function IncentiveCard({ incentive }: IncentiveCardProps) {
                 Puntos
               </p>
               <p className="mt-0.5 text-sm font-black text-brand sm:mt-1 sm:text-lg">
-                {incentive.pointsRequired.toLocaleString("es-PE")}
+                {incentive.pointsRequired.toLocaleString("es-BO")}
               </p>
             </div>
             <div>
@@ -97,7 +97,7 @@ export function IncentiveCard({ incentive }: IncentiveCardProps) {
                 Stock
               </p>
               <p className={`mt-0.5 text-sm font-black sm:mt-1 sm:text-lg ${outOfStock ? "text-error" : "text-brand"}`}>
-                {incentive.stock.toLocaleString("es-PE")}
+                {incentive.stock.toLocaleString("es-BO")}
               </p>
             </div>
           </div>

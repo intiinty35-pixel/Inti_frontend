@@ -71,7 +71,7 @@ export function ProjectLotsBrowser({
           </p>
         </div>
         <div className="rounded-card border border-edge bg-surface px-4 py-3 text-sm font-black text-brand shadow-[var(--shadow-card)]">
-          {availableCount.toLocaleString("es-PE")} disponibles
+          {availableCount.toLocaleString("es-BO")} disponibles
         </div>
       </div>
 

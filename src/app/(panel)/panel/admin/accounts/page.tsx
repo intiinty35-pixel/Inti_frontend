@@ -78,7 +78,7 @@ interface AdminAccountsPageProps {
 
 function formatDate(value?: string | null) {
   if (!value) return "-";
-  return new Intl.DateTimeFormat("es-PE", { day: "2-digit", month: "short", year: "numeric" }).format(new Date(value));
+  return new Intl.DateTimeFormat("es-BO", { day: "2-digit", month: "short", year: "numeric" }).format(new Date(value));
 }
 
 function StatBox({ label, value }: { label: string; value: number }) {

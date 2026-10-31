@@ -31,17 +31,17 @@ interface RankingResponse {
 const REFRESH_MS = 15_000;
 const PAGE_SIZE = 10;
 
-/** Fecha de Lima (UTC-5) como YYYY-MM-DD, `daysAgo` dias atras. */
-function limaDate(daysAgo = 0) {
+/** Fecha de Bolivia (UTC-4) como YYYY-MM-DD, `daysAgo` dias atras. */
+function boliviaDate(daysAgo = 0) {
   return new Date(Date.now() - 5 * 3_600_000 - daysAgo * 86_400_000).toISOString().slice(0, 10);
 }
 
 const PRESETS = [
   { label: "Todo", from: "", to: "" },
-  { label: "Hoy", from: () => limaDate(0), to: () => limaDate(0) },
-  { label: "7 días", from: () => limaDate(6), to: () => limaDate(0) },
-  { label: "4 semanas", from: () => limaDate(27), to: () => limaDate(0) },
-  { label: "3 meses", from: () => limaDate(89), to: () => limaDate(0) },
+  { label: "Hoy", from: () => boliviaDate(0), to: () => boliviaDate(0) },
+  { label: "7 días", from: () => boliviaDate(6), to: () => boliviaDate(0) },
+  { label: "4 semanas", from: () => boliviaDate(27), to: () => boliviaDate(0) },
+  { label: "3 meses", from: () => boliviaDate(89), to: () => boliviaDate(0) },
 ] as const;
 
 function resolve(value: string | (() => string)) {
@@ -50,7 +50,7 @@ function resolve(value: string | (() => string)) {
 
 function formatDate(value: string | null) {
   if (!value) return "-";
-  return new Intl.DateTimeFormat("es-PE", { day: "2-digit", month: "short", year: "numeric" }).format(new Date(value));
+  return new Intl.DateTimeFormat("es-BO", { day: "2-digit", month: "short", year: "numeric" }).format(new Date(value));
 }
 
 export function RankingDashboard() {
@@ -114,7 +114,7 @@ export function RankingDashboard() {
       const url = window.URL.createObjectURL(await response.blob());
       const link = document.createElement("a");
       link.href = url;
-      link.download = `quienes-mas-refirieron-${limaDate(0)}.xlsx`;
+      link.download = `quienes-mas-refirieron-${boliviaDate(0)}.xlsx`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -244,7 +244,7 @@ export function RankingDashboard() {
           </div>
           {data ? (
             <span className="ml-auto w-full text-right text-[11px] font-semibold text-muted sm:w-auto">
-              Actualizado {new Intl.DateTimeFormat("es-PE", { timeStyle: "medium" }).format(new Date(data.generatedAt))}
+              Actualizado {new Intl.DateTimeFormat("es-BO", { timeStyle: "medium" }).format(new Date(data.generatedAt))}
             </span>
           ) : null}
         </div>
@@ -279,7 +279,7 @@ function Kpi({ label, value }: { label: string; value: number | undefined }) {
     <div className="rounded-card border border-edge bg-surface p-4 text-center shadow-[var(--shadow-card)]">
       <p className="text-[11px] font-black uppercase tracking-[0.16em] text-muted">{label}</p>
       <p className="mt-1 font-display text-3xl font-black tracking-tight text-brand">
-        {value === undefined ? "–" : value.toLocaleString("es-PE")}
+        {value === undefined ? "–" : value.toLocaleString("es-BO")}
       </p>
     </div>
   );

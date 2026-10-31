@@ -10,7 +10,7 @@ const VALUE_PROPS = [
   },
   {
     title: "Conocimiento del mercado regional",
-    text: "Desarrollamos nuestra actividad desde Tumbes, con cercania al entorno local y sus oportunidades.",
+    text: "Desarrollamos nuestra actividad desde Santa Cruz de la Sierra, con cercania al entorno local y sus oportunidades.",
     Icon: MapPin,
   },
   {
@@ -38,20 +38,20 @@ const VALUE_PROPS = [
 const INFO = [
   {
     label: "Oficina",
-    value: "Calle Huascar 310, Tumbes, Tumbes",
-    href: "https://www.google.com/maps/search/Calle%20Huascar%20310%2C%20Tumbes%2C%20Tumbes",
+    value: "Santa Cruz de la Sierra",
+    href: "https://www.google.com/maps/search/Santa%20Cruz%20de%20la%20Sierra%2C%20Bolivia",
     Icon: MapPin,
   },
   {
     label: "WhatsApp / Telefono",
-    value: "956 678 664",
-    href: "https://wa.me/51956678664",
+    value: "+591 63204858",
+    href: "https://wa.me/59163204858",
     Icon: Phone,
   },
   {
     label: "Correo",
-    value: "arizproyectos@gmail.com",
-    href: "mailto:arizproyectos@gmail.com",
+    value: "intiinty35@gmail.com",
+    href: "mailto:intiinty35@gmail.com",
     Icon: Mail,
   },
   {

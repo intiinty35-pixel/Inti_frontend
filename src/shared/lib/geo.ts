@@ -1,6 +1,6 @@
 const NOMINATIM_SEARCH = "https://nominatim.openstreetmap.org/search";
-const COUNTRY = "Peru";
-const COUNTRY_CODE = "pe";
+const COUNTRY = "Bolivia";
+const COUNTRY_CODE = "bo";
 
 export interface MapPlace {
   latitude: number;

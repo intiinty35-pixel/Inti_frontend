@@ -7,8 +7,8 @@ import { IncentiveImageField } from "@/features/rewards/components/incentive-ima
 import { createPromotion, updatePromotion } from "@/features/promotions/api/actions";
 import type { AdminPromotion } from "@/features/promotions/types";
 
-function limaDay(date: Date) {
-  return date.toLocaleDateString("en-CA", { timeZone: "America/Lima" });
+function boliviaDay(date: Date) {
+  return date.toLocaleDateString("en-CA", { timeZone: "America/La_Paz" });
 }
 
 /** Modal para crear una promoción o, si recibe `promotion`, editarla. */
@@ -80,14 +80,14 @@ export function PromotionFormModal({
                 name="startDate"
                 type="date"
                 label="Se muestra desde"
-                defaultValue={limaDay(promotion ? new Date(promotion.startsAt) : new Date())}
+                defaultValue={boliviaDay(promotion ? new Date(promotion.startsAt) : new Date())}
                 required
               />
               <Input
                 name="endDate"
                 type="date"
                 label="Hasta (inclusive)"
-                defaultValue={promotion ? limaDay(new Date(promotion.endsAt)) : undefined}
+                defaultValue={promotion ? boliviaDay(new Date(promotion.endsAt)) : undefined}
                 required
               />
             </div>

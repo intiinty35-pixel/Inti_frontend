@@ -23,8 +23,8 @@ import { SelectedProjectExplorer } from './selected-project-explorer';
 
 type PublishedPlan = SitePlan & { currency?: 'PEN' | 'USD' };
 const EMPTY: SitePlan = { logoUrl: '', zones: [], lots: [] };
-const CENTER = { lat: -9.19, lng: -75.0152 };
-const PERU_BOUNDS = [{ lat: -18.35, lng: -81.4 }, { lat: 0.05, lng: -68.65 }];
+const CENTER = { lat: -17.783333, lng: -63.182126 };
+const BOLIVIA_BOUNDS = [{ lat: -22.9, lng: -69.65 }, { lat: -9.6, lng: -57.45 }];
 const getCachedSitePlan = createMapRequestCache<PublishedPlan | null>();
 
 function LotSheet({ lot, project, code, onClose }: { lot: PlanLot; project: Listing; code: string; onClose: () => void }) {
@@ -180,7 +180,7 @@ export function MapPageExplorer({ listings, loadError = false, mapToolbarHref }:
       {mapToolbarHref && <Link href={ROUTES.home} className={styles.toolbarLogo} aria-label="INTI Proyectos, inicio"><img src="/logo/logo.png" alt="INTI Proyectos" /></Link>}
       <div className={styles.filterFields}>
       <div className={styles.operation} role="group" aria-label="Operación">{[['buy', 'Comprar'], ['rent', 'Alquilar']].map(([value, label]) => <button type="button" key={value} aria-pressed={operation === value} className={operation === value ? styles.filterActive : ''} onClick={() => { setOperation(value); resetSelection(); }}>{label}</button>)}</div>
-      <MapFilterSelect label="Región" value={region} onChange={value => { setRegion(value); setZone(''); resetSelection(); }} options={[{ value: '', label: 'Todo el Perú' }, ...regions.map(value => ({ value, label: value }))]} />
+      <MapFilterSelect label="Departamento" value={region} onChange={value => { setRegion(value); setZone(''); resetSelection(); }} options={[{ value: '', label: 'Todo Bolivia' }, ...regions.map(value => ({ value, label: value }))]} />
       <MapFilterSelect label="Zona / distrito" value={zone} onChange={value => { setZone(value); resetSelection(); }} options={[{ value: '', label: 'Todas las zonas' }, ...zones.map(value => ({ value, label: value }))]} />
       <MapFilterSelect label="Quiero ver" value="projects" onChange={value => { window.location.href = `${ROUTES.properties}?operation=${operation}&type=${value}`; }} options={[{ value: 'projects', label: 'Proyectos' }, { value: 'houses', label: 'Casas' }, { value: 'apartments', label: 'Departamentos' }, { value: 'land', label: 'Terrenos' }]} />
       <MapFilterSelect label="Moneda" value={currency} onChange={value => { setCurrency(value); resetSelection(); }} options={[{ value: 'PEN', label: 'Soles (S/)' }, { value: 'USD', label: 'Dólares ($)' }]} />
@@ -197,7 +197,7 @@ export function MapPageExplorer({ listings, loadError = false, mapToolbarHref }:
       lotSheet={panel === 'LOT' && lot ? <LotSheet lot={lot} project={active} code={accessCodes[active.id] ?? ''} onClose={() => { setSelectedLot(undefined); setPanel('PROJECT'); }} /> : undefined} /> : <div className={`${styles.layout} ${panel && view !== 'list' ? styles.withPanel : ''} ${view === 'list' ? styles.listOnly : ''}`}>
     <header className={styles.header}><h1 className="sr-only">Proyectos en el mapa</h1>{view === 'both' && <div className={styles.desktopSort}>{sortControl}</div>}<nav className={styles.viewControls} aria-label="Vista de resultados">{([['list', 'Lista', List], ['both', 'Ambos', Columns2], ['map', 'Mapa', MapIcon]] as const).map(([value, label, Icon]) => <button key={value} type="button" aria-pressed={view === value} className={view === value ? styles.filterActive : ''} onClick={() => changeView(value)}><Icon size={17} />{label}</button>)}</nav>{view === 'list' && <section className={`${styles.listHeader} ${styles.listToolbarResults}`} aria-label="Resultados">{listSummary}</section>}</header>
       <div className={styles.map}>
-        <SitePlanMap currency={active?.price.currency} plan={plan ?? EMPTY} center={CENTER} overviewBounds={PERU_BOUNDS} mapType="roadmap" compactMapControl hideLegendOnMobile showImage={showPlanImage} publicView clusterMarkers={false} markers={markers} markerFocusId={activeId} hideFocusedMarker={!!plan} focusPlanRequest={focusPlanRequest} onMarkerSelect={selectProject} onSelect={selectLot} selected={selectedLot} className={styles.mapSurface} />
+        <SitePlanMap currency={active?.price.currency} plan={plan ?? EMPTY} center={CENTER} overviewBounds={BOLIVIA_BOUNDS} mapType="roadmap" compactMapControl hideLegendOnMobile showImage={showPlanImage} publicView clusterMarkers={false} markers={markers} markerFocusId={activeId} hideFocusedMarker={!!plan} focusPlanRequest={focusPlanRequest} onMarkerSelect={selectProject} onSelect={selectLot} selected={selectedLot} className={styles.mapSurface} />
 
       </div>
       {panel && <aside ref={sidebarRef} className={styles.sidebar} aria-label={panel === 'LOT' ? 'Ficha del lote' : panel === 'PROJECT' ? 'Proyecto seleccionado' : 'Listado de proyectos'}>

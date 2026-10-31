@@ -12,13 +12,13 @@ import { buildMetadata } from "@/shared/lib/seo";
 import { getCurrentPromotionsServer } from "@/features/promotions/api/server";
 
 export const metadata = buildMetadata({
-  title: "Inmobiliaria en Tumbes: venta, alquiler y proyectos",
+  title: "Inmobiliaria en Santa Cruz de la Sierra: venta, alquiler y proyectos",
   description:
-    "Encuentra casas, departamentos, terrenos y proyectos inmobiliarios en Tumbes. Compra, alquila o invierte con el acompañamiento de Inti Proyectos.",
+    "Encuentra casas, departamentos, terrenos y proyectos inmobiliarios en Santa Cruz de la Sierra, Bolivia. Compra, alquila o invierte con el acompañamiento de Inti Proyectos.",
   path: "/",
   keywords: [
     "inmobiliaria inti",
-    "buscar propiedades en Peru",
+    "buscar propiedades en Bolivia",
     "comprar propiedades",
     "alquilar propiedades",
     "proyectos de lotes",

@@ -151,7 +151,7 @@ function MetricCard({
         <div className="min-w-0">
           <p className="flex min-h-7 items-center justify-center text-[9px] font-black uppercase leading-tight tracking-wide text-muted sm:min-h-0 sm:text-[11px] sm:tracking-[0.16em]">{label}</p>
           <p className="mt-1 font-display text-2xl font-black tracking-tight text-brand sm:text-3xl">
-            {value.toLocaleString("es-PE")}
+            {value.toLocaleString("es-BO")}
           </p>
         </div>
       </div>

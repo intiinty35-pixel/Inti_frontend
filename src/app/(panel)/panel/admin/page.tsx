@@ -53,7 +53,7 @@ function monthKey(date: Date) {
 }
 
 function monthLabel(date: Date) {
-  return new Intl.DateTimeFormat("es-PE", { month: "short" }).format(date).replace(".", "");
+  return new Intl.DateTimeFormat("es-BO", { month: "short" }).format(date).replace(".", "");
 }
 
 function getDateValue(item: unknown) {

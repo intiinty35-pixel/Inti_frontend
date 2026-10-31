@@ -78,7 +78,7 @@ export function ProjectSitePlan({
   }, [slug, retry, accessCode]);
   const lot = plan?.lots.find((item) => item.id === selected);
   const money = (value: number) =>
-    new Intl.NumberFormat("es-PE", { style: "currency", currency }).format(
+    new Intl.NumberFormat("es-BO", { style: "currency", currency }).format(
       value,
     );
   if (error)
@@ -244,7 +244,7 @@ export function ProjectSitePlan({
                 <strong>
                   {plan.lots
                     .reduce((n, item) => n + item.areaM2, 0)
-                    .toLocaleString("es-PE")}{" "}
+                    .toLocaleString("es-BO")}{" "}
                   m²
                 </strong>
               </div>

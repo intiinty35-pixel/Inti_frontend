@@ -4,14 +4,14 @@ import { ROUTES } from "@/shared/config/routes";
 
 const BASE = ROUTES.panel.admin.referrals;
 
-/** Fecha de hoy en Lima (UTC-5) como YYYY-MM-DD, menos `days` dias. */
-function limaDate(daysAgo = 0) {
+/** Fecha de hoy en Bolivia (UTC-4) como YYYY-MM-DD, menos `days` días. */
+function boliviaDate(daysAgo = 0) {
   const date = new Date(Date.now() - 5 * 60 * 60 * 1000 - daysAgo * 24 * 60 * 60 * 1000);
   return date.toISOString().slice(0, 10);
 }
 
 function presetHref(from: string, search: string) {
-  const params = new URLSearchParams({ from, to: limaDate(0) });
+  const params = new URLSearchParams({ from, to: boliviaDate(0) });
   if (search) params.set("search", search);
   return `${BASE}?${params.toString()}`;
 }
@@ -19,10 +19,10 @@ function presetHref(from: string, search: string) {
 export function ReferralFilters({ search, from, to }: { search: string; from: string; to: string }) {
   const active = Boolean(search || from || to);
   const presets = [
-    { label: "Hoy", from: limaDate(0) },
-    { label: "Últimos 7 días", from: limaDate(6) },
-    { label: "Últimas 4 semanas", from: limaDate(27) },
-    { label: "Últimos 3 meses", from: limaDate(89) },
+    { label: "Hoy", from: boliviaDate(0) },
+    { label: "Últimos 7 días", from: boliviaDate(6) },
+    { label: "Últimas 4 semanas", from: boliviaDate(27) },
+    { label: "Últimos 3 meses", from: boliviaDate(89) },
   ];
 
   return (
@@ -91,7 +91,7 @@ export function ReferralFilters({ search, from, to }: { search: string; from: st
             key={preset.label}
             href={presetHref(preset.from, search)}
             className={`shrink-0 whitespace-nowrap rounded-full border px-2 py-1 text-xs font-bold transition-colors sm:px-3 ${
-              from === preset.from && to === limaDate(0)
+              from === preset.from && to === boliviaDate(0)
                 ? "border-brand bg-brand text-on-brand"
                 : "border-edge text-brand hover:border-brand"
             }`}

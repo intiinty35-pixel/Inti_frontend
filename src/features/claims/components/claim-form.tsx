@@ -6,7 +6,7 @@ import { submitPublicClaim, type ClaimInput, type ClaimResponse, type ClaimType 
 const COMPANY_INFO = {
   businessName: "INTI GROUP SOCIEDAD ANONIMA CERRADA",
   ruc: "20609623552",
-  address: "Jr. Huascar Nro. 310 Int. 01 Otr. Centro Tumbes, Tumbes, Peru",
+  address: "Santa Cruz de la Sierra, Bolivia",
 };
 
 interface FormErrors {

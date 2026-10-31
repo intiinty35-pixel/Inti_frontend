@@ -54,8 +54,8 @@ export function ApartmentPlanEditor({ initial }: { initial: PlanSession }) {
   const floorOutline = building && floor ? floorBuildingOutline(plan, building, floor) : [];
   const locked = busy || uploading;
   const pending = drawingBuilding || drawingUnit || points.length > 0 || Boolean(activeAlignment);
-  const center = { lat: Number(initial.project.location?.latitude ?? -12.0464), lng: Number(initial.project.location?.longitude ?? -77.0428) };
-  const money = (value: number) => new Intl.NumberFormat("es-PE", { style: "currency", currency: initial.project.currency }).format(value);
+  const center = { lat: Number(initial.project.location?.latitude ?? -17.7833), lng: Number(initial.project.location?.longitude ?? -63.1821) };
+  const money = (value: number) => new Intl.NumberFormat("es-BO", { style: "currency", currency: initial.project.currency }).format(value);
   const totalUnits = buildings.reduce((n, b) => n + b.floors.reduce((m, f) => m + f.apartments.length, 0), 0);
   const basePath = `/admin/projects/${initial.project.id}/site-plan`;
 
@@ -205,7 +205,7 @@ export function ApartmentPlanEditor({ initial }: { initial: PlanSession }) {
 
   return <section className={s.editor} aria-label="Editor de edificios y departamentos">
     <header className={s.header}>
-      <div><p className={s.muted}>Edificios · Pisos · Departamentos</p><h1 className="text-2xl font-black">{initial.project.name}</h1><p className={s.muted}>{dirty ? "Cambios sin guardar" : "Borrador guardado"}{publishedAt ? ` · Publicado ${new Date(publishedAt).toLocaleDateString("es-PE")}` : ""}</p></div>
+      <div><p className={s.muted}>Edificios · Pisos · Departamentos</p><h1 className="text-2xl font-black">{initial.project.name}</h1><p className={s.muted}>{dirty ? "Cambios sin guardar" : "Borrador guardado"}{publishedAt ? ` · Publicado ${new Date(publishedAt).toLocaleDateString("es-BO")}` : ""}</p></div>
       <div className={`${s.actions} ${s.headerActions}`}>
         <Link className={s.link} href={`/panel/admin/projects/${initial.project.id}/site-plan?view=environment`} onClick={event => { if ((dirty || pending) && !window.confirm("Hay cambios sin guardar. ¿Salir al editor del entorno?")) event.preventDefault(); }}>Entorno: calles y áreas comunes</Link>
         <button type="button" disabled={locked} onClick={() => void save(false)}><Save size={15} />Guardar borrador</button>

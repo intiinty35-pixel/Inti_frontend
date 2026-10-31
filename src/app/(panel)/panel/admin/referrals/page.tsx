@@ -175,7 +175,7 @@ export default async function AdminReferralsPage({
                         Puntos
                       </p>
                       <p className="mt-1 text-lg font-black text-brand">
-                        {referrer.totalPoints.toLocaleString("es-PE")}
+                        {referrer.totalPoints.toLocaleString("es-BO")}
                       </p>
                     </div>
                   </div>
@@ -232,7 +232,7 @@ function MetricCard({
         <div>
           <p className="text-[11px] font-black uppercase tracking-[0.16em] text-muted">{label}</p>
           <p className="mt-1 font-display text-3xl font-black tracking-tight text-brand">
-            {value.toLocaleString("es-PE")}
+            {value.toLocaleString("es-BO")}
           </p>
         </div>
       </div>

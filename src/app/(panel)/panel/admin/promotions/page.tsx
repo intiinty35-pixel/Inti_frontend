@@ -5,11 +5,11 @@ import { PromotionForm } from "@/features/promotions/components/promotion-form";
 import { PromotionRowActions } from "@/features/promotions/components/promotion-row-actions";
 import type { AdminPromotion } from "@/features/promotions/types";
 
-const dateFormat = new Intl.DateTimeFormat("es-PE", {
+const dateFormat = new Intl.DateTimeFormat("es-BO", {
   day: "2-digit",
   month: "short",
   year: "numeric",
-  timeZone: "America/Lima",
+  timeZone: "America/La_Paz",
 });
 
 function statusOf(promotion: AdminPromotion, now: number) {

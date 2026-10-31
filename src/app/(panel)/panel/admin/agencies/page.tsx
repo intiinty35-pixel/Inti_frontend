@@ -41,7 +41,7 @@ function StatCard({
         <div>
           <p className="text-[11px] font-black uppercase tracking-[0.16em] text-muted">{label}</p>
           <p className="mt-3 font-display text-4xl font-black tracking-tight text-brand">
-            {value.toLocaleString("es-PE")}
+            {value.toLocaleString("es-BO")}
           </p>
         </div>
         <span className={`flex size-11 shrink-0 items-center justify-center rounded-xl ${tone}`}>
@@ -92,7 +92,7 @@ export default async function AdminAgenciesPage({
                   Pendientes en esta página
                 </p>
                 <p className="mt-1 font-display text-3xl font-black text-brand">
-                  {pagePendingTotal.toLocaleString("es-PE")}
+                  {pagePendingTotal.toLocaleString("es-BO")}
                 </p>
               </div>
             </div>

@@ -89,16 +89,15 @@ function isValidEmail(value: string): boolean {
 }
 
 /**
- * Celular de Perú. El usuario escribe SOLO los 9 dígitos que empiezan en 9
- * (ej. 923 655 566); el prefijo de país 51 se agrega al enviar (buildPeruPhone).
+ * Celular boliviano: 8 dígitos; se agrega el prefijo de país 591 al enviar.
  */
-function isValidPeruPhone(value: string): boolean {
-  return /^9\d{8}$/.test(value.replace(/\D/g, ''));
+function isValidBoliviaPhone(value: string): boolean {
+  return /^\d{8}$/.test(value.replace(/\D/g, ''));
 }
 
-/** Devuelve el celular en formato internacional 51 + 9 dígitos (ej. 51923655566). */
-function buildPeruPhone(value: string): string {
-  return `51${value.replace(/\D/g, '')}`;
+/** Devuelve el celular en formato internacional 591 + 8 dígitos. */
+function buildBoliviaPhone(value: string): string {
+  return `591${value.replace(/\D/g, '')}`;
 }
 
 export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalProps) {
@@ -253,7 +252,7 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
     if (!referrerEmail.trim()) next.referrerEmail = 'Ingresa tu correo.';
     else if (!isValidEmail(referrerEmail)) next.referrerEmail = 'Ingresa un correo válido, por ejemplo nombre@correo.com.';
     if (!referrerPhone.trim()) next.referrerPhone = 'Ingresa tu teléfono.';
-    else if (!isValidPeruPhone(referrerPhone)) next.referrerPhone = 'Ingresa tu celular de 9 dígitos (ej. 923 655 566).';
+    else if (!isValidBoliviaPhone(referrerPhone)) next.referrerPhone = 'Ingresa un celular boliviano de 8 dígitos (ej. 63204858).';
     if (!paymentMethod) {
       next.referrerPayment = 'Elige cómo quieres recibir tu bono.';
     } else if (paymentMethod === 'bank') {
@@ -278,7 +277,7 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
     if (!email.trim()) next.email = 'Ingresa el correo del referido.';
     else if (!isValidEmail(email)) next.email = 'Ingresa un correo válido, por ejemplo nombre@correo.com.';
     if (!phone.trim()) next.phone = 'Ingresa el teléfono del referido.';
-    else if (!isValidPeruPhone(phone)) next.phone = 'Ingresa un celular de 9 dígitos (ej. 923 655 566).';
+    else if (!isValidBoliviaPhone(phone)) next.phone = 'Ingresa un celular boliviano de 8 dígitos (ej. 63204858).';
     return next;
   }
 
@@ -288,7 +287,7 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
     if (!email.trim()) next.email = 'Ingresa el correo del referido.';
     else if (!isValidEmail(email)) next.email = 'Ingresa un correo válido, por ejemplo nombre@correo.com.';
     if (!phone.trim()) next.phone = 'Ingresa el teléfono del referido.';
-    else if (!isValidPeruPhone(phone)) next.phone = 'Ingresa un celular de 9 dígitos (ej. 923 655 566).';
+    else if (!isValidBoliviaPhone(phone)) next.phone = 'Ingresa un celular boliviano de 8 dígitos (ej. 63204858).';
     if (!interest) next.interest = 'Selecciona qué desea hacer.';
     if (allowsArizProject(interest) && !projectChoice) {
       next.project = 'Elige un proyecto Inti o selecciona "Omitir proyecto".';
@@ -403,11 +402,11 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
         ? {
             referrerName: validatedReferrer.name,
             referrerEmail: validatedReferrer.email,
-            referrerPhone: buildPeruPhone(validatedReferrer.phone),
+            referrerPhone: buildBoliviaPhone(validatedReferrer.phone),
             referrerCode: referrerCode.trim(),
             name: name.trim(),
             email: email.trim(),
-            phone: buildPeruPhone(phone),
+            phone: buildBoliviaPhone(phone),
             interest: interest === ARIZ_PROJECT_INTEREST ? 'COMPRA_LOTE' : interest,
             availability,
             projectId: allowsArizProject(interest) && projectChoice && projectChoice !== SKIP_PROJECT ? projectChoice : undefined,
@@ -416,7 +415,7 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
         : {
             referrerName: referrerName.trim(),
             referrerEmail: referrerEmail.trim(),
-            referrerPhone: buildPeruPhone(referrerPhone),
+            referrerPhone: buildBoliviaPhone(referrerPhone),
             referrerCode: referrerCode.trim() || undefined,
             referrerBankAccount:
               paymentMethod === 'bank' ? `${referrerBank} - ${referrerBankAccount}` : undefined,
@@ -424,7 +423,7 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
             referrerPlin: paymentMethod === 'plin' ? referrerPlin : undefined,
             name: name.trim(),
             email: email.trim(),
-            phone: buildPeruPhone(phone),
+            phone: buildBoliviaPhone(phone),
             interest: interest === ARIZ_PROJECT_INTEREST ? 'COMPRA_LOTE' : interest,
             availability,
             projectId: allowsArizProject(interest) && projectChoice && projectChoice !== SKIP_PROJECT ? projectChoice : undefined,
@@ -820,12 +819,12 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
                   inputMode="numeric"
                   autoComplete="tel"
                   leading="+51"
-                  placeholder="923 655 566"
+                  placeholder="63204858"
                   maxLength={9}
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   error={errors.phone}
-                  hint="Solo 9 dígitos; el +51 se agrega automáticamente."
+                  hint="Ingresa 8 dígitos; se agregará el prefijo +591."
                   required
                 />
                 <div className="border-t border-edge pt-4">
@@ -896,12 +895,12 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
                   inputMode="numeric"
                   autoComplete="tel"
                   leading="+51"
-                  placeholder="923 655 566"
+                  placeholder="63204858"
                   maxLength={9}
                   value={referrerPhone}
                   onChange={(e) => setReferrerPhone(e.target.value)}
                   error={errors.referrerPhone}
-                  hint="Solo 9 dígitos; el +51 se agrega automáticamente."
+                  hint="Ingresa 8 dígitos; se agregará el prefijo +591."
                   required
                 />
                 <div className="flex flex-col gap-2">
@@ -1087,12 +1086,12 @@ export function ReferralModal({ open, onClose, preloadedCode }: ReferralModalPro
                   inputMode="numeric"
                   autoComplete="tel"
                   leading="+51"
-                  placeholder="923 655 566"
+                  placeholder="63204858"
                   maxLength={9}
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   error={errors.phone}
-                  hint="Solo 9 dígitos; el +51 se agrega automáticamente."
+                  hint="Ingresa 8 dígitos; se agregará el prefijo +591."
                   required
                 />
                 {error && (

@@ -1,12 +1,12 @@
 const DAY_MS = 86_400_000;
 
-const SHORT_DATE = new Intl.DateTimeFormat("es-PE", {
+const SHORT_DATE = new Intl.DateTimeFormat("es-BO", {
   day: "numeric",
   month: "short",
   year: "numeric",
 });
 
-const FULL_DATE = new Intl.DateTimeFormat("es-PE", {
+const FULL_DATE = new Intl.DateTimeFormat("es-BO", {
   day: "numeric",
   month: "long",
   year: "numeric",

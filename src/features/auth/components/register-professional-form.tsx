@@ -134,7 +134,7 @@ export function RegisterProfessionalForm() {
         )}
         <Input name="phone" type="tel" label="Teléfono" autoComplete="tel" minLength={7} required />
         <Input name="whatsapp" type="tel" label="WhatsApp" minLength={7} required />
-        <Input name="city" label="Ciudad" defaultValue="Lima" required />
+        <Input name="city" label="Ciudad" defaultValue="Santa Cruz de la Sierra" required />
         {isPerson ? (
           <Input name="districts" label="Distritos donde trabaja" />
         ) : (

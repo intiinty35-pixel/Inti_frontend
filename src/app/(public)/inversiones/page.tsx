@@ -14,7 +14,8 @@ export const metadata = buildMetadata({
   path: ROUTES.investments,
   keywords: [
     "inversion inmobiliaria",
-    "invertir en Tumbes",
+    "invertir en Bolivia",
+    "invertir en Santa Cruz de la Sierra",
     "plusvalia inmobiliaria",
     "oportunidades de inversion",
   ],

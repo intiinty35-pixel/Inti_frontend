@@ -5,7 +5,7 @@ import { ROUTES } from "@/shared/config/routes";
 export const metadata = buildMetadata({
   title: "Servicios inmobiliarios, corretaje y proyectos",
   description:
-    "Servicios inmobiliarios para venta, alquiler, intermediacion, corretaje, prospeccion, gestion legal y comercializacion de proyectos inmobiliarios en Peru.",
+    "Servicios inmobiliarios para venta, alquiler, intermediacion, corretaje, prospeccion, gestion legal y comercializacion de proyectos inmobiliarios en Bolivia.",
   path: ROUTES.services,
   keywords: [
     "servicios inmobiliarios",

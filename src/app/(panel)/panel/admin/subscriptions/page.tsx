@@ -17,7 +17,7 @@ interface AdminSubscriptionsPageProps {
 }
 
 function formatDate(value: string) {
-  return new Intl.DateTimeFormat("es-PE", {
+  return new Intl.DateTimeFormat("es-BO", {
     day: "2-digit",
     month: "short",
     year: "numeric",
@@ -198,7 +198,7 @@ function MetricCard({
         <div>
           <p className="text-[11px] font-black uppercase tracking-[0.16em] text-muted">{label}</p>
           <p className="mt-1 font-display text-3xl font-black tracking-tight text-brand">
-            {typeof value === "number" ? value.toLocaleString("es-PE") : value}
+            {typeof value === "number" ? value.toLocaleString("es-BO") : value}
           </p>
         </div>
       </div>

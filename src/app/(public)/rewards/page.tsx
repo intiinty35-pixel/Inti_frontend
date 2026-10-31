@@ -542,7 +542,7 @@ export default function RewardsPage() {
                       <div className="flex items-center gap-1.5">
                         <Coins className="size-3.5 text-accent" />
                         <span className="text-[11px] font-bold text-brand">
-                          {incentive.pointsRequired.toLocaleString("es-PE")} pts
+                          {incentive.pointsRequired.toLocaleString("es-BO")} pts
                         </span>
                       </div>
                       <span className="text-[11px] text-muted">
@@ -560,8 +560,8 @@ export default function RewardsPage() {
                           Te faltan puntos
                         </Button>
                         <p className="text-center text-[10px] text-muted">
-                          Tienes {totalPoints.toLocaleString("es-PE")} pts · Faltan{" "}
-                          {(incentive.pointsRequired - totalPoints).toLocaleString("es-PE")} pts
+                          Tienes {totalPoints.toLocaleString("es-BO")} pts · Faltan{" "}
+                          {(incentive.pointsRequired - totalPoints).toLocaleString("es-BO")} pts
                         </p>
                       </div>
                     ) : (
@@ -598,7 +598,7 @@ export default function RewardsPage() {
                 <p className="mt-1 text-sm text-muted">{selectedIncentive.description}</p>
                 <div className="mt-3 flex items-center justify-between">
                   <span className="text-sm font-bold text-brand">
-                    -{selectedIncentive.pointsRequired.toLocaleString("es-PE")} puntos
+                    -{selectedIncentive.pointsRequired.toLocaleString("es-BO")} puntos
                   </span>
                   <span className="text-xs text-muted">
                     Stock: {selectedIncentive.stock}
@@ -609,7 +609,7 @@ export default function RewardsPage() {
                 <p className="text-sm text-muted">
                   Después del canje tendrás:{" "}
                   <span className="font-bold text-ink">
-                    {(totalPoints - selectedIncentive.pointsRequired).toLocaleString("es-PE")} puntos
+                    {(totalPoints - selectedIncentive.pointsRequired).toLocaleString("es-BO")} puntos
                   </span>
                 </p>
               </div>

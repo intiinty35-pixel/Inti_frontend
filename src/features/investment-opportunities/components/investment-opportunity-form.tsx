@@ -262,7 +262,7 @@ export function InvestmentOpportunityForm({
         </label>
         <label className={labelClass}>
           Ubicación visible
-          <input className={inputClass} value={form.location} maxLength={180} placeholder="Ej. Zorritos, Tumbes" required onChange={(e) => setField("location", e.target.value)} />
+          <input className={inputClass} value={form.location} maxLength={180} placeholder="Ej. Equipetrol, Santa Cruz de la Sierra" required onChange={(e) => setField("location", e.target.value)} />
         </label>
         <label className={`${labelClass} sm:col-span-2`}>
           Resumen para las tarjetas

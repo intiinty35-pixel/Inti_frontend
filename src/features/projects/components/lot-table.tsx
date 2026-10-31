@@ -22,7 +22,7 @@ export function LotTable({ plan, project, exportUrl, onClose, onEdit, onDelete }
   const [deleteLot, setDeleteLot] = useState<PlanLot | null>(null);
   const drawnLots = plan.lots.filter(l => l.path.length >= 3);
   const rows = drawnLots.filter(l => (!status || l.status === status) && `${l.code} ${l.block} ${l.street} ${l.address} ${l.type} ${LOT_LABELS[l.status]}`.toLocaleLowerCase().includes(query.toLocaleLowerCase()));
-  const money = (n: number) => new Intl.NumberFormat('es-PE', { style: 'currency', currency: project.currency }).format(n);
+  const money = (n: number) => new Intl.NumberFormat('es-BO', { style: 'currency', currency: project.currency }).format(n);
   async function download(format: 'xlsx' | 'pdf') {
     setBusy(true); setError('');
     try {

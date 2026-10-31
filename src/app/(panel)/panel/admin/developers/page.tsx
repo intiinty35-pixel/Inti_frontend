@@ -82,7 +82,7 @@ export default async function AdminDevelopersPage({
                   Fichas en esta página
                 </p>
                 <p className="mt-1 font-display text-3xl font-black text-brand">
-                  {pageTotal.toLocaleString("es-PE")}
+                  {pageTotal.toLocaleString("es-BO")}
                 </p>
               </div>
             </div>
@@ -264,7 +264,7 @@ function StatCard({
         <div>
           <p className="text-[11px] font-black uppercase tracking-[0.16em] text-muted">{label}</p>
           <p className="mt-1 font-display text-3xl font-black tracking-tight text-brand">
-            {value.toLocaleString("es-PE")}
+            {value.toLocaleString("es-BO")}
           </p>
         </div>
       </div>

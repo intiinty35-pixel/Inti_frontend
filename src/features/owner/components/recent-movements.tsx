@@ -33,7 +33,7 @@ const KIND_LABELS: Record<MovementKind, string> = {
 };
 
 function formatShortDate(value: string) {
-  return new Intl.DateTimeFormat("es-PE", {
+  return new Intl.DateTimeFormat("es-BO", {
     day: "2-digit",
     month: "short",
   }).format(new Date(value));

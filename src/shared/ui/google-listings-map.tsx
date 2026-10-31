@@ -33,7 +33,7 @@ const EMPTY: SitePlan = { logoUrl: "", zones: [], lots: [] };
 /** Loads nearby published plans only when the visitor zooms into a project. */
 export function GoogleListingsMap({
   points,
-  center = [-12.046374, -77.042793],
+  center = [-17.783333, -63.182126],
   className,
   activeId,
   onSelect,
@@ -144,7 +144,7 @@ export function GoogleListingsMap({
   );
   const lot = owner?.plan.lots.find((item) => item.id === selectedLot);
   const money = (value: number) =>
-    new Intl.NumberFormat("es-PE", {
+    new Intl.NumberFormat("es-BO", {
       style: "currency",
       currency:
         owner?.plan.currency ??

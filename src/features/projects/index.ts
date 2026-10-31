@@ -18,13 +18,7 @@ export {
   PROJECT_STAGES,
   PROJECT_STAGE_LABELS,
 } from "@/features/projects/data/project-catalogs";
-export {
-  PERU_DEPARTMENTS,
-  PERU_PLACE_OPTIONS,
-  getDistricts,
-  getProvinces,
-  isConsistentLocation,
-} from "@/shared/data/peru-locations";
+export { BOLIVIA_DEPARTMENTS } from "@/shared/data/bolivia-locations";
 export {
   createEmptyLot,
   createEmptyMilestone,

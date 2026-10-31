@@ -80,7 +80,7 @@ export function SelectedProjectExplorer({ project, plan, planError, projectAcces
   const info = useRef<HTMLElement>(null);
   const dialog = useRef<HTMLDialogElement>(null);
   const imageTrigger = useRef<HTMLButtonElement>(null);
-  const center = useMemo(() => ({ lat: detail?.location?.latitude ?? project.location.lat ?? -9.19, lng: detail?.location?.longitude ?? project.location.lng ?? -75.0152 }), [detail?.location?.latitude, detail?.location?.longitude, project.location.lat, project.location.lng]);
+  const center = useMemo(() => ({ lat: detail?.location?.latitude ?? project.location.lat ?? -17.783333, lng: detail?.location?.longitude ?? project.location.lng ?? -63.182126 }), [detail?.location?.latitude, detail?.location?.longitude, project.location.lat, project.location.lng]);
   const planImageUrl = plan?.image?.url;
   const showPlanImage = Boolean(planImageUrl && planImagePreference?.url === planImageUrl && planImagePreference.visible);
   const locationMarkers = useMemo(() => [{

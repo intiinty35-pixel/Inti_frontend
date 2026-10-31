@@ -3,7 +3,7 @@ import { env } from "@/shared/lib/env";
 
 export const SITE_NAME = "Inti Proyectos";
 export const SEO_KEYWORDS = [
-  "inmobiliaria en Peru",
+  "inmobiliaria en Bolivia",
   "propiedades en venta",
   "propiedades en alquiler",
   "alquiler de departamentos",
@@ -73,7 +73,7 @@ export function buildMetadata({
       url: canonical,
       siteName: SITE_NAME,
       type: "website",
-      locale: "es_PE",
+      locale: "es_BO",
       images: [{ url: imageUrl, width: 1200, height: 630, alt: SITE_NAME }],
     },
     twitter: {

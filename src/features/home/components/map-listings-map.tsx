@@ -17,7 +17,7 @@ export interface MapListingMarker {
   lng: number;
 }
 
-const DEFAULT_CENTER: [number, number] = [-12.046374, -77.042793];
+const DEFAULT_CENTER: [number, number] = [-17.783333, -63.182126];
 
 const propertyMarkerIcon = new L.DivIcon({
   className: "",

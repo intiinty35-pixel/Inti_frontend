@@ -14,7 +14,7 @@ async function removeReport(formData: FormData) {
 }
 
 function formatDate(value: string) {
-  return new Intl.DateTimeFormat("es-PE", {
+  return new Intl.DateTimeFormat("es-BO", {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(new Date(value));

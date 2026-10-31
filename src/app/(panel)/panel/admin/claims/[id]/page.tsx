@@ -8,7 +8,7 @@ import { getAdminClaim } from '@/features/claims/api/server';
 const COMPANY_INFO = {
   businessName: 'INTI GROUP S.A.C.',
   ruc: '20615573711',
-  address: 'Jr. Lopez Aldana 286, La Victoria, Lima, Perú',
+  address: 'Santa Cruz de la Sierra, Bolivia',
 };
 
 export default async function AdminClaimDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -137,7 +137,7 @@ export default async function AdminClaimDetailPage({ params }: { params: Promise
             </div>
             <div>
               <p className="text-xs font-bold uppercase tracking-wide text-muted">Creado</p>
-              <p className="mt-1 text-sm text-ink">{new Date(claim.createdAt).toLocaleString('es-PE')}</p>
+              <p className="mt-1 text-sm text-ink">{new Date(claim.createdAt).toLocaleString('es-BO')}</p>
             </div>
           </div>
         </CardContent>

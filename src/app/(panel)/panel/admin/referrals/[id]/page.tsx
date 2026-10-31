@@ -51,7 +51,7 @@ async function deleteReferrer(id: string) {
 }
 
 function formatDate(value: string) {
-  return new Intl.DateTimeFormat("es-PE", { day: "2-digit", month: "short", year: "numeric" }).format(new Date(value));
+  return new Intl.DateTimeFormat("es-BO", { day: "2-digit", month: "short", year: "numeric" }).format(new Date(value));
 }
 
 function countByStatus(referrals: AdminReferral[], status: ReferralStatus) {
@@ -98,7 +98,7 @@ export default async function AdminReferrerDetailPage({ params, searchParams }: 
                 </div>
                 <div className="flex items-center justify-between gap-3 rounded-card bg-white/12 px-3 py-2 text-left ring-1 ring-white/15 sm:block sm:px-4 sm:py-3 sm:text-right">
                   <p className="text-[11px] font-black uppercase tracking-wide text-white/70">Total acumulado</p>
-                  <p className="text-3xl font-black sm:text-4xl">{referrer.totalPoints.toLocaleString("es-PE")}</p>
+                  <p className="text-3xl font-black sm:text-4xl">{referrer.totalPoints.toLocaleString("es-BO")}</p>
                 </div>
               </div>
             </div>
@@ -231,7 +231,7 @@ export default async function AdminReferrerDetailPage({ params, searchParams }: 
 
                   <div className="rounded-card border border-edge bg-surface-muted p-4 xl:text-right">
                     <p className="text-xs font-black uppercase tracking-wide text-muted">Puntos referido</p>
-                    <p className="mt-2 text-3xl font-black text-brand">{referral.points.toLocaleString("es-PE")}</p>
+                    <p className="mt-2 text-3xl font-black text-brand">{referral.points.toLocaleString("es-BO")}</p>
                   </div>
 
                   <div className="rounded-card border border-edge bg-white p-4">

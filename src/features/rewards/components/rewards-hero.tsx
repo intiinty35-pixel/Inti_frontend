@@ -76,7 +76,7 @@ export function RewardsHero({
               </span>
             </div>
             <p className="mt-5 font-display text-5xl font-bold leading-none tracking-tight text-brand sm:text-6xl">
-              {totalPoints.toLocaleString("es-PE")}
+              {totalPoints.toLocaleString("es-BO")}
             </p>
             <div className="mt-4 flex items-center justify-between border-t border-edge pt-3">
               <span className="text-sm font-semibold text-brand">Puntos Inti</span>
@@ -98,7 +98,7 @@ export function RewardsHero({
                 </span>
               </div>
               <p className="mt-5 font-display text-5xl font-bold leading-none tracking-tight text-accent sm:text-6xl">
-                {campaignPoints.toLocaleString("es-PE")}
+                {campaignPoints.toLocaleString("es-BO")}
               </p>
               <div className="mt-4 flex items-center justify-between border-t border-edge pt-3">
                 <span className="text-sm font-semibold text-accent">Campañas</span>

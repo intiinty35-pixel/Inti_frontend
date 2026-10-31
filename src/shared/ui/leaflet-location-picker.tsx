@@ -83,7 +83,7 @@ function MapResize({ containerRef }: { containerRef: RefObject<HTMLDivElement | 
 export function LeafletLocationPicker({ latitude, longitude, onChange }: LocationPickerProps) {
   const validPoint = isValidPoint(latitude, longitude);
   const center = useMemo<[number, number]>(
-    () => validPoint ? [latitude, longitude] : [-12.046374, -77.042793],
+    () => validPoint ? [latitude, longitude] : [-17.783333, -63.182126],
     [latitude, longitude, validPoint],
   );
   const containerRef = useRef<HTMLDivElement>(null);

@@ -23,7 +23,7 @@ interface Testimonial {
 const TESTIMONIALS: readonly Testimonial[] = [
   {
     name: "María Fernández",
-    role: "Compró un departamento en Tumbes",
+    role: "Compró un departamento en Santa Cruz de la Sierra",
     quote:
       "Desde la primera visita hasta la firma todo fue transparente. El asesor me explicó cada costo y nunca sentí presión. Hoy disfruto mi departamento.",
     rating: 5,
@@ -95,7 +95,7 @@ const TESTIMONIALS: readonly Testimonial[] = [
   },
   {
     name: "Raúl Jiménez",
-    role: "Inversionista en Tumbes",
+    role: "Inversionista en Santa Cruz de la Sierra",
     quote:
       "La información de mercado que comparten es muy útil para decidir. Compré dos lotes y el proceso se sintió seguro de principio a fin.",
     rating: 5,

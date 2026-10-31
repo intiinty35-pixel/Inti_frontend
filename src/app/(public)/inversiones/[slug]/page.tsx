@@ -12,7 +12,7 @@ import { ListingsMap, type MapPoint } from "@/features/listings/components/listi
 import { ArrowRightIcon, ChartIcon, PinIcon, RulerIcon, WhatsappIcon } from "@/shared/ui";
 
 const formatMoney = (value: number) =>
-  new Intl.NumberFormat("es-PE", {
+  new Intl.NumberFormat("es-BO", {
     style: "currency",
     currency: "PEN",
     maximumFractionDigits: 0,

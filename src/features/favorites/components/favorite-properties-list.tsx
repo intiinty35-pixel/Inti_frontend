@@ -53,7 +53,7 @@ export function FavoritePropertiesList({ favorites }: { favorites: Favorite[] })
                   <div className="mt-3 flex min-w-0 items-center justify-between gap-2 border-t border-edge pt-3">
                     <p className="truncate text-xs font-medium text-muted">
                       Guardada el{" "}
-                      {new Date(favorite.createdAt).toLocaleDateString("es-PE", {
+                      {new Date(favorite.createdAt).toLocaleDateString("es-BO", {
                         day: "2-digit",
                         month: "short",
                         year: "numeric",

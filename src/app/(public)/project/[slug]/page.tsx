@@ -74,7 +74,7 @@ function formatMonthYear(iso: string | null) {
   if (!iso) return null;
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return null;
-  return date.toLocaleDateString("es-PE", { month: "long", year: "numeric" });
+  return date.toLocaleDateString("es-BO", { month: "long", year: "numeric" });
 }
 
 function priceRange(project: ProjectApiDetail) {
@@ -407,7 +407,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             </section>
           ) : null}
 
-          {(project.hasPublishedSitePlan || project.category === "DEPARTAMENTOS") && <ProjectSitePlan slug={slug} center={{ lat: hasCoords ? lat : -12.0464, lng: hasCoords ? lng : -77.0428 }} currency={project.currency} />}
+          {(project.hasPublishedSitePlan || project.category === "DEPARTAMENTOS") && <ProjectSitePlan slug={slug} center={{ lat: hasCoords ? lat : -17.7833, lng: hasCoords ? lng : -63.1821 }} currency={project.currency} />}
           {!project.hasPublishedSitePlan && project.lots.length > 0 ? (
             <ProjectLotsBrowser
               lots={project.lots}

@@ -14,7 +14,7 @@ import {
 } from "@/features/investment-opportunities/types";
 
 function formatMoney(value: number) {
-  return `S/ ${value.toLocaleString("es-PE")}`;
+  return `S/ ${value.toLocaleString("es-BO")}`;
 }
 
 export function InvestmentOpportunityAdminList({

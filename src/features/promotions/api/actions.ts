@@ -4,9 +4,9 @@ import { revalidatePath } from "next/cache";
 import { backendFetch } from "@/shared/lib/api/server";
 import { ROUTES } from "@/shared/config/routes";
 
-// Las fechas se eligen como dia calendario (hora de Lima, UTC-5): la promocion
+// Las fechas se eligen como día calendario (hora de Bolivia, UTC-4): la promoción
 // empieza a las 00:00 del primer dia y termina a las 23:59 del ultimo.
-const LIMA_OFFSET = "-05:00";
+const BOLIVIA_OFFSET = "-04:00";
 
 async function readError(response: Response, fallback: string) {
   const error = await response.json().catch(() => ({ message: fallback }));
@@ -28,8 +28,8 @@ function readPromotionForm(formData: FormData) {
     title,
     imageUrl,
     publicId: publicId || undefined,
-    startsAt: `${startDate}T00:00:00${LIMA_OFFSET}`,
-    endsAt: `${endDate}T23:59:59${LIMA_OFFSET}`,
+    startsAt: `${startDate}T00:00:00${BOLIVIA_OFFSET}`,
+    endsAt: `${endDate}T23:59:59${BOLIVIA_OFFSET}`,
   };
 }
 

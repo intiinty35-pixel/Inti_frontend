@@ -40,7 +40,7 @@ const STATUS_ICON: Record<ReferralStatus, typeof Clock> = {
 
 function formatDate(value: string): string {
   try {
-    return new Date(value).toLocaleDateString("es-PE", {
+    return new Date(value).toLocaleDateString("es-BO", {
       day: "2-digit",
       month: "short",
       year: "numeric",
@@ -163,7 +163,7 @@ export function ReferralsStatus({ code, onTotalPointsChange }: ReferralsStatusPr
                               <div className="text-right">
                                 <p className="text-xs font-bold uppercase tracking-wide text-muted">Puntos</p>
                                 <p className="text-lg font-black text-brand">
-                                  {referral.points > 0 ? `+${referral.points.toLocaleString("es-PE")}` : 'Pendiente'}
+                                  {referral.points > 0 ? `+${referral.points.toLocaleString("es-BO")}` : 'Pendiente'}
                                 </p>
                               </div>
                             </div>
@@ -186,7 +186,7 @@ export function ReferralsStatus({ code, onTotalPointsChange }: ReferralsStatusPr
                           Puntos
                         </p>
                         <p className="text-xl font-black text-brand">
-                          {referral.points > 0 ? `+${referral.points.toLocaleString("es-PE")}` : '0'}
+                          {referral.points > 0 ? `+${referral.points.toLocaleString("es-BO")}` : '0'}
                         </p>
                       </div>
                     </CardContent>

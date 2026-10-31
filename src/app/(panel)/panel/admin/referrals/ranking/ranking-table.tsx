@@ -16,8 +16,8 @@ export function RankingTable({ rows, loading, onUpdated }: { rows: RankingRow[];
       <td>{row.phone ? <a className={s.whatsapp} href={`https://wa.me/${row.phone.replace(/\D/g, '')}`} target="_blank" rel="noreferrer"><MessageCircle size={13} />Contactar</a> : '—'}</td>
       <td>{row.paymentType || '—'}</td>
       <td className={s.code}>{row.bankAccount || '—'}</td><td className={s.code}>{row.yape || '—'}</td><td className={s.code}>{row.plin || '—'}</td>
-      <td className={s.number}>{row.referralsCount.toLocaleString('es-PE')}</td><td className={s.number}>{row.completedCount.toLocaleString('es-PE')}</td><td className={s.number}>{row.points.toLocaleString('es-PE')}</td>
-      <td>{row.lastReferralAt ? new Intl.DateTimeFormat('es-PE', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'America/Lima' }).format(new Date(row.lastReferralAt)) : '—'}</td>
+      <td className={s.number}>{row.referralsCount.toLocaleString('es-BO')}</td><td className={s.number}>{row.completedCount.toLocaleString('es-BO')}</td><td className={s.number}>{row.points.toLocaleString('es-BO')}</td>
+      <td>{row.lastReferralAt ? new Intl.DateTimeFormat('es-BO', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'America/La_Paz' }).format(new Date(row.lastReferralAt)) : '—'}</td>
       <td className={s.actions}><MemberActions id={row.id} name={row.name} onUpdated={onUpdated} /></td>
     </tr>)}
   </tbody></table></div></section>;

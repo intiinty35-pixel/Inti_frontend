@@ -98,7 +98,7 @@ export function PublicFooter({ publishHref = ROUTES.registerProfessional }: { pu
           <div className="flex flex-col items-start text-left sm:col-span-2 lg:col-span-1">
             <Brand />
             <p className="mt-5 max-w-sm text-sm leading-6 text-white/70">
-              Tu aliado inmobiliario en Bolivia. Te acompañamos a encontrar, vender o desarrollar espacios con confianza.
+              Tu aliado inmobiliario en Santa Cruz de la Sierra. Te acompañamos a encontrar, vender o desarrollar espacios con confianza.
             </p>
             <Link href="/contacto" className="mt-5 inline-flex h-10 items-center gap-2 rounded-lg bg-accent px-4 text-sm font-bold text-brand transition-colors hover:bg-white">
               Habla con un asesor <ArrowUpRight className="size-4" />
@@ -138,9 +138,9 @@ export function PublicFooter({ publishHref = ROUTES.registerProfessional }: { pu
           <div>
             <h2 className="text-[11px] font-bold tracking-[0.18em] text-accent uppercase">Visítanos</h2>
             <ul className="mt-4 flex flex-col gap-4 text-sm text-white/70">
-              <li className="flex items-start gap-3"><MapPin className="mt-0.5 size-4 shrink-0 text-accent" /><a className="transition-colors hover:text-white" href="https://www.google.com/maps/search/La%20Paz%2C%20Bolivia" target="_blank" rel="noopener noreferrer">La Paz<br />Bolivia</a></li>
-              <li className="flex items-center gap-3"><Phone className="size-4 shrink-0 text-accent" /><a className="transition-colors hover:text-white" href="https://wa.me/51956678664" target="_blank" rel="noopener noreferrer">+51 956 678 664</a></li>
-              <li className="flex items-center gap-3"><Mail className="size-4 shrink-0 text-accent" /><Link className="transition-colors hover:text-white" href="/contacto">Contactar con Inti</Link></li>
+              <li className="flex items-start gap-3"><MapPin className="mt-0.5 size-4 shrink-0 text-accent" /><a className="transition-colors hover:text-white" href="https://www.google.com/maps/search/Santa%20Cruz%20de%20la%20Sierra%2C%20Bolivia" target="_blank" rel="noopener noreferrer">Santa Cruz de la Sierra</a></li>
+              <li className="flex items-center gap-3"><Phone className="size-4 shrink-0 text-accent" /><a className="transition-colors hover:text-white" href="https://wa.me/59163204858" target="_blank" rel="noopener noreferrer">+591 63204858</a></li>
+              <li className="flex items-center gap-3"><Mail className="size-4 shrink-0 text-accent" /><a className="transition-colors hover:text-white" href="mailto:intiinty35@gmail.com">intiinty35@gmail.com</a></li>
             </ul>
           </div>
 

@@ -224,13 +224,13 @@ export function EditIncentiveForm({ id, incentive }: EditIncentiveFormProps) {
                 <div className="flex items-center justify-between rounded-lg bg-surface-muted px-3 py-2">
                   <span className="font-semibold text-muted">Creado:</span>
                   <span className="font-bold text-ink">
-                    {new Date(incentive.createdAt).toLocaleDateString("es-PE")}
+                    {new Date(incentive.createdAt).toLocaleDateString("es-BO")}
                   </span>
                 </div>
                 <div className="flex items-center justify-between rounded-lg bg-surface-muted px-3 py-2">
                   <span className="font-semibold text-muted">Actualizado:</span>
                   <span className="font-bold text-ink">
-                    {new Date(incentive.updatedAt).toLocaleDateString("es-PE")}
+                    {new Date(incentive.updatedAt).toLocaleDateString("es-BO")}
                   </span>
                 </div>
               </div>

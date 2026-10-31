@@ -8,7 +8,7 @@ export const metadata = buildMetadata({
   description:
     "Diseño, ingeniería, construcción, remodelación, acabados, trámites y supervisión de obras con INTI Proyectos.",
   path: ROUTES.construye,
-  keywords: ["construcción de casas", "diseño y arquitectura", "remodelación", "expedientes técnicos", "Tumbes"],
+  keywords: ["construcción de casas", "diseño y arquitectura", "remodelación", "expedientes técnicos", "Santa Cruz de la Sierra", "Bolivia"],
 });
 
 export default function ConstruyePage() {

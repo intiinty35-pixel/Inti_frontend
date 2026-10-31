@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-const TIME = new Intl.DateTimeFormat("es-PE", {
+const TIME = new Intl.DateTimeFormat("es-BO", {
   hour: "2-digit",
   minute: "2-digit",
   second: "2-digit",

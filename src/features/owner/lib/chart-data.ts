@@ -1,7 +1,7 @@
 import type { Lead } from "@/features/owner/types/property";
 import { CATEGORICAL } from "@/shared/ui";
 
-const DAY_LABEL = new Intl.DateTimeFormat("es-PE", { day: "2-digit", month: "2-digit" });
+const DAY_LABEL = new Intl.DateTimeFormat("es-BO", { day: "2-digit", month: "2-digit" });
 
 export function leadsPerDay(leads: Lead[], days: number, now: number): { label: string; value: number }[] {
   const buckets = new Map<string, number>();
