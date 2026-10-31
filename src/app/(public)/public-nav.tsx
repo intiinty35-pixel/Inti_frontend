@@ -264,7 +264,7 @@ export function PublicNav({ overlay = false }: PublicNavProps = {}) {
             className={cn(BASE, linkTone(item, overlay))}
           >
             {item.label}
-            {active ? (
+            {active && item.label !== "Inicio" ? (
               <span aria-hidden className="absolute inset-x-3 bottom-0 h-[3px] rounded-t bg-accent" />
             ) : null}
           </Link>

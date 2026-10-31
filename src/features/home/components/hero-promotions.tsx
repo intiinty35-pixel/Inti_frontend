@@ -3,7 +3,7 @@ import { HeroPromotionsCarousel } from "@/features/home/components/hero-promotio
 import type { CurrentPromotion } from "@/features/promotions/types";
 
 const HERO_SLOT =
-  "pointer-events-none absolute right-0 bottom-6 z-5 hidden w-[48vw] max-w-[760px] min-w-[520px] lg:block xl:right-8";
+  "pointer-events-none absolute right-0 bottom-6 z-5 hidden w-[42vw] max-w-[620px] min-w-[400px] lg:block xl:right-8";
 
 /**
  * Espacio derecho del hero. Si hay promociones vigentes las muestra en carrusel;
@@ -26,7 +26,7 @@ export function HeroPromotions({ promotions }: { promotions: CurrentPromotion[] 
   }
 
   return (
-    <div className="absolute right-0 bottom-28 z-5 hidden w-[42vw] max-w-[660px] min-w-[420px] lg:block xl:right-8">
+    <div className="absolute right-0 bottom-28 z-5 hidden w-[38vw] max-w-[560px] min-w-[360px] lg:block xl:right-8">
       <HeroPromotionsCarousel promotions={promotions} />
     </div>
   );

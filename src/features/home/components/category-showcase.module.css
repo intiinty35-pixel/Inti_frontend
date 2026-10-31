@@ -1,0 +1,92 @@
+.rows {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.viewport {
+  overflow: hidden;
+}
+
+.track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+
+.group {
+  display: flex;
+  flex: none;
+  list-style: none;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0 0.75rem 0 0;
+}
+
+.item {
+  flex: none;
+}
+
+.toRight {
+  animation: move-right 32s linear infinite;
+}
+
+.toLeft {
+  animation: move-left 32s linear infinite;
+}
+
+.paused .track,
+.viewport:hover .track,
+.viewport:focus-within .track {
+  animation-play-state: paused;
+}
+
+@keyframes move-right {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes move-left {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@media (min-width: 640px) {
+  .rows {
+    gap: 1.25rem;
+  }
+
+  .group {
+    gap: 1.25rem;
+    padding-right: 1.25rem;
+  }
+
+  .toRight,
+  .toLeft {
+    animation-duration: 42s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .viewport {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+  }
+
+  .track {
+    animation: none;
+    transform: none;
+  }
+
+  .controls {
+    display: none;
+  }
+
+  .group[aria-hidden="true"] {
+    display: none;
+  }
+
+  .item {
+    scroll-snap-align: start;
+  }
+}

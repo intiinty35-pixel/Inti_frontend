@@ -18,8 +18,6 @@ export interface PublicHeaderProps {
   accountAvatarUrl?: string;
   accountHref: string;
   accountRole?: UserRole;
-  /** Destino de "Publicar propiedad": el formulario de publicar si hay sesión, el registro si no. */
-  publishHref?: string;
 }
 
 function Logo({ light }: { light: boolean }) {
@@ -57,7 +55,6 @@ export function PublicHeader({
   accountAvatarUrl,
   accountHref,
   accountRole,
-  publishHref = ROUTES.registerProfessional,
 }: PublicHeaderProps) {
   const pathname = usePathname();
   const overlay = hasOverlayHeader(pathname);
@@ -121,18 +118,6 @@ export function PublicHeader({
   const solid = !overlay;
   const translucent = overlay && scrolled;
 
-  const accountClass = (filled: boolean) =>
-    cn(
-      "flex h-10 items-center justify-center rounded-card border px-4 text-sm font-black whitespace-nowrap transition-colors",
-      filled
-        ? solid
-          ? "bg-brand text-on-brand hover:bg-brand-hover"
-          : "bg-accent text-on-accent hover:bg-accent-hover"
-        : solid
-          ? "border-edge bg-surface text-brand hover:border-brand"
-          : "border-white/35 bg-white/10 text-white hover:border-white/70 hover:bg-white/15",
-    );
-
   return (
     <header
       className={cn(
@@ -165,9 +150,6 @@ export function PublicHeader({
 
         {isCustomer ? (
           <div className="hidden items-center gap-2 lg:flex">
-            <Link href={publishHref} className={accountClass(true)}>
-              Publicar propiedad
-            </Link>
             <div className="relative" ref={desktopAccountMenuRef}>
               <button
                 type="button"
@@ -253,25 +235,18 @@ export function PublicHeader({
             {accountName}
           </Link>
         ) : (
-          <div className="hidden grid-cols-2 gap-2 lg:grid">
+          <div className="hidden lg:flex">
             <Link
               href={ROUTES.login}
               className={cn(
-                "flex h-10 items-center justify-center gap-2 rounded-card border px-4 text-sm font-black whitespace-nowrap transition-colors",
+                "flex h-10 items-center justify-center gap-2 rounded-card border border-accent bg-accent px-4 text-sm font-black whitespace-nowrap text-on-accent transition-colors hover:bg-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
                 solid
-                  ? "border-[#25d366] bg-[#25d366]/10 text-[#168a43] hover:border-[#1fb857] hover:bg-[#25d366]/20"
-                  : "border-[#25d366] bg-[#25d366] text-white shadow-[0_8px_20px_-8px_rgb(37_211_102_/_0.7)] hover:bg-[#1fb857]",
+                  ? "shadow-sm"
+                  : "shadow-[0_8px_20px_-8px_rgb(255_210_0_/_0.4)]",
               )}
             >
               <span>Iniciar sesión</span>
               <LogIn className="size-4 shrink-0 translate-y-0.5" aria-hidden="true" />
-            </Link>
-            {/*
-              Sobre el hero oscuro el azul de marca no se distingue del fondo,
-              asi que el registro pasa a amarillo, que es el acento de la marca.
-            */}
-            <Link href={publishHref} className={accountClass(true)}>
-              Publicar propiedad
             </Link>
           </div>
         )}
@@ -398,7 +373,7 @@ export function PublicHeader({
 
           <div className="border-t border-edge p-4">
             {isCustomer ? (
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid gap-2">
                 <Link
                   href={accountHref}
                   onClick={() => setMenuOpen(false)}
@@ -407,16 +382,9 @@ export function PublicHeader({
                   Mi cuenta
                 </Link>
                 <Link
-                  href={publishHref}
-                  onClick={() => setMenuOpen(false)}
-                  className="flex h-11 items-center justify-center rounded-card bg-accent px-3 text-sm font-bold text-on-accent"
-                >
-                  Publicar propiedad
-                </Link>
-                <Link
                   href={ROUTES.panel.client.favorites}
                   onClick={() => setMenuOpen(false)}
-                  className="col-span-2 flex h-11 items-center justify-center gap-2 rounded-card bg-brand px-3 text-sm font-bold text-on-brand"
+                  className="flex h-11 items-center justify-center gap-2 rounded-card bg-brand px-3 text-sm font-bold text-on-brand"
                 >
                   <Heart className="size-4" />
                   Mis favoritos
@@ -431,21 +399,14 @@ export function PublicHeader({
                 {accountName ?? "Mi cuenta"}
               </Link>
             ) : (
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid gap-2">
                 <Link
                   href={ROUTES.login}
                   onClick={() => setMenuOpen(false)}
-                  className="flex h-11 items-center justify-center gap-2 rounded-card border border-[#25d366] bg-[#25d366] px-4 text-sm font-bold text-white transition-colors hover:bg-[#1fb857]"
+                  className="flex h-11 items-center justify-center gap-2 rounded-card border border-accent bg-accent px-4 text-sm font-bold text-on-accent transition-colors hover:bg-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
                 >
                   <span>Iniciar sesión</span>
                   <LogIn className="size-4 shrink-0 translate-y-0.5" aria-hidden="true" />
-                </Link>
-                <Link
-                  href={publishHref}
-                  onClick={() => setMenuOpen(false)}
-                  className="flex h-11 items-center justify-center rounded-card bg-accent px-4 text-sm font-bold text-on-accent"
-                >
-                  Publicar propiedad
                 </Link>
               </div>
             )}

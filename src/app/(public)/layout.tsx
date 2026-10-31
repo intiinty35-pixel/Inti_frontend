@@ -52,7 +52,6 @@ export default async function PublicLayout({ children }: { children: ReactNode }
         accountAvatarUrl={accountAvatarUrl}
         accountRole={session?.role}
         accountHref={session ? getHomeRoute(session.role) : ROUTES.login}
-        publishHref={publishHref}
       />
 
       <FavoritesProvider isAuthenticated={Boolean(session)}>

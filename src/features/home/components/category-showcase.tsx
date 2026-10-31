@@ -1,18 +1,20 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import {
-  ArrowRight,
   Construction,
   Hammer,
   HandCoins,
   House,
   KeyRound,
+  Pause,
+  Play,
   TrendingUp,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { ROUTES } from "@/shared/config/routes";
-import { cn } from "@/shared/lib/cn";
+import styles from "./category-showcase.module.css";
 
 interface Category {
   slug: string;
@@ -23,132 +25,81 @@ interface Category {
 }
 
 const categories: readonly Category[] = [
-  {
-    slug: "comprar",
-    label: "Comprar propiedad",
-    subtitle: "Encuentra tu hogar ideal en Tumbes.",
-    href: `${ROUTES.properties}?operation=buy`,
-    Icon: House,
-  },
-  {
-    slug: "proyectos",
-    label: "Ver proyectos",
-    subtitle: "Conoce nuestros desarrollos inmobiliarios.",
-    href: ROUTES.projects,
-    Icon: Construction,
-  },
-  {
-    slug: "invertir",
-    label: "Invertir con Inti",
-    subtitle: "Oportunidades con alta plusvalia.",
-    href: ROUTES.investments,
-    Icon: TrendingUp,
-  },
-  {
-    slug: "vender",
-    label: "Vender mi propiedad",
-    subtitle: "Publica y vende con el mejor respaldo.",
-    href: ROUTES.registerProfessional,
-    Icon: HandCoins,
-  },
-  {
-    slug: "construir",
-    label: "Construir mi casa",
-    subtitle: "Hacemos realidad tu proyecto.",
-    href: ROUTES.construye,
-    Icon: Hammer,
-  },
-  {
-    slug: "alquilar",
-    label: "Alquilar mi propiedad",
-    subtitle: "Encuentra o publica en alquiler.",
-    href: `${ROUTES.properties}?operation=rent`,
-    Icon: KeyRound,
-  },
+  { slug: "comprar", label: "Comprar propiedad", subtitle: "Encuentra tu hogar ideal en Tumbes.", href: `${ROUTES.properties}?operation=buy`, Icon: House },
+  { slug: "proyectos", label: "Ver proyectos", subtitle: "Conoce nuestros desarrollos inmobiliarios.", href: ROUTES.projects, Icon: Construction },
+  { slug: "invertir", label: "Invertir con Inti", subtitle: "Oportunidades con alta plusvalía.", href: ROUTES.investments, Icon: TrendingUp },
+  { slug: "vender", label: "Vender mi propiedad", subtitle: "Publica y vende con el mejor respaldo.", href: ROUTES.registerProfessional, Icon: HandCoins },
+  { slug: "construir", label: "Construir mi casa", subtitle: "Hacemos realidad tu proyecto.", href: ROUTES.construye, Icon: Hammer },
+  { slug: "alquilar", label: "Alquilar mi propiedad", subtitle: "Encuentra o publica en alquiler.", href: `${ROUTES.properties}?operation=rent`, Icon: KeyRound },
 ];
 
-const GRID =
-  "horizontal-scrollbar-hidden mt-8 flex gap-3 overflow-x-auto pb-1 sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0 sm:gap-4 lg:grid-cols-6";
-
-function CategoryCard({ category, index }: { category: Category; index: number }) {
-  const { Icon } = category;
-
-  return (
-    <li
-      className="animate-[categoryFadeIn_700ms_ease-out_both]"
-      style={{ animationDelay: `${index * 70}ms` }}
-    >
-      <Link
-        href={category.href}
-        aria-label={`${category.label}. ${category.subtitle}`}
-        className={cn(
-          "group flex h-[144px] w-[175px] shrink-0 flex-col rounded-[6px] border border-brand bg-brand px-5 pt-4 pb-3 shadow-[0_10px_24px_rgb(11_27_92_/_0.18)] transition duration-200 sm:h-[144px] sm:w-auto sm:px-5 sm:pt-4 sm:pb-3",
-          "hover:-translate-y-0.5 hover:bg-brand-hover hover:shadow-[0_14px_28px_rgb(11_27_92_/_0.22)]",
-          "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent",
-        )}
-      >
-        <span aria-hidden className="mb-2 grid size-7 place-items-center text-white">
-          <Icon className="size-6" strokeWidth={2.6} />
-        </span>
-
-        <span className="min-w-0 text-center">
-          <span className="mx-auto block max-w-[8.6rem] text-[14.5px] font-black leading-5 text-accent">
-            {category.label}
-          </span>
-          <span className="mx-auto mt-1 block max-w-[8.8rem] text-[11px] font-semibold leading-4 text-white/85">
-            {category.subtitle}
-          </span>
-        </span>
-
-        <span
-          aria-hidden
-          className="mt-auto grid size-5 place-items-center rounded-full bg-white text-brand transition-colors duration-200 group-hover:bg-accent group-hover:text-on-accent"
-        >
-          <ArrowRight className="size-3" strokeWidth={2.4} />
-        </span>
-      </Link>
-    </li>
+function CategoryCard({ category, decorative = false }: { category: Category; decorative?: boolean }) {
+  const { label, subtitle, href, Icon } = category;
+  const cardClass = "group flex min-h-[142px] w-[min(44vw,12rem)] shrink-0 flex-col items-center justify-center border border-edge bg-white px-3 py-4 text-center transition-colors duration-200 hover:border-brand/35 hover:bg-[#fbfaf7] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand sm:min-h-[180px] sm:w-[min(48vw,19rem)] sm:max-w-[22rem] sm:px-5 sm:py-6 sm:focus-visible:outline-offset-4 lg:w-[26vw]";
+  const content = (
+    <>
+      <span className="grid size-8 place-items-center border border-accent text-brand transition-colors group-hover:bg-accent/10 sm:size-11">
+        <Icon className="size-4 sm:size-[18px]" strokeWidth={1.8} />
+      </span>
+      <h3 className="mt-2.5 text-[10px] leading-snug font-semibold uppercase tracking-[0.02em] text-brand sm:mt-4 sm:text-sm sm:tracking-[0.04em]">{label}</h3>
+      <p className="mt-1 max-w-[15rem] text-[9px] leading-relaxed text-muted sm:mt-2 sm:text-xs">{subtitle}</p>
+    </>
   );
+
+  if (decorative) return <Link href={href} tabIndex={-1} aria-hidden="true" className={cardClass}>{content}</Link>;
+  return <Link href={href} aria-label={`${label}. ${subtitle}`} className={cardClass}>{content}</Link>;
 }
 
-export interface CategoryShowcaseProps {
-  /**
-   * `"hero"` (por defecto): el buscador del hero se solapa sobre el borde
-   * superior de esta sección, por eso reserva espacio en móvil.
-   * `"section"`: hay una sección intermedia (promociones móviles) que ya
-   * absorbe ese solape y aquí solo se necesita el espaciado normal.
-   */
-  topSpacing?: "hero" | "section";
-}
+export function CategoryShowcase() {
+  const [isPaused, setIsPaused] = useState(false);
+  const rows = [categories.slice(0, 3), categories.slice(3, 6)] as const;
 
-export function CategoryShowcase({ topSpacing = "hero" }: CategoryShowcaseProps) {
   return (
-    <section
-      className={cn(
-        "overflow-hidden bg-[#f1efea] pb-7 lg:pt-32",
-        topSpacing === "hero" ? "pt-[180px] sm:pt-[190px]" : "pt-7 sm:pt-8",
-      )}
-    >
-      <div className="mx-auto w-full px-3 sm:px-4 lg:px-5 xl:px-6">
-        <div className="flex items-center justify-between gap-4">
-          <h2 className="text-[28px] font-black leading-none tracking-tight text-brand sm:text-[34px] lg:text-[40px]">
+    <section className="overflow-hidden bg-white py-10 sm:py-12 lg:py-14" aria-labelledby="category-showcase-title">
+      <div className="mx-auto w-full max-w-[84rem] px-4 sm:px-6">
+        <header className="mx-auto max-w-2xl text-center">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-brand/65">Servicios inmobiliarios</p>
+          <h2 id="category-showcase-title" className="mt-2 font-display text-balance text-2xl font-bold uppercase leading-tight tracking-[0.04em] text-brand sm:text-3xl sm:tracking-[0.06em] lg:text-4xl">
             ¿Qué quieres hacer hoy?
           </h2>
-          <div className="flex items-center gap-2">
-            <span className="flex items-center gap-1 text-[11px] font-bold text-muted sm:hidden">
-              Desliza <span className="inline-block animate-bounce text-accent">→</span>
-            </span>
-            <p className="hidden pt-0.5 text-[11px] font-bold leading-none text-muted sm:block">
-              Todo lo que necesitas en un solo lugar
-            </p>
-          </div>
+          <span aria-hidden="true" className="mx-auto mt-4 block h-0.5 w-14 rounded-full bg-accent" />
+        </header>
+
+        <div className="mt-6 flex justify-center sm:mt-8">
+          <button
+            type="button"
+            onClick={() => setIsPaused((paused) => !paused)}
+            aria-pressed={isPaused}
+            aria-label={isPaused ? "Reanudar movimiento de las tarjetas" : "Pausar movimiento de las tarjetas"}
+            className={`${styles.controls} inline-flex min-h-9 items-center gap-2 rounded-full border border-edge px-3 text-[11px] font-semibold text-brand transition-colors hover:border-brand/40 hover:bg-[#fbfaf7] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand sm:min-h-10 sm:px-4 sm:text-xs`}
+          >
+            {isPaused ? <Play className="size-3.5" aria-hidden="true" /> : <Pause className="size-3.5" aria-hidden="true" />}
+            {isPaused ? "Reanudar" : "Pausar"}
+          </button>
         </div>
 
-        <ul className={GRID}>
-          {categories.map((category, index) => (
-            <CategoryCard key={category.slug} category={category} index={index} />
+        <div className={`${styles.rows} ${isPaused ? styles.paused : ""} mt-6 sm:mt-7`}>
+          {rows.map((row, rowIndex) => (
+            <div className={styles.viewport} key={rowIndex}>
+              <div className={`${styles.track} ${rowIndex === 0 ? styles.toRight : styles.toLeft}`}>
+                <ul className={styles.group} aria-label={rowIndex === 0 ? "Opciones inmobiliarias, primera fila" : "Opciones inmobiliarias, segunda fila"}>
+                  {row.map((category) => (
+                    <li className={styles.item} key={category.slug}>
+                      <CategoryCard category={category} />
+                    </li>
+                  ))}
+                </ul>
+                <div className={styles.group} aria-hidden="true">
+                  {row.map((category) => (
+                    <div className={styles.item} key={category.slug}>
+                      <CategoryCard category={category} decorative />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           ))}
-        </ul>
+        </div>
       </div>
     </section>
   );

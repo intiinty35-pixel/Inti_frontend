@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BookOpenText } from "lucide-react";
+import { ArrowUpRight, BookOpenText, Mail, MapPin, Phone } from "lucide-react";
 import { Container } from "@/shared/ui";
 import { ROUTES } from "@/shared/config/routes";
 
@@ -28,21 +28,10 @@ const GROUPS: readonly FooterGroup[] = [
     links: [
       { label: "Comprar", href: `${ROUTES.properties}?operation=buy` },
       { label: "Alquilar", href: `${ROUTES.properties}?operation=rent` },
-      { label: "Proyectos" },
+      { label: "Proyectos", href: ROUTES.projects },
       { label: "Ver mapa", href: `${ROUTES.home}#mapa` },
     ],
   },
-  /* [OCULTO-DEMO P8] Footer: grupo Profesionales
-  {
-    title: "Profesionales",
-    links: [
-      { label: "Publicar propiedad", href: ROUTES.registerProfessional },
-      { label: "Para agentes", href: ROUTES.registerProfessional },
-      { label: "Para inmobiliarias", href: ROUTES.registerProfessional },
-      { label: "Para desarrolladores", href: ROUTES.registerProfessional },
-    ],
-  },
-  */
   {
     title: "Inti",
     links: [
@@ -103,15 +92,17 @@ function Brand() {
 
 export function PublicFooter({ publishHref = ROUTES.registerProfessional }: { publishHref?: string }) {
   return (
-    <footer className="bg-brand text-white">
-      <Container size="wide" className="py-14 sm:py-16">
-        <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-2 sm:gap-10 lg:grid-cols-[1.4fr_repeat(3,1fr)_auto] lg:gap-8">
-          <div className="col-span-2 flex flex-col items-center text-center sm:col-span-1 sm:items-start sm:text-left">
+    <footer className="border-t-4 border-accent bg-[#071b45] text-white">
+      <Container size="wide" className="py-12 sm:py-16">
+        <div className="grid grid-cols-1 gap-x-12 gap-y-12 sm:grid-cols-2 lg:grid-cols-[1.3fr_0.75fr_0.75fr_1.15fr] lg:gap-12">
+          <div className="flex flex-col items-start text-left sm:col-span-2 lg:col-span-1">
             <Brand />
-            <p className="mt-5 max-w-xs text-sm leading-relaxed text-white/75">
-              Conectamos personas, propiedades y oportunidades con una experiencia más clara y
-              confiable.
+            <p className="mt-5 max-w-sm text-sm leading-6 text-white/70">
+              Tu aliado inmobiliario en Bolivia. Te acompañamos a encontrar, vender o desarrollar espacios con confianza.
             </p>
+            <Link href="/contacto" className="mt-5 inline-flex h-10 items-center gap-2 rounded-lg bg-accent px-4 text-sm font-bold text-brand transition-colors hover:bg-white">
+              Habla con un asesor <ArrowUpRight className="size-4" />
+            </Link>
           </div>
 
           {GROUPS.map((group) => (
@@ -119,13 +110,13 @@ export function PublicFooter({ publishHref = ROUTES.registerProfessional }: { pu
               <h2 className="text-[11px] font-bold tracking-[0.18em] text-accent uppercase">
                 {group.title}
               </h2>
-              <ul className="mt-4 flex flex-col gap-2.5">
+              <ul className="mt-4 flex flex-col gap-3">
                 {group.links.map((link) => (
                   <li key={link.label}>
                     {link.href ? (
                       <Link
                         href={link.label === "Publicar propiedad" ? publishHref : link.href}
-                        className="inline-flex items-center gap-2 text-sm text-white/75 transition-colors hover:text-white"
+                        className="inline-flex items-center gap-2 text-sm text-white/70 transition-colors hover:text-accent"
                       >
                         {link.href === ROUTES.claims ? <BookOpenText className="size-4 text-accent" /> : null}
                         {link.label}
@@ -133,7 +124,7 @@ export function PublicFooter({ publishHref = ROUTES.registerProfessional }: { pu
                     ) : (
                       <span
                         title="Disponible próximamente"
-                        className="cursor-default text-sm text-white/75"
+                        className="cursor-default text-sm text-white/50"
                       >
                         {link.label}
                       </span>
@@ -144,11 +135,28 @@ export function PublicFooter({ publishHref = ROUTES.registerProfessional }: { pu
             </div>
           ))}
 
-          <div className="flex flex-col items-start text-left sm:items-end sm:justify-self-end sm:text-right">
-            <h2 className="text-[11px] font-bold tracking-[0.18em] text-accent uppercase">
-              Síguenos
-            </h2>
-            <ul className="mt-4 grid grid-cols-2 justify-items-start gap-3 sm:flex sm:items-center sm:justify-items-end">
+          <div>
+            <h2 className="text-[11px] font-bold tracking-[0.18em] text-accent uppercase">Visítanos</h2>
+            <ul className="mt-4 flex flex-col gap-4 text-sm text-white/70">
+              <li className="flex items-start gap-3"><MapPin className="mt-0.5 size-4 shrink-0 text-accent" /><a className="transition-colors hover:text-white" href="https://www.google.com/maps/search/La%20Paz%2C%20Bolivia" target="_blank" rel="noopener noreferrer">La Paz<br />Bolivia</a></li>
+              <li className="flex items-center gap-3"><Phone className="size-4 shrink-0 text-accent" /><a className="transition-colors hover:text-white" href="https://wa.me/51956678664" target="_blank" rel="noopener noreferrer">+51 956 678 664</a></li>
+              <li className="flex items-center gap-3"><Mail className="size-4 shrink-0 text-accent" /><Link className="transition-colors hover:text-white" href="/contacto">Contactar con Inti</Link></li>
+            </ul>
+          </div>
+
+        </div>
+
+        {/* Franja inferior */}
+        <div className="mt-10 border-t border-white/20 pt-6 text-xs text-white/70">
+          <div className="grid grid-cols-1 items-center gap-6 md:grid-cols-[1fr_auto_1fr]">
+            <div className="flex flex-col items-center gap-1 text-center md:items-start md:text-left">
+              <span>© {new Date().getFullYear()} Inti Proyectos</span>
+              <Link href={ROUTES.terms} className="font-semibold text-accent transition-colors hover:text-white">
+                Términos y condiciones
+              </Link>
+            </div>
+
+            <ul className="flex items-center justify-center gap-2" aria-label="Redes sociales de Inti">
               {SOCIAL_LINKS.map(({ name, href }) => (
                 <li key={name}>
                   {href ? (
@@ -162,43 +170,19 @@ export function PublicFooter({ publishHref = ROUTES.registerProfessional }: { pu
                       <SocialIcon name={name} />
                     </a>
                   ) : (
-                    <span
-                      title="LinkedIn: próximamente"
-                      role="img"
-                      aria-label="LinkedIn: próximamente"
-                      className="grid size-10 cursor-default place-items-center rounded-full border border-white/10 text-white/35"
-                    >
+                    <span title="LinkedIn: próximamente" role="img" aria-label="LinkedIn: próximamente" className="grid size-10 cursor-default place-items-center rounded-full border border-white/10 text-white/35">
                       <SocialIcon name={name} />
                     </span>
                   )}
                 </li>
               ))}
             </ul>
-          </div>
-        </div>
 
-        {/* Sección inferior */}
-        <div className="mt-10 grid grid-cols-1 items-center gap-6 border-t border-white/20 pt-6 text-xs text-white/70 md:grid-cols-3">
-          {/* Izquierda: Copyright y Términos */}
-          <div className="order-2 flex flex-col items-center gap-1 text-center md:order-1 md:items-start md:text-left">
-            <span>© {new Date().getFullYear()} Inti Proyectos</span>
-            <Link href={ROUTES.terms} className="font-semibold text-accent transition-colors hover:text-white">
-              Términos y condiciones
-            </Link>
+            <div className="flex flex-col items-center gap-1 text-center">
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/50">Registro inmobiliario · MVCS</p>
+              <p className="text-xs font-bold tracking-wide text-white/85">Código N.º 02407-PJ-MVCS</p>
+            </div>
           </div>
-
-          {/* Centro: Imagen del MVCS y Código */}
-          <div className="order-1 flex flex-col items-center gap-1 text-center md:order-2">
-            <img
-              src="/logo/ministerio-vivienda.png"
-              alt="Ministerio de Vivienda, Construcción y Saneamiento del Perú"
-              className="h-[4.5rem] w-72 max-w-full rounded-sm bg-white object-cover object-center"
-            />
-            <p className="text-xs font-bold tracking-wide text-white/85">CÓDIGO N° 02407 - PJ - MVCS</p>
-          </div>
-
-          {/* Columna derecha vacía para balancear el grid en desktop */}
-          <div className="hidden md:order-3 md:block" />
         </div>
       </Container>
     </footer>

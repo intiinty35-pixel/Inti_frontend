@@ -1,6 +1,3 @@
-"use client";
-
-import { useState } from "react";
 import { BadgeCheck, Handshake, LineChart, MapPinned, ShieldCheck } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -9,9 +6,16 @@ interface Reason {
   title: string;
   description: string;
   Icon: LucideIcon;
-  backTitle: string;
   backPoints: readonly string[];
 }
+
+const CARD_POSITIONS = [
+  "xl:col-start-1 xl:col-span-2",
+  "xl:col-start-3 xl:col-span-2",
+  "xl:col-start-5 xl:col-span-2",
+  "xl:col-start-2 xl:col-span-2",
+  "xl:col-start-4 xl:col-span-2",
+];
 
 const REASONS: readonly Reason[] = [
   {
@@ -19,7 +23,6 @@ const REASONS: readonly Reason[] = [
     title: "Propiedades verificadas",
     description: "Revisamos fotos, datos y documentos antes de publicar cada anuncio.",
     Icon: BadgeCheck,
-    backTitle: "Así lo verificamos",
     backPoints: [
       "Documentación revisada antes de publicar.",
       "Fotos y medidas reales del inmueble.",
@@ -31,7 +34,6 @@ const REASONS: readonly Reason[] = [
     title: "Ubicación precisa",
     description: "Mapa, distrito y referencia exacta en cada inmueble del listado.",
     Icon: MapPinned,
-    backTitle: "Ubícala sin dudas",
     backPoints: [
       "Coordenadas exactas y distrito señalado.",
       "Referencia clara en cada anuncio.",
@@ -43,7 +45,6 @@ const REASONS: readonly Reason[] = [
     title: "Valores claros",
     description: "Precio, área y lotes siempre a la vista, sin letra chica.",
     Icon: LineChart,
-    backTitle: "Sin letra chica",
     backPoints: [
       "Precio total y área siempre a la vista.",
       "Condiciones y gastos explicados.",
@@ -55,7 +56,6 @@ const REASONS: readonly Reason[] = [
     title: "Te acompañamos",
     description: "Un asesor de INTI te guía desde la búsqueda hasta la escritura.",
     Icon: Handshake,
-    backTitle: "Te guiamos en todo",
     backPoints: [
       "Asesor dedicado desde la búsqueda.",
       "Apoyo en visitas y trámites.",
@@ -67,7 +67,6 @@ const REASONS: readonly Reason[] = [
     title: "Inmobiliaria registrada",
     description: "Operamos con registro inmobiliario para brindarte respaldo y confianza.",
     Icon: ShieldCheck,
-    backTitle: "Respaldo institucional",
     backPoints: [
       "Codigo de agencia inmobiliaria N.º 02407-PJ-MVCS.",
       "Atencion responsable en cada operacion.",
@@ -76,114 +75,52 @@ const REASONS: readonly Reason[] = [
   },
 ];
 
-/** Card que gira al hacer clic y muestra información útil en la cara trasera. */
-function FlipReasonCard({ reason }: { reason: Reason }) {
-  const [flipped, setFlipped] = useState(false);
+/** Tarjeta informativa fija, legible sin interacción. */
+function ReasonCard({ reason, index }: { reason: Reason; index: number }) {
   const Icon = reason.Icon;
 
-  const backfaceVisibility = {
-    backfaceVisibility: "hidden",
-    WebkitBackfaceVisibility: "hidden",
-  } as const;
-
   return (
-    <button
-      type="button"
-      onClick={() => setFlipped((value) => !value)}
-      aria-pressed={flipped}
-      title={flipped ? "Volver a ver el resumen" : "Ver más información"}
-      className="h-full min-h-[240px] w-full rounded-[8px] text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand sm:h-[245px] sm:min-h-0"
-      style={{ perspective: "1400px" }}
-    >
-      <div
-        className="relative grid h-full w-full transition-transform duration-500"
-        style={{
-          transformStyle: "preserve-3d",
-          transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
-        }}
-      >
-        {/* Cara frontal */}
-        <div
-          className="col-start-1 row-start-1 flex min-w-0 flex-col rounded-[8px] border border-edge bg-surface p-3 shadow-sm sm:p-4"
-          style={backfaceVisibility}
-        >
-          <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-[6px] bg-accent/15 text-accent">
-            <Icon className="size-5" strokeWidth={1.8} />
-          </span>
-
-          <div className="mt-2.5 min-w-0">
-            <h3 className="break-words text-sm leading-tight font-black tracking-tight text-[#082a6b] sm:text-base">
-              {reason.title}
-            </h3>
-            <p className="mt-1 break-words text-[11px] leading-snug text-[#596273] sm:text-[12.5px] sm:leading-relaxed">
-              {reason.description}
-            </p>
-          </div>
-
-          <span className="mt-auto inline-flex min-w-0 items-center gap-1 pt-2.5 text-[10px] leading-tight font-bold text-brand sm:text-xs">
-            Toca para descubrir más
-            <Icon className="size-3.5 shrink-0" strokeWidth={2.2} />
-          </span>
-        </div>
-
-        {/* Cara trasera */}
-        <div
-          className="col-start-1 row-start-1 flex min-w-0 flex-col rounded-[8px] bg-brand p-3.5 text-white shadow-[var(--shadow-pop)] sm:p-4"
-          style={{ ...backfaceVisibility, transform: "rotateY(180deg)" }}
-        >
-          <p className="text-[10px] font-bold tracking-[0.16em] text-accent uppercase">
-            Dato útil
-          </p>
-          <h3 className="mt-1 text-base font-black tracking-tight text-white sm:text-lg">{reason.backTitle}</h3>
-
-          <ul className="mt-2 flex flex-col gap-1.5 sm:mt-2.5 sm:gap-2">
-            {reason.backPoints.map((point) => (
-              <li key={point} className="flex items-start gap-2 text-[11.5px] leading-snug text-white/90 sm:text-xs">
-                <span aria-hidden className="mt-1.5 size-1.5 shrink-0 rounded-full bg-accent" />
-                {point}
-              </li>
-            ))}
-          </ul>
-
-          <span className="mt-auto inline-flex items-center gap-1 pt-3 text-xs font-bold text-white/80">
-            Volver
-          </span>
-        </div>
+    <li className={`group relative flex min-h-[190px] flex-col overflow-hidden rounded-3xl border border-white bg-white p-4 shadow-[0_12px_34px_rgb(11_27_92_/_0.06)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_46px_rgb(11_27_92_/_0.12)] sm:min-h-[230px] sm:p-7 ${CARD_POSITIONS[index]}`}>
+      <span aria-hidden className="pointer-events-none absolute -right-7 -top-8 size-28 rounded-full bg-accent/10 transition-transform duration-500 group-hover:scale-125" />
+      <div className="relative flex items-center justify-between">
+        <span className="grid size-12 place-items-center rounded-2xl bg-brand text-accent"><Icon className="size-5" strokeWidth={1.8} /></span>
+        <span className="font-display text-4xl font-semibold tabular-nums text-brand/10">{String(index + 1).padStart(2, "0")}</span>
       </div>
-    </button>
+      <h3 className="relative mt-5 font-display text-lg font-bold leading-tight text-brand">{reason.title}</h3>
+      <p className="relative mt-2 text-sm leading-relaxed text-muted">{reason.description}</p>
+      <p className="relative mt-auto flex items-start gap-2 border-t border-edge pt-4 text-xs leading-relaxed text-brand/75">
+        <BadgeCheck className="mt-0.5 size-4 shrink-0 text-accent" />{reason.backPoints[0]}
+      </p>
+    </li>
   );
 }
 
 export function WhyChooseArizSection() {
   return (
-    <section aria-labelledby="por-que-elegir-ariz" className="w-full bg-white py-12 sm:py-16">
-      {/* Reemplazamos Container o removemos la restricción de max-width si quieres ancho completo */}
-      <div className="w-full px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:gap-x-8">
-          <div>
-            <p className="text-[11px] font-bold tracking-[0.18em] text-accent uppercase">
-              Confianza y respaldo
-            </p>
-            <h2
-              id="por-que-elegir-ariz"
-              className="mt-2 max-w-full text-xl leading-tight font-black tracking-tight text-[#082a6b] text-balance sm:text-3xl"
-            >
-              Por qué elegir Inti
-            </h2>
-          </div>
-
-          <p className="text-sm leading-relaxed font-bold text-[#596273] lg:pb-0.5">
-            Comprar con INTI significa comprar con datos verificados y el respaldo de un asesor
-            que te acompaña hasta el final.
+    <section aria-labelledby="por-que-elegir-ariz" className="relative isolate w-full overflow-hidden bg-[#f7f6f2] py-10 sm:py-20 lg:py-24">
+      <div aria-hidden className="pointer-events-none absolute -top-40 left-1/2 -z-10 size-[32rem] -translate-x-1/2 rounded-full bg-white/70 blur-3xl" />
+      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+        <header className="mx-auto max-w-2xl text-center">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-brand/60">Confianza que se construye</p>
+          <h2 id="por-que-elegir-ariz" className="mt-2 font-display text-2xl font-bold tracking-tight text-brand sm:text-4xl lg:text-5xl">
+            Por qué elegir Inti
+          </h2>
+          <span aria-hidden="true" className="mx-auto mt-4 block h-0.5 w-14 rounded-full bg-accent" />
+          <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-muted sm:text-base">
+            Comprar con INTI significa contar con información clara y un asesor que te acompaña en cada paso.
           </p>
-        </div>
-        <ul className="mt-5 grid grid-cols-2 gap-3 sm:mt-7 sm:grid-cols-2 sm:gap-4 lg:grid-cols-5">
-          {REASONS.map((reason) => (
-            <li key={reason.key} className="w-full">
-              <FlipReasonCard reason={reason} />
-            </li>
+        </header>
+        <ul className="mt-7 grid grid-cols-1 gap-3 sm:mt-10 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:mt-14 xl:grid-cols-6 xl:gap-5">
+          {REASONS.map((reason, index) => (
+            <ReasonCard key={reason.key} reason={reason} index={index} />
           ))}
         </ul>
+        <div className="mx-auto mt-6 flex max-w-3xl flex-wrap items-center justify-center gap-x-3 gap-y-1 rounded-2xl border border-brand/10 bg-white/75 px-4 py-3 text-center shadow-sm sm:mt-10 sm:px-5 sm:py-4">
+          <ShieldCheck className="size-5 text-brand" />
+          <span className="text-xs font-semibold text-brand">Inmobiliaria registrada ante el MVCS</span>
+          <span className="hidden h-4 w-px bg-edge sm:block" />
+          <span className="text-xs text-muted">Código N.º 02407-PJ-MVCS</span>
+        </div>
       </div>
     </section>
   );

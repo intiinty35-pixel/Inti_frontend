@@ -1,18 +1,12 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import Link from "next/link";
 import { MapIcon } from "@/shared/ui";
 import type { MapPoint } from "@/features/listings/components/listings-map";
 
 const ProjectMap = dynamic<{ points: readonly MapPoint[]; className?: string }>(
   () =>
-    import("@/features/listings/components/listings-map").then((module) => {
-      const Inner = ({ points, className }: { points: readonly MapPoint[]; className?: string }) => (
-        <module.ListingsMap points={points} className={className} interactive={false} compactPins />
-      );
-      return Inner;
-    }),
+    import("@/features/home/components/openfreemap-project-map").then((module) => module.OpenFreeMapProjectMap),
   {
     ssr: false,
     loading: () => (
@@ -25,43 +19,27 @@ const ProjectMap = dynamic<{ points: readonly MapPoint[]; className?: string }>(
 
 export function AccountProjectMapPreview({
   points,
-  href,
 }: {
   points: readonly MapPoint[];
-  href: string;
 }) {
   return (
-    <Link
-      href={href}
-      aria-label="Ver proyectos en el mapa"
-      className="group relative mx-auto block h-[380px] w-full max-w-[360px] overflow-hidden rounded-[8px] border border-white/70 bg-[#DDE8F7] shadow-[0_24px_60px_rgb(7_26_90_/_0.18)] transition-transform hover:-translate-y-1 sm:h-[420px] lg:h-[480px]"
-    >
-      {points.length > 0 ? (
-        <ProjectMap points={points} className="h-full w-full" />
-      ) : (
-        <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-surface-muted p-8 text-center">
-          <MapIcon className="size-9 text-brand/40" />
-          <span className="text-sm font-black text-brand">Mapa de proyectos</span>
-        </div>
-      )}
+    <div role="region" aria-label="Mapa interactivo de proyectos INTI" className="group relative h-[65svh] min-h-[360px] max-h-[900px] w-full overflow-hidden bg-[#DDE8F7] sm:h-[70vh] sm:min-h-[520px]">
+      <ProjectMap points={points} className="openfreemap-map h-full w-full" />
 
-      <div className="absolute inset-x-5 top-5 flex items-center justify-between rounded-[8px] bg-white/90 px-4 py-3 shadow-sm backdrop-blur">
+      <div className="pointer-events-none absolute left-4 top-4 flex items-center gap-2 rounded-full border border-white/70 bg-white/95 px-4 py-2.5 shadow-md backdrop-blur sm:left-6 sm:top-6">
         <span className="flex items-center gap-2 text-sm font-black text-brand">
           <MapIcon className="size-5 text-accent" />
           Mapa INTI
         </span>
-        <span className="text-[11px] font-bold text-muted">Proyectos</span>
       </div>
 
-      <div className="absolute inset-x-5 bottom-5 rounded-[8px] bg-white/92 p-4 shadow-sm backdrop-blur transition-transform group-hover:-translate-y-1">
-        <p className="text-[11px] font-black tracking-[0.14em] text-accent uppercase">
-          Vista previa
-        </p>
-        <h3 className="mt-1 text-base font-black text-brand">Explora proyectos por zona</h3>
-        <p className="mt-1 text-xs leading-relaxed text-muted">
-          Haz clic para abrir el mapa de proyectos y revisar ubicaciones disponibles.
-        </p>
-      </div>
-    </Link>
+      {points.length === 0 ? (
+        <div role="status" className="absolute bottom-4 left-4 max-w-[calc(100%-2rem)] rounded-2xl border border-white/80 bg-white/95 p-4 shadow-lg backdrop-blur sm:bottom-6 sm:left-6 sm:max-w-sm sm:p-5">
+          <span className="grid size-10 place-items-center rounded-xl bg-accent/15 text-brand"><MapIcon className="size-5" /></span>
+          <p className="mt-3 text-sm font-bold text-brand">Aún no hay proyectos que mostrar</p>
+          <p className="mt-1 text-xs leading-relaxed text-muted">Cuando haya proyectos con ubicación, aparecerán aquí.</p>
+        </div>
+      ) : null}
+    </div>
   );
 }

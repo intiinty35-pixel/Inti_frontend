@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { House } from "lucide-react";
 import { Container, Pagination } from "@/shared/ui";
 import { buildMetadata } from "@/shared/lib/seo";
 import { formatPrice } from "@/shared/lib/format";
@@ -202,8 +203,10 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
                   ))}
                 </div>
               ) : (
-                <div className="rounded-card border border-dashed border-edge bg-surface-muted p-10 text-center text-sm text-muted">
-                  No encontramos propiedades con esos filtros.
+                <div role="status" className="flex min-h-64 flex-col items-center justify-center rounded-card border border-dashed border-edge bg-surface-muted px-6 py-10 text-center">
+                  <span className="grid size-12 place-items-center rounded-full bg-surface text-brand shadow-sm"><House className="size-6" aria-hidden="true" /></span>
+                  <h2 className="mt-4 font-display text-lg font-bold text-brand">{result.total > 0 ? "No encontramos propiedades con esos filtros" : "Aún no hay propiedades que mostrar"}</h2>
+                  <p className="mt-1 max-w-sm text-sm leading-relaxed text-muted">{result.total > 0 ? "Prueba ajustar los filtros para ver más opciones." : "Cuando publiquemos nuevas propiedades, aparecerán aquí."}</p>
                 </div>
               )}
 
